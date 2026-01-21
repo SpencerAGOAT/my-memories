@@ -731,20 +731,44 @@
 <div id="player" style="position:absolute; top:-999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB7GeyT9SY7zFBeT-lfCM6iHZ_ipFXvemU",
+        authDomain: "fangtasia-14197.firebaseapp.com",
+        databaseURL: "https://fangtasia-14197-default-rtdb.firebaseio.com",
+        projectId: "fangtasia-14197",
+        storageBucket: "fangtasia-14197.firebasestorage.app",
+        messagingSenderId: "735588641679",
+        appId: "1:735588641679:web:5e0b9c5c5c84166b2f79fa"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const CLOUD_NAME = "fangtasia-14197"; 
     const UPLOAD_PRESET = "fangtasia"; 
     
-    // Registered users database - includes dynamic members
-    let userDatabase = {
+    // Core admin accounts (hardcoded for security)
+    const coreAdmins = {
         "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", target: "list_technician", isAdmin: true, isST: true },
         "buttheadandbeav126": { pass: "wtfomfgfangtasiafordabros21", rank: "ᗝᓬ⊢", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
         "bloomhouse8483": { pass: "methybethy89!", rank: "MOD", fullRank: "Moderator", style: "mod-style", target: "list_mod", isAdmin: true }
     };
     
-    // Load dynamic members from localStorage
-    const savedMembers = JSON.parse(localStorage.getItem('f_members') || '{}');
-    userDatabase = { ...userDatabase, ...savedMembers };
+    // User database starts with core admins
+    let userDatabase = { ...coreAdmins };
+    
+    // Load members from Firebase on startup
+    db.ref('members').on('value', (snapshot) => {
+        const members = snapshot.val() || {};
+        userDatabase = { ...coreAdmins, ...members };
+    });
 
     let CURRENT_USER = "";
     let IS_GUEST = false;
@@ -955,9 +979,21 @@
         const username = document.getElementById('app_username').value.trim();
         const reason = document.getElementById('app_reason').value.trim();
         if (!username || !reason) { alert('Fill required fields.'); return; }
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
-        apps.push({ username, referral: document.getElementById('app_referral').value, reason, offering: document.getElementById('app_offering').value, date: new Date().toLocaleDateString(), status: 'pending', id: Date.now() });
-        localStorage.setItem('f_applications', JSON.stringify(apps));
+        
+        const appData = { 
+            username, 
+            referral: document.getElementById('app_referral').value, 
+            reason, 
+            offering: document.getElementById('app_offering').value, 
+            date: new Date().toLocaleDateString(), 
+            status: 'pending', 
+            id: Date.now(),
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+        
+        // Save to Firebase
+        db.ref('applications/' + appData.id).set(appData);
+        
         document.getElementById('app_form').style.display = 'none';
         document.getElementById('app_result').innerHTML = '<div class="app-status app-pending"><strong>🩸 Blood Pact Received</strong><br>The coven will review your request.</div>';
         document.getElementById('app_result').style.display = 'block';
@@ -1209,75 +1245,101 @@
     function sendChat() {
         if (IS_GUEST) return;
         
-        // Check for timeout
-        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
-        const ban = bans[CURRENT_USER];
-        if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
-            if (ban.type === 'timeout') {
-                alert('You are timed out and cannot send messages.');
-                return;
-            }
-        }
-        
-        const input = document.getElementById('chat_input');
-        const text = input.value.trim();
-        if(!text) return;
-        const msgs = JSON.parse(localStorage.getItem('f_chat_v2')) || [];
-        const u = userDatabase[CURRENT_USER];
-        const profile = JSON.parse(localStorage.getItem('f_profile_' + CURRENT_USER) || '{}');
-        
-        // Check for commands
-        const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
-        if (cmdMatch && chatCommands[cmdMatch[1]]) {
-            const result = chatCommands[cmdMatch[1]](cmdMatch[2] || '');
-            if (result.type === 'system') {
-                input.value = '';
-                const logs = document.getElementById('chat_logs');
-                logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>';
-                logs.scrollTop = logs.scrollHeight;
-                return;
-            } else {
-                msgs.push({ user: CURRENT_USER, text: result.text, isAction: true, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-            }
-        } else {
-            msgs.push({ user: CURRENT_USER, text: text, tag: u.rank, style: u.style, color: profile.color || null, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-            // Trigger bot
-            for (const br of botResponses) {
-                if (br.trigger.test(text)) {
-                    setTimeout(() => {
-                        const m = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
-                        m.push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-                        localStorage.setItem('f_chat_v2', JSON.stringify(m.slice(-100)));
-                        loadMessages();
-                    }, 1000 + Math.random() * 1000);
-                    break;
+        // Check for timeout (from Firebase bans)
+        db.ref('bans/' + CURRENT_USER).once('value', (snapshot) => {
+            const ban = snapshot.val();
+            if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
+                if (ban.type === 'timeout') {
+                    alert('You are timed out and cannot send messages.');
+                    return;
                 }
             }
-        }
-        localStorage.setItem('f_chat_v2', JSON.stringify(msgs.slice(-100)));
-        localStorage.removeItem('f_typing');
-        input.value = "";
-        loadMessages();
+            
+            const input = document.getElementById('chat_input');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            const u = userDatabase[CURRENT_USER];
+            const profile = JSON.parse(localStorage.getItem('f_profile_' + CURRENT_USER) || '{}');
+            
+            // Check for commands
+            const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
+            if (cmdMatch && chatCommands[cmdMatch[1]]) {
+                const result = chatCommands[cmdMatch[1]](cmdMatch[2] || '');
+                if (result.type === 'system') {
+                    input.value = '';
+                    const logs = document.getElementById('chat_logs');
+                    logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>';
+                    logs.scrollTop = logs.scrollHeight;
+                    return;
+                } else {
+                    // Push action to Firebase
+                    db.ref('chat').push({ 
+                        user: CURRENT_USER, 
+                        text: result.text, 
+                        isAction: true, 
+                        tag: u.rank, 
+                        style: u.style, 
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+            } else {
+                // Push message to Firebase
+                db.ref('chat').push({ 
+                    user: CURRENT_USER, 
+                    text: text, 
+                    tag: u.rank, 
+                    style: u.style, 
+                    color: profile.color || null, 
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Trigger bot response
+                for (const br of botResponses) {
+                    if (br.trigger.test(text)) {
+                        setTimeout(() => {
+                            db.ref('chat').push({ 
+                                user: 'Eric Northman', 
+                                text: br.response, 
+                                tag: 'BOT', 
+                                style: 'bot-style', 
+                                isBot: true, 
+                                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            });
+                        }, 1000 + Math.random() * 1000);
+                        break;
+                    }
+                }
+            }
+            input.value = "";
+        });
     }
 
     // ADMIN: BOT MESSAGE
     function sendBotMessage() {
         const text = document.getElementById('bot_message').value.trim();
         if (!text) return;
-        const msgs = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
-        msgs.push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, avatar: '🤖', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        localStorage.setItem('f_chat_v2', JSON.stringify(msgs.slice(-100)));
+        db.ref('chat').push({ 
+            user: 'Eric Northman', 
+            text: text, 
+            tag: 'BOT', 
+            style: 'bot-style', 
+            isBot: true, 
+            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
         document.getElementById('bot_message').value = '';
-        loadMessages();
     }
 
     // ADMIN: PIN MESSAGE
     function pinMessage() {
         const text = document.getElementById('pin_message').value.trim();
         if (!text) return;
-        localStorage.setItem('f_pinned', text);
+        db.ref('pinned').set(text);
         document.getElementById('pin_message').value = '';
-        loadMessages();
     }
 
     // IMAGE UPLOAD
@@ -1287,9 +1349,12 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
-            const pending = JSON.parse(localStorage.getItem('f_pending_images') || '[]');
-            pending.push({ data: e.target.result, user: CURRENT_USER, id: Date.now() });
-            localStorage.setItem('f_pending_images', JSON.stringify(pending));
+            db.ref('pending_images').push({ 
+                data: e.target.result, 
+                user: CURRENT_USER, 
+                id: Date.now(),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
             alert('Image submitted for approval!');
         };
         reader.readAsDataURL(file);
@@ -1297,93 +1362,121 @@
     }
 
     function loadPendingImages() {
-        const pending = JSON.parse(localStorage.getItem('f_pending_images') || '[]');
         const container = document.getElementById('pending_images');
-        if (pending.length === 0) { container.innerHTML = '<span style="color:#666; font-size:9px;">None</span>'; return; }
-        container.innerHTML = pending.map(p => '<div class="approval-item"><img src="' + p.data + '"><div><div style="color:#d40000; font-size:10px;">' + p.user + '</div><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; margin:2px;" onclick="approveImage(' + p.id + ')">✓</button><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; background:#333;" onclick="denyImage(' + p.id + ')">✗</button></div></div>').join('');
+        if (!container) return;
+        
+        db.ref('pending_images').once('value', (snapshot) => {
+            const pending = [];
+            snapshot.forEach((child) => {
+                pending.push({ ...child.val(), key: child.key });
+            });
+            
+            if (pending.length === 0) { 
+                container.innerHTML = '<span style="color:#666; font-size:9px;">None</span>'; 
+                return; 
+            }
+            container.innerHTML = pending.map(p => '<div class="approval-item"><img src="' + p.data + '"><div><div style="color:#d40000; font-size:10px;">' + p.user + '</div><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; margin:2px;" onclick="approveImage(\'' + p.key + '\',\'' + p.user + '\',\'' + p.data.substring(0,50) + '\')">✓</button><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; background:#333;" onclick="denyImage(\'' + p.key + '\')">✗</button></div></div>').join('');
+        });
     }
 
-    function approveImage(id) {
-        const pending = JSON.parse(localStorage.getItem('f_pending_images') || '[]');
-        const img = pending.find(p => p.id === id);
-        if (!img) return;
-        const msgs = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
-        const u = userDatabase[img.user] || { rank: 'M', style: 'member-style' };
-        const profile = JSON.parse(localStorage.getItem('f_profile_' + img.user) || '{}');
-        msgs.push({ user: img.user, text: '', imageData: img.data, tag: u.rank, style: u.style, avatar: profile.avatar || '🦇', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        localStorage.setItem('f_chat_v2', JSON.stringify(msgs.slice(-100)));
-        localStorage.setItem('f_pending_images', JSON.stringify(pending.filter(p => p.id !== id)));
-        loadPendingImages();
-        loadMessages();
+    function approveImage(key, user, dataPreview) {
+        // Get full image data from Firebase
+        db.ref('pending_images/' + key).once('value', (snapshot) => {
+            const img = snapshot.val();
+            if (!img) return;
+            
+            const u = userDatabase[img.user] || { rank: 'M', style: 'member-style' };
+            
+            // Add to chat
+            db.ref('chat').push({ 
+                user: img.user, 
+                text: '[Image]', 
+                imageData: img.data, 
+                tag: u.rank, 
+                style: u.style, 
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Remove from pending
+            db.ref('pending_images/' + key).remove();
+            loadPendingImages();
+        });
     }
 
-    function denyImage(id) {
-        const pending = JSON.parse(localStorage.getItem('f_pending_images') || '[]');
-        localStorage.setItem('f_pending_images', JSON.stringify(pending.filter(p => p.id !== id)));
+    function denyImage(key) {
+        db.ref('pending_images/' + key).remove();
         loadPendingImages();
     }
 
     function loadPendingApps() {
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]').filter(a => a.status === 'pending');
         const container = document.getElementById('pending_apps');
         if (!container) return;
-        if (apps.length === 0) { container.innerHTML = '<span style="color:#666; font-size:9px;">No pending applications</span>'; return; }
-        container.innerHTML = apps.map(a => `
-            <div style="border:1px solid #400; padding:8px; margin-bottom:8px; background:#0a0000;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(a.username)}</span>
-                    <span style="color:#555; font-size:8px;">${a.date}</span>
+        
+        db.ref('applications').orderByChild('status').equalTo('pending').once('value', (snapshot) => {
+            const apps = [];
+            snapshot.forEach((child) => {
+                apps.push(child.val());
+            });
+            
+            if (apps.length === 0) { 
+                container.innerHTML = '<span style="color:#666; font-size:9px;">No pending applications</span>'; 
+                return; 
+            }
+            
+            container.innerHTML = apps.map(a => `
+                <div style="border:1px solid #400; padding:8px; margin-bottom:8px; background:#0a0000;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(a.username)}</span>
+                        <span style="color:#555; font-size:8px;">${a.date}</span>
+                    </div>
+                    <div style="color:#888; font-size:9px; margin:5px 0;">
+                        <strong>Referral:</strong> ${escapeHtml(a.referral || 'None')}<br>
+                        <strong>Reason:</strong> ${escapeHtml(a.reason)}<br>
+                        <strong>Offering:</strong> ${escapeHtml(a.offering || 'None')}
+                    </div>
+                    <div style="display:flex; gap:5px; margin-top:8px;">
+                        <button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#050;" onclick="approveApp(${a.id})">✓ Accept</button>
+                        <button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#500;" onclick="denyApp(${a.id})">✗ Deny</button>
+                    </div>
                 </div>
-                <div style="color:#888; font-size:9px; margin:5px 0;">
-                    <strong>Referral:</strong> ${escapeHtml(a.referral || 'None')}<br>
-                    <strong>Reason:</strong> ${escapeHtml(a.reason)}<br>
-                    <strong>Offering:</strong> ${escapeHtml(a.offering || 'None')}
-                </div>
-                <div style="display:flex; gap:5px; margin-top:8px;">
-                    <button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#050;" onclick="approveApp(${a.id})">✓ Accept</button>
-                    <button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#500;" onclick="denyApp(${a.id})">✗ Deny</button>
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        });
     }
 
     function approveApp(id) {
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
-        const idx = apps.findIndex(a => a.id === id);
-        if (idx !== -1) { 
-            apps[idx].status = 'approved'; 
-            localStorage.setItem('f_applications', JSON.stringify(apps)); 
-        }
+        db.ref('applications/' + id).update({ status: 'approved' });
         loadPendingApps();
     }
 
     function denyApp(id) {
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
-        const idx = apps.findIndex(a => a.id === id);
-        if (idx !== -1) { 
-            apps[idx].status = 'denied'; 
-            localStorage.setItem('f_applications', JSON.stringify(apps)); 
-        }
+        db.ref('applications/' + id).update({ status: 'denied' });
         loadPendingApps();
     }
 
     // ADMIN FUNCTIONS
     function clearPin() {
-        localStorage.removeItem('f_pinned');
-        loadMessages();
+        db.ref('pinned').remove();
     }
 
     function clearChat() {
         if (confirm('Clear ALL chat messages? This cannot be undone.')) {
-            localStorage.removeItem('f_chat_v2');
-            loadMessages();
+            db.ref('chat').remove();
         }
     }
 
     function exportChat() {
-        const msgs = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
-        const text = msgs.map(m => `[${m.time}] ${m.user}: ${m.text}`).join('\n');
-        const blob = new Blob([text], { type: 'text/plain' });
+        db.ref('chat').orderByChild('timestamp').once('value', (snapshot) => {
+            const msgs = [];
+            snapshot.forEach((child) => msgs.push(child.val()));
+            const text = msgs.map(m => `[${m.time}] ${m.user}: ${m.text}`).join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
+            a.click();
+        });
+    }
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
@@ -1413,13 +1506,37 @@
     function checkAppStatus() {
         const username = document.getElementById('app_username').value.trim();
         if (!username) { alert('Enter your username to check status.'); return; }
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
-        const app = apps.find(a => a.username.toLowerCase() === username.toLowerCase());
         
         const resultDiv = document.getElementById('app_result');
         document.getElementById('app_form').style.display = 'none';
         resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '<div style="color:#888;">Checking...</div>';
         
+        // Search Firebase for application
+        db.ref('applications').orderByChild('username').equalTo(username).once('value', (snapshot) => {
+            let app = null;
+            snapshot.forEach((child) => {
+                app = child.val();
+            });
+            
+            if (!app) {
+                // Try case-insensitive search
+                db.ref('applications').once('value', (allSnap) => {
+                    allSnap.forEach((child) => {
+                        const a = child.val();
+                        if (a.username.toLowerCase() === username.toLowerCase()) {
+                            app = a;
+                        }
+                    });
+                    renderAppStatus(app, resultDiv);
+                });
+            } else {
+                renderAppStatus(app, resultDiv);
+            }
+        });
+    }
+    
+    function renderAppStatus(app, resultDiv) {
         if (!app) {
             resultDiv.innerHTML = '<div class="app-status" style="border-color:#888; color:#888;">No application found for this username.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
         } else if (app.status === 'pending') {
@@ -1435,7 +1552,7 @@
                     <label style="color:#ffd700; font-size:8px;">🌟 VIP Code (optional)</label>
                     <input type="text" id="inline_vip_code" class="ie-input" placeholder="Enter VIP invite code" style="margin:0;">
                 </div>
-                <button class="ie-btn" onclick="completeInlineRegistration()">🦇 Complete Registration</button>
+                <button class="ie-btn" onclick="completeInlineRegistration(${app.id})">🦇 Complete Registration</button>
                 <div id="inline_reg_result" style="margin-top:8px;"></div>
             `;
         } else if (app.status === 'denied') {
@@ -1461,41 +1578,53 @@
         if (pass !== pass2) { resultEl.innerHTML = '<span style="color:#f00;">Passwords do not match.</span>'; return; }
         if (pass.length < 6) { resultEl.innerHTML = '<span style="color:#f00;">Password must be 6+ characters.</span>'; return; }
         
-        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
-        if (members[username] || userDatabase[username]) {
+        if (userDatabase[username]) {
             resultEl.innerHTML = '<span style="color:#f00;">Username already registered.</span>';
             return;
         }
         
-        // Check VIP code if provided
-        let isVIP = false;
+        // Check VIP code if provided (from Firebase)
         if (vipCode) {
-            const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
-            const codeIdx = codes.findIndex(c => c.code === vipCode && !c.used);
-            if (codeIdx !== -1) {
-                codes[codeIdx].used = true;
-                codes[codeIdx].usedBy = username;
-                localStorage.setItem('f_vip_codes', JSON.stringify(codes));
-                isVIP = true;
-            } else {
-                resultEl.innerHTML = '<span style="color:#f00;">Invalid or used VIP code.</span>';
-                return;
-            }
-        }
-        
-        // Add new member
-        if (isVIP) {
-            members[username] = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
+            db.ref('vip_codes').orderByChild('code').equalTo(vipCode).once('value', (snapshot) => {
+                let codeData = null;
+                let codeKey = null;
+                snapshot.forEach((child) => {
+                    if (!child.val().used) {
+                        codeData = child.val();
+                        codeKey = child.key;
+                    }
+                });
+                
+                if (codeData) {
+                    // Mark code as used
+                    db.ref('vip_codes/' + codeKey).update({ used: true, usedBy: username });
+                    finishRegistration(username, pass, true, appId, resultEl);
+                } else {
+                    resultEl.innerHTML = '<span style="color:#f00;">Invalid or used VIP code.</span>';
+                }
+            });
         } else {
-            members[username] = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+            finishRegistration(username, pass, false, appId, resultEl);
         }
-        localStorage.setItem('f_members', JSON.stringify(members));
-        userDatabase[username] = members[username];
+    }
+    
+    function finishRegistration(username, pass, isVIP, appId, resultEl) {
+        // Create member data
+        let memberData;
+        if (isVIP) {
+            memberData = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
+        } else {
+            memberData = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+        }
         
-        // Update application
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
-        const idx = apps.findIndex(a => a.username.toLowerCase() === username.toLowerCase());
-        if (idx !== -1) { apps[idx].status = 'registered'; localStorage.setItem('f_applications', JSON.stringify(apps)); }
+        // Save to Firebase
+        db.ref('members/' + username).set(memberData);
+        userDatabase[username] = memberData;
+        
+        // Update application status
+        if (appId) {
+            db.ref('applications/' + appId).update({ status: 'registered' });
+        }
         
         const msg = isVIP ? '🌟 VIP Registration complete!' : '✓ Registration complete!';
         resultEl.innerHTML = '<span style="color:#0f0;">' + msg + '</span>';
@@ -1570,35 +1699,26 @@
         if (!username || !action) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Select user and action.</span>'; return; }
         
         // Don't allow moderation of core admins
-        const coreAdmins = ['losersyndicate', 'buttheadandbeav126', 'bloomhouse8483'];
-        if (coreAdmins.includes(username.toLowerCase())) {
+        const protectedAdmins = ['losersyndicate', 'buttheadandbeav126', 'bloomhouse8483'];
+        if (protectedAdmins.includes(username.toLowerCase())) {
             document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Cannot moderate core admins.</span>';
             return;
         }
         
-        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
         const now = Date.now();
         const expiry = duration === 0 ? 0 : now + (duration * 60 * 1000);
         
         if (action === 'kick') {
-            // Kick just logs them out (no persistent effect)
             document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' has been kicked.</span>';
         } else if (action === 'timeout') {
-            bans[username] = { type: 'timeout', expiry: expiry, reason: reason, by: CURRENT_USER };
-            localStorage.setItem('f_bans', JSON.stringify(bans));
+            db.ref('bans/' + username).set({ type: 'timeout', expiry: expiry, reason: reason, by: CURRENT_USER });
             document.getElementById('mod_result').innerHTML = '<span style="color:#ffd700;">' + username + ' timed out for ' + (duration === 0 ? 'permanently' : duration + ' mins') + '.</span>';
         } else if (action === 'softban') {
-            bans[username] = { type: 'softban', expiry: expiry, reason: reason, by: CURRENT_USER };
-            localStorage.setItem('f_bans', JSON.stringify(bans));
+            db.ref('bans/' + username).set({ type: 'softban', expiry: expiry, reason: reason, by: CURRENT_USER });
             document.getElementById('mod_result').innerHTML = '<span style="color:#ff6600;">' + username + ' soft banned (suspended).</span>';
         } else if (action === 'hardban') {
-            // Hard ban deletes the account
-            bans[username] = { type: 'hardban', expiry: 0, reason: reason, by: CURRENT_USER };
-            localStorage.setItem('f_bans', JSON.stringify(bans));
-            // Remove from members
-            const members = JSON.parse(localStorage.getItem('f_members') || '{}');
-            delete members[username];
-            localStorage.setItem('f_members', JSON.stringify(members));
+            db.ref('bans/' + username).set({ type: 'hardban', expiry: 0, reason: reason, by: CURRENT_USER });
+            db.ref('members/' + username).remove();
             delete userDatabase[username];
             document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">' + username + ' HARD BANNED (account deleted).</span>';
         }
@@ -1607,25 +1727,25 @@
     }
 
     function loadBannedUsers() {
-        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
         const container = document.getElementById('banned_users');
         if (!container) return;
         
-        const now = Date.now();
-        const activeBans = Object.entries(bans).filter(([u, b]) => b.expiry === 0 || b.expiry > now);
-        
-        if (activeBans.length === 0) { container.innerHTML = 'None'; return; }
-        
-        container.innerHTML = activeBans.map(([user, ban]) => {
-            const exp = ban.expiry === 0 ? 'Permanent' : new Date(ban.expiry).toLocaleString();
-            return '<div style="border-bottom:1px solid #333; padding:3px 0;"><strong>' + user + '</strong> [' + ban.type + '] - ' + exp + ' <button onclick="unbanUser(\'' + user + '\')" style="font-size:8px; padding:1px 4px;">Unban</button></div>';
-        }).join('');
+        db.ref('bans').once('value', (snapshot) => {
+            const bans = snapshot.val() || {};
+            const now = Date.now();
+            const activeBans = Object.entries(bans).filter(([u, b]) => b.expiry === 0 || b.expiry > now);
+            
+            if (activeBans.length === 0) { container.innerHTML = 'None'; return; }
+            
+            container.innerHTML = activeBans.map(([user, ban]) => {
+                const exp = ban.expiry === 0 ? 'Permanent' : new Date(ban.expiry).toLocaleString();
+                return '<div style="border-bottom:1px solid #333; padding:3px 0;"><strong>' + user + '</strong> [' + ban.type + '] - ' + exp + ' <button onclick="unbanUser(\'' + user + '\')" style="font-size:8px; padding:1px 4px;">Unban</button></div>';
+            }).join('');
+        });
     }
 
     function unbanUser(username) {
-        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
-        delete bans[username];
-        localStorage.setItem('f_bans', JSON.stringify(bans));
+        db.ref('bans/' + username).remove();
         loadBannedUsers();
     }
 
@@ -1664,9 +1784,7 @@
         const newRank = document.getElementById('elevate_rank').value;
         
         if (!username) { alert('Enter username.'); return; }
-        
-        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
-        if (!members[username] && !userDatabase[username]) { alert('User not found.'); return; }
+        if (!userDatabase[username]) { alert('User not found.'); return; }
         
         const rankConfig = {
             'member': { rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false },
@@ -1675,11 +1793,9 @@
             'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', target: 'list_admin', isAdmin: true }
         };
         
-        if (members[username]) {
-            members[username] = { ...members[username], ...rankConfig[newRank] };
-            localStorage.setItem('f_members', JSON.stringify(members));
-            userDatabase[username] = members[username];
-        }
+        // Update in Firebase
+        db.ref('members/' + username).update(rankConfig[newRank]);
+        userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] };
         
         alert(username + ' elevated to ' + rankConfig[newRank].fullRank);
     }
@@ -1688,20 +1804,20 @@
     function generateVIPCode() {
         if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
         const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-        const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
-        codes.push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false });
-        localStorage.setItem('f_vip_codes', JSON.stringify(codes));
+        db.ref('vip_codes').push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false });
         document.getElementById('vip_code_display').textContent = code;
         loadActiveCodes();
     }
 
     function loadActiveCodes() {
-        const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
-        const active = codes.filter(c => !c.used);
         const container = document.getElementById('active_codes');
-        if (container) {
-            container.innerHTML = active.length ? active.map(c => c.code).join('<br>') : 'None';
-        }
+        if (!container) return;
+        
+        db.ref('vip_codes').orderByChild('used').equalTo(false).once('value', (snapshot) => {
+            const codes = [];
+            snapshot.forEach((child) => codes.push(child.val().code));
+            container.innerHTML = codes.length ? codes.join('<br>') : 'None';
+        });
     }
 
     // VIP IMAGE HOSTING - VIP and Staff only
@@ -1755,27 +1871,44 @@
         }
     }
 
+    // Setup real-time chat listener
+    let chatListenerSet = false;
+    function setupChatListener() {
+        if (chatListenerSet) return;
+        chatListenerSet = true;
+        
+        db.ref('chat').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
+            const logs = document.getElementById('chat_logs');
+            if (!logs) return;
+            
+            const msgs = [];
+            snapshot.forEach((child) => {
+                msgs.push(child.val());
+            });
+            
+            // Get pinned message
+            db.ref('pinned').once('value', (pinSnap) => {
+                const pinned = pinSnap.val();
+                const pinnedContainer = document.getElementById('pinned_container');
+                if (pinnedContainer) {
+                    pinnedContainer.innerHTML = pinned ? '<div class="pinned-msg"><span style="color:#ffd700; font-size:8px;">📌 PINNED</span><br>' + escapeHtml(pinned) + '</div>' : '';
+                }
+            });
+            
+            logs.innerHTML = msgs.map(m => {
+                if (m.isAction) {
+                    return '<div class="chat-action" style="padding:4px 0; font-size:11px;">* ' + escapeHtml(m.text) + '</div>';
+                }
+                const botClass = m.isBot ? ' chat-bot' : '';
+                const imgHtml = m.imageData ? '<img class="chat-image" src="' + m.imageData + '">' : '';
+                return '<div class="chat-entry' + botClass + '"><div class="chat-header"><span class="rank-tag ' + m.style + '">' + m.tag + '</span><span class="chat-username ' + m.style + '" onclick="showProfileCard(\'' + m.user + '\', event)" style="' + (m.color ? 'color:' + m.color + ' !important;' : '') + '">' + m.user + '</span><span style="color:#444; font-size:8px; margin-left:auto;">' + (m.time || '') + '</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">' + escapeHtml(m.text) + imgHtml + '</div></div>';
+            }).join('');
+            logs.scrollTop = logs.scrollHeight;
+        });
+    }
+
     function loadMessages() {
-        const logs = document.getElementById('chat_logs');
-        if (!logs) return;
-        const msgs = JSON.parse(localStorage.getItem('f_chat_v2')) || [];
-        
-        // Pinned message
-        const pinned = localStorage.getItem('f_pinned');
-        const pinnedContainer = document.getElementById('pinned_container');
-        if (pinnedContainer) {
-            pinnedContainer.innerHTML = pinned ? '<div class="pinned-msg"><span style="color:#ffd700; font-size:8px;">📌 PINNED</span><br>' + escapeHtml(pinned) + '</div>' : '';
-        }
-        
-        logs.innerHTML = msgs.map(m => {
-            if (m.isAction) {
-                return '<div class="chat-action" style="padding:4px 0; font-size:11px;">* ' + escapeHtml(m.text) + '</div>';
-            }
-            const botClass = m.isBot ? ' chat-bot' : '';
-            const imgHtml = m.imageData ? '<img class="chat-image" src="' + m.imageData + '">' : '';
-            return '<div class="chat-entry' + botClass + '"><div class="chat-header"><span class="rank-tag ' + m.style + '">' + m.tag + '</span><span class="chat-username ' + m.style + '" onclick="showProfileCard(\'' + m.user + '\', event)" style="' + (m.color ? 'color:' + m.color + ' !important;' : '') + '">' + m.user + '</span><span style="color:#444; font-size:8px; margin-left:auto;">' + (m.time || '') + '</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">' + escapeHtml(m.text) + imgHtml + '</div></div>';
-        }).join('');
-        logs.scrollTop = logs.scrollHeight;
+        setupChatListener();
     }
 
     function updateMemberList() {
@@ -1789,7 +1922,7 @@
         const profile = JSON.parse(localStorage.getItem('f_profile_' + CURRENT_USER) || '{}');
         document.getElementById(u.target).innerHTML = `
             <div class="member-item ${u.style}">
-                <span style="font-size: 14px;">${profile.avatar || '🦇'}</span> ${CURRENT_USER}
+                <span style="font-size: 14px;">🦇</span> ${CURRENT_USER}
                 ${profile.status ? `<div style="font-size:9px; color:#666; margin-left:20px;">${escapeHtml(profile.status)}</div>` : ''}
             </div>`;
     }
