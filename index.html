@@ -11,7 +11,6 @@
     <style>
         :root { --vamp-red: #8b0000; --glass: rgba(15, 0, 0, 0.9); }
         
-        /* BACKGROUND */
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
@@ -27,7 +26,6 @@
             color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: pointer;
         }
 
-        /* DESKTOP SYSTEM */
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px; }
         .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
         .icon img { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
@@ -84,6 +82,7 @@
             <input type="text" id="ie_filename" class="ie-input" placeholder="Memory Name">
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
             <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
+            <button class="ie-btn" style="margin-top:20px; background:#222;" onclick="clearArchive()">Purge Local Cache</button>
         </div>
     </div>
 </div>
@@ -128,6 +127,12 @@
         "bloomhouse8483": "methybethy89!"
     };
 
+    // --- 1. LOAD SAVED MEMORIES ON STARTUP ---
+    window.addEventListener('load', () => {
+        const savedMemories = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
+        savedMemories.forEach(mem => addIconToMemories(mem.name, mem.url, false));
+    });
+
     function validateIE() {
         const u = document.getElementById('ie_user').value;
         const p = document.getElementById('ie_pass').value;
@@ -162,22 +167,25 @@
 
             if (response.ok) {
                 alert("Archive Synced!");
-                addIconToMemories(name, data.secure_url);
+                // 'true' saves it to LocalStorage
+                addIconToMemories(name, data.secure_url, true);
+                
                 statusBtn.innerText = "Push to Cloud";
                 document.getElementById('ie_filename').value = "";
                 fileInput.value = "";
             } else {
-                alert("VOID ERROR: " + (data.error ? data.error.message : "Unknown Error"));
+                alert("VOID ERROR: " + (data.error ? data.error.message : "Check Preset"));
                 statusBtn.innerText = "Push to Cloud";
             }
         } catch (err) {
-            alert("Digital connection failed.");
+            alert("Connection lost.");
         } finally {
             statusBtn.disabled = false;
         }
     }
 
-    function addIconToMemories(name, url) {
+    // --- 2. ICON LOGIC WITH PERMANENCE ---
+    function addIconToMemories(name, url, shouldSave) {
         const grid = document.getElementById('memories_grid');
         const div = document.createElement('div');
         div.className = "icon";
@@ -186,18 +194,30 @@
             <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png" style="width:38px; filter: sepia(1) hue-rotate(330deg) saturate(2);">
             <div style="color:white; font-size:10px; margin-top:5px; word-wrap: break-word;">${name}</div>
         `;
+        
         div.onclick = () => {
             const v = document.getElementById('main_vid');
             v.src = url;
-            
-            // Pauses background music so you can hear the memory
-            if(player) player.pauseVideo();
-
+            if(player) player.pauseVideo(); // Mute background music
             if(document.getElementById('vid_player').style.display === 'none') toggleWin('vid_player');
             v.load();
             v.play();
         };
+        
         grid.appendChild(div);
+
+        if (shouldSave) {
+            const archive = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
+            archive.push({ name, url });
+            localStorage.setItem('fangtasia_archive', JSON.stringify(archive));
+        }
+    }
+
+    function clearArchive() {
+        if(confirm("Purge all memories from this device? (They stay on Cloudinary, but disappear from this folder)")) {
+            localStorage.removeItem('fangtasia_archive');
+            document.getElementById('memories_grid').innerHTML = "";
+        }
     }
 
     function beginSession() { 
@@ -210,7 +230,6 @@
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     }
 
-    // Draggable Logic
     document.querySelectorAll('.window').forEach(win => {
         win.querySelector('.title-bar').onmousedown = (e) => {
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
@@ -221,7 +240,6 @@
         };
     });
 
-    // YouTube Audio Logic
     var player;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
