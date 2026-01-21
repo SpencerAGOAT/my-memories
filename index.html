@@ -62,12 +62,12 @@
         #boot-screen {
             position: fixed; inset: 0; background: black; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: none !important;
+            color: #d40000;  cursor: none !important;
         }
         
         .boot-title {
             font-size: 60px;
-            font-family: 'UnifrakturMaguntia';
+            
             animation: bloodPulse 2s ease-in-out infinite;
             text-shadow: 0 0 20px rgba(212, 0, 0, 0.5), 0 0 40px rgba(212, 0, 0, 0.3);
         }
@@ -113,15 +113,17 @@
         .rank-tag { font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 2px; border: 1px solid; text-transform: uppercase; min-width: 25px; text-align: center; }
         
         #member_list { width: 180px; border-left: 1px solid #400; padding: 12px; background: #0a0000; }
-        .member-category { color: #d40000; font-size: 14px; font-weight: bold; margin-top: 15px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px; font-family: 'UnifrakturMaguntia', serif; }
+        .member-category { color: #d40000; font-size: 14px; font-weight: bold; margin-top: 15px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px;  }
         .member-item { font-size: 14px; font-weight: bold; margin-top: 6px; }
 
-        /* RANK STYLING */
-        .st-style { color: #ff00ff; border-color: #ff00ff; background: linear-gradient(90deg, #ff00ff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 3px rgba(255,0,255,0.5)); }
+        /* RANK STYLING - Clean readable text */
+        .st-style { color: #ff00ff; border-color: #ff00ff; }
         .a-style { color: #ff00ea; border-color: #ff00ea; }
         .mod-style { color: #00ff00; border-color: #00ff00; }
         .guest-style { color: #888; border-color: #555; }
-        .vip-style { color: #ffd700; border-color: #ffd700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        .vip-style { color: #ffd700; border-color: #ffd700; }
+        .member-style { color: #ff4444; border-color: #ff4444; }
+        .bot-style { color: #d40000; border-color: #d40000; }
 
         /* MEMORIES 3-COLUMN GRID */
         #memories_grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; justify-items: center; }
@@ -244,7 +246,7 @@
 
         /* ADMIN */
         .admin-section { margin-bottom: 12px; }
-        .admin-section h4 { color: #d40000; font-family: 'UnifrakturMaguntia'; margin-bottom: 6px; font-size: 12px; }
+        .admin-section h4 { color: #d40000;  margin-bottom: 6px; font-size: 12px; }
         .approval-item { display: flex; gap: 8px; padding: 8px; border: 1px solid #333; margin-bottom: 6px; align-items: center; }
         .approval-item img { max-width: 60px; max-height: 45px; }
 
@@ -360,96 +362,45 @@
         <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
         <div>Portal</div>
     </div>
-    <div class="icon" onclick="toggleWin('guestbook_window')">
-        <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/write_wordpad-0.png">
-        <div>Guestbook</div>
-    </div>
-    <div class="icon" onclick="toggleWin('shrine_window')">
-        <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/diamond-0.png">
-        <div>The Shrine</div>
-    </div>
     <div class="icon" onclick="toggleWin('games_window')">
         <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/joystick-2.png">
         <div>Games</div>
     </div>
     <div class="icon" onclick="toggleWin('apply_window')">
-        <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/key_win-0.png">
+        <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/keys-0.png">
         <div>Apply</div>
     </div>
     <div class="icon" onclick="toggleWin('about_window')">
         <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/help_book_cool-4.png">
         <div>About</div>
     </div>
-</div>
-
-<!-- GUESTBOOK WINDOW - FOR ALL VISITORS -->
-<div class="window" id="guestbook_window" style="left:100px; top:80px; width:400px; height:450px;">
-    <div class="title-bar">
-        <div class="title-bar-text">📖 Guestbook - Sign Your Soul Away</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('guestbook_window')"></button></div>
-    </div>
-    <div class="window-body">
-        <div class="ie-content">
-            <div id="guestbook_entries" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
-            <input type="text" id="gb_name" class="ie-input" placeholder="Your Name (or alias)..." maxlength="20">
-            <textarea id="gb_message" class="ie-input" placeholder="Leave your mark..." style="height: 60px; resize: none;" maxlength="200"></textarea>
-            <button class="ie-btn" onclick="signGuestbook()">🩸 Sign in Blood</button>
-        </div>
+    <div class="icon" id="admin_icon" style="display:none;" onclick="toggleWin('admin_window')">
+        <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/lock-0.png">
+        <div>Admin Panel</div>
     </div>
 </div>
 
 <!-- ABOUT WINDOW -->
-<div class="window" id="about_window" style="left:200px; top:120px; width:350px; height:380px;">
+<div class="window" id="about_window" style="left:200px; top:120px; width:350px; height:320px;">
     <div class="title-bar">
         <div class="title-bar-text">About fangtasia.wtf</div>
         <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('about_window')"></button></div>
     </div>
     <div class="window-body">
         <div class="ie-content" style="text-align: center;">
-            <h2 style="font-family: 'UnifrakturMaguntia'; font-size: 28px; margin-bottom: 5px;">fangtasia.wtf</h2>
+            <h2 style="font-size: 28px; margin-bottom: 5px;">fangtasia.wtf</h2>
             <p style="color: #666; font-size: 10px;">Version 6.66</p>
             <div style="border: 1px solid #400; padding: 15px; margin: 15px 0; text-align: left; background: #050000;">
                 <p style="color: #999; font-size: 11px; line-height: 1.6;">
-                    Welcome to the digital crypt. This is a private archive maintained by the inner circle.
+                    Welcome to the digital crypt. A private archive maintained by the inner circle.
                     <br><br>
-                    🦇 <span style="color:#d40000;">Memories</span> - Our video archive<br>
+                    🦇 <span style="color:#d40000;">Memories</span> - Video archive<br>
                     🦇 <span style="color:#d40000;">Portal</span> - Member access<br>
-                    🦇 <span style="color:#d40000;">Guestbook</span> - Leave your mark<br>
+                    🦇 <span style="color:#d40000;">Games</span> - Silver Stakes<br>
                     🦇 <span style="color:#d40000;">The Lounge</span> - Members only
                 </p>
             </div>
             <p style="color: #555; font-size: 9px;">© 2024 - Eternal Night Productions</p>
-            <div style="margin-top: 15px;">
-                <div class="visitor-counter" style="font-size: 11px;">
-                    SOULS COLLECTED: <span id="visitor_count_about">000000</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- SHRINE WINDOW -->
-<div class="window" id="shrine_window" style="left:120px; top:60px; width:340px; height:420px;">
-    <div class="title-bar">
-        <div class="title-bar-text">🕯️ The Shrine</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('shrine_window')"></button></div>
-    </div>
-    <div class="window-body">
-        <div class="shrine-container">
-            <h2 style="font-family: 'UnifrakturMaguntia'; color: #d40000; margin: 5px 0;">The Eternal Flame</h2>
-            <p style="color: #555; font-size: 9px;">Light a candle. Leave an offering.</p>
-            <div class="candle-row">
-                <span class="candle" onclick="toggleCandle(0)">🕯️</span>
-                <span class="candle" onclick="toggleCandle(1)">🕯️</span>
-                <span class="candle" onclick="toggleCandle(2)">🕯️</span>
-                <span class="candle" onclick="toggleCandle(3)">🕯️</span>
-                <span class="candle" onclick="toggleCandle(4)">🕯️</span>
-            </div>
-            <div style="font-size: 45px;">⚰️</div>
-            <p style="color: #666; font-style: italic; font-size: 11px;" id="shrine_message">"In darkness, we find our light."</p>
-            <input type="text" class="offering-input" id="offering_input" placeholder="Leave an offering..." maxlength="40">
-            <button class="ie-btn" style="width: auto; padding: 4px 15px; margin-top: 8px;" onclick="leaveOffering()">🩸 Offer</button>
-            <div class="offerings-list" id="offerings_list"></div>
         </div>
     </div>
 </div>
@@ -462,7 +413,7 @@
     </div>
     <div class="window-body">
         <div style="padding: 10px;">
-            <h3 style="font-family: 'UnifrakturMaguntia'; color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
+            <h3 style=" color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
             <p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes! Left-click reveal, right-click flag.</p>
             <div class="game-status" id="game_status">🦇 Stakes: 10</div>
             <div class="stakes-grid" id="stakes_grid"></div>
@@ -481,7 +432,7 @@
     </div>
     <div class="window-body">
         <div class="ie-content">
-            <h2 style="font-family: 'UnifrakturMaguntia'; margin-top: 0; font-size: 18px;">Join the Coven</h2>
+            <h2 style="margin-top: 0; font-size: 18px;">Join the Coven</h2>
             <p style="color: #888; font-size: 9px; margin-bottom: 10px;">Access is granted only to the worthy.</p>
             <div id="app_form">
                 <input type="text" id="app_username" class="ie-input" placeholder="Desired Username" maxlength="20">
@@ -489,8 +440,31 @@
                 <textarea id="app_reason" class="ie-input" placeholder="Why do you seek entry?" style="height: 60px; resize: none;"></textarea>
                 <textarea id="app_offering" class="ie-input" placeholder="What can you offer?" style="height: 50px; resize: none;"></textarea>
                 <button class="ie-btn" onclick="submitApplication()">🩸 Submit Blood Pact</button>
+                <button class="ie-btn" style="background: #333; margin-top: 5px;" onclick="checkAppStatus()">Check Application Status</button>
             </div>
             <div id="app_result" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- REGISTRATION WINDOW - Shows after approval -->
+<div class="window" id="register_window" style="left:180px; top:100px; width:340px; height:350px; display:none;">
+    <div class="title-bar">
+        <div class="title-bar-text">✓ Complete Registration</div>
+        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('register_window')"></button></div>
+    </div>
+    <div class="window-body">
+        <div class="ie-content">
+            <h2 style="margin-top: 0; font-size: 16px; color: #00ff00;">🩸 Application Approved!</h2>
+            <p style="color: #888; font-size: 10px; margin-bottom: 15px;">Complete your registration to join the coven.</p>
+            <input type="text" id="reg_username" class="ie-input" placeholder="Username" maxlength="20">
+            <input type="password" id="reg_password" class="ie-input" placeholder="Password">
+            <input type="password" id="reg_password2" class="ie-input" placeholder="Confirm Password">
+            <button class="ie-btn" onclick="completeRegistration()">🦇 Complete Registration</button>
+            <div id="reg_result" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -505,7 +479,6 @@
         <div class="tab-bar">
             <div class="tab active" onclick="switchChatTab('main', this)">Lounge</div>
             <div class="tab" onclick="switchChatTab('settings', this)">⚙️ Settings</div>
-            <div class="tab" id="tab_admin" style="display:none;" onclick="switchChatTab('admin', this)">👑 Admin</div>
         </div>
         
         <div id="chat_main">
@@ -545,18 +518,8 @@
         </div>
         
         <div id="chat_settings" style="display: none; padding: 12px; overflow-y: auto; height: calc(100% - 40px);">
-            <h3 style="font-family: 'UnifrakturMaguntia'; color: #d40000; margin: 0 0 10px 0; font-size: 14px;">Profile</h3>
-            <label style="color: #888; font-size: 9px;">Avatar</label>
-            <div class="avatar-grid">
-                <div class="avatar-option" data-avatar="🦇" onclick="selectAvatar(this)">🦇</div>
-                <div class="avatar-option" data-avatar="🧛" onclick="selectAvatar(this)">🧛</div>
-                <div class="avatar-option" data-avatar="💀" onclick="selectAvatar(this)">💀</div>
-                <div class="avatar-option" data-avatar="🩸" onclick="selectAvatar(this)">🩸</div>
-                <div class="avatar-option" data-avatar="🌙" onclick="selectAvatar(this)">🌙</div>
-                <div class="avatar-option" data-avatar="⚰️" onclick="selectAvatar(this)">⚰️</div>
-                <div class="avatar-option" data-avatar="🐺" onclick="selectAvatar(this)">🐺</div>
-                <div class="avatar-option" data-avatar="👁️" onclick="selectAvatar(this)">👁️</div>
-            </div>
+            <h3 style="color: #d40000; margin: 0 0 10px 0; font-size: 14px;">Profile Settings</h3>
+            
             <label style="color: #888; font-size: 9px;">Name Color</label>
             <div class="color-picker-row">
                 <div class="color-swatch" style="background: #ff0000;" data-color="#ff0000" onclick="selectColor(this)"></div>
@@ -565,80 +528,114 @@
                 <div class="color-swatch" style="background: #00ffff;" data-color="#00ffff" onclick="selectColor(this)"></div>
                 <div class="color-swatch" style="background: #ffd700;" data-color="#ffd700" onclick="selectColor(this)"></div>
                 <div class="color-swatch" style="background: #ff6600;" data-color="#ff6600" onclick="selectColor(this)"></div>
+                <div class="color-swatch" style="background: #ff69b4;" data-color="#ff69b4" onclick="selectColor(this)"></div>
+                <div class="color-swatch" style="background: #9400d3;" data-color="#9400d3" onclick="selectColor(this)"></div>
+                <div class="color-swatch" style="background: #00ff7f;" data-color="#00ff7f" onclick="selectColor(this)"></div>
+                <div class="color-swatch" style="background: #ffffff;" data-color="#ffffff" onclick="selectColor(this)"></div>
             </div>
+            
             <label style="color: #888; font-size: 9px;">Chat Theme</label>
             <div class="theme-grid">
-                <div class="theme-option chat-theme-default" data-theme="default" onclick="selectTheme(this)"></div>
-                <div class="theme-option chat-theme-coffin" data-theme="coffin" onclick="selectTheme(this)"></div>
-                <div class="theme-option chat-theme-blood" data-theme="blood" onclick="selectTheme(this)"></div>
-                <div class="theme-option chat-theme-crypt" data-theme="crypt" onclick="selectTheme(this)"></div>
-                <div class="theme-option chat-theme-neon" data-theme="neon" onclick="selectTheme(this)"></div>
+                <div class="theme-option chat-theme-default" data-theme="default" onclick="selectTheme(this)" title="Default"></div>
+                <div class="theme-option chat-theme-coffin" data-theme="coffin" onclick="selectTheme(this)" title="Coffin"></div>
+                <div class="theme-option chat-theme-blood" data-theme="blood" onclick="selectTheme(this)" title="Blood"></div>
+                <div class="theme-option chat-theme-crypt" data-theme="crypt" onclick="selectTheme(this)" title="Crypt"></div>
+                <div class="theme-option chat-theme-neon" data-theme="neon" onclick="selectTheme(this)" title="Neon"></div>
             </div>
-            <label style="color: #888; font-size: 9px;">Status</label>
-            <input type="text" id="user_status" class="ie-input" placeholder="Status..." maxlength="30">
+            
+            <label style="color: #888; font-size: 9px;">Mood Status</label>
+            <select id="user_mood" class="ie-input" onchange="saveProfile()">
+                <option value="">None</option>
+                <option value="🩸 Thirsty">🩸 Thirsty</option>
+                <option value="😴 Dormant">😴 Dormant</option>
+                <option value="🌙 Hunting">🌙 Hunting</option>
+                <option value="⚰️ Resting">⚰️ Resting</option>
+                <option value="🦇 Lurking">🦇 Lurking</option>
+                <option value="🔥 Vibing">🔥 Vibing</option>
+                <option value="💀 Dead Inside">💀 Dead Inside</option>
+                <option value="✨ Ascending">✨ Ascending</option>
+            </select>
+            
+            <label style="color: #888; font-size: 9px;">Custom Status</label>
+            <input type="text" id="user_status" class="ie-input" placeholder="What's happening..." maxlength="30">
+            
             <label style="color: #888; font-size: 9px;">Bio</label>
-            <textarea id="user_bio" class="ie-input" placeholder="About you..." maxlength="100" style="height: 50px; resize: none;"></textarea>
-            <button class="ie-btn" onclick="saveProfile()">Save</button>
-        </div>
-        
-        <div id="chat_admin" style="display: none; padding: 12px; overflow-y: auto; height: calc(100% - 40px);">
-            <h3 style="font-family: 'UnifrakturMaguntia'; color: #d40000; margin: 0 0 10px 0; font-size: 14px;">Admin Panel</h3>
-            <div class="admin-section">
-                <h4>🖼️ Pending Images</h4>
-                <div id="pending_images">None</div>
-            </div>
-            <div class="admin-section">
-                <h4>📝 Applications</h4>
-                <div id="pending_apps">None</div>
-            </div>
-            <div class="admin-section">
-                <h4>📌 Pin Message</h4>
-                <input type="text" id="pin_message" class="ie-input" placeholder="Message to pin...">
-                <button class="ie-btn" onclick="pinMessage()">Pin</button>
-            </div>
-            <div class="admin-section">
-                <h4>🤖 Bot Message</h4>
-                <input type="text" id="bot_message" class="ie-input" placeholder="Bot says...">
-                <button class="ie-btn" onclick="sendBotMessage()">Send as Nosferatu</button>
-            </div>
+            <textarea id="user_bio" class="ie-input" placeholder="Tell us about yourself..." maxlength="150" style="height: 50px; resize: none;"></textarea>
+            
+            <button class="ie-btn" onclick="saveProfile()">Save Profile</button>
         </div>
     </div>
 </div>
 
-<!-- PROFILE CUSTOMIZATION WINDOW -->
-<div class="window" id="profile_window" style="left:400px; top:150px; width:320px; height:400px;">
+<!-- ADMIN PANEL WINDOW -->
+<div class="window" id="admin_window" style="left:300px; top:60px; width:480px; height:580px; display:none;">
     <div class="title-bar">
-        <div class="title-bar-text">⚙ Profile Customization</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('profile_window')"></button></div>
+        <div class="title-bar-text">👑 Admin Control Panel</div>
+        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('admin_window')"></button></div>
     </div>
-    <div class="window-body">
+    <div class="window-body" style="overflow-y: auto;">
         <div class="ie-content">
-            <h3 style="font-family: 'UnifrakturMaguntia'; margin-top: 0;">Your Avatar</h3>
-            <div class="avatar-grid">
-                <div class="avatar-option" data-avatar="🦇" onclick="selectAvatar(this)">🦇</div>
-                <div class="avatar-option" data-avatar="🧛" onclick="selectAvatar(this)">🧛</div>
-                <div class="avatar-option" data-avatar="💀" onclick="selectAvatar(this)">💀</div>
-                <div class="avatar-option" data-avatar="🩸" onclick="selectAvatar(this)">🩸</div>
-                <div class="avatar-option" data-avatar="🌙" onclick="selectAvatar(this)">🌙</div>
-                <div class="avatar-option" data-avatar="⚰️" onclick="selectAvatar(this)">⚰️</div>
-                <div class="avatar-option" data-avatar="🐺" onclick="selectAvatar(this)">🐺</div>
-                <div class="avatar-option" data-avatar="👁️" onclick="selectAvatar(this)">👁️</div>
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">🖼️ Pending Images</h4>
+                <div id="pending_images" style="max-height: 100px; overflow-y: auto;">None</div>
             </div>
             
-            <h3 style="font-family: 'UnifrakturMaguntia';">Name Color</h3>
-            <div class="color-picker-row">
-                <div class="color-swatch" style="background: #ff0000;" data-color="#ff0000" onclick="selectColor(this)"></div>
-                <div class="color-swatch" style="background: #ff00ff;" data-color="#ff00ff" onclick="selectColor(this)"></div>
-                <div class="color-swatch" style="background: #00ff00;" data-color="#00ff00" onclick="selectColor(this)"></div>
-                <div class="color-swatch" style="background: #00ffff;" data-color="#00ffff" onclick="selectColor(this)"></div>
-                <div class="color-swatch" style="background: #ffd700;" data-color="#ffd700" onclick="selectColor(this)"></div>
-                <div class="color-swatch" style="background: #ff6600;" data-color="#ff6600" onclick="selectColor(this)"></div>
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">📝 Membership Applications</h4>
+                <div id="pending_apps" style="max-height: 120px; overflow-y: auto;">None</div>
             </div>
             
-            <h3 style="font-family: 'UnifrakturMaguntia';">Status</h3>
-            <input type="text" id="user_status" class="ie-input" placeholder="What's on your mind?" maxlength="30" onchange="saveProfile()">
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">⚠️ User Moderation</h4>
+                <input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate...">
+                <select id="mod_action" class="ie-input">
+                    <option value="">Select Action...</option>
+                    <option value="kick">Kick (disconnect, can rejoin)</option>
+                    <option value="timeout">Timeout (temp mute)</option>
+                    <option value="softban">Soft Ban (suspend account)</option>
+                    <option value="hardban">Hard Ban (delete account)</option>
+                </select>
+                <select id="mod_duration" class="ie-input">
+                    <option value="5">5 minutes</option>
+                    <option value="30">30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="1440">24 hours</option>
+                    <option value="10080">7 days</option>
+                    <option value="0">Permanent</option>
+                </select>
+                <input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)">
+                <button class="ie-btn" style="background: #800;" onclick="executeModAction()">Execute Action</button>
+                <div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div>
+            </div>
             
-            <button class="ie-btn" style="margin-top: 15px;" onclick="saveProfile()">Save Changes</button>
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">🚫 Banned/Suspended Users</h4>
+                <div id="banned_users" style="max-height: 100px; overflow-y: auto; font-size: 10px;">None</div>
+            </div>
+            
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">📌 Lounge Announcement</h4>
+                <input type="text" id="pin_message" class="ie-input" placeholder="Message to pin...">
+                <button class="ie-btn" onclick="pinMessage()">Pin</button>
+                <button class="ie-btn" style="background: #333;" onclick="clearPin()">Clear</button>
+            </div>
+            
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">🧛 Eric Northman Bot</h4>
+                <input type="text" id="bot_message" class="ie-input" placeholder="Eric says...">
+                <button class="ie-btn" onclick="sendBotMessage()">Send as Eric</button>
+            </div>
+            
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">🗑️ Chat Management</h4>
+                <button class="ie-btn" style="background: #500;" onclick="clearChat()">Clear All Messages</button>
+                <button class="ie-btn" style="background: #333;" onclick="exportChat()">Export Chat Log</button>
+            </div>
+            
+            <div class="admin-section">
+                <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">📊 Stats</h4>
+                <div id="admin_stats" style="color: #888; font-size: 11px;"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -657,14 +654,14 @@
     <div class="title-bar"><div class="title-bar-text">fangtasia.wtf Portal</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie_window')"></button></div></div>
     <div class="window-body">
         <div class="ie-content" id="ie_login">
-            <h2 style="font-family: 'UnifrakturMaguntia';">Member Login</h2>
+            <h2 style="">Member Login</h2>
             <input type="text" id="ie_user" class="ie-input" placeholder="Username">
             <input type="password" id="ie_pass" class="ie-input" placeholder="Password">
             <button class="ie-btn" onclick="validateIE()">Authorize</button>
             
             <div class="guest-section">
                 <p style="color: #666; font-size: 10px; text-align: center; margin-bottom: 10px;">— OR —</p>
-                <button class="guest-btn" onclick="toggleWin('guestbook_window')">📖 Sign the Guestbook</button>
+                <button class="guest-btn" onclick="toggleWin('removed_guestbook')">📖 Sign the Guestbook</button>
                 <button class="guest-btn" onclick="toggleWin('about_window')">❓ About This Place</button>
                 <button class="guest-btn" onclick="enterGuestChat()">👁️ Lurk the Lounge (Read-Only)</button>
                 <p style="color: #555; font-size: 9px; text-align: center; margin-top: 15px;">
@@ -674,7 +671,7 @@
         </div>
         <div class="ie-content" id="ie_upload" style="display:none;">
             <button class="lounge-entry-btn" onclick="openChat()">🩸 Enter The Lounge</button>
-            <h2 style="font-family: 'UnifrakturMaguntia';">Upload Memory</h2>
+            <h2 style="">Upload Memory</h2>
             <p id="logged_in_as" style="font-size: 11px; color: #fff;"></p>
             <input type="text" id="ie_filename" class="ie-input" placeholder="Memory Name">
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
@@ -702,17 +699,22 @@
     const CLOUD_NAME = "fangtasia-14197"; 
     const UPLOAD_PRESET = "fangtasia"; 
     
-    const userDatabase = {
+    // Registered users database - includes dynamic members
+    let userDatabase = {
         "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", target: "list_technician", isAdmin: true },
-        "buttheadandbeav126": { pass: "wtfomfgfangtasiafordabros21", rank: "A", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
+        "buttheadandbeav126": { pass: "wtfomfgfangtasiafordabros21", rank: "ᗝᓬ⊢", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
         "bloomhouse8483": { pass: "methybethy89!", rank: "MOD", fullRank: "Moderator", style: "mod-style", target: "list_mod", isAdmin: true }
     };
+    
+    // Load dynamic members from localStorage
+    const savedMembers = JSON.parse(localStorage.getItem('f_members') || '{}');
+    userDatabase = { ...userDatabase, ...savedMembers };
 
     let CURRENT_USER = "";
     let IS_GUEST = false;
     let currentPage = 1;
     const itemsPerPage = 9;
-    let userProfile = { avatar: "🦇", color: "#ff0000", status: "", bio: "", theme: "default" };
+    let userProfile = { color: "#ff0000", status: "", bio: "", theme: "default", mood: "" };
     let currentProfileUser = "";
     let idleTime = 0;
     let screensaverActive = false;
@@ -946,7 +948,9 @@
             document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u}`;
             loadProfile();
             updateMemberList();
-            if (userDatabase[u].isAdmin) document.getElementById('tab_admin').style.display = 'block';
+            if (userDatabase[u].isAdmin) {
+                document.getElementById('admin_icon').style.display = 'block';
+            }
         } else { alert("DENIED."); }
     }
 
@@ -976,7 +980,7 @@
         if (saved) userProfile = { ...userProfile, ...JSON.parse(saved) };
         document.getElementById('user_status').value = userProfile.status || '';
         document.getElementById('user_bio').value = userProfile.bio || '';
-        document.querySelectorAll('.avatar-option').forEach(el => el.classList.toggle('selected', el.dataset.avatar === userProfile.avatar));
+        if (document.getElementById('user_mood')) document.getElementById('user_mood').value = userProfile.mood || '';
         document.querySelectorAll('.color-swatch').forEach(el => el.classList.toggle('selected', el.dataset.color === userProfile.color));
         document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === userProfile.theme));
         applyChatTheme();
@@ -985,15 +989,9 @@
     function saveProfile() {
         userProfile.status = document.getElementById('user_status').value;
         userProfile.bio = document.getElementById('user_bio').value;
+        if (document.getElementById('user_mood')) userProfile.mood = document.getElementById('user_mood').value;
         localStorage.setItem('f_profile_' + CURRENT_USER, JSON.stringify(userProfile));
         updateMemberList();
-    }
-
-    function selectAvatar(el) {
-        document.querySelectorAll('.avatar-option').forEach(e => e.classList.remove('selected'));
-        el.classList.add('selected');
-        userProfile.avatar = el.dataset.avatar;
-        saveProfile();
     }
 
     function selectColor(el) {
@@ -1023,11 +1021,15 @@
         const card = document.getElementById('profile_card');
         const userData = userDatabase[username];
         const profile = JSON.parse(localStorage.getItem('f_profile_' + username) || '{}');
-        document.getElementById('pc_avatar').textContent = profile.avatar || '🦇';
+        document.getElementById('pc_avatar').textContent = '🦇';
         document.getElementById('pc_name').textContent = username;
         document.getElementById('pc_name').className = 'profile-card-name ' + (userData?.style || '');
         document.getElementById('pc_title').textContent = userData?.fullRank || 'Member';
-        document.getElementById('pc_bio').textContent = profile.bio || 'No bio set.';
+        
+        let bioText = profile.bio || 'No bio set.';
+        if (profile.mood) bioText = profile.mood + '<br><br>' + bioText;
+        document.getElementById('pc_bio').innerHTML = bioText;
+        
         card.style.display = 'block';
         card.style.left = Math.min(event.clientX, window.innerWidth - 280) + 'px';
         card.style.top = Math.min(event.clientY, window.innerHeight - 200) + 'px';
@@ -1086,8 +1088,6 @@
         el.classList.add('active');
         document.getElementById('chat_main').style.display = tab === 'main' ? 'block' : 'none';
         document.getElementById('chat_settings').style.display = tab === 'settings' ? 'block' : 'none';
-        document.getElementById('chat_admin').style.display = tab === 'admin' ? 'block' : 'none';
-        if (tab === 'admin') { loadPendingImages(); loadPendingApps(); }
     }
 
     // TYPING INDICATOR
@@ -1134,6 +1134,17 @@
 
     function sendChat() {
         if (IS_GUEST) return;
+        
+        // Check for timeout
+        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
+        const ban = bans[CURRENT_USER];
+        if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
+            if (ban.type === 'timeout') {
+                alert('You are timed out and cannot send messages.');
+                return;
+            }
+        }
+        
         const input = document.getElementById('chat_input');
         const text = input.value.trim();
         if(!text) return;
@@ -1155,13 +1166,13 @@
                 msgs.push({ user: CURRENT_USER, text: result.text, isAction: true, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
             }
         } else {
-            msgs.push({ user: CURRENT_USER, text: text, tag: u.rank, style: u.style, avatar: profile.avatar || '🦇', color: profile.color || null, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+            msgs.push({ user: CURRENT_USER, text: text, tag: u.rank, style: u.style, color: profile.color || null, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
             // Trigger bot
             for (const br of botResponses) {
                 if (br.trigger.test(text)) {
                     setTimeout(() => {
                         const m = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
-                        m.push({ user: 'Nosferatu', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, avatar: '🤖', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+                        m.push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
                         localStorage.setItem('f_chat_v2', JSON.stringify(m.slice(-100)));
                         loadMessages();
                     }, 1000 + Math.random() * 1000);
@@ -1180,7 +1191,7 @@
         const text = document.getElementById('bot_message').value.trim();
         if (!text) return;
         const msgs = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
-        msgs.push({ user: 'Nosferatu', text: text, tag: 'BOT', style: 'bot-style', isBot: true, avatar: '🤖', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+        msgs.push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, avatar: '🤖', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
         localStorage.setItem('f_chat_v2', JSON.stringify(msgs.slice(-100)));
         document.getElementById('bot_message').value = '';
         loadMessages();
@@ -1252,8 +1263,203 @@
         loadPendingApps();
     }
 
+    // ADMIN FUNCTIONS
+    function clearPin() {
+        localStorage.removeItem('f_pinned');
+        loadMessages();
+    }
+
+    function clearChat() {
+        if (confirm('Clear ALL chat messages? This cannot be undone.')) {
+            localStorage.removeItem('f_chat_v2');
+            loadMessages();
+        }
+    }
+
+    function exportChat() {
+        const msgs = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
+        const text = msgs.map(m => `[${m.time}] ${m.user}: ${m.text}`).join('\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
+        a.click();
+    }
+
+    function loadAdminStats() {
+        const msgs = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
+        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
+        const pending = JSON.parse(localStorage.getItem('f_pending_images') || '[]');
+        const visitors = localStorage.getItem('f_visitors') || '0';
+        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
+        const stats = document.getElementById('admin_stats');
+        if (stats) {
+            stats.innerHTML = `
+                Total Messages: ${msgs.length}<br>
+                Pending Images: ${pending.length}<br>
+                Applications: ${apps.length} (${apps.filter(a => a.status === 'pending').length} pending)<br>
+                Registered Members: ${Object.keys(members).length}<br>
+                Total Visitors: ${visitors}
+            `;
+        }
+        loadBannedUsers();
+    }
+
+    // APPLICATION STATUS CHECK
+    function checkAppStatus() {
+        const username = document.getElementById('app_username').value.trim();
+        if (!username) { alert('Enter your username to check status.'); return; }
+        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
+        const app = apps.find(a => a.username.toLowerCase() === username.toLowerCase());
+        if (!app) {
+            document.getElementById('app_result').innerHTML = '<div class="app-status" style="border-color:#888; color:#888;">No application found for this username.</div>';
+        } else if (app.status === 'pending') {
+            document.getElementById('app_result').innerHTML = '<div class="app-status app-pending">Your application is pending review.</div>';
+        } else if (app.status === 'approved') {
+            document.getElementById('app_result').innerHTML = '<div class="app-status" style="border-color:#0f0; color:#0f0;">Approved! Click below to complete registration.</div><button class="ie-btn" style="margin-top:10px;" onclick="showRegistration(\'' + app.username + '\')">Complete Registration</button>';
+        } else if (app.status === 'denied') {
+            document.getElementById('app_result').innerHTML = '<div class="app-status" style="border-color:#f00; color:#f00;">Your application was denied.</div>';
+        }
+        document.getElementById('app_form').style.display = 'none';
+        document.getElementById('app_result').style.display = 'block';
+    }
+
+    function showRegistration(username) {
+        document.getElementById('reg_username').value = username;
+        toggleWin('apply_window');
+        toggleWin('register_window');
+    }
+
+    function completeRegistration() {
+        const username = document.getElementById('reg_username').value.trim();
+        const pass = document.getElementById('reg_password').value;
+        const pass2 = document.getElementById('reg_password2').value;
+        
+        if (!username || !pass) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Fill all fields.</span>'; return; }
+        if (pass !== pass2) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Passwords do not match.</span>'; return; }
+        if (pass.length < 6) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Password must be 6+ characters.</span>'; return; }
+        
+        // Check if username already exists
+        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
+        if (members[username] || userDatabase[username]) {
+            document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Username already taken.</span>';
+            return;
+        }
+        
+        // Add new member
+        members[username] = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+        localStorage.setItem('f_members', JSON.stringify(members));
+        userDatabase[username] = members[username];
+        
+        // Update application status
+        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
+        const idx = apps.findIndex(a => a.username.toLowerCase() === username.toLowerCase());
+        if (idx !== -1) { apps[idx].status = 'registered'; localStorage.setItem('f_applications', JSON.stringify(apps)); }
+        
+        document.getElementById('reg_result').innerHTML = '<span style="color:#0f0;">Registration complete! You can now log in.</span>';
+        setTimeout(() => { toggleWin('register_window'); toggleWin('ie_window'); }, 2000);
+    }
+
+    // MODERATION FUNCTIONS
+    function executeModAction() {
+        const username = document.getElementById('mod_username').value.trim();
+        const action = document.getElementById('mod_action').value;
+        const duration = parseInt(document.getElementById('mod_duration').value);
+        const reason = document.getElementById('mod_reason').value;
+        
+        if (!username || !action) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Select user and action.</span>'; return; }
+        
+        // Don't allow moderation of core admins
+        const coreAdmins = ['losersyndicate', 'buttheadandbeav126', 'bloomhouse8483'];
+        if (coreAdmins.includes(username.toLowerCase())) {
+            document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Cannot moderate core admins.</span>';
+            return;
+        }
+        
+        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
+        const now = Date.now();
+        const expiry = duration === 0 ? 0 : now + (duration * 60 * 1000);
+        
+        if (action === 'kick') {
+            // Kick just logs them out (no persistent effect)
+            document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' has been kicked.</span>';
+        } else if (action === 'timeout') {
+            bans[username] = { type: 'timeout', expiry: expiry, reason: reason, by: CURRENT_USER };
+            localStorage.setItem('f_bans', JSON.stringify(bans));
+            document.getElementById('mod_result').innerHTML = '<span style="color:#ffd700;">' + username + ' timed out for ' + (duration === 0 ? 'permanently' : duration + ' mins') + '.</span>';
+        } else if (action === 'softban') {
+            bans[username] = { type: 'softban', expiry: expiry, reason: reason, by: CURRENT_USER };
+            localStorage.setItem('f_bans', JSON.stringify(bans));
+            document.getElementById('mod_result').innerHTML = '<span style="color:#ff6600;">' + username + ' soft banned (suspended).</span>';
+        } else if (action === 'hardban') {
+            // Hard ban deletes the account
+            bans[username] = { type: 'hardban', expiry: 0, reason: reason, by: CURRENT_USER };
+            localStorage.setItem('f_bans', JSON.stringify(bans));
+            // Remove from members
+            const members = JSON.parse(localStorage.getItem('f_members') || '{}');
+            delete members[username];
+            localStorage.setItem('f_members', JSON.stringify(members));
+            delete userDatabase[username];
+            document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">' + username + ' HARD BANNED (account deleted).</span>';
+        }
+        
+        loadBannedUsers();
+    }
+
+    function loadBannedUsers() {
+        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
+        const container = document.getElementById('banned_users');
+        if (!container) return;
+        
+        const now = Date.now();
+        const activeBans = Object.entries(bans).filter(([u, b]) => b.expiry === 0 || b.expiry > now);
+        
+        if (activeBans.length === 0) { container.innerHTML = 'None'; return; }
+        
+        container.innerHTML = activeBans.map(([user, ban]) => {
+            const exp = ban.expiry === 0 ? 'Permanent' : new Date(ban.expiry).toLocaleString();
+            return '<div style="border-bottom:1px solid #333; padding:3px 0;"><strong>' + user + '</strong> [' + ban.type + '] - ' + exp + ' <button onclick="unbanUser(\'' + user + '\')" style="font-size:8px; padding:1px 4px;">Unban</button></div>';
+        }).join('');
+    }
+
+    function unbanUser(username) {
+        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
+        delete bans[username];
+        localStorage.setItem('f_bans', JSON.stringify(bans));
+        loadBannedUsers();
+    }
+
+    // Check if current user is banned/timed out
+    function checkUserBan() {
+        if (!CURRENT_USER) return false;
+        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
+        const ban = bans[CURRENT_USER];
+        if (!ban) return false;
+        
+        const now = Date.now();
+        if (ban.expiry !== 0 && ban.expiry < now) {
+            // Ban expired, remove it
+            delete bans[CURRENT_USER];
+            localStorage.setItem('f_bans', JSON.stringify(bans));
+            return false;
+        }
+        
+        if (ban.type === 'hardban' || ban.type === 'softban') {
+            alert('Your account has been suspended. Reason: ' + (ban.reason || 'No reason given'));
+            logout();
+            return true;
+        }
+        
+        if (ban.type === 'timeout') {
+            return true; // Can view but not send
+        }
+        
+        return false;
+    }
+
     function loadMessages() {
         const logs = document.getElementById('chat_logs');
+        if (!logs) return;
         const msgs = JSON.parse(localStorage.getItem('f_chat_v2')) || [];
         
         // Pinned message
@@ -1269,7 +1475,7 @@
             }
             const botClass = m.isBot ? ' chat-bot' : '';
             const imgHtml = m.imageData ? '<img class="chat-image" src="' + m.imageData + '">' : '';
-            return '<div class="chat-entry' + botClass + '"><div class="chat-header"><span style="font-size:14px;">' + (m.avatar || '🦇') + '</span><span class="rank-tag ' + m.style + '">' + m.tag + '</span><span class="chat-username ' + m.style + '" onclick="showProfileCard(\'' + m.user + '\', event)" style="' + (m.color ? 'color:' + m.color + ' !important;' : '') + '">' + m.user + '</span><span style="color:#444; font-size:8px; margin-left:auto;">' + (m.time || '') + '</span></div><div style="color:#ccc; font-size:11px; padding-left:40px;">' + escapeHtml(m.text) + imgHtml + '</div></div>';
+            return '<div class="chat-entry' + botClass + '"><div class="chat-header"><span class="rank-tag ' + m.style + '">' + m.tag + '</span><span class="chat-username ' + m.style + '" onclick="showProfileCard(\'' + m.user + '\', event)" style="' + (m.color ? 'color:' + m.color + ' !important;' : '') + '">' + m.user + '</span><span style="color:#444; font-size:8px; margin-left:auto;">' + (m.time || '') + '</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">' + escapeHtml(m.text) + imgHtml + '</div></div>';
         }).join('');
         logs.scrollTop = logs.scrollHeight;
     }
@@ -1360,7 +1566,8 @@
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
             el.style.zIndex = "200"; 
         }
-        if (id === 'guestbook_window') loadGuestbook();
+        if (id === 'removed_guestbook') loadGuestbook();
+        if (id === 'admin_window') { loadPendingImages(); loadPendingApps(); loadAdminStats(); }
     }
 
     function makeDraggable(winId) {
@@ -1378,7 +1585,10 @@
         };
     }
 
-    ['ie_window', 'memories_folder', 'chat_win', 'guestbook_window', 'about_window', 'profile_window', 'shrine_window', 'games_window', 'apply_window'].forEach(id => makeDraggable(id));
+    ['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'register_window'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) makeDraggable(id);
+    });
     
     function beginSession() { 
         document.getElementById('boot-screen').style.display = 'none'; 
@@ -1398,12 +1608,10 @@
 
     window.addEventListener('load', () => { 
         renderMemories(); 
-        loadGuestbook();
         updateVisitorCount();
-        renderCandles();
-        renderOfferings();
         initStakesGame();
-        setInterval(loadMessages, 3000); 
+        // Real-time chat refresh (every 1 second for live updates)
+        setInterval(loadMessages, 1000); 
     });
 </script>
 </body>
