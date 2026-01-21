@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fangtasia - Dark Desktop</title>
+    <title>Fangtasia - OS</title>
     
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/7.css">
     
     <style>
-        :root { --vamp-red: #800000; --glass: rgba(15, 0, 0, 0.9); }
+        :root { --glass: rgba(15, 0, 0, 0.9); }
         
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
@@ -17,10 +17,9 @@
                 url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&') no-repeat center center fixed;
             background-size: cover;
             font-family: "Segoe UI", Tahoma, sans-serif;
-            cursor: default;
         }
 
-        /* TRAY LOGO */
+        /* GOTHIC TRAY LOGO */
         .main-logo {
             position: fixed; bottom: 8px; right: 20px;
             font-family: 'UnifrakturMaguntia', cursive;
@@ -29,61 +28,47 @@
             pointer-events: none; z-index: 101;
         }
 
-        /* DESKTOP GRID */
+        /* DESKTOP ALIGNMENT */
         #desktop { 
             display: flex; flex-direction: column; flex-wrap: wrap;
             align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px;
         }
 
-        .icon { 
-            width: 80px; text-align: center; color: white; 
-            text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px;
-        }
-
-        /* UNIFIED "INTERNET EXPLORER" RED STYLE FOR ALL SHORTCUTS */
+        /* SHORTCUT STYLE (CRYSTALLIZED RED) */
+        .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; }
         .icon img { 
             width: 44px; display: block; margin: 0 auto 6px;
             filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 2px rgba(0,0,0,0.8));
         }
 
-        /* WINDOWS */
+        /* WINDOW ARCHITECTURE */
         .window { 
-            position: absolute; width: 450px; height: 350px; z-index: 10; display: none; 
+            position: absolute; min-width: 200px; min-height: 150px; z-index: 10; display: none; 
             background: #0d0d0d !important; border: 1px solid #700000 !important; 
             box-shadow: 0 15px 40px rgba(0,0,0,1); resize: both; overflow: hidden; 
         }
-        .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; border-bottom: 1px solid #400 !important; }
-        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; overflow: auto; color: white; }
+        .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
+        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; overflow: auto; }
 
-        /* MEMORIES FOLDER INTERIOR */
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, 95px); gap: 15px; padding: 20px; }
-        .file { text-align: center; color: #ccc; cursor: pointer; font-size: 11px; }
-        .file img { width: 38px; filter: sepia(1) hue-rotate(330deg); margin-bottom: 4px; } /* Default Media Icon style */
+        /* MEMORIES FOLDER VIEW */
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, 100px); gap: 15px; padding: 20px; }
+        .file { text-align: center; color: #eee; cursor: pointer; font-size: 11px; }
+        .file img { width: 38px; filter: sepia(1) hue-rotate(330deg) saturate(1.5); margin-bottom: 5px; }
 
-        /* TASKBAR */
+        /* TASKBAR & SHIFTED SOUND ICONS */
         .taskbar { 
             position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
             backdrop-filter: blur(12px); border-top: 1px solid rgba(255,0,0,0.3); 
-            display: flex; align-items: center; padding: 0 15px; z-index: 100; 
+            display: flex; align-items: center; z-index: 100; 
         }
-        .start-btn { width: 30px; filter: grayscale(1) sepia(1) saturate(15) hue-rotate(320deg); cursor: pointer; margin-right: 50px; } 
+        .start-btn { width: 30px; filter: grayscale(1) sepia(1) saturate(15) hue-rotate(320deg); cursor: pointer; margin-left: 15px; } 
         
-        /* SPACED MUSIC CONTROLS */
+        .sound-controls { display: flex; margin-left: 120px; gap: 45px; }
         .music-ctrl { 
             width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); 
-            margin-right: 45px; opacity: 0.8; transition: opacity 0.2s;
+            opacity: 0.8; transition: 0.2s;
         }
         .music-ctrl:hover { opacity: 1; transform: scale(1.1); }
-
-        /* OFFLINE MINESWEEPER STYLING */
-        #mine-board { margin: 15px auto; border-collapse: collapse; user-select: none; }
-        #mine-board td { width: 24px; height: 24px; border: 1px solid #444; background: #222; text-align: center; cursor: pointer; font-family: monospace; }
-        .open { background: #000 !important; border-color: #111 !important; }
-        .dead { background: #ff0000 !important; }
-
-        /* LOCAL SOLITAIRE PREVIEW */
-        .sol-canvas-wrap { text-align: center; padding: 20px; }
-        #sol-preview { border: 2px solid #500; border-radius: 4px; background: #003300; }
     </style>
 </head>
 <body onclick="startMusic()">
@@ -107,67 +92,72 @@
         <img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png">
         <div>Paint</div>
     </div>
-    <div class="icon" onclick="alert('Searching the dark web...')">
-        <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
-        <div>Internet</div>
-    </div>
-    <div class="icon" onclick="alert('Connecting to servers...')">
-        <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png">
-        <div>Skype</div>
-    </div>
 </div>
 
-<div class="window" id="memories_folder" style="left:80px; top:60px; width:460px; height:320px;">
-    <div class="title-bar"><div class="title-bar-text">C:\Fangtasia\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
+<div class="window" id="memories_folder" style="left:100px; top:80px; width:480px; height:340px;">
+    <div class="title-bar">
+        <div class="title-bar-text">C:\Users\Vampire\Memories</div>
+        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div>
+    </div>
     <div class="window-body">
         <div class="folder-grid">
-            <div class="file" onclick="toggleWin('vid_player')">
+            <div class="file" onclick="toggleWin('vid_june')">
                 <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png">
-                <div>Clip_01.mp4</div>
-            </div>
-            <div class="file">
-                <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png">
-                <div>Clip_02.mp4</div>
+                <div>BEWARE_OF_JUNE.mp4</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="window" id="mines_win" style="left:550px; top:80px; width:280px; height:380px;">
-    <div class="title-bar"><div class="title-bar-text">Minesweeper.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('mines_win')"></button></div></div>
-    <div class="window-body" style="text-align: center;">
-        <button onclick="initMines()" style="margin: 10px; cursor: pointer; background: #400; color: white; border: 1px solid red;">New Game</button>
-        <table id="mine-board"></table>
+<div class="window" id="vid_june" style="left:500px; top:120px; width:520px; height:400px;">
+    <div class="title-bar">
+        <div class="title-bar-text">Media Player - BEWARE_OF_JUNE.mp4</div>
+        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid_june')"></button></div>
     </div>
-</div>
-
-<div class="window" id="solitaire_win" style="left:500px; top:150px; width:620px; height:460px;">
-    <div class="title-bar"><div class="title-bar-text">Solitaire.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire_win')"></button></div></div>
     <div class="window-body">
-        <div class="sol-canvas-wrap">
-            <p>LOCAL CARDS LOADED</p>
-            <canvas id="sol-preview" width="550" height="300"></canvas>
-            <p style="font-size: 10px; color: #666;">Offline Card Engine Active (No Ads)</p>
-        </div>
+        <video controls style="width:100%; height:100%; background: black;">
+            <source src="https://cdn.discordapp.com/attachments/1459009893540434114/1463467174176755905/BEWARE_OF_JUNE_AMERICA.pdf.mp4?ex=6971ef84&is=69709e04&hm=7043fd4b9dec51800666c0856257fce790b99a4f7650cbd8dcea01b3c5d8e8ae&" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
 </div>
 
-<div class="window" id="paint_win" style="left:150px; top:200px; width:700px; height:500px;">
+<div class="window" id="solitaire_win" style="left:150px; top:150px; width:800px; height:600px;">
+    <div class="title-bar">
+        <div class="title-bar-text">Solitaire.exe</div>
+        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire_win')"></button></div>
+    </div>
+    <div class="window-body">
+        <iframe src="https://arbaling.github.io/solitaire/" style="width:100%; height:100%; border:none; background:#004400;"></iframe>
+    </div>
+</div>
+
+<div class="window" id="mines_win" style="left:200px; top:200px; width:280px; height:380px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('mines_win')"></button></div></div>
+    <div class="window-body" style="text-align: center; padding-top: 10px;">
+        <button onclick="initMines()" style="margin-bottom:10px; background:#400; color:white; border:1px solid red; cursor:pointer;">New Game</button>
+        <div id="mine-board" style="display:inline-block; background:#333; border:2px solid #555;"></div>
+    </div>
+</div>
+
+<div class="window" id="paint_win" style="left:300px; top:100px; width:700px; height:500px;">
     <div class="title-bar"><div class="title-bar-text">Paint.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint_win')"></button></div></div>
     <div class="window-body"><iframe src="https://jspaint.app" style="width:100%; height:100%;"></iframe></div>
 </div>
 
 <div class="taskbar">
     <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()" title="Pause Music">
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()" title="Play Music">
+    <div class="sound-controls">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
+    </div>
 </div>
 
 <div id="player" style="position:absolute; top:-999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    // WINDOW DRAG & BRING TO FRONT
+    // WINDOW INTERACTION
     document.querySelectorAll('.window').forEach(win => {
         const header = win.querySelector('.title-bar');
         header.onmousedown = (e) => {
@@ -186,42 +176,26 @@
     function toggleWin(id) {
         let el = document.getElementById(id);
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
-        if(id === 'solitaire_win') drawSol();
     }
 
-    // OFFLINE MINESWEEPER LOGIC
+    // MINESWEEPER LOGIC
     function initMines() {
         const board = document.getElementById('mine-board');
         board.innerHTML = "";
-        for(let i=0; i<10; i++) {
-            let row = board.insertRow();
-            for(let j=0; j<10; j++) {
-                let cell = row.insertCell();
-                cell.onclick = function() {
-                    this.classList.add('open');
-                    if(Math.random() < 0.15) {
-                        this.classList.add('dead'); this.innerHTML = "X";
-                        setTimeout(() => { alert('Fatal Error: Mine Exploded'); initMines(); }, 100);
-                    } else {
-                        this.innerHTML = "1"; this.style.color = "cyan";
-                    }
-                };
-            }
+        for(let i=0; i<81; i++) {
+            let cell = document.createElement('div');
+            cell.style = "width:25px; height:25px; border:1px solid #111; float:left; cursor:pointer; color:red; text-align:center; line-height:25px;";
+            cell.onclick = function() {
+                if(Math.random() < 0.15) { this.innerHTML = "X"; this.style.background = "maroon"; alert("BOOM"); initMines(); }
+                else { this.innerHTML = "1"; this.style.background = "#000"; }
+            };
+            board.appendChild(cell);
+            if((i+1)%9 == 0) { let br = document.createElement('br'); board.appendChild(br); }
         }
     }
     initMines();
 
-    // OFFLINE SOLITAIRE LOCAL PREVIEW
-    function drawSol() {
-        const c = document.getElementById('sol-preview');
-        const x = c.getContext('2d');
-        x.fillStyle = "#003300"; x.fillRect(0,0,550,300);
-        x.strokeStyle = "red";
-        for(let i=0; i<7; i++) x.strokeRect(30+(i*70), 80, 50, 75);
-        x.fillStyle = "white"; x.fillText("Local System Ready", 220, 40);
-    }
-
-    // STARTUP MUSIC LOGIC
+    // MUSIC LOGIC
     var player; var started = false;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
@@ -230,14 +204,7 @@
             events: { 'onReady': (e) => { e.target.mute(); e.target.playVideo(); } }
         });
     }
-
-    function startMusic() { 
-        if (!started && player) { 
-            player.unMute(); 
-            player.playVideo();
-            started = true; 
-        } 
-    }
+    function startMusic() { if (!started && player) { player.unMute(); player.playVideo(); started = true; } }
     function pauseMusic() { if(player) player.pauseVideo(); }
     function playMusic() { if(player) player.playVideo(); }
 </script>
