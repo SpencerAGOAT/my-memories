@@ -19,7 +19,6 @@
             font-family: "Segoe UI", sans-serif;
         }
 
-        /* GOTHIC LOGO BOTTOM RIGHT */
         .main-logo {
             position: fixed; bottom: 5px; right: 20px;
             font-family: 'UnifrakturMaguntia', cursive;
@@ -28,7 +27,6 @@
             pointer-events: none; z-index: 101;
         }
 
-        /* DESKTOP GRID - LEFT SIDE */
         #desktop { 
             display: flex; flex-direction: column; flex-wrap: wrap;
             align-content: flex-start; padding: 20px; height: calc(100vh - 50px); gap: 15px;
@@ -39,13 +37,12 @@
             text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px;
         }
 
-        /* UNIFIED RED CRYSTAL FILTER FOR DESKTOP */
+        /* THE UNIFIED RED CRYSTAL FILTER */
         .icon img { 
             width: 44px; display: block; margin: 0 auto 5px;
             filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 1px rgba(0,0,0,0.9));
         }
 
-        /* WINDOW STYLES */
         .window { 
             position: absolute; width: 450px; height: 350px; z-index: 10; display: none; 
             background: #0a0a0a !important; border: 1px solid #700000 !important; 
@@ -54,12 +51,10 @@
         .title-bar { background: linear-gradient(to bottom, #8b0000, #300000) !important; cursor: move; }
         .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; overflow: auto; }
 
-        /* FOLDER EXPLORER */
         .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, 90px); gap: 15px; padding: 20px; }
         .file { text-align: center; color: white; cursor: pointer; font-size: 11px; }
         .file img { width: 38px; filter: sepia(1) hue-rotate(330deg) saturate(2); margin-bottom: 5px; }
 
-        /* TASKBAR */
         .taskbar { 
             position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
             backdrop-filter: blur(15px); border-top: 1px solid rgba(255,0,0,0.2); 
@@ -68,11 +63,11 @@
         .start-btn { width: 32px; filter: grayscale(1) sepia(1) saturate(20) hue-rotate(320deg); cursor: pointer; margin-right: 40px; } 
         .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); margin-right: 30px; opacity: 0.8; }
         
-        /* OFFLINE MINESWEEPER CSS */
-        #mine-table { margin: 10px auto; border-collapse: collapse; background: #333; }
-        #mine-table td { width: 20px; height: 20px; border: 1px solid #555; text-align: center; cursor: pointer; color: #fff; font-weight: bold; }
-        .revealed { background: #1a1a1a; }
-        .mine { background: #800 !important; }
+        /* MINESWEEPER GUI */
+        #mine-table { margin: 10px auto; border-collapse: collapse; background: #222; border: 2px solid #555; }
+        #mine-table td { width: 22px; height: 22px; border: 1px solid #444; text-align: center; cursor: pointer; color: #f00; font-family: 'Courier New', monospace; }
+        .revealed { background: #000; border: 1px solid #222 !important; }
+        .mine { background: #f00 !important; color: #000 !important; }
     </style>
 </head>
 <body onclick="startMusic()">
@@ -89,15 +84,21 @@
         <div>Solitaire</div>
     </div>
     <div class="icon" onclick="toggleWin('minesweeper')">
-        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-1.png">
+        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
         <div>Mines</div>
     </div>
     <div class="icon" onclick="toggleWin('paint')">
         <img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png">
         <div>Paint</div>
     </div>
-    <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png"><div>Internet</div></div>
-    <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png"><div>Skype</div></div>
+    <div class="icon">
+        <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
+        <div>Internet</div>
+    </div>
+    <div class="icon">
+        <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png">
+        <div>Skype</div>
+    </div>
 </div>
 
 <div class="window" id="memories_folder" style="left:100px; top:100px; width:450px; height:320px;">
@@ -112,20 +113,22 @@
     </div>
 </div>
 
-<div class="window" id="minesweeper" style="left:300px; top:150px; width:250px; height:320px;">
-    <div class="title-bar"><div class="title-bar-text">Minesweeper (Offline)</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
+<div class="window" id="minesweeper" style="left:300px; top:150px; width:260px; height:340px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
     <div class="window-body" style="text-align: center;">
-        <button onclick="initMines()" style="margin-top:10px;">New Game</button>
+        <button onclick="initMines()" style="margin: 10px; background: #400; color: white; border: 1px solid red; cursor: pointer;">Reset Game</button>
         <table id="mine-table"></table>
     </div>
 </div>
 
-<div class="window" id="solitaire" style="left:250px; top:120px; width:600px; height:400px;">
-    <div class="title-bar"><div class="title-bar-text">Solitaire (Offline)</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
+<div class="window" id="solitaire" style="left:250px; top:120px; width:600px; height:450px;">
+    <div class="title-bar"><div class="title-bar-text">Solitaire.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
     <div class="window-body">
-        <iframe src="https://solitaire.pet/em/" style="width:100%; height:100%;"></iframe>
+        <iframe src="https://solitaire.pet/em/" style="width:100%; height:100%; border:none;"></iframe>
     </div>
 </div>
+
+<div class="window" id="paint" style="left:350px; top:100px; width:750px; height:500px;"><div class="title-bar"><div class="title-bar-text">Paint.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint')"></button></div></div><div class="window-body"><iframe src="https://jspaint.app"></iframe></div></div>
 
 <div class="taskbar">
     <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
@@ -137,7 +140,7 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    // WINDOW DRAGGING & FRONTING
+    // WINDOW LOGIC
     document.querySelectorAll('.window').forEach(win => {
         const header = win.querySelector('.title-bar');
         header.onmousedown = (e) => {
@@ -153,17 +156,24 @@
         };
     });
 
-    // OFFLINE MINESWEEPER LOGIC
+    // MINESWEEPER LOGIC
     function initMines() {
         const table = document.getElementById('mine-table');
         table.innerHTML = "";
-        for(let i=0; i<10; i++) {
+        for(let i=0; i<9; i++) {
             let row = table.insertRow();
-            for(let j=0; j<10; j++) {
+            for(let j=0; j<9; j++) {
                 let cell = row.insertCell();
                 cell.onclick = function() { 
+                    if(this.classList.contains('revealed')) return;
                     this.classList.add('revealed');
-                    if(Math.random() < 0.15) { this.classList.add('mine'); alert('Game Over'); initMines(); }
+                    if(Math.random() < 0.15) { 
+                        this.classList.add('mine'); 
+                        this.innerHTML = "X";
+                        setTimeout(() => { alert('BOOM!'); initMines(); }, 100);
+                    } else {
+                        this.innerHTML = Math.floor(Math.random() * 3);
+                    }
                 };
             }
         }
