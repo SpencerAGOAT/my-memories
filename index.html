@@ -1,234 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fangtasia - OS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fangtasia OS</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/7.css">
+    
+    <style>
+        :root { --vamp-red: #8b0000; --glass: rgba(15, 0, 0, 0.9); }
+        
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
+        body {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&') no-repeat center center fixed;
+            background-size: cover;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/7.css">
+        /* BOOT OVERLAY - Fixes Autoplay Music */
+        #boot-screen {
+            position: fixed; inset: 0; background: black; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: pointer;
+        }
 
-<style>
-:root { --glass: rgba(15, 0, 0, 0.9); }
+        .main-logo {
+            position: fixed; bottom: 8px; right: 20px;
+            font-family: 'UnifrakturMaguntia', cursive;
+            color: #d40000; font-size: 26px; opacity: 0.9;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+            pointer-events: none; z-index: 101;
+        }
 
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    background: black;
-    overflow: hidden;
-}
+        /* DESKTOP GRID */
+        #desktop { 
+            display: flex; flex-direction: column; flex-wrap: wrap;
+            align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px;
+        }
 
-body {
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-    url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg') no-repeat center center fixed;
-    background-size: cover;
-    font-family: "Segoe UI", Tahoma, sans-serif;
-}
+        .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
 
-/* LOGO */
-.main-logo {
-    position: fixed;
-    bottom: 8px;
-    right: 20px;
-    font-family: 'UnifrakturMaguntia', cursive;
-    color: #d40000;
-    font-size: 26px;
-    text-shadow: 0 0 10px rgba(255,0,0,0.8);
-    pointer-events: none;
-    z-index: 101;
-}
+        .icon img { 
+            width: 44px; display: block; margin: 0 auto 6px;
+            filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 2px rgba(0,0,0,0.8));
+        }
 
-/* DESKTOP */
-#desktop {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    padding: 25px;
-    height: calc(100vh - 50px);
-    gap: 20px;
-}
+        /* WINDOW ARCHITECTURE */
+        .window { 
+            position: absolute; min-width: 250px; min-height: 200px; z-index: 10; display: none; 
+            background: #0d0d0d !important; border: 1px solid #700000 !important; 
+            box-shadow: 0 15px 40px rgba(0,0,0,1); resize: both; overflow: hidden; 
+        }
+        .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
+        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; overflow: auto; }
 
-.icon {
-    width: 80px;
-    text-align: center;
-    color: white;
-    cursor: pointer;
-    font-size: 11px;
-}
+        /* FOLDER GRID */
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, 100px); gap: 15px; padding: 20px; }
+        .file { text-align: center; color: #eee; cursor: pointer; font-size: 11px; }
+        .file img { width: 38px; filter: sepia(1) hue-rotate(330deg) saturate(1.5); margin-bottom: 5px; }
 
-.icon img {
-    width: 44px;
-    margin-bottom: 6px;
-    filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5);
-}
+        /* TASKBAR & SHIFTED CONTROLS */
+        .taskbar { 
+            position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
+            backdrop-filter: blur(12px); border-top: 1px solid rgba(255,0,0,0.3); 
+            display: flex; align-items: center; z-index: 100; 
+        }
+        .start-btn { width: 30px; filter: grayscale(1) sepia(1) saturate(15) hue-rotate(320deg); cursor: pointer; margin-left: 15px; } 
+        
+        .sound-controls { display: flex; margin-left: 150px; gap: 45px; }
+        .music-ctrl { 
+            width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); 
+            opacity: 0.8; transition: 0.2s;
+        }
 
-/* WINDOWS */
-.window {
-    position: absolute;
-    min-width: 200px;
-    min-height: 150px;
-    display: none;
-    background: #0d0d0d !important;
-    border: 1px solid #700000 !important;
-    z-index: 10;
-}
-
-.window-body {
-    height: calc(100% - 32px);
-    background: black;
-}
-
-/* TASKBAR */
-.taskbar {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 40px;
-    background: var(--glass);
-    display: flex;
-    align-items: center;
-    z-index: 100;
-}
-
-/* START */
-.start-btn {
-    width: 28px;
-    height: 28px;
-    margin-left: 12px;
-    margin-right: 10px;
-    cursor: pointer;
-    filter: grayscale(1) sepia(1) saturate(15) hue-rotate(320deg);
-}
-
-/* SOUND */
-.sound-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.music-ctrl {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg);
-    opacity: 0.85;
-}
-.music-ctrl:hover { opacity: 1; }
-</style>
+        #mine-board { display: inline-block; background: #222; border: 2px solid #555; margin: 10px; }
+    </style>
 </head>
+<body>
 
-<body onclick="startMusic()">
+<div id="boot-screen" onclick="beginSession()">
+    <h1 style="font-size: 50px;">Fangtasia</h1>
+    <p>Click to Initialize System</p>
+</div>
 
 <div class="main-logo">Fangtasia</div>
 
-<!-- DESKTOP ICONS -->
 <div id="desktop">
-
-<div class="icon" onclick="toggleWin('memories_folder')">
-<img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
-<div>Memories</div>
+    <div class="icon" onclick="toggleWin('memories_folder')">
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
+        <div>Memories</div>
+    </div>
+    <div class="icon" onclick="toggleWin('mines_win')">
+        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
+        <div>Mines</div>
+    </div>
+    <div class="icon" onclick="toggleWin('paint_win')">
+        <img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png">
+        <div>Paint</div>
+    </div>
+    <div class="icon" onclick="alert('Internet Explorer error: Connection Secure.')">
+        <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
+        <div>Internet</div>
+    </div>
+    <div class="icon" onclick="alert('Skype: Encrypted Session.')">
+        <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png">
+        <div>Skype</div>
+    </div>
 </div>
 
-<div class="icon" onclick="toggleWin('solitaire_win')">
-<img src="https://win98icons.alexmeub.com/icons/png/cards-2.png">
-<div>Solitaire</div>
+<div class="window" id="memories_folder" style="left:50px; top:50px; width:480px; height:340px;">
+    <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
+    <div class="window-body">
+        <div class="folder-grid">
+            <div class="file" onclick="toggleWin('vid_jackass')">
+                <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png">
+                <div>mob_jackass.mp4</div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="icon" onclick="toggleWin('mines_win')">
-<img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
-<div>Mines</div>
+<div class="window" id="vid_jackass" style="left:550px; top:100px; width:540px; height:440px;">
+    <div class="title-bar"><div class="title-bar-text">Media Player - mob_jackass.mp4</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid_jackass')"></button></div></div>
+    <div class="window-body">
+        <video id="v1" controls style="width:100%; height:100%; background: black;">
+            <source src="https://raw.githubusercontent.com/SpencerAGOAT/my-memories/main/mob_jackass.mp4.mp4" type="video/mp4">
+        </video>
+    </div>
 </div>
 
-<div class="icon" onclick="toggleWin('ie_win')">
-<img src="https://win98icons.alexmeub.com/icons/png/msie2-1.png">
-<div>Internet</div>
+<div class="window" id="mines_win" style="left:300px; top:150px; width:280px; height:380px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('mines_win')"></button></div></div>
+    <div class="window-body" style="text-align: center;"><button onclick="initMines()" style="margin:10px;">Reset Game</button><div id="mine-board"></div></div>
 </div>
 
-<div class="icon" onclick="toggleWin('skype_win')">
-<img src="https://win98icons.alexmeub.com/icons/png/msn3-0.png">
-<div>Skype</div>
+<div class="window" id="paint_win" style="left:100px; top:100px; width:700px; height:500px;">
+    <div class="title-bar"><div class="title-bar-text">Paint</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint_win')"></button></div></div>
+    <div class="window-body"><iframe src="https://jspaint.app" style="width:100%; height:100%;"></iframe></div>
 </div>
 
-</div>
-
-<!-- WINDOWS -->
-
-<div class="window" id="solitaire_win" style="left:150px;top:150px;width:800px;height:600px;">
-<div class="title-bar"><div class="title-bar-text">Solitaire.exe</div>
-<div class="title-bar-controls"><button onclick="toggleWin('solitaire_win')"></button></div></div>
-<div class="window-body">
-<iframe src="https://arbaling.github.io/solitaire/" style="width:100%;height:100%;border:none;"></iframe>
-</div>
-</div>
-
-<div class="window" id="mines_win" style="left:200px;top:200px;width:280px;height:380px;">
-<div class="title-bar"><div class="title-bar-text">Minesweeper</div>
-<div class="title-bar-controls"><button onclick="toggleWin('mines_win')"></button></div></div>
-<div class="window-body">
-<button onclick="initMines()">New Game</button>
-<div id="mine-board"></div>
-</div>
-</div>
-
-<div class="window" id="ie_win" style="left:180px;top:120px;width:900px;height:600px;">
-<div class="title-bar"><div class="title-bar-text">Internet Explorer</div>
-<div class="title-bar-controls"><button onclick="toggleWin('ie_win')"></button></div></div>
-<div class="window-body">
-<iframe src="https://www.bing.com" style="width:100%;height:100%;border:none;background:white;"></iframe>
-</div>
-</div>
-
-<div class="window" id="skype_win" style="left:220px;top:160px;width:420px;height:520px;">
-<div class="title-bar"><div class="title-bar-text">Skype</div>
-<div class="title-bar-controls"><button onclick="toggleWin('skype_win')"></button></div></div>
-<div class="window-body" style="color:#aaa;display:flex;align-items:center;justify-content:center;text-align:center;">
-Skype is no longer supported.<br>Archived interface.
-</div>
-</div>
-
-<!-- TASKBAR -->
 <div class="taskbar">
-<img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
-<div class="sound-controls">
-<img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
-<img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
-</div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
+    <div class="sound-controls">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
+    </div>
 </div>
 
-<!-- AUDIO -->
-<div id="player" style="position:fixed;width:0;height:0;overflow:hidden;pointer-events:none;"></div>
+<div id="player" style="position:absolute; top:-999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-function toggleWin(id) {
-    const el = document.getElementById(id);
-    document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
-    if (el.style.display === 'block') el.style.display = 'none';
-    else { el.style.display = 'block'; el.style.zIndex = "20"; }
-}
-
-function initMines() {
-    const board = document.getElementById('mine-board');
-    board.innerHTML = '';
-    for(let i=0;i<81;i++){
-        const c=document.createElement('div');
-        c.style="width:25px;height:25px;border:1px solid #111;display:inline-block;color:red;text-align:center;line-height:25px;";
-        c.onclick=()=>{Math.random()<0.15?(alert('BOOM'),initMines()):(c.innerHTML='1')};
-        board.appendChild(c);
+    function beginSession() {
+        document.getElementById('boot-screen').style.display = 'none';
+        if (player) { player.unMute(); player.playVideo(); }
     }
-}
 
-var player, started=false;
-function onYouTubeIframeAPIReady(){
-    player=new YT.Player('player',{videoId:'Bi5kyehmeaY',playerVars:{autoplay:1,loop:1,playlist:'Bi5kyehmeaY'},events:{onReady:e=>{e.target.mute();e.target.playVideo();}}});
-}
-function startMusic(){ if(player&&!started){player.unMute();started=true;} }
-function pauseMusic(){ if(player)player.pauseVideo(); }
-function playMusic(){ if(player)player.playVideo(); }
+    document.querySelectorAll('.window').forEach(win => {
+        const header = win.querySelector('.title-bar');
+        header.onmousedown = (e) => {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+            win.style.zIndex = "20";
+            let oX = e.clientX - win.offsetLeft, oY = e.clientY - win.offsetTop;
+            document.onmousemove = (e) => { win.style.left = (e.clientX-oX)+'px'; win.style.top = (e.clientY-oY)+'px'; };
+            document.onmouseup = () => document.onmousemove = null;
+        };
+    });
+
+    function toggleWin(id) {
+        let el = document.getElementById(id);
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    }
+
+    function initMines() {
+        const b = document.getElementById('mine-board'); b.innerHTML = "";
+        for(let i=0; i<81; i++) {
+            let c = document.createElement('div');
+            c.style = "width:25px; height:25px; border:1px solid #111; float:left; cursor:pointer; color:red; line-height:25px; text-align:center;";
+            c.onclick = function() { 
+                if(Math.random()<0.1) { this.innerHTML="X"; alert("Boom"); initMines(); }
+                else { this.innerHTML="1"; this.style.background="#000"; }
+            };
+            b.appendChild(c); if((i+1)%9==0) b.appendChild(document.createElement('br'));
+        }
+    }
+    initMines();
+
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            videoId: 'Bi5kyehmeaY',
+            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 },
+            events: { 'onReady': (e) => { e.target.mute(); } }
+        });
+    }
+    function pauseMusic() { player.pauseVideo(); }
+    function playMusic() { player.playVideo(); }
 </script>
-
 </body>
 </html>
