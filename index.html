@@ -1326,14 +1326,44 @@
     function loadPendingApps() {
         const apps = JSON.parse(localStorage.getItem('f_applications') || '[]').filter(a => a.status === 'pending');
         const container = document.getElementById('pending_apps');
-        if (apps.length === 0) { container.innerHTML = '<span style="color:#666; font-size:9px;">None</span>'; return; }
-        container.innerHTML = apps.map(a => '<div style="border:1px solid #400; padding:6px; margin-bottom:5px; font-size:9px;"><div style="color:#d40000; font-weight:bold;">' + escapeHtml(a.username) + '</div><div style="color:#666;">' + a.date + '</div><div style="color:#888; margin:3px 0;">' + escapeHtml(a.reason).substring(0, 80) + '...</div><button class="ie-btn" style="padding:2px 8px; font-size:9px; width:auto;" onclick="approveApp(' + a.id + ')">Approve</button></div>').join('');
+        if (!container) return;
+        if (apps.length === 0) { container.innerHTML = '<span style="color:#666; font-size:9px;">No pending applications</span>'; return; }
+        container.innerHTML = apps.map(a => `
+            <div style="border:1px solid #400; padding:8px; margin-bottom:8px; background:#0a0000;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(a.username)}</span>
+                    <span style="color:#555; font-size:8px;">${a.date}</span>
+                </div>
+                <div style="color:#888; font-size:9px; margin:5px 0;">
+                    <strong>Referral:</strong> ${escapeHtml(a.referral || 'None')}<br>
+                    <strong>Reason:</strong> ${escapeHtml(a.reason)}<br>
+                    <strong>Offering:</strong> ${escapeHtml(a.offering || 'None')}
+                </div>
+                <div style="display:flex; gap:5px; margin-top:8px;">
+                    <button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#050;" onclick="approveApp(${a.id})">✓ Accept</button>
+                    <button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#500;" onclick="denyApp(${a.id})">✗ Deny</button>
+                </div>
+            </div>
+        `).join('');
     }
 
     function approveApp(id) {
         const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
         const idx = apps.findIndex(a => a.id === id);
-        if (idx !== -1) { apps[idx].status = 'approved'; localStorage.setItem('f_applications', JSON.stringify(apps)); }
+        if (idx !== -1) { 
+            apps[idx].status = 'approved'; 
+            localStorage.setItem('f_applications', JSON.stringify(apps)); 
+        }
+        loadPendingApps();
+    }
+
+    function denyApp(id) {
+        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
+        const idx = apps.findIndex(a => a.id === id);
+        if (idx !== -1) { 
+            apps[idx].status = 'denied'; 
+            localStorage.setItem('f_applications', JSON.stringify(apps)); 
+        }
         loadPendingApps();
     }
 
@@ -1385,17 +1415,91 @@
         if (!username) { alert('Enter your username to check status.'); return; }
         const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
         const app = apps.find(a => a.username.toLowerCase() === username.toLowerCase());
-        if (!app) {
-            document.getElementById('app_result').innerHTML = '<div class="app-status" style="border-color:#888; color:#888;">No application found for this username.</div>';
-        } else if (app.status === 'pending') {
-            document.getElementById('app_result').innerHTML = '<div class="app-status app-pending">Your application is pending review.</div>';
-        } else if (app.status === 'approved') {
-            document.getElementById('app_result').innerHTML = '<div class="app-status" style="border-color:#0f0; color:#0f0;">Approved! Click below to complete registration.</div><button class="ie-btn" style="margin-top:10px;" onclick="showRegistration(\'' + app.username + '\')">Complete Registration</button>';
-        } else if (app.status === 'denied') {
-            document.getElementById('app_result').innerHTML = '<div class="app-status" style="border-color:#f00; color:#f00;">Your application was denied.</div>';
-        }
+        
+        const resultDiv = document.getElementById('app_result');
         document.getElementById('app_form').style.display = 'none';
-        document.getElementById('app_result').style.display = 'block';
+        resultDiv.style.display = 'block';
+        
+        if (!app) {
+            resultDiv.innerHTML = '<div class="app-status" style="border-color:#888; color:#888;">No application found for this username.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+        } else if (app.status === 'pending') {
+            resultDiv.innerHTML = '<div class="app-status app-pending">🕐 Your application is pending review.<br><small>Check back soon!</small></div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+        } else if (app.status === 'approved') {
+            resultDiv.innerHTML = `
+                <div class="app-status" style="border-color:#0f0; color:#0f0; margin-bottom:15px;">✓ Application Approved!</div>
+                <h3 style="color:#d40000; margin:0 0 10px 0; font-size:13px;">Complete Registration</h3>
+                <input type="text" id="inline_reg_user" class="ie-input" value="${escapeHtml(app.username)}" readonly style="background:#111;">
+                <input type="password" id="inline_reg_pass" class="ie-input" placeholder="Choose Password">
+                <input type="password" id="inline_reg_pass2" class="ie-input" placeholder="Confirm Password">
+                <div style="border:1px dashed #ffd700; padding:6px; margin:8px 0; background:rgba(255,215,0,0.05);">
+                    <label style="color:#ffd700; font-size:8px;">🌟 VIP Code (optional)</label>
+                    <input type="text" id="inline_vip_code" class="ie-input" placeholder="Enter VIP invite code" style="margin:0;">
+                </div>
+                <button class="ie-btn" onclick="completeInlineRegistration()">🦇 Complete Registration</button>
+                <div id="inline_reg_result" style="margin-top:8px;"></div>
+            `;
+        } else if (app.status === 'denied') {
+            resultDiv.innerHTML = '<div class="app-status" style="border-color:#f00; color:#f00;">✗ Your application was denied.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+        } else if (app.status === 'registered') {
+            resultDiv.innerHTML = '<div class="app-status" style="border-color:#0f0; color:#0f0;">✓ Already registered! Please log in via Portal.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+        }
+    }
+
+    function resetAppForm() {
+        document.getElementById('app_form').style.display = 'block';
+        document.getElementById('app_result').style.display = 'none';
+    }
+
+    function completeInlineRegistration() {
+        const username = document.getElementById('inline_reg_user').value.trim();
+        const pass = document.getElementById('inline_reg_pass').value;
+        const pass2 = document.getElementById('inline_reg_pass2').value;
+        const vipCode = document.getElementById('inline_vip_code').value.trim();
+        const resultEl = document.getElementById('inline_reg_result');
+        
+        if (!pass) { resultEl.innerHTML = '<span style="color:#f00;">Enter a password.</span>'; return; }
+        if (pass !== pass2) { resultEl.innerHTML = '<span style="color:#f00;">Passwords do not match.</span>'; return; }
+        if (pass.length < 6) { resultEl.innerHTML = '<span style="color:#f00;">Password must be 6+ characters.</span>'; return; }
+        
+        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
+        if (members[username] || userDatabase[username]) {
+            resultEl.innerHTML = '<span style="color:#f00;">Username already registered.</span>';
+            return;
+        }
+        
+        // Check VIP code if provided
+        let isVIP = false;
+        if (vipCode) {
+            const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
+            const codeIdx = codes.findIndex(c => c.code === vipCode && !c.used);
+            if (codeIdx !== -1) {
+                codes[codeIdx].used = true;
+                codes[codeIdx].usedBy = username;
+                localStorage.setItem('f_vip_codes', JSON.stringify(codes));
+                isVIP = true;
+            } else {
+                resultEl.innerHTML = '<span style="color:#f00;">Invalid or used VIP code.</span>';
+                return;
+            }
+        }
+        
+        // Add new member
+        if (isVIP) {
+            members[username] = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
+        } else {
+            members[username] = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+        }
+        localStorage.setItem('f_members', JSON.stringify(members));
+        userDatabase[username] = members[username];
+        
+        // Update application
+        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
+        const idx = apps.findIndex(a => a.username.toLowerCase() === username.toLowerCase());
+        if (idx !== -1) { apps[idx].status = 'registered'; localStorage.setItem('f_applications', JSON.stringify(apps)); }
+        
+        const msg = isVIP ? '🌟 VIP Registration complete!' : '✓ Registration complete!';
+        resultEl.innerHTML = '<span style="color:#0f0;">' + msg + '</span>';
+        setTimeout(() => { toggleWin('apply_window'); toggleWin('ie_window'); }, 1500);
     }
 
     function showRegistration(username) {
@@ -1600,8 +1704,17 @@
         }
     }
 
-    // VIP IMAGE HOSTING
+    // VIP IMAGE HOSTING - VIP and Staff only
     function uploadVIPImage() {
+        // Verify VIP or staff status
+        const user = userDatabase[CURRENT_USER];
+        if (!user) { alert('Not logged in.'); return; }
+        const isVIPorStaff = user.rank === 'VIP' || user.isAdmin || user.isST;
+        if (!isVIPorStaff) { 
+            alert('VIP Image Hosting is exclusive to VIP members and staff.'); 
+            return; 
+        }
+        
         const file = document.getElementById('vip_image_picker').files[0];
         if (!file) { alert('Select an image.'); return; }
         if (!file.type.startsWith('image/')) { alert('Images only.'); return; }
@@ -1800,12 +1913,24 @@
     function pauseMusic() { if(player) player.pauseVideo(); }
     function playMusic() { if(player) player.playVideo(); }
 
+    // Real-time refresh for admin panel
+    function refreshAdminIfOpen() {
+        const adminWin = document.getElementById('admin_window');
+        if (adminWin && adminWin.style.display === 'block') {
+            loadPendingApps();
+            loadPendingImages();
+            loadAdminStats();
+        }
+    }
+
     window.addEventListener('load', () => { 
         renderMemories(); 
         updateVisitorCount();
         initStakesGame();
-        // Real-time chat refresh (every 1 second for live updates)
-        setInterval(loadMessages, 1000); 
+        // Real-time chat refresh (every 1 second)
+        setInterval(loadMessages, 1000);
+        // Real-time admin panel refresh (every 2 seconds)
+        setInterval(refreshAdminIfOpen, 2000);
     });
 </script>
 </body>
