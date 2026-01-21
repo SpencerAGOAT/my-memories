@@ -108,8 +108,8 @@
         .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
 
-        /* THE LOUNGE CHAT */
-        .chat-container { display: flex; height: 350px; background: #050000; border-bottom: 1px solid #400; }
+        /* THE LOUNGE CHAT - BIGGER */
+        .chat-container { display: flex; height: 420px; background: #050000; border-bottom: 1px solid #400; }
         #chat_logs { flex: 1; overflow-y: scroll; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
         
         /* CHAT MESSAGE TAGS */
@@ -337,17 +337,44 @@
 <!-- SCREENSAVER -->
 <div id="screensaver"></div>
 
-<!-- PROFILE CARD POPUP -->
-<div class="profile-card" id="profile_card">
+<!-- PROFILE CARD POPUP - ENHANCED -->
+<div class="profile-card" id="profile_card" style="width:340px; max-height:550px; overflow-y:auto;">
     <div class="profile-card-header">
-        <span class="profile-card-avatar" id="pc_avatar">🦇</span>
+        <div class="profile-card-avatar" id="pc_avatar" style="width:65px; height:65px; border-radius:50%; overflow:hidden; background:#111; display:flex; align-items:center; justify-content:center; font-size:30px; border:2px solid #700;">🦇</div>
         <div>
             <div class="profile-card-name" id="pc_name">Username</div>
             <div class="profile-card-title" id="pc_title">Member</div>
+            <div id="pc_status" style="color:#666; font-size:9px; margin-top:3px;"></div>
+        </div>
+    </div>
+    <div style="display:flex; padding:10px 15px; gap:20px; border-bottom:1px solid #300; background:#0a0000;">
+        <div style="text-align:center;">
+            <div id="pc_rep" style="color:#ff4444; font-size:18px; font-weight:bold;">0</div>
+            <div style="color:#666; font-size:8px;">REPUTATION</div>
+        </div>
+        <div style="text-align:center;">
+            <div id="pc_comment_count" style="color:#ff4444; font-size:18px; font-weight:bold;">0</div>
+            <div style="color:#666; font-size:8px;">COMMENTS</div>
         </div>
     </div>
     <div class="profile-card-bio" id="pc_bio">No bio set.</div>
-    <button class="profile-card-btn" onclick="openDM(currentProfileUser)">💬 Send Message</button>
+    <div id="pc_music_section" style="display:none; padding:10px 15px; border-bottom:1px solid #300;">
+        <div style="color:#888; font-size:9px; margin-bottom:5px;">🎵 Profile Music</div>
+        <div id="pc_music_player"></div>
+    </div>
+    <div id="pc_comments_list" style="padding:10px 15px; max-height:120px; overflow-y:auto; border-bottom:1px solid #300;">
+        <div style="color:#555; font-size:10px;">No comments yet.</div>
+    </div>
+    <div style="padding:10px 15px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="profile-card-btn" onclick="openDM(currentProfileUser)">💬 Message</button>
+        <button class="profile-card-btn" id="btn_rep_pos" style="background:#030; border-color:#070; display:none;" onclick="giveRep(1)">👍 +Rep</button>
+        <button class="profile-card-btn" id="btn_rep_neg" style="background:#300; border-color:#700; display:none;" onclick="giveRep(-1)">👎 -Rep</button>
+    </div>
+    <div style="padding:10px 15px; border-top:1px solid #300;">
+        <input type="text" id="profile_comment_input" class="ie-input" placeholder="Leave a comment..." style="margin-bottom:5px; padding:6px; font-size:10px;">
+        <button class="ie-btn" style="padding:6px; font-size:10px;" onclick="leaveProfileComment()">Post Comment</button>
+    </div>
+    <button class="profile-card-btn" style="margin:10px 15px; width:calc(100% - 30px);" onclick="closeProfileCard()">Close</button>
 </div>
 
 <div id="boot-screen" onclick="beginSession()">
@@ -386,6 +413,10 @@
     <div class="icon" id="admin_icon" style="display:none;" onclick="toggleWin('admin_window')">
         <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/lock-0.png">
         <div>Admin Panel</div>
+    </div>
+    <div class="icon" id="management_icon" style="display:none;" onclick="toggleWin('management_window')">
+        <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/directory_explorer-5.png">
+        <div>Management</div>
     </div>
 </div>
 
@@ -479,8 +510,8 @@
     </div>
 </div>
 
-<!-- CHAT WINDOW -->
-<div class="window" id="chat_win" style="left:550px; top:50px; width:650px; height:520px;">
+<!-- CHAT WINDOW - BIGGER -->
+<div class="window" id="chat_win" style="left:400px; top:30px; width:820px; height:620px;">
     <div class="title-bar">
         <div class="title-bar-text">🩸 The Lounge</div>
         <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('chat_win')"></button></div>
@@ -527,10 +558,26 @@
             </div>
         </div>
         
-        <div id="chat_settings" style="display: none; padding: 12px; overflow-y: auto; height: calc(100% - 40px);">
-            <h3 style="color: #d40000; margin: 0 0 10px 0; font-size: 14px;">Profile Settings</h3>
+        <div id="chat_settings" style="display: none; padding: 15px; overflow-y: auto; height: calc(100% - 40px);">
+            <h3 style="color: #d40000; margin: 0 0 15px 0; font-size: 16px;">Profile Settings</h3>
             
-            <label style="color: #888; font-size: 9px;">Name Color</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                <div>
+                    <label style="color: #888; font-size: 10px; display:block; margin-bottom:5px;">Profile Picture</label>
+                    <input type="text" id="avatar_url" class="ie-input" placeholder="Paste image URL (Pinterest, etc)">
+                    <input type="file" id="avatar_upload" class="ie-input" accept="image/*" style="border:none; padding:5px 0;">
+                    <button class="ie-btn" style="padding:8px;" onclick="updateAvatar()">Update Avatar</button>
+                    <div id="avatar_preview" style="margin-top:10px; text-align:center;"></div>
+                </div>
+                <div>
+                    <label style="color: #888; font-size: 10px; display:block; margin-bottom:5px;">Profile Music (SoundCloud/Spotify)</label>
+                    <input type="text" id="profile_music" class="ie-input" placeholder="https://soundcloud.com/... or spotify link">
+                    <button class="ie-btn" style="padding:8px;" onclick="updateProfileMusic()">Set Profile Music</button>
+                    <p style="color:#555; font-size:8px; margin-top:5px;">Plays when someone views your profile</p>
+                </div>
+            </div>
+            
+            <label style="color: #888; font-size: 10px;">Name Color</label>
             <div class="color-picker-row">
                 <div class="color-swatch" style="background: #ff0000;" data-color="#ff0000" onclick="selectColor(this)"></div>
                 <div class="color-swatch" style="background: #ff00ff;" data-color="#ff00ff" onclick="selectColor(this)"></div>
@@ -544,7 +591,7 @@
                 <div class="color-swatch" style="background: #ffffff;" data-color="#ffffff" onclick="selectColor(this)"></div>
             </div>
             
-            <label style="color: #888; font-size: 9px;">Chat Theme</label>
+            <label style="color: #888; font-size: 10px;">Chat Theme</label>
             <div class="theme-grid">
                 <div class="theme-option chat-theme-default" data-theme="default" onclick="selectTheme(this)" title="Default"></div>
                 <div class="theme-option chat-theme-coffin" data-theme="coffin" onclick="selectTheme(this)" title="Coffin"></div>
@@ -553,7 +600,7 @@
                 <div class="theme-option chat-theme-neon" data-theme="neon" onclick="selectTheme(this)" title="Neon"></div>
             </div>
             
-            <label style="color: #888; font-size: 9px;">Mood Status</label>
+            <label style="color: #888; font-size: 10px;">Mood Status</label>
             <select id="user_mood" class="ie-input" onchange="saveProfile()">
                 <option value="">None</option>
                 <option value="🩸 Thirsty">🩸 Thirsty</option>
@@ -566,10 +613,10 @@
                 <option value="✨ Ascending">✨ Ascending</option>
             </select>
             
-            <label style="color: #888; font-size: 9px;">Custom Status</label>
+            <label style="color: #888; font-size: 10px;">Custom Status</label>
             <input type="text" id="user_status" class="ie-input" placeholder="What's happening..." maxlength="30">
             
-            <label style="color: #888; font-size: 9px;">Bio</label>
+            <label style="color: #888; font-size: 10px;">Bio</label>
             <textarea id="user_bio" class="ie-input" placeholder="Tell us about yourself..." maxlength="150" style="height: 50px; resize: none;"></textarea>
             
             <button class="ie-btn" onclick="saveProfile()">Save Profile</button>
@@ -675,6 +722,54 @@
     </div>
 </div>
 
+<!-- MANAGEMENT WINDOW -->
+<div class="window" id="management_window" style="left:60px; top:40px; width:750px; height:580px;">
+    <div class="title-bar">
+        <div class="title-bar-text">📁 Site Management</div>
+        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('management_window')"></button></div>
+    </div>
+    <div class="window-body">
+        <div style="display:flex; background:#0a0000; border-bottom:1px solid #400;">
+            <div class="mgmt-tab active" onclick="switchMgmtTab('apps', this)" style="padding:10px 15px; color:#d40000; border-right:1px solid #300; cursor:pointer;">Applications</div>
+            <div class="mgmt-tab" onclick="switchMgmtTab('members', this)" style="padding:10px 15px; color:#666; border-right:1px solid #300; cursor:pointer;">Members</div>
+            <div class="mgmt-tab" onclick="switchMgmtTab('images', this)" style="padding:10px 15px; color:#666; border-right:1px solid #300; cursor:pointer;">Hosted Images</div>
+            <div class="mgmt-tab" onclick="switchMgmtTab('videos', this)" style="padding:10px 15px; color:#666; border-right:1px solid #300; cursor:pointer;">Videos</div>
+            <div class="mgmt-tab" onclick="switchMgmtTab('codes', this)" style="padding:10px 15px; color:#666; cursor:pointer;">VIP Codes</div>
+        </div>
+        
+        <div id="mgmt_apps" style="padding:15px;">
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <select id="app_filter" class="ie-input" style="width:150px;" onchange="loadAllApplications()">
+                    <option value="all">All Applications</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="denied">Denied</option>
+                    <option value="registered">Registered</option>
+                </select>
+                <input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()">
+            </div>
+            <div id="all_applications" style="max-height:420px; overflow-y:auto;"></div>
+        </div>
+        
+        <div id="mgmt_members" style="padding:15px; display:none;">
+            <div id="all_members" style="max-height:470px; overflow-y:auto;"></div>
+        </div>
+        
+        <div id="mgmt_images" style="padding:15px; display:none;">
+            <div id="all_hosted_images" style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; max-height:470px; overflow-y:auto;"></div>
+        </div>
+        
+        <div id="mgmt_videos" style="padding:15px; display:none;">
+            <div id="all_videos" style="max-height:470px; overflow-y:auto;"></div>
+        </div>
+        
+        <div id="mgmt_codes" style="padding:15px; display:none;">
+            <button class="ie-btn" style="width:auto; margin-bottom:15px; padding:10px 20px;" onclick="generateVIPCode()">🌟 Generate New VIP Code</button>
+            <div id="all_vip_codes" style="max-height:420px; overflow-y:auto;"></div>
+        </div>
+    </div>
+</div>
+
 <div class="window" id="memories_folder" style="left:50px; top:50px; width:550px; height:580px;">
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body" style="display:flex; flex-direction:column; height:100%;">
@@ -687,7 +782,7 @@
     </div>
 </div>
 
-<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:620px;">
+<div class="window" id="ie_window" style="left:120px; top:80px; width:450px; height:680px;">
     <div class="title-bar"><div class="title-bar-text">fangtasia.wtf Portal</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie_window')"></button></div></div>
     <div class="window-body" style="overflow-y:auto;">
         <div class="ie-content" id="ie_login">
@@ -1057,6 +1152,7 @@
                 // Show admin icon for admins
                 if (userDatabase[u].isAdmin) {
                     document.getElementById('admin_icon').style.display = 'block';
+                    document.getElementById('management_icon').style.display = 'block';
                 }
                 
                 // Show ST section for Site Technician
@@ -1085,6 +1181,7 @@
         document.getElementById('ie_user').value = '';
         document.getElementById('ie_pass').value = '';
         document.getElementById('admin_icon').style.display = 'none';
+        document.getElementById('management_icon').style.display = 'none';
         document.getElementById('st_section').style.display = 'none';
         document.getElementById('vip_image_section').style.display = 'none';
         toggleWin('chat_win');
@@ -1851,47 +1948,76 @@
         });
     }
 
-    // VIP IMAGE HOSTING - VIP and Staff only
+    // VIP IMAGE HOSTING - CLOUDINARY FOR REAL DISCORD EMBEDS
     function uploadVIPImage() {
-        // Verify VIP or staff status
         const user = userDatabase[CURRENT_USER];
         if (!user) { alert('Not logged in.'); return; }
         const isVIPorStaff = user.rank === 'VIP' || user.isAdmin || user.isST;
-        if (!isVIPorStaff) { 
-            alert('VIP Image Hosting is exclusive to VIP members and staff.'); 
-            return; 
-        }
+        if (!isVIPorStaff) { alert('VIP Image Hosting is exclusive to VIP members and staff.'); return; }
         
         const file = document.getElementById('vip_image_picker').files[0];
         if (!file) { alert('Select an image.'); return; }
         if (!file.type.startsWith('image/')) { alert('Images only.'); return; }
         
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const images = JSON.parse(localStorage.getItem('f_vip_images_' + CURRENT_USER) || '[]');
-            const id = Date.now().toString(36);
-            const imgData = { id: id, data: e.target.result, name: file.name, date: new Date().toLocaleDateString() };
-            images.push(imgData);
-            localStorage.setItem('f_vip_images_' + CURRENT_USER, JSON.stringify(images.slice(-20))); // Keep last 20
-            
-            // Create embed link (simulated - in real app would be server URL)
-            const embedLink = 'fangtasia.wtf/i/' + CURRENT_USER + '/' + id;
-            document.getElementById('vip_image_result').innerHTML = '<div style="background:#111; padding:5px; margin-top:5px;"><span style="color:#0f0; font-size:9px;">Uploaded!</span><br><input type="text" value="' + embedLink + '" style="width:100%; font-size:9px; background:#000; border:1px solid #333; color:#ffd700; padding:2px;" onclick="this.select()"></div>';
-            loadVIPGallery();
-        };
-        reader.readAsDataURL(file);
+        document.getElementById('vip_image_result').innerHTML = '<div style="color:#888; font-size:10px;">Uploading to cloud...</div>';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+        
+        fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.secure_url) {
+                    // Save to Firebase for persistence
+                    db.ref('hosted_images').push({
+                        url: data.secure_url,
+                        user: CURRENT_USER,
+                        name: file.name,
+                        date: new Date().toLocaleDateString(),
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    
+                    document.getElementById('vip_image_result').innerHTML = `
+                        <div style="background:#0a0a00; border:1px solid #ffd700; padding:10px; margin-top:8px;">
+                            <div style="color:#0f0; font-size:10px; margin-bottom:8px;">✓ Uploaded! Discord-embeddable link:</div>
+                            <input type="text" value="${data.secure_url}" style="width:100%; font-size:10px; background:#000; border:1px solid #ffd700; color:#ffd700; padding:6px;" onclick="this.select(); document.execCommand('copy'); alert('Link copied!');" readonly>
+                            <img src="${data.secure_url}" style="max-width:100%; max-height:120px; margin-top:8px; border:1px solid #400;">
+                        </div>
+                    `;
+                    loadVIPGallery();
+                } else {
+                    document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Upload failed. Try again.</div>';
+                }
+            })
+            .catch(err => {
+                document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Upload error.</div>';
+            });
     }
 
     function loadVIPGallery() {
-        const images = JSON.parse(localStorage.getItem('f_vip_images_' + CURRENT_USER) || '[]');
         const container = document.getElementById('vip_image_gallery');
         if (!container) return;
-        container.innerHTML = images.slice(-6).reverse().map(img => '<img src="' + img.data + '" style="width:50px; height:50px; object-fit:cover; border:1px solid #333; margin:2px; cursor:pointer;" onclick="copyImageLink(\'' + img.id + '\')" title="Click to copy link">').join('');
+        
+        db.ref('hosted_images').orderByChild('user').equalTo(CURRENT_USER).limitToLast(6).once('value', (snapshot) => {
+            const images = [];
+            snapshot.forEach(child => images.push(child.val()));
+            
+            if (images.length === 0) {
+                container.innerHTML = '<div style="color:#666; font-size:9px;">No images uploaded yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = images.reverse().map(img => `
+                <img src="${img.url}" style="width:50px; height:50px; object-fit:cover; border:1px solid #333; margin:2px; cursor:pointer;" 
+                     onclick="navigator.clipboard.writeText('${img.url}'); alert('URL copied: ${img.url}')" 
+                     title="Click to copy embed URL">
+            `).join('');
+        });
     }
 
-    function copyImageLink(id) {
-        const link = 'fangtasia.wtf/i/' + CURRENT_USER + '/' + id;
-        navigator.clipboard.writeText(link).then(() => alert('Link copied: ' + link));
+    function copyImageLink(url) {
+        navigator.clipboard.writeText(url).then(() => alert('Link copied!'));
     }
 
     // PREV PAGE FOR MEMORIES
@@ -2090,6 +2216,328 @@
     function pauseMusic() { if(player) player.pauseVideo(); }
     function playMusic() { if(player) player.playVideo(); }
 
+    // AVATAR FUNCTIONS
+    function updateAvatar() {
+        const url = document.getElementById('avatar_url').value.trim();
+        const fileInput = document.getElementById('avatar_upload');
+        
+        if (url) {
+            userProfile.avatar = url;
+            db.ref('profiles/' + CURRENT_USER).update({ avatar: url });
+            document.getElementById('avatar_preview').innerHTML = '<img src="' + url + '" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #700;">';
+            alert('Avatar updated!');
+        } else if (fileInput && fileInput.files[0]) {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('upload_preset', UPLOAD_PRESET);
+            
+            fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.secure_url) {
+                        userProfile.avatar = data.secure_url;
+                        db.ref('profiles/' + CURRENT_USER).update({ avatar: data.secure_url });
+                        document.getElementById('avatar_preview').innerHTML = '<img src="' + data.secure_url + '" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #700;">';
+                        alert('Avatar uploaded!');
+                    }
+                });
+        } else {
+            alert('Enter a URL or select a file.');
+        }
+    }
+
+    function updateProfileMusic() {
+        const url = document.getElementById('profile_music').value.trim();
+        userProfile.music = url;
+        db.ref('profiles/' + CURRENT_USER).update({ music: url });
+        alert('Profile music set!');
+    }
+
+    // ENHANCED PROFILE CARD
+    function showProfileCard(username, event) {
+        if (event) event.stopPropagation();
+        currentProfileUser = username;
+        const card = document.getElementById('profile_card');
+        
+        db.ref('profiles/' + username).once('value', (snapshot) => {
+            const profile = snapshot.val() || {};
+            const user = userDatabase[username] || { rank: 'M', fullRank: 'Member' };
+            
+            document.getElementById('pc_name').textContent = username;
+            document.getElementById('pc_title').textContent = user.fullRank || 'Member';
+            document.getElementById('pc_bio').textContent = profile.bio || 'No bio set.';
+            document.getElementById('pc_status').textContent = profile.status || '';
+            
+            // Avatar
+            const avatarEl = document.getElementById('pc_avatar');
+            if (profile.avatar) {
+                avatarEl.innerHTML = '<img src="' + profile.avatar + '" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            } else {
+                avatarEl.innerHTML = '🦇';
+            }
+            
+            // Load reputation
+            db.ref('reputation/' + username).once('value', (repSnap) => {
+                const rep = repSnap.val() || { score: 0 };
+                document.getElementById('pc_rep').textContent = rep.score || 0;
+            });
+            
+            // Load comments
+            db.ref('profile_comments/' + username).orderByChild('timestamp').limitToLast(10).once('value', (commSnap) => {
+                const comments = [];
+                commSnap.forEach(c => comments.push(c.val()));
+                document.getElementById('pc_comment_count').textContent = comments.length;
+                
+                const commentsList = document.getElementById('pc_comments_list');
+                if (comments.length === 0) {
+                    commentsList.innerHTML = '<div style="color:#555; font-size:10px;">No comments yet.</div>';
+                } else {
+                    commentsList.innerHTML = comments.reverse().map(c => `
+                        <div style="background:#0a0000; padding:6px; margin-bottom:4px; border-left:2px solid #500;">
+                            <span style="color:#d40000; font-weight:bold; font-size:10px;">${escapeHtml(c.from)}</span>
+                            <span style="color:#444; font-size:8px;"> - ${c.date}</span>
+                            <div style="color:#999; font-size:10px; margin-top:2px;">${escapeHtml(c.text)}</div>
+                        </div>
+                    `).join('');
+                }
+            });
+            
+            // Music player
+            const musicSection = document.getElementById('pc_music_section');
+            const musicPlayer = document.getElementById('pc_music_player');
+            if (profile.music) {
+                musicSection.style.display = 'block';
+                if (profile.music.includes('soundcloud.com')) {
+                    musicPlayer.innerHTML = `<iframe width="100%" height="80" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(profile.music)}&color=%23ff0000&auto_play=true&hide_related=true&show_comments=false&show_user=false"></iframe>`;
+                } else if (profile.music.includes('spotify.com')) {
+                    const spotifyMatch = profile.music.match(/track\/([a-zA-Z0-9]+)/);
+                    if (spotifyMatch) {
+                        musicPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${spotifyMatch[1]}" width="100%" height="80" frameborder="0" allow="encrypted-media"></iframe>`;
+                    }
+                } else {
+                    musicPlayer.innerHTML = '<div style="color:#666; font-size:9px;">Invalid music URL</div>';
+                }
+            } else {
+                musicSection.style.display = 'none';
+            }
+            
+            // Rep buttons - VIP+ only
+            const canRep = CURRENT_USER && userDatabase[CURRENT_USER] && (userDatabase[CURRENT_USER].rank === 'VIP' || userDatabase[CURRENT_USER].isAdmin || userDatabase[CURRENT_USER].isST);
+            document.getElementById('btn_rep_pos').style.display = canRep && username !== CURRENT_USER ? 'inline-block' : 'none';
+            document.getElementById('btn_rep_neg').style.display = canRep && username !== CURRENT_USER ? 'inline-block' : 'none';
+            
+            card.style.display = 'block';
+            card.style.left = Math.min(event.clientX || 200, window.innerWidth - 360) + 'px';
+            card.style.top = Math.min(event.clientY || 100, window.innerHeight - 500) + 'px';
+        });
+    }
+
+    function closeProfileCard() {
+        document.getElementById('profile_card').style.display = 'none';
+        // Stop any playing music
+        document.getElementById('pc_music_player').innerHTML = '';
+    }
+
+    function giveRep(amount) {
+        if (!CURRENT_USER || currentProfileUser === CURRENT_USER) return;
+        const canRep = userDatabase[CURRENT_USER] && (userDatabase[CURRENT_USER].rank === 'VIP' || userDatabase[CURRENT_USER].isAdmin || userDatabase[CURRENT_USER].isST);
+        if (!canRep) { alert('Only VIP+ members can give reputation!'); return; }
+        
+        db.ref('reputation/' + currentProfileUser).once('value', (snapshot) => {
+            const current = snapshot.val() || { score: 0, givers: {} };
+            if (current.givers && current.givers[CURRENT_USER]) {
+                alert('You already gave rep to this user!');
+                return;
+            }
+            current.score = (current.score || 0) + amount;
+            current.givers = current.givers || {};
+            current.givers[CURRENT_USER] = amount;
+            db.ref('reputation/' + currentProfileUser).set(current);
+            document.getElementById('pc_rep').textContent = current.score;
+            alert(amount > 0 ? '+Rep given!' : '-Rep given!');
+        });
+    }
+
+    function leaveProfileComment() {
+        if (!CURRENT_USER || IS_GUEST) { alert('Must be logged in to comment!'); return; }
+        const text = document.getElementById('profile_comment_input').value.trim();
+        if (!text) return;
+        
+        db.ref('profile_comments/' + currentProfileUser).push({
+            from: CURRENT_USER,
+            text: text,
+            date: new Date().toLocaleDateString(),
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        document.getElementById('profile_comment_input').value = '';
+        // Refresh profile card
+        showProfileCard(currentProfileUser, { clientX: parseInt(document.getElementById('profile_card').style.left), clientY: parseInt(document.getElementById('profile_card').style.top), stopPropagation: () => {} });
+    }
+
+    // MANAGEMENT FUNCTIONS
+    function switchMgmtTab(tab, el) {
+        document.querySelectorAll('.mgmt-tab').forEach(t => { t.style.color = '#666'; });
+        el.style.color = '#d40000';
+        ['apps', 'members', 'images', 'videos', 'codes'].forEach(t => {
+            document.getElementById('mgmt_' + t).style.display = t === tab ? 'block' : 'none';
+        });
+        if (tab === 'apps') loadAllApplications();
+        if (tab === 'members') loadAllMembers();
+        if (tab === 'images') loadAllHostedImages();
+        if (tab === 'videos') loadAllVideos();
+        if (tab === 'codes') loadAllVIPCodes();
+    }
+
+    function loadAllApplications() {
+        const container = document.getElementById('all_applications');
+        if (!container) return;
+        const filter = document.getElementById('app_filter').value;
+        const search = document.getElementById('app_search').value.toLowerCase();
+        
+        db.ref('applications').orderByChild('timestamp').once('value', (snapshot) => {
+            const apps = [];
+            snapshot.forEach(child => apps.push({ ...child.val(), key: child.key }));
+            
+            let filtered = apps.reverse();
+            if (filter !== 'all') filtered = filtered.filter(a => a.status === filter);
+            if (search) filtered = filtered.filter(a => a.username.toLowerCase().includes(search));
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No applications found.</div>';
+                return;
+            }
+            
+            container.innerHTML = filtered.map(a => {
+                const statusColor = { pending: '#ffd700', approved: '#00ff00', denied: '#ff4444', registered: '#4488ff' }[a.status] || '#888';
+                return `
+                    <div style="background:#0a0000; border:1px solid #400; padding:12px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong style="color:#d40000; font-size:14px;">${escapeHtml(a.username)}</strong>
+                            <span style="background:${statusColor}22; color:${statusColor}; padding:2px 10px; font-size:10px; border-radius:3px;">${a.status.toUpperCase()}</span>
+                        </div>
+                        <div style="color:#888; font-size:11px; margin-bottom:8px;">
+                            <div><strong>Date:</strong> ${a.date}</div>
+                            <div><strong>Referral:</strong> ${escapeHtml(a.referral || 'None')}</div>
+                            <div><strong>Reason:</strong> ${escapeHtml(a.reason)}</div>
+                            <div><strong>Offering:</strong> ${escapeHtml(a.offering || 'None')}</div>
+                        </div>
+                        ${a.status === 'pending' ? `
+                            <div style="display:flex; gap:8px;">
+                                <button class="ie-btn" style="padding:6px 15px; font-size:11px; background:#050; flex:1;" onclick="approveApp(${a.id})">✓ Approve</button>
+                                <button class="ie-btn" style="padding:6px 15px; font-size:11px; background:#500; flex:1;" onclick="denyApp(${a.id})">✗ Deny</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        });
+    }
+
+    function loadAllMembers() {
+        const container = document.getElementById('all_members');
+        if (!container) return;
+        
+        db.ref('members').once('value', (snapshot) => {
+            const members = [];
+            snapshot.forEach(child => members.push({ username: child.key, ...child.val() }));
+            
+            // Include core admins
+            Object.keys(coreAdmins).forEach(name => {
+                if (!members.find(m => m.username === name)) {
+                    members.push({ username: name, ...coreAdmins[name], isCore: true });
+                }
+            });
+            
+            container.innerHTML = members.map(m => `
+                <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span class="${m.style}" style="font-weight:bold;">${escapeHtml(m.username)}</span>
+                        <span style="color:#666; font-size:10px;"> [${m.fullRank}]</span>
+                        ${m.isCore ? '<span style="color:#ff00ff; font-size:9px;"> (Core)</span>' : ''}
+                    </div>
+                    ${!m.isCore ? `<button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="if(confirm('Delete ${m.username}?')) { db.ref('members/${m.username}').remove(); loadAllMembers(); }">Delete</button>` : ''}
+                </div>
+            `).join('');
+        });
+    }
+
+    function loadAllHostedImages() {
+        const container = document.getElementById('all_hosted_images');
+        if (!container) return;
+        
+        db.ref('hosted_images').orderByChild('timestamp').limitToLast(50).once('value', (snapshot) => {
+            const images = [];
+            snapshot.forEach(child => images.push({ ...child.val(), key: child.key }));
+            
+            if (images.length === 0) {
+                container.innerHTML = '<div style="color:#666; grid-column:1/-1; text-align:center; padding:20px;">No hosted images.</div>';
+                return;
+            }
+            
+            container.innerHTML = images.reverse().map(img => `
+                <div style="background:#0a0000; border:1px solid #400; padding:5px; text-align:center;">
+                    <img src="${img.url}" style="width:100%; height:80px; object-fit:cover; cursor:pointer;" onclick="window.open('${img.url}', '_blank')">
+                    <div style="font-size:9px; color:#888; margin-top:3px;">${escapeHtml(img.user)}</div>
+                    <div style="font-size:8px; color:#555;">${img.date}</div>
+                </div>
+            `).join('');
+        });
+    }
+
+    function loadAllVideos() {
+        const container = document.getElementById('all_videos');
+        if (!container) return;
+        
+        db.ref('archive').orderByChild('timestamp').once('value', (snapshot) => {
+            const videos = [];
+            snapshot.forEach(child => videos.push({ ...child.val(), key: child.key }));
+            
+            if (videos.length === 0) {
+                container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No videos in archive.</div>';
+                return;
+            }
+            
+            container.innerHTML = videos.reverse().map(v => `
+                <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong style="color:#d40000;">${escapeHtml(v.name)}</strong>
+                        <span style="color:#666; font-size:10px;"> by ${escapeHtml(v.uploader)}</span>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto;" onclick="window.open('${v.url}', '_blank')">View</button>
+                        <button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="if(confirm('Delete this video?')) { db.ref('archive/${v.key}').remove(); loadAllVideos(); renderMemories(); }">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        });
+    }
+
+    function loadAllVIPCodes() {
+        const container = document.getElementById('all_vip_codes');
+        if (!container) return;
+        
+        db.ref('vip_codes').orderByChild('created').once('value', (snapshot) => {
+            const codes = [];
+            snapshot.forEach(child => codes.push({ ...child.val(), key: child.key }));
+            
+            if (codes.length === 0) {
+                container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No VIP codes generated.</div>';
+                return;
+            }
+            
+            container.innerHTML = codes.reverse().map(c => `
+                <div style="background:#0a0000; border:1px solid ${c.used ? '#333' : '#ffd700'}; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="color:${c.used ? '#666' : '#ffd700'}; font-family:monospace; font-size:14px;">${c.code}</span>
+                        <span style="color:#555; font-size:10px;"> - Created by ${c.createdBy}</span>
+                        ${c.used ? `<span style="color:#0f0; font-size:10px;"> (Used by ${c.usedBy})</span>` : ''}
+                    </div>
+                    ${!c.used ? `<button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="if(confirm('Delete this code?')) { db.ref('vip_codes/${c.key}').remove(); loadAllVIPCodes(); }">Delete</button>` : ''}
+                </div>
+            `).join('');
+        });
+    }
+
     // Real-time refresh for admin panel
     function refreshAdminIfOpen() {
         const adminWin = document.getElementById('admin_window');
@@ -2104,9 +2552,7 @@
         renderMemories(); 
         updateVisitorCount();
         initStakesGame();
-        // Real-time chat refresh (every 1 second)
         setInterval(loadMessages, 1000);
-        // Real-time admin panel refresh (every 2 seconds)
         setInterval(refreshAdminIfOpen, 2000);
     });
 </script>
