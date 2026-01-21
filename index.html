@@ -6,11 +6,14 @@
     <title>Red Aero Desktop</title>
     <link rel="stylesheet" href="https://unpkg.com/7.css">
     <style>
-        :root { --win7-red: #800000; }
+        :root { 
+            --win7-red: #800000; 
+            --glass: rgba(40, 0, 0, 0.6);
+        }
 
         body {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                        url('https://wallpapercave.com/wp/wp2555314.jpg') no-repeat center center fixed;
+            /* YOUR CUSTOM BACKGROUND */
+            background: url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
             margin: 0;
@@ -19,10 +22,20 @@
             cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
         }
 
-        /* Red Theme Overrides */
+        /* Red Aero Window Styling */
         .title-bar {
             background: linear-gradient(to bottom, #a00000, #4a0000) !important;
             border-bottom: 1px solid #300000 !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2) !important;
+        }
+
+        .window {
+            position: absolute;
+            width: 380px;
+            z-index: 10;
+            background: rgba(20, 20, 20, 0.9) !important; /* Darker window body */
+            color: white !important;
+            border: 1px solid #600000 !important;
         }
 
         #desktop {
@@ -32,35 +45,34 @@
             height: calc(100vh - 40px);
         }
 
+        /* FIXED RED ICONS */
         .folder-icon {
             width: 80px;
             text-align: center;
             color: white;
-            text-shadow: 1px 1px 3px black;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             cursor: pointer;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            transition: transform 0.1s;
         }
+        
+        .folder-icon:hover { transform: scale(1.05); }
 
         .folder-icon img {
-            width: 50px;
-            filter: hue-rotate(150deg) saturate(2) brightness(0.7);
+            width: 55px;
+            /* Direct Red Icon Filter */
+            filter: drop-shadow(0 0 5px rgba(255,0,0,0.3)) sepia(1) saturate(10) hue-rotate(320deg) brightness(0.8);
         }
 
-        .window {
-            position: absolute;
-            width: 380px;
-            z-index: 10;
-        }
-
-        /* Taskbar */
+        /* Red Taskbar */
         .taskbar {
             position: fixed;
             bottom: 0;
             width: 100%;
             height: 40px;
-            background: rgba(50, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            border-top: 1px solid #700000;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 0, 0, 0.3);
             display: flex;
             align-items: center;
             padding: 0 10px;
@@ -68,70 +80,76 @@
         }
 
         .start-btn {
-            width: 32px;
-            height: 32px;
-            filter: hue-rotate(140deg) brightness(0.8);
+            width: 34px;
+            height: 34px;
+            filter: sepia(1) saturate(20) hue-rotate(320deg) brightness(0.7);
             cursor: pointer;
+            transition: filter 0.2s;
         }
+        
+        .start-btn:hover { filter: sepia(1) saturate(20) hue-rotate(320deg) brightness(1); }
 
         .system-tray {
             margin-left: auto;
-            padding-right: 20px;
+            padding-right: 25px;
         }
 
         .mute-btn {
             width: 20px;
             cursor: pointer;
-            filter: invert(1) sepia(1) saturate(5) hue-rotate(330deg); /* Red speaker */
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(330deg);
         }
+
+        .window-body { color: white !important; }
     </style>
 </head>
 <body onclick="startMusic()">
 
 <div id="desktop">
     <div class="folder-icon" onclick="toggleWin('vid1')">
-        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
-        <div>Summer '24</div>
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="folder">
+        <div>Memories '24</div>
     </div>
 
     <div class="folder-icon" onclick="toggleWin('vid2')">
-        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
-        <div>New Years</div>
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="folder">
+        <div>Clips</div>
     </div>
 </div>
 
 <div class="window" id="vid1" style="display:none; top:100px; left:150px;">
     <div class="title-bar">
-        <div class="title-bar-text">Summer_Memories.mp4</div>
+        <div class="title-bar-text">Memory_Explorer.exe</div>
         <div class="title-bar-controls">
             <button aria-label="Close" onclick="toggleWin('vid1')"></button>
         </div>
     </div>
     <div class="window-body">
+        <p style="margin-bottom: 10px;">Click below to watch:</p>
         <video width="100%" controls>
-            <source src="INSERT_YOUR_VIDEO_URL_HERE" type="video/mp4">
+            <source src="YOUR_VIDEO_URL_HERE" type="video/mp4">
         </video>
     </div>
 </div>
 
 <div class="window" id="vid2" style="display:none; top:150px; left:200px;">
     <div class="title-bar">
-        <div class="title-bar-text">NYE_Party.mp4</div>
+        <div class="title-bar-text">Video_Clip.mp4</div>
         <div class="title-bar-controls">
             <button aria-label="Close" onclick="toggleWin('vid2')"></button>
         </div>
     </div>
     <div class="window-body">
         <video width="100%" controls>
-            <source src="INSERT_YOUR_VIDEO_URL_HERE" type="video/mp4">
+            <source src="YOUR_SECOND_VIDEO_URL" type="video/mp4">
         </video>
     </div>
 </div>
 
 <div class="taskbar">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn" title="Start">
     <div class="system-tray">
-        <img src="https://cdn-icons-png.flaticon.com/512/3127/3127001.png" class="mute-btn" onclick="toggleMute()">
+        <img src="https://cdn-icons-png.flaticon.com/512/3127/3127001.png" class="mute-btn" onclick="toggleMute()" title="Mute/Unmute">
     </div>
 </div>
 
@@ -145,17 +163,36 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             videoId: 'Bi5kyehmeaY',
-            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY' },
-            events: { 'onReady': (e) => { e.target.mute(); e.target.playVideo(); } }
+            playerVars: { 
+                'autoplay': 1, 
+                'loop': 1, 
+                'playlist': 'Bi5kyehmeaY',
+                'controls': 0
+            },
+            events: { 
+                'onReady': (e) => { 
+                    e.target.mute(); 
+                    e.target.playVideo(); 
+                } 
+            }
         });
     }
 
     function startMusic() {
-        if (!started && player) { player.unMute(); started = true; }
+        if (!started && player) { 
+            player.unMute(); 
+            started = true; 
+        }
     }
 
     function toggleMute() {
-        if (player.isMuted()) { player.unMute(); } else { player.mute(); }
+        if (player.isMuted()) { 
+            player.unMute(); 
+            document.querySelector('.mute-btn').style.opacity = "1";
+        } else { 
+            player.mute(); 
+            document.querySelector('.mute-btn').style.opacity = "0.5";
+        }
     }
 
     function toggleWin(id) {
