@@ -11,6 +11,7 @@
     <style>
         :root { --vamp-red: #8b0000; --glass: rgba(15, 0, 0, 0.9); }
         
+        /* 1. CORE SYSTEM STYLES */
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
@@ -27,13 +28,27 @@
         }
 
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px; }
+        
+        /* 2. ICON & WINDOW ENGINE */
         .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
         .icon img { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
 
-        .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1); display: none; z-index: 10; overflow: hidden; }
+        .window { 
+            position: absolute; 
+            background: #0d0d0d !important; 
+            border: 1px solid #700000 !important; 
+            box-shadow: 0 15px 40px rgba(0,0,0,1); 
+            display: none; 
+            z-index: 10; 
+            overflow: hidden; 
+            resize: both; /* Makes windows resizable */
+            min-width: 250px; 
+            min-height: 200px; 
+        }
         .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
 
+        /* 3. UI COMPONENTS */
         .ie-content { padding: 20px; color: #d40000; }
         .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; }
         .ie-btn { background: #500; color: white; border: 1px solid #f00; padding: 8px; cursor: pointer; width: 100%; font-weight: bold; }
@@ -82,7 +97,7 @@
             <input type="text" id="ie_filename" class="ie-input" placeholder="Memory Name">
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
             <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
-            <button class="ie-btn" style="margin-top:20px; background:#222;" onclick="clearArchive()">Purge Local Cache</button>
+            <button class="ie-btn" style="margin-top:20px; background:#222; border-color:#444;" onclick="clearArchive()">Purge Local Cache</button>
         </div>
     </div>
 </div>
@@ -91,13 +106,6 @@
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body">
         <div id="memories_grid" style="display:grid; grid-template-columns: repeat(auto-fill, 90px); gap:20px; padding:25px;"></div>
-    </div>
-</div>
-
-<div class="window" id="vid_player" style="left:550px; top:120px; width:500px; height:430px;">
-    <div class="title-bar"><div class="title-bar-text">Media Player</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid_player')"></button></div></div>
-    <div class="window-body" style="background: black; display: flex; align-items: center; justify-content: center;">
-        <video id="main_vid" controls style="width:100%; height:100%; background: black; object-fit: contain;"></video>
     </div>
 </div>
 
@@ -119,6 +127,7 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
+    // --- CONFIGURATION ---
     const CLOUD_NAME = "fangtasia-14197"; 
     const UPLOAD_PRESET = "fangtasia"; 
 
@@ -127,7 +136,7 @@
         "bloomhouse8483": "methybethy89!"
     };
 
-    // --- 1. LOAD SAVED MEMORIES ON STARTUP ---
+    // --- INITIALIZATION ---
     window.addEventListener('load', () => {
         const savedMemories = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
         savedMemories.forEach(mem => addIconToMemories(mem.name, mem.url, false));
@@ -142,6 +151,7 @@
         } else { alert("ACCESS DENIED"); }
     }
 
+    // --- CLOUDINARY UPLOAD ENGINE ---
     async function processIEUpload() {
         const fileInput = document.getElementById('ie_file_picker');
         const file = fileInput.files[0];
@@ -167,14 +177,12 @@
 
             if (response.ok) {
                 alert("Archive Synced!");
-                // 'true' saves it to LocalStorage
                 addIconToMemories(name, data.secure_url, true);
-                
                 statusBtn.innerText = "Push to Cloud";
                 document.getElementById('ie_filename').value = "";
                 fileInput.value = "";
             } else {
-                alert("VOID ERROR: " + (data.error ? data.error.message : "Check Preset"));
+                alert("UPLOAD ERROR: Check Cloudinary Preset");
                 statusBtn.innerText = "Push to Cloud";
             }
         } catch (err) {
@@ -184,7 +192,7 @@
         }
     }
 
-    // --- 2. ICON LOGIC WITH PERMANENCE ---
+    // --- MEMORY FOLDER ENGINE ---
     function addIconToMemories(name, url, shouldSave) {
         const grid = document.getElementById('memories_grid');
         const div = document.createElement('div');
@@ -195,15 +203,7 @@
             <div style="color:white; font-size:10px; margin-top:5px; word-wrap: break-word;">${name}</div>
         `;
         
-        div.onclick = () => {
-            const v = document.getElementById('main_vid');
-            v.src = url;
-            if(player) player.pauseVideo(); // Mute background music
-            if(document.getElementById('vid_player').style.display === 'none') toggleWin('vid_player');
-            v.load();
-            v.play();
-        };
-        
+        div.onclick = () => spawnVideoWindow(name, url);
         grid.appendChild(div);
 
         if (shouldSave) {
@@ -213,13 +213,45 @@
         }
     }
 
+    // --- RESIZABLE VIDEO WINDOW SPAWNER ---
+    function spawnVideoWindow(name, url) {
+        if(player) player.pauseVideo(); 
+
+        const winId = 'vwin_' + Date.now();
+        const win = document.createElement('div');
+        win.className = 'window';
+        win.id = winId;
+        win.style.display = 'block';
+        win.style.left = (Math.random() * 100 + 300) + 'px'; // Random offset
+        win.style.top = (Math.random() * 100 + 100) + 'px';
+        win.style.width = '480px';
+        win.style.height = '360px';
+        win.style.zIndex = '200';
+
+        win.innerHTML = `
+            <div class="title-bar" id="${winId}_header">
+                <div class="title-bar-text">Media Player - ${name}</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Close" onclick="document.getElementById('${winId}').remove()"></button>
+                </div>
+            </div>
+            <div class="window-body" style="background: black; display: flex; align-items: center; justify-content: center; height: calc(100% - 32px);">
+                <video src="${url}" controls autoplay style="width:100%; height:100%; background: black; object-fit: contain;"></video>
+            </div>
+        `;
+
+        document.body.appendChild(win);
+        makeDraggable(winId);
+    }
+
     function clearArchive() {
-        if(confirm("Purge all memories from this device? (They stay on Cloudinary, but disappear from this folder)")) {
+        if(confirm("Purge all memories from this device?")) {
             localStorage.removeItem('fangtasia_archive');
             document.getElementById('memories_grid').innerHTML = "";
         }
     }
 
+    // --- WINDOW MANAGEMENT ---
     function beginSession() { 
         document.getElementById('boot-screen').style.display = 'none'; 
         if (player) { player.unMute(); player.playVideo(); }
@@ -228,18 +260,32 @@
     function toggleWin(id) {
         let el = document.getElementById(id);
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+        if(el.style.display === 'block') {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+            el.style.zIndex = "100";
+        }
     }
 
-    document.querySelectorAll('.window').forEach(win => {
-        win.querySelector('.title-bar').onmousedown = (e) => {
+    function makeDraggable(winId) {
+        const win = document.getElementById(winId);
+        const header = document.getElementById(winId + '_header') || win.querySelector('.title-bar');
+        
+        header.onmousedown = (e) => {
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
-            win.style.zIndex = "20";
+            win.style.zIndex = "100";
             let oX = e.clientX - win.offsetLeft, oY = e.clientY - win.offsetTop;
-            document.onmousemove = (e) => { win.style.left = (e.clientX-oX)+'px'; win.style.top = (e.clientY-oY)+'px'; };
+            document.onmousemove = (e) => {
+                win.style.left = (e.clientX - oX) + 'px';
+                win.style.top = (e.clientY - oY) + 'px';
+            };
             document.onmouseup = () => document.onmousemove = null;
         };
-    });
+    }
 
+    // Initialize drag for main windows
+    ['ie_window', 'memories_folder', 'mines_win'].forEach(id => makeDraggable(id));
+
+    // --- YOUTUBE BACKGROUND ENGINE ---
     var player;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
@@ -248,8 +294,8 @@
             events: { 'onReady': (e) => { e.target.mute(); } }
         });
     }
-    function pauseMusic() { player.pauseVideo(); }
-    function playMusic() { player.playVideo(); }
+    function pauseMusic() { if(player) player.pauseVideo(); }
+    function playMusic() { if(player) player.playVideo(); }
 </script>
 </body>
 </html>
