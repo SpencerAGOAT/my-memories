@@ -3,39 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Red Aero Desktop</title>
+    <title>Fangtasia</title>
+    
     <link rel="stylesheet" href="https://unpkg.com/7.css">
+    
     <style>
         :root { 
             --win7-red: #800000; 
-            --glass: rgba(40, 0, 0, 0.6);
+            --glass: rgba(30, 0, 0, 0.7);
+        }
+
+        /* GLITCH-FREE BACKGROUND LOGIC */
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: black; /* Prevents grey box if image fails */
         }
 
         body {
-            /* YOUR CUSTOM BACKGROUND */
-            background: url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&') no-repeat center center fixed;
+            /* Full Fix for Background Glitches */
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
             background-size: cover;
-            height: 100vh;
-            margin: 0;
+            
             overflow: hidden;
             font-family: "Segoe UI", sans-serif;
             cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
         }
 
-        /* Red Aero Window Styling */
+        /* Aero Window Styling */
         .title-bar {
             background: linear-gradient(to bottom, #a00000, #4a0000) !important;
             border-bottom: 1px solid #300000 !important;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2) !important;
         }
 
         .window {
             position: absolute;
             width: 380px;
             z-index: 10;
-            background: rgba(20, 20, 20, 0.9) !important; /* Darker window body */
+            background: rgba(15, 15, 15, 0.95) !important;
             color: white !important;
             border: 1px solid #600000 !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
         #desktop {
@@ -43,6 +58,7 @@
             flex-direction: column;
             padding: 20px;
             height: calc(100vh - 40px);
+            z-index: 5;
         }
 
         /* FIXED RED ICONS */
@@ -50,18 +66,14 @@
             width: 80px;
             text-align: center;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 4px black;
             cursor: pointer;
-            margin-bottom: 25px;
-            transition: transform 0.1s;
+            margin-bottom: 30px;
         }
         
-        .folder-icon:hover { transform: scale(1.05); }
-
         .folder-icon img {
             width: 55px;
-            /* Direct Red Icon Filter */
-            filter: drop-shadow(0 0 5px rgba(255,0,0,0.3)) sepia(1) saturate(10) hue-rotate(320deg) brightness(0.8);
+            filter: drop-shadow(0 0 5px rgba(255,0,0,0.4)) sepia(1) saturate(15) hue-rotate(325deg) brightness(0.7);
         }
 
         /* Red Taskbar */
@@ -71,8 +83,8 @@
             width: 100%;
             height: 40px;
             background: var(--glass);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255, 0, 0, 0.4);
             display: flex;
             align-items: center;
             padding: 0 10px;
@@ -84,10 +96,7 @@
             height: 34px;
             filter: sepia(1) saturate(20) hue-rotate(320deg) brightness(0.7);
             cursor: pointer;
-            transition: filter 0.2s;
         }
-        
-        .start-btn:hover { filter: sepia(1) saturate(20) hue-rotate(320deg) brightness(1); }
 
         .system-tray {
             margin-left: auto;
@@ -95,7 +104,7 @@
         }
 
         .mute-btn {
-            width: 20px;
+            width: 22px;
             cursor: pointer;
             filter: invert(1) sepia(1) saturate(5) hue-rotate(330deg);
         }
@@ -107,49 +116,48 @@
 
 <div id="desktop">
     <div class="folder-icon" onclick="toggleWin('vid1')">
-        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="folder">
-        <div>Memories '24</div>
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
+        <div>Memories</div>
     </div>
 
     <div class="folder-icon" onclick="toggleWin('vid2')">
-        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" alt="folder">
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
         <div>Clips</div>
     </div>
 </div>
 
-<div class="window" id="vid1" style="display:none; top:100px; left:150px;">
+<div class="window" id="vid1" style="display:none; top:100px; left:100px;">
     <div class="title-bar">
-        <div class="title-bar-text">Memory_Explorer.exe</div>
+        <div class="title-bar-text">Fangtasia_Memory_1.exe</div>
         <div class="title-bar-controls">
             <button aria-label="Close" onclick="toggleWin('vid1')"></button>
         </div>
     </div>
     <div class="window-body">
-        <p style="margin-bottom: 10px;">Click below to watch:</p>
         <video width="100%" controls>
-            <source src="YOUR_VIDEO_URL_HERE" type="video/mp4">
+            <source src="YOUR_URL_HERE" type="video/mp4">
         </video>
     </div>
 </div>
 
-<div class="window" id="vid2" style="display:none; top:150px; left:200px;">
+<div class="window" id="vid2" style="display:none; top:150px; left:150px;">
     <div class="title-bar">
-        <div class="title-bar-text">Video_Clip.mp4</div>
+        <div class="title-bar-text">Fangtasia_Memory_2.exe</div>
         <div class="title-bar-controls">
             <button aria-label="Close" onclick="toggleWin('vid2')"></button>
         </div>
     </div>
     <div class="window-body">
         <video width="100%" controls>
-            <source src="YOUR_SECOND_VIDEO_URL" type="video/mp4">
+            <source src="YOUR_URL_HERE" type="video/mp4">
         </video>
     </div>
 </div>
 
 <div class="taskbar">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn" title="Start">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
     <div class="system-tray">
-        <img src="https://cdn-icons-png.flaticon.com/512/3127/3127001.png" class="mute-btn" onclick="toggleMute()" title="Mute/Unmute">
+        <img src="https://cdn-icons-png.flaticon.com/512/3127/3127001.png" class="mute-btn" onclick="toggleMute()">
     </div>
 </div>
 
@@ -163,36 +171,17 @@
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             videoId: 'Bi5kyehmeaY',
-            playerVars: { 
-                'autoplay': 1, 
-                'loop': 1, 
-                'playlist': 'Bi5kyehmeaY',
-                'controls': 0
-            },
-            events: { 
-                'onReady': (e) => { 
-                    e.target.mute(); 
-                    e.target.playVideo(); 
-                } 
-            }
+            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 },
+            events: { 'onReady': (e) => { e.target.mute(); e.target.playVideo(); } }
         });
     }
 
     function startMusic() {
-        if (!started && player) { 
-            player.unMute(); 
-            started = true; 
-        }
+        if (!started && player) { player.unMute(); started = true; }
     }
 
     function toggleMute() {
-        if (player.isMuted()) { 
-            player.unMute(); 
-            document.querySelector('.mute-btn').style.opacity = "1";
-        } else { 
-            player.mute(); 
-            document.querySelector('.mute-btn').style.opacity = "0.5";
-        }
+        if (player.isMuted()) { player.unMute(); } else { player.mute(); }
     }
 
     function toggleWin(id) {
