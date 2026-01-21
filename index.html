@@ -1013,52 +1013,59 @@
         const u = document.getElementById('ie_user').value;
         const p = document.getElementById('ie_pass').value;
         
-        // Check if user is banned
-        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
-        const ban = bans[u];
-        if (ban) {
-            const now = Date.now();
-            if (ban.expiry === 0 || ban.expiry > now) {
-                if (ban.type === 'hardban') {
-                    alert('This account has been permanently banned.');
-                    return;
-                } else if (ban.type === 'softban') {
-                    const expStr = ban.expiry === 0 ? 'permanently' : 'until ' + new Date(ban.expiry).toLocaleString();
-                    alert('This account is suspended ' + expStr + '.\nReason: ' + (ban.reason || 'No reason given'));
-                    return;
-                }
-            } else {
-                // Ban expired, remove it
-                delete bans[u];
-                localStorage.setItem('f_bans', JSON.stringify(bans));
-            }
-        }
+        if (!u || !p) { alert("Enter username and password."); return; }
         
-        if(userDatabase[u] && userDatabase[u].pass === p) {
-            CURRENT_USER = u;
-            IS_GUEST = false;
-            document.getElementById('ie_login').style.display = 'none';
-            document.getElementById('ie_upload').style.display = 'block';
-            document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
-            loadProfile();
-            updateMemberList();
-            
-            // Show admin icon for admins
-            if (userDatabase[u].isAdmin) {
-                document.getElementById('admin_icon').style.display = 'block';
+        // Check if user is banned (from Firebase)
+        db.ref('bans/' + u).once('value', (snapshot) => {
+            const ban = snapshot.val();
+            if (ban) {
+                const now = Date.now();
+                if (ban.expiry === 0 || ban.expiry > now) {
+                    if (ban.type === 'hardban') {
+                        alert('This account has been permanently banned.');
+                        return;
+                    } else if (ban.type === 'softban') {
+                        const expStr = ban.expiry === 0 ? 'permanently' : 'until ' + new Date(ban.expiry).toLocaleString();
+                        alert('This account is suspended ' + expStr + '.\nReason: ' + (ban.reason || 'No reason given'));
+                        return;
+                    }
+                } else {
+                    // Ban expired, remove it
+                    db.ref('bans/' + u).remove();
+                }
             }
             
-            // Show ST section for Site Technician
-            if (userDatabase[u].isST) {
-                document.getElementById('st_section').style.display = 'block';
-            }
-            
-            // Show VIP image hosting for VIP+
-            if (userDatabase[u].rank === 'VIP' || userDatabase[u].isAdmin || userDatabase[u].isST) {
-                document.getElementById('vip_image_section').style.display = 'block';
-                loadVIPGallery();
-            }
-        } else { alert("DENIED."); }
+            // Proceed with login
+            if(userDatabase[u] && userDatabase[u].pass === p) {
+                CURRENT_USER = u;
+                IS_GUEST = false;
+                document.getElementById('ie_login').style.display = 'none';
+                document.getElementById('ie_upload').style.display = 'block';
+                document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
+                loadProfile();
+                updateMemberList();
+                
+                // Show admin icon for admins
+                if (userDatabase[u].isAdmin) {
+                    document.getElementById('admin_icon').style.display = 'block';
+                }
+                
+                // Show ST section for Site Technician
+                if (userDatabase[u].isST) {
+                    const stSection = document.getElementById('st_section');
+                    if (stSection) stSection.style.display = 'block';
+                }
+                
+                // Show VIP image hosting for VIP+
+                if (userDatabase[u].rank === 'VIP' || userDatabase[u].isAdmin || userDatabase[u].isST) {
+                    const vipSection = document.getElementById('vip_image_section');
+                    if (vipSection) {
+                        vipSection.style.display = 'block';
+                        loadVIPGallery();
+                    }
+                }
+            } else { alert("DENIED."); }
+        });
     }
 
     function logout() {
@@ -1477,28 +1484,39 @@
             a.click();
         });
     }
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
-        a.click();
-    }
 
     function loadAdminStats() {
-        const msgs = JSON.parse(localStorage.getItem('f_chat_v2') || '[]');
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
-        const pending = JSON.parse(localStorage.getItem('f_pending_images') || '[]');
-        const visitors = localStorage.getItem('f_visitors') || '0';
-        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
         const stats = document.getElementById('admin_stats');
-        if (stats) {
+        if (!stats) return;
+        
+        const visitors = localStorage.getItem('f_visitors') || '0';
+        
+        // Get counts from Firebase
+        Promise.all([
+            db.ref('chat').once('value'),
+            db.ref('applications').once('value'),
+            db.ref('pending_images').once('value'),
+            db.ref('members').once('value')
+        ]).then(([chatSnap, appsSnap, pendingSnap, membersSnap]) => {
+            let chatCount = 0, appCount = 0, pendingAppCount = 0, pendingImgCount = 0, memberCount = 0;
+            
+            chatSnap.forEach(() => chatCount++);
+            appsSnap.forEach((child) => {
+                appCount++;
+                if (child.val().status === 'pending') pendingAppCount++;
+            });
+            pendingSnap.forEach(() => pendingImgCount++);
+            membersSnap.forEach(() => memberCount++);
+            
             stats.innerHTML = `
-                Total Messages: ${msgs.length}<br>
-                Pending Images: ${pending.length}<br>
-                Applications: ${apps.length} (${apps.filter(a => a.status === 'pending').length} pending)<br>
-                Registered Members: ${Object.keys(members).length}<br>
+                Total Messages: ${chatCount}<br>
+                Pending Images: ${pendingImgCount}<br>
+                Applications: ${appCount} (${pendingAppCount} pending)<br>
+                Registered Members: ${memberCount}<br>
                 Total Visitors: ${visitors}
             `;
-        }
+        });
+        
         loadBannedUsers();
     }
 
@@ -1567,7 +1585,7 @@
         document.getElementById('app_result').style.display = 'none';
     }
 
-    function completeInlineRegistration() {
+    function completeInlineRegistration(appId) {
         const username = document.getElementById('inline_reg_user').value.trim();
         const pass = document.getElementById('inline_reg_pass').value;
         const pass2 = document.getElementById('inline_reg_pass2').value;
@@ -1939,9 +1957,13 @@
             const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method: 'POST', body: formData });
             const data = await res.json();
             if (res.ok) {
-                const archive = JSON.parse(localStorage.getItem('f_archive')) || [];
-                archive.push({ name, url: data.secure_url, uploader: CURRENT_USER });
-                localStorage.setItem('f_archive', JSON.stringify(archive));
+                // Save to Firebase
+                db.ref('archive').push({ 
+                    name, 
+                    url: data.secure_url, 
+                    uploader: CURRENT_USER,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
                 renderMemories();
                 document.getElementById('upload_status').innerText = "Push to Cloud";
                 document.getElementById('ie_filename').value = "";
@@ -1953,37 +1975,46 @@
     function renderMemories() {
         const grid = document.getElementById('memories_grid');
         grid.innerHTML = "";
-        const archive = JSON.parse(localStorage.getItem('f_archive')) || [];
-        const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
         
-        // Update page indicator
-        const indicator = document.getElementById('page_indicator');
-        if (indicator) indicator.textContent = 'Page ' + currentPage + ' of ' + totalPages;
-        
-        if (archive.length === 0) {
-            grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories archived yet...</p>';
-            return;
-        }
-        const start = (currentPage - 1) * itemsPerPage;
-        archive.slice(start, start + itemsPerPage).forEach(mem => {
-            const div = document.createElement('div');
-            div.className = "icon";
-            div.innerHTML = `<div onclick="spawnVideoWindow('${escapeHtml(mem.name)}', '${mem.url}')">
-                <img class="video-icon" src="https://win98icons.alexmeub.com/icons/png/video_file-0.png">
-                <div style="font-size:10px;">${escapeHtml(mem.name)}</div>
-                <div style="font-size:8px; color:#666;">${escapeHtml(mem.uploader)}</div>
-            </div>`;
-            grid.appendChild(div);
+        db.ref('archive').orderByChild('timestamp').once('value', (snapshot) => {
+            const archive = [];
+            snapshot.forEach((child) => archive.push(child.val()));
+            
+            const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
+            
+            // Update page indicator
+            const indicator = document.getElementById('page_indicator');
+            if (indicator) indicator.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+            
+            if (archive.length === 0) {
+                grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories archived yet...</p>';
+                return;
+            }
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            archive.slice(start, start + itemsPerPage).forEach(mem => {
+                const div = document.createElement('div');
+                div.className = "icon";
+                div.innerHTML = `<div onclick="spawnVideoWindow('${escapeHtml(mem.name)}', '${mem.url}')">
+                    <img class="video-icon" src="https://win98icons.alexmeub.com/icons/png/video_file-0.png">
+                    <div style="font-size:10px;">${escapeHtml(mem.name)}</div>
+                    <div style="font-size:8px; color:#666;">${escapeHtml(mem.uploader)}</div>
+                </div>`;
+                grid.appendChild(div);
+            });
         });
     }
 
     function nextPage() {
-        const archive = JSON.parse(localStorage.getItem('f_archive')) || [];
-        const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderMemories();
-        }
+        db.ref('archive').once('value', (snapshot) => {
+            let count = 0;
+            snapshot.forEach(() => count++);
+            const totalPages = Math.ceil(count / itemsPerPage) || 1;
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderMemories();
+            }
+        });
     }
 
     function spawnVideoWindow(name, url) {
