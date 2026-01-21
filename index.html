@@ -98,7 +98,7 @@
 <div class="window" id="vid_player" style="left:550px; top:120px; width:500px; height:430px;">
     <div class="title-bar"><div class="title-bar-text">Media Player</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid_player')"></button></div></div>
     <div class="window-body" style="background: black; display: flex; align-items: center; justify-content: center;">
-        <video id="main_vid" controls style="width:100%; height:100%; background: black;"></video>
+        <video id="main_vid" controls style="width:100%; height:100%; background: black; object-fit: contain;"></video>
     </div>
 </div>
 
@@ -171,7 +171,7 @@
                 statusBtn.innerText = "Push to Cloud";
             }
         } catch (err) {
-            alert("Digital connection failed. Check Cloud Name.");
+            alert("Digital connection failed.");
         } finally {
             statusBtn.disabled = false;
         }
@@ -189,6 +189,10 @@
         div.onclick = () => {
             const v = document.getElementById('main_vid');
             v.src = url;
+            
+            // Pauses background music so you can hear the memory
+            if(player) player.pauseVideo();
+
             if(document.getElementById('vid_player').style.display === 'none') toggleWin('vid_player');
             v.load();
             v.play();
@@ -206,7 +210,7 @@
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     }
 
-    // Windows Draggable Logic
+    // Draggable Logic
     document.querySelectorAll('.window').forEach(win => {
         win.querySelector('.title-bar').onmousedown = (e) => {
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
