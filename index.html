@@ -6,112 +6,53 @@
     <title>Fangtasia</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Vampiro+One&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://unpkg.com/7.css">
     
     <style>
-        :root { 
-            --win7-red: #800000; 
-            --glass: rgba(30, 0, 0, 0.7);
-        }
-
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            background-color: black;
-        }
-
+        :root { --win7-red: #800000; --glass: rgba(30, 0, 0, 0.75); }
+        
+        /* 1. GLITCH-FREE BACKGROUND */
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
-            background-image: 
-                linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
                 url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&');
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            overflow: hidden;
+            background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover;
             font-family: "Segoe UI", sans-serif;
             cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
         }
 
-        /* 2. WATERMARK STYLING */
-        .watermark {
-            position: fixed;
-            bottom: 50px; /* Sits just above the taskbar */
-            right: 20px;
-            font-family: 'Vampiro One', cursive;
-            color: white;
-            font-size: 24px; /* Smaller size */
-            opacity: 0.4; /* Semi-transparent watermark feel */
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            pointer-events: none; /* Allows you to click "through" it */
-            z-index: 90;
-        }
+        /* 2. VAMPIRE WATERMARK */
+        .watermark { position: fixed; bottom: 55px; right: 25px; font-family: 'Vampiro One', cursive; color: white; font-size: 20px; opacity: 0.3; pointer-events: none; z-index: 90; }
 
-        /* Aero Window Styling */
-        .title-bar {
-            background: linear-gradient(to bottom, #a00000, #4a0000) !important;
-            border-bottom: 1px solid #300000 !important;
-        }
+        /* 3. DESKTOP & ICONS */
+        #desktop { display: grid; grid-template-columns: repeat(auto-fill, 90px); grid-auto-rows: 95px; gap: 15px; padding: 25px; height: calc(100vh - 40px); }
+        .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
+        .icon img { width: 48px; margin-bottom: 5px; transition: transform 0.1s; }
+        .icon:hover img { transform: scale(1.1); filter: brightness(1.2); }
 
-        .window {
-            position: absolute;
-            width: 380px;
-            z-index: 10;
-            background: rgba(15, 15, 15, 0.95) !important;
-            color: white !important;
-            border: 1px solid #600000 !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
+        /* THEME FILTERS */
+        .red-filter { filter: sepia(1) saturate(20) hue-rotate(330deg) brightness(0.7); }
+        .skype-red { filter: hue-rotate(140deg) saturate(8) brightness(0.6); }
 
-        #desktop {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            height: calc(100vh - 40px);
-            z-index: 5;
+        /* 4. DRAGGABLE & RESIZABLE WINDOWS */
+        .window { 
+            position: absolute; width: 450px; height: 350px; z-index: 10; display: none; 
+            background: #111 !important; border: 1px solid #700000 !important; 
+            box-shadow: 0 10px 50px rgba(0,0,0,0.9); resize: both; overflow: hidden; 
         }
+        .title-bar { background: linear-gradient(to bottom, #a00000, #4a0000) !important; cursor: move; }
+        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; }
+        iframe, video { width: 100%; height: 100%; border: none; background: black; display: block; }
 
-        .folder-icon {
-            width: 80px;
-            text-align: center;
-            color: white;
-            text-shadow: 2px 2px 4px black;
-            cursor: pointer;
-            margin-bottom: 30px;
+        /* 5. TASKBAR (SOUND ON LEFT) */
+        .taskbar { 
+            position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
+            backdrop-filter: blur(15px); border-top: 1px solid rgba(255,0,0,0.3); 
+            display: flex; align-items: center; padding: 0 10px; z-index: 100; 
         }
-        
-        .folder-icon img {
-            width: 55px;
-            filter: drop-shadow(0 0 5px rgba(255,0,0,0.4)) sepia(1) saturate(15) hue-rotate(325deg) brightness(0.7);
-        }
-
-        .taskbar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 40px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            z-index: 100;
-        }
-
-        .start-btn {
-            width: 34px;
-            height: 34px;
-            filter: sepia(1) saturate(20) hue-rotate(320deg) brightness(0.7);
-            cursor: pointer;
-        }
-
-        .system-tray { margin-left: auto; padding-right: 25px; }
-        .mute-btn { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(5) hue-rotate(330deg); }
-        .window-body { color: white !important; }
+        .start-btn { width: 32px; filter: sepia(1) saturate(20) hue-rotate(320deg) brightness(0.7); cursor: pointer; margin-right: 10px; }
+        .mute-btn { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(5) hue-rotate(330deg); margin-right: 15px; }
+        .system-tray { margin-left: auto; color: white; font-size: 12px; padding-right: 10px; opacity: 0.8; }
     </style>
 </head>
 <body onclick="startMusic()">
@@ -119,46 +60,73 @@
 <div class="watermark">Fangtasia</div>
 
 <div id="desktop">
-    <div class="folder-icon" onclick="toggleWin('vid1')">
-        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
-        <div>Memories</div>
-    </div>
-    <div class="folder-icon" onclick="toggleWin('vid2')">
-        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
-        <div>Clips</div>
+    <div class="icon" onclick="toggleWin('vid1')"><img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" class="red-filter"><div>Memories</div></div>
+    <div class="icon" onclick="toggleWin('solitaire')"><img src="https://win98icons.alexmeub.com/icons/png/cards-2.png" class="red-filter"><div>Solitaire</div></div>
+    <div class="icon" onclick="toggleWin('minesweeper')"><img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png" class="red-filter"><div>Mines</div></div>
+    <div class="icon" onclick="toggleWin('paint')"><img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png" class="red-filter"><div>Paint</div></div>
+    <div class="icon" onclick="toggleWin('ie')"><img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png" class="red-filter"><div>Internet</div></div>
+    <div class="icon"><img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Skype_logo_%282019%E2%80%93present%29.svg" class="skype-red"><div>Skype</div></div>
+</div>
+
+<div class="window" id="vid1" style="left:150px; top:100px;">
+    <div class="title-bar"><div class="title-bar-text">Fangtasia_Clips.mp4</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid1')"></button></div></div>
+    <div class="window-body">
+        <video controls><source src="YOUR_VIDEO_URL" type="video/mp4"></video>
     </div>
 </div>
 
-<div class="window" id="vid1" style="display:none; top:100px; left:100px;">
-    <div class="title-bar">
-        <div class="title-bar-text">Memory_1.exe</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid1')"></button></div>
-    </div>
-    <div class="window-body">
-        <video width="100%" controls><source src="YOUR_URL" type="video/mp4"></video>
-    </div>
+<div class="window" id="solitaire" style="left:50px; top:50px; width:600px; height:450px;">
+    <div class="title-bar"><div class="title-bar-text">Solitaire</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
+    <div class="window-body"><iframe src="https://solitaire.pet/em/"></iframe></div>
 </div>
 
-<div class="window" id="vid2" style="display:none; top:150px; left:150px;">
-    <div class="title-bar">
-        <div class="title-bar-text">Memory_2.exe</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid2')"></button></div>
-    </div>
-    <div class="window-body">
-        <video width="100%" controls><source src="YOUR_URL" type="video/mp4"></video>
-    </div>
+<div class="window" id="minesweeper" style="left:100px; top:100px; width:300px; height:420px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
+    <div class="window-body"><iframe src="https://minesweeper.online/en/embed/v2/1"></iframe></div>
+</div>
+
+<div class="window" id="paint" style="left:200px; top:50px; width:700px; height:500px;">
+    <div class="title-bar"><div class="title-bar-text">Paint</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint')"></button></div></div>
+    <div class="window-body"><iframe src="https://jspaint.app"></iframe></div>
+</div>
+
+<div class="window" id="ie" style="left:250px; top:80px; width:600px; height:400px;">
+    <div class="title-bar"><div class="title-bar-text">Internet Explorer</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie')"></button></div></div>
+    <div class="window-body"><iframe src="https://oldweb.today/random"></iframe></div>
 </div>
 
 <div class="taskbar">
     <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
-    <div class="system-tray">
-        <img src="https://cdn-icons-png.flaticon.com/512/3127/3127001.png" class="mute-btn" onclick="toggleMute()">
-    </div>
+    <img src="https://cdn-icons-png.flaticon.com/512/3127/3127001.png" class="mute-btn" id="volBtn" onclick="toggleMute()">
+    <div class="system-tray" id="clock">00:00</div>
 </div>
 
 <div id="player" style="position:absolute; top:-9999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
+    // WINDOW DRAGGING LOGIC
+    document.querySelectorAll('.window').forEach(win => {
+        const header = win.querySelector('.title-bar');
+        header.onmousedown = (e) => {
+            let offsetX = e.clientX - win.offsetLeft;
+            let offsetY = e.clientY - win.offsetTop;
+            document.onmousemove = (e) => {
+                win.style.left = (e.clientX - offsetX) + 'px';
+                win.style.top = (e.clientY - offsetY) + 'px';
+            };
+            document.onmouseup = () => document.onmousemove = null;
+        };
+    });
+
+    // CLOCK
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    // AUDIO LOGIC
     var player; var started = false;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
@@ -168,9 +136,14 @@
         });
     }
     function startMusic() { if (!started && player) { player.unMute(); started = true; } }
-    function toggleMute() { if (player.isMuted()) { player.unMute(); } else { player.mute(); } }
-    function toggleWin(id) { var el = document.getElementById(id); el.style.display = (el.style.display === 'none') ? 'block' : 'none'; }
+    function toggleMute() {
+        if (player.isMuted()) { player.unMute(); document.getElementById('volBtn').style.opacity = "1"; }
+        else { player.mute(); document.getElementById('volBtn').style.opacity = "0.4"; }
+    }
+    function toggleWin(id) {
+        let el = document.getElementById(id);
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    }
 </script>
-
 </body>
 </html>
