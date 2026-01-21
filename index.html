@@ -20,21 +20,21 @@
             cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
         }
 
-        /* LOGO MOVED TO BOTTOM RIGHT TRAY AREA */
+        /* LOGO IN BOTTOM RIGHT */
         .main-logo {
             position: fixed;
-            bottom: 5px; /* Aligned with taskbar text */
+            bottom: 5px;
             right: 20px;
             font-family: 'UnifrakturMaguntia', cursive;
             color: #d40000;
-            font-size: 28px; /* Resized to fit the tray area */
+            font-size: 28px;
             opacity: 0.9;
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 1px 1px 2px #000;
             pointer-events: none;
-            z-index: 101; /* Above taskbar */
+            z-index: 101;
         }
 
-        /* LEFT-SIDE VERTICAL ICON GRID */
+        /* VERTICAL LEFT SIDE ICONS */
         #desktop { 
             display: flex;
             flex-direction: column;
@@ -46,19 +46,21 @@
         }
 
         .icon { 
-            width: 80px; 
+            width: 85px; 
             text-align: center; 
             color: white; 
             text-shadow: 1px 1px 3px black; 
             cursor: pointer; 
             font-size: 11px;
-            margin-bottom: 5px;
         }
-        .icon img { width: 48px; display: block; margin: 0 auto 5px; }
 
-        /* FILTERS */
-        .red-filter { filter: sepia(1) saturate(20) hue-rotate(330deg) brightness(0.7); }
-        .skype-red { filter: hue-rotate(145deg) saturate(10) brightness(0.4) contrast(1.2); opacity: 0.8; }
+        /* UNIFIED RED IMAGE STYLE FOR ALL ICONS */
+        .icon img { 
+            width: 48px; 
+            display: block; 
+            margin: 0 auto 5px;
+            filter: sepia(1) saturate(25) hue-rotate(325deg) brightness(0.6) contrast(1.2) drop-shadow(0 0 5px rgba(255,0,0,0.3));
+        }
 
         /* WINDOWS */
         .window { 
@@ -70,25 +72,23 @@
         .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; }
         iframe, video { width: 100%; height: 100%; border: none; background: black; }
 
-        /* TASKBAR WITH SPREAD CONTROLS */
+        /* TASKBAR & SPREAD MUSIC CONTROLS */
         .taskbar { 
             position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
             backdrop-filter: blur(15px); border-top: 1px solid rgba(255,0,0,0.2); 
             display: flex; align-items: center; padding: 0 15px; z-index: 100; 
         }
         
-        .start-btn { width: 32px; filter: grayscale(1) sepia(1) saturate(20) hue-rotate(320deg); cursor: pointer; margin-right: auto; } /* Pushes everything else to the right */
+        .start-btn { width: 32px; filter: grayscale(1) sepia(1) saturate(20) hue-rotate(320deg); cursor: pointer; margin-right: 30px; } 
         
         .music-ctrl {
             width: 20px;
             cursor: pointer;
             filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg);
-            margin: 0 15px;
+            margin-right: 25px; /* Spaced out horizontally */
             transition: transform 0.1s;
         }
         .music-ctrl:hover { transform: scale(1.2); }
-
-        .system-tray-spacer { width: 150px; } /* Creates room for the logo on the right */
     </style>
 </head>
 <body onclick="startMusic()">
@@ -96,12 +96,30 @@
 <div class="main-logo">Fangtasia</div>
 
 <div id="desktop">
-    <div class="icon" onclick="toggleWin('vid1')"><img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png" class="red-filter"><div>Memories</div></div>
-    <div class="icon" onclick="toggleWin('solitaire')"><img src="https://win98icons.alexmeub.com/icons/png/cards-2.png" class="red-filter"><div>Solitaire</div></div>
-    <div class="icon" onclick="toggleWin('minesweeper')"><img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png" class="red-filter"><div>Mines</div></div>
-    <div class="icon" onclick="toggleWin('paint')"><img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png" class="red-filter"><div>Paint</div></div>
-    <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png" class="red-filter"><div>Internet</div></div>
-    <div class="icon"><img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Skype_logo_%282019%E2%80%93present%29.svg" class="skype-red"><div>Skype</div></div>
+    <div class="icon" onclick="toggleWin('vid1')">
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
+        <div>Memories</div>
+    </div>
+    <div class="icon" onclick="toggleWin('solitaire')">
+        <img src="https://win98icons.alexmeub.com/icons/png/cards-2.png">
+        <div>Solitaire</div>
+    </div>
+    <div class="icon" onclick="toggleWin('minesweeper')">
+        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
+        <div>Mines</div>
+    </div>
+    <div class="icon" onclick="toggleWin('paint')">
+        <img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png">
+        <div>Paint</div>
+    </div>
+    <div class="icon">
+        <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
+        <div>Internet</div>
+    </div>
+    <div class="icon">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Skype_logo_%282019%E2%80%93present%29.svg">
+        <div>Skype</div>
+    </div>
 </div>
 
 <div class="window" id="vid1" style="left:200px; top:100px; width:500px; height:380px;">
@@ -125,12 +143,10 @@
 </div>
 
 <div class="taskbar">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn" onclick="toggleMusic()">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
     
     <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" id="pauseBtn" onclick="pauseMusic()" title="Pause Music">
     <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" id="playBtn" onclick="playMusic()" title="Play Music">
-    
-    <div class="system-tray-spacer"></div>
 </div>
 
 <div id="player" style="position:absolute; top:-9999px;"></div>
