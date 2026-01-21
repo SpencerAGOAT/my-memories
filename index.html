@@ -90,6 +90,11 @@
             96% { opacity: 0.5; }
             97% { opacity: 1; }
         }
+        
+        @keyframes batFloat {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
 
         /* DESKTOP UI */
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 40px); gap: 20px; }
@@ -346,10 +351,14 @@
 </div>
 
 <div id="boot-screen" onclick="beginSession()">
+    <div class="boot-bat" style="font-size: 80px; margin-bottom: 20px; animation: batFloat 3s ease-in-out infinite;">🦇</div>
     <h1 class="boot-title">fangtasia.wtf</h1>
-    <p class="boot-subtitle">Click to Initialize Secure OS</p>
+    <p class="boot-subtitle">Click anywhere to enter the crypt...</p>
     <div style="margin-top: 30px;">
-        <div class="visitor-counter">VISITORS: <span id="visitor_count">000000</span></div>
+        <div class="visitor-counter">SOULS COLLECTED: <span id="visitor_count">000000</span></div>
+    </div>
+    <div style="margin-top: 40px; color: #500; font-size: 10px; animation: flicker 3s infinite;">
+        ▼ CLICK TO INITIALIZE ▼
     </div>
 </div>
 
@@ -1666,41 +1675,45 @@
         if (pass.length < 6) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Password must be 6+ characters.</span>'; return; }
         
         // Check if username already exists
-        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
-        if (members[username] || userDatabase[username]) {
+        if (userDatabase[username]) {
             document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Username already taken.</span>';
             return;
         }
         
-        // Check VIP code if provided
-        let isVIP = false;
+        // Check VIP code if provided (from Firebase)
         if (vipCode) {
-            const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
-            const codeIdx = codes.findIndex(c => c.code === vipCode && !c.used);
-            if (codeIdx !== -1) {
-                codes[codeIdx].used = true;
-                codes[codeIdx].usedBy = username;
-                localStorage.setItem('f_vip_codes', JSON.stringify(codes));
-                isVIP = true;
-            } else {
-                document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Invalid or already used VIP code.</span>';
-                return;
-            }
-        }
-        
-        // Add new member
-        if (isVIP) {
-            members[username] = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
+            db.ref('vip_codes').orderByChild('code').equalTo(vipCode).once('value', (snapshot) => {
+                let codeData = null;
+                let codeKey = null;
+                snapshot.forEach((child) => {
+                    if (!child.val().used) {
+                        codeData = child.val();
+                        codeKey = child.key;
+                    }
+                });
+                
+                if (codeData) {
+                    db.ref('vip_codes/' + codeKey).update({ used: true, usedBy: username });
+                    saveNewMember(username, pass, true);
+                } else {
+                    document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Invalid or already used VIP code.</span>';
+                }
+            });
         } else {
-            members[username] = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+            saveNewMember(username, pass, false);
         }
-        localStorage.setItem('f_members', JSON.stringify(members));
-        userDatabase[username] = members[username];
+    }
+    
+    function saveNewMember(username, pass, isVIP) {
+        let memberData;
+        if (isVIP) {
+            memberData = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
+        } else {
+            memberData = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+        }
         
-        // Update application status
-        const apps = JSON.parse(localStorage.getItem('f_applications') || '[]');
-        const idx = apps.findIndex(a => a.username.toLowerCase() === username.toLowerCase());
-        if (idx !== -1) { apps[idx].status = 'registered'; localStorage.setItem('f_applications', JSON.stringify(apps)); }
+        db.ref('members/' + username).set(memberData);
+        userDatabase[username] = memberData;
         
         const rankMsg = isVIP ? '🌟 VIP Registration complete!' : 'Registration complete!';
         document.getElementById('reg_result').innerHTML = '<span style="color:#0f0;">' + rankMsg + ' You can now log in.</span>';
