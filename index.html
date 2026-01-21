@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Windows 7 Memory Desktop</title>
+  <link rel="stylesheet" href="https://unpkg.com/7.css">
+  <style>
+    body {
+      background: url('https://bit.ly/win7-wallpaper') no-repeat center center fixed;
+      background-size: cover;
+      cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto; /* Animated Cursor */
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    .desktop-icon {
+      width: 80px;
+      text-align: center;
+      margin: 20px;
+      cursor: pointer;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+    .desktop-icon img { width: 50px; }
+  </style>
+</head>
+<body>
 
+  <div class="desktop-icon" onclick="openFolder()">
+    <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
+    <div>Memories</div>
+  </div>
+
+  <div class="window" id="memory-window" style="width: 400px; display: none; position: absolute; top: 20%; left: 30%;">
+    <div class="title-bar">
+      <div class="title-bar-text">Our Memories - 2024</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeFolder()"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <p>Here is a clip from last summer:</p>
+      <video width="100%" controls>
+        <source src="your-video-link.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="status-bar">
+      <p class="status-bar-field">1 object(s)</p>
+    </div>
+  </div>
+
+  <script>
+    function openFolder() { document.getElementById('memory-window').style.display = 'block'; }
+    function closeFolder() { document.getElementById('memory-window').style.display = 'none'; }
+  </script>
+
+</body>
+</html>
