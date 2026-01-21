@@ -17,78 +17,62 @@
                 url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&') no-repeat center center fixed;
             background-size: cover;
             font-family: "Segoe UI", sans-serif;
-            cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
         }
 
+        /* GOTHIC LOGO BOTTOM RIGHT */
         .main-logo {
-            position: fixed;
-            bottom: 5px;
-            right: 20px;
+            position: fixed; bottom: 5px; right: 20px;
             font-family: 'UnifrakturMaguntia', cursive;
-            color: #d40000;
-            font-size: 28px;
-            opacity: 0.9;
+            color: #d40000; font-size: 28px; opacity: 0.9;
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 1px 1px 2px #000;
-            pointer-events: none;
-            z-index: 101;
+            pointer-events: none; z-index: 101;
         }
 
+        /* DESKTOP GRID - LEFT SIDE */
         #desktop { 
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            padding: 20px;
-            height: calc(100vh - 50px);
-            gap: 15px;
+            display: flex; flex-direction: column; flex-wrap: wrap;
+            align-content: flex-start; padding: 20px; height: calc(100vh - 50px); gap: 15px;
         }
 
         .icon { 
-            width: 85px; 
-            text-align: center; 
-            color: white; 
-            text-shadow: 1px 1px 3px black; 
-            cursor: pointer; 
-            font-size: 11px;
+            width: 85px; text-align: center; color: white; 
+            text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px;
         }
 
-        /* FIXED UNIFIED FILTER: BLENDS EVERYTHING INTO THE IE RED STYLE */
+        /* UNIFIED RED CRYSTAL FILTER FOR DESKTOP */
         .icon img { 
-            width: 44px; 
-            display: block; 
-            margin: 0 auto 5px;
-            /* High contrast, deep red saturation, crystallized shadows */
+            width: 44px; display: block; margin: 0 auto 5px;
             filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 1px rgba(0,0,0,0.9));
-            transition: filter 0.2s;
         }
-        .icon:hover img { filter: grayscale(0) sepia(1) saturate(45) hue-rotate(320deg) brightness(0.75) contrast(1.6) drop-shadow(0 0 8px red); }
 
+        /* WINDOW STYLES */
         .window { 
             position: absolute; width: 450px; height: 350px; z-index: 10; display: none; 
             background: #0a0a0a !important; border: 1px solid #700000 !important; 
             box-shadow: 0 10px 50px rgba(0,0,0,0.9); resize: both; overflow: hidden; 
         }
         .title-bar { background: linear-gradient(to bottom, #8b0000, #300000) !important; cursor: move; }
-        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; }
-        iframe, video { width: 100%; height: 100%; border: none; background: black; }
+        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; overflow: auto; }
 
+        /* FOLDER EXPLORER */
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, 90px); gap: 15px; padding: 20px; }
+        .file { text-align: center; color: white; cursor: pointer; font-size: 11px; }
+        .file img { width: 38px; filter: sepia(1) hue-rotate(330deg) saturate(2); margin-bottom: 5px; }
+
+        /* TASKBAR */
         .taskbar { 
             position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
             backdrop-filter: blur(15px); border-top: 1px solid rgba(255,0,0,0.2); 
             display: flex; align-items: center; padding: 0 15px; z-index: 100; 
         }
-        
         .start-btn { width: 32px; filter: grayscale(1) sepia(1) saturate(20) hue-rotate(320deg); cursor: pointer; margin-right: 40px; } 
+        .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); margin-right: 30px; opacity: 0.8; }
         
-        .music-ctrl {
-            width: 22px;
-            cursor: pointer;
-            filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg);
-            margin-right: 30px;
-            opacity: 0.8;
-            transition: opacity 0.2s, transform 0.1s;
-        }
-        .music-ctrl:hover { opacity: 1; transform: scale(1.1); }
+        /* OFFLINE MINESWEEPER CSS */
+        #mine-table { margin: 10px auto; border-collapse: collapse; background: #333; }
+        #mine-table td { width: 20px; height: 20px; border: 1px solid #555; text-align: center; cursor: pointer; color: #fff; font-weight: bold; }
+        .revealed { background: #1a1a1a; }
+        .mine { background: #800 !important; }
     </style>
 </head>
 <body onclick="startMusic()">
@@ -96,7 +80,7 @@
 <div class="main-logo">Fangtasia</div>
 
 <div id="desktop">
-    <div class="icon" onclick="toggleWin('vid1')">
+    <div class="icon" onclick="toggleWin('memories_folder')">
         <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
         <div>Memories</div>
     </div>
@@ -112,51 +96,53 @@
         <img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png">
         <div>Paint</div>
     </div>
-    <div class="icon">
-        <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
-        <div>Internet</div>
+    <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png"><div>Internet</div></div>
+    <div class="icon"><img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png"><div>Skype</div></div>
+</div>
+
+<div class="window" id="memories_folder" style="left:100px; top:100px; width:450px; height:320px;">
+    <div class="title-bar"><div class="title-bar-text">Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
+    <div class="window-body">
+        <div class="folder-grid">
+            <div class="file" onclick="toggleWin('clip1')">
+                <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png">
+                <div>Clip_01.mp4</div>
+            </div>
+        </div>
     </div>
-    <div class="icon">
-        <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png">
-        <div>Skype</div>
+</div>
+
+<div class="window" id="minesweeper" style="left:300px; top:150px; width:250px; height:320px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper (Offline)</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
+    <div class="window-body" style="text-align: center;">
+        <button onclick="initMines()" style="margin-top:10px;">New Game</button>
+        <table id="mine-table"></table>
     </div>
 </div>
 
-<div class="window" id="vid1" style="left:200px; top:100px; width:500px; height:380px;">
-    <div class="title-bar"><div class="title-bar-text">Fangtasia_Memory.mp4</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid1')"></button></div></div>
-    <div class="window-body"><video id="videoPlayer" controls><source src="YOUR_VIDEO_URL" type="video/mp4"></video></div>
-</div>
-
-<div class="window" id="solitaire" style="left:250px; top:150px; width:620px; height:450px;">
-    <div class="title-bar"><div class="title-bar-text">Solitaire.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
-    <div class="window-body"><iframe src="https://solitaire.pet/em/"></iframe></div>
-</div>
-
-<div class="window" id="minesweeper" style="left:300px; top:200px; width:260px; height:370px;">
-    <div class="title-bar"><div class="title-bar-text">Minesweeper.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
-    <div class="window-body"><iframe src="https://minesweeper.online/en/embed/v2/1?difficulty=1&theme=2"></iframe></div>
-</div>
-
-<div class="window" id="paint" style="left:350px; top:100px; width:750px; height:500px;">
-    <div class="title-bar"><div class="title-bar-text">Paint.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint')"></button></div></div>
-    <div class="window-body"><iframe src="https://jspaint.app"></iframe></div>
+<div class="window" id="solitaire" style="left:250px; top:120px; width:600px; height:400px;">
+    <div class="title-bar"><div class="title-bar-text">Solitaire (Offline)</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
+    <div class="window-body">
+        <iframe src="https://solitaire.pet/em/" style="width:100%; height:100%;"></iframe>
+    </div>
 </div>
 
 <div class="taskbar">
     <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
-    
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" id="pauseBtn" onclick="pauseMusic()" title="Pause">
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" id="playBtn" onclick="playMusic()" title="Play">
+    <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
+    <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
 </div>
 
 <div id="player" style="position:absolute; top:-9999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    // WINDOW DRAGGING
+    // WINDOW DRAGGING & FRONTING
     document.querySelectorAll('.window').forEach(win => {
         const header = win.querySelector('.title-bar');
         header.onmousedown = (e) => {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+            win.style.zIndex = "20";
             let offsetX = e.clientX - win.offsetLeft;
             let offsetY = e.clientY - win.offsetTop;
             document.onmousemove = (e) => {
@@ -167,10 +153,30 @@
         };
     });
 
-    // MUSIC LOGIC
-    var player; 
-    var started = false;
+    // OFFLINE MINESWEEPER LOGIC
+    function initMines() {
+        const table = document.getElementById('mine-table');
+        table.innerHTML = "";
+        for(let i=0; i<10; i++) {
+            let row = table.insertRow();
+            for(let j=0; j<10; j++) {
+                let cell = row.insertCell();
+                cell.onclick = function() { 
+                    this.classList.add('revealed');
+                    if(Math.random() < 0.15) { this.classList.add('mine'); alert('Game Over'); initMines(); }
+                };
+            }
+        }
+    }
+    initMines();
 
+    function toggleWin(id) {
+        let el = document.getElementById(id);
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    }
+
+    // MUSIC LOGIC
+    var player; var started = false;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             videoId: 'Bi5kyehmeaY',
@@ -178,31 +184,9 @@
             events: { 'onReady': (e) => { e.target.mute(); e.target.playVideo(); } }
         });
     }
-
-    function startMusic() { 
-        if (!started && player) { 
-            player.unMute(); 
-            player.playVideo();
-            started = true; 
-        } 
-    }
-
-    function pauseMusic() { 
-        if(player) player.pauseVideo(); 
-        document.getElementById('pauseBtn').style.opacity = "0.3";
-        document.getElementById('playBtn').style.opacity = "1";
-    }
-
-    function playMusic() { 
-        if(player) player.playVideo(); 
-        document.getElementById('playBtn').style.opacity = "0.3";
-        document.getElementById('pauseBtn').style.opacity = "1";
-    }
-
-    function toggleWin(id) {
-        let el = document.getElementById(id);
-        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
-    }
+    function startMusic() { if (!started && player) { player.unMute(); player.playVideo(); started = true; } }
+    function pauseMusic() { if(player) player.pauseVideo(); }
+    function playMusic() { if(player) player.playVideo(); }
 </script>
 </body>
 </html>
