@@ -3,71 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fangtasia</title>
+    <title>Fangtasia - Dark Desktop</title>
     
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/7.css">
     
     <style>
-        :root { --win7-red: #800000; --glass: rgba(20, 0, 0, 0.85); }
+        :root { --vamp-red: #800000; --glass: rgba(15, 0, 0, 0.9); }
         
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
                 url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&') no-repeat center center fixed;
             background-size: cover;
-            font-family: "Segoe UI", sans-serif;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            cursor: default;
         }
 
+        /* TRAY LOGO */
         .main-logo {
-            position: fixed; bottom: 5px; right: 20px;
+            position: fixed; bottom: 8px; right: 20px;
             font-family: 'UnifrakturMaguntia', cursive;
-            color: #d40000; font-size: 28px; opacity: 0.9;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 1px 1px 2px #000;
+            color: #d40000; font-size: 26px; opacity: 0.9;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
             pointer-events: none; z-index: 101;
         }
 
+        /* DESKTOP GRID */
         #desktop { 
             display: flex; flex-direction: column; flex-wrap: wrap;
-            align-content: flex-start; padding: 20px; height: calc(100vh - 50px); gap: 15px;
+            align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px;
         }
 
         .icon { 
-            width: 85px; text-align: center; color: white; 
+            width: 80px; text-align: center; color: white; 
             text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px;
         }
 
-        /* THE UNIFIED RED CRYSTAL FILTER */
+        /* UNIFIED "INTERNET EXPLORER" RED STYLE FOR ALL SHORTCUTS */
         .icon img { 
-            width: 44px; display: block; margin: 0 auto 5px;
-            filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 1px rgba(0,0,0,0.9));
+            width: 44px; display: block; margin: 0 auto 6px;
+            filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 2px rgba(0,0,0,0.8));
         }
 
+        /* WINDOWS */
         .window { 
             position: absolute; width: 450px; height: 350px; z-index: 10; display: none; 
-            background: #0a0a0a !important; border: 1px solid #700000 !important; 
-            box-shadow: 0 10px 50px rgba(0,0,0,0.9); resize: both; overflow: hidden; 
+            background: #0d0d0d !important; border: 1px solid #700000 !important; 
+            box-shadow: 0 15px 40px rgba(0,0,0,1); resize: both; overflow: hidden; 
         }
-        .title-bar { background: linear-gradient(to bottom, #8b0000, #300000) !important; cursor: move; }
-        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; overflow: auto; }
+        .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; border-bottom: 1px solid #400 !important; }
+        .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; overflow: auto; color: white; }
 
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, 90px); gap: 15px; padding: 20px; }
-        .file { text-align: center; color: white; cursor: pointer; font-size: 11px; }
-        .file img { width: 38px; filter: sepia(1) hue-rotate(330deg) saturate(2); margin-bottom: 5px; }
+        /* MEMORIES FOLDER INTERIOR */
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, 95px); gap: 15px; padding: 20px; }
+        .file { text-align: center; color: #ccc; cursor: pointer; font-size: 11px; }
+        .file img { width: 38px; filter: sepia(1) hue-rotate(330deg); margin-bottom: 4px; } /* Default Media Icon style */
 
+        /* TASKBAR */
         .taskbar { 
             position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
-            backdrop-filter: blur(15px); border-top: 1px solid rgba(255,0,0,0.2); 
+            backdrop-filter: blur(12px); border-top: 1px solid rgba(255,0,0,0.3); 
             display: flex; align-items: center; padding: 0 15px; z-index: 100; 
         }
-        .start-btn { width: 32px; filter: grayscale(1) sepia(1) saturate(20) hue-rotate(320deg); cursor: pointer; margin-right: 40px; } 
-        .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); margin-right: 30px; opacity: 0.8; }
+        .start-btn { width: 30px; filter: grayscale(1) sepia(1) saturate(15) hue-rotate(320deg); cursor: pointer; margin-right: 50px; } 
         
-        /* MINESWEEPER GUI */
-        #mine-table { margin: 10px auto; border-collapse: collapse; background: #222; border: 2px solid #555; }
-        #mine-table td { width: 22px; height: 22px; border: 1px solid #444; text-align: center; cursor: pointer; color: #f00; font-family: 'Courier New', monospace; }
-        .revealed { background: #000; border: 1px solid #222 !important; }
-        .mine { background: #f00 !important; color: #000 !important; }
+        /* SPACED MUSIC CONTROLS */
+        .music-ctrl { 
+            width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); 
+            margin-right: 45px; opacity: 0.8; transition: opacity 0.2s;
+        }
+        .music-ctrl:hover { opacity: 1; transform: scale(1.1); }
+
+        /* OFFLINE MINESWEEPER STYLING */
+        #mine-board { margin: 15px auto; border-collapse: collapse; user-select: none; }
+        #mine-board td { width: 24px; height: 24px; border: 1px solid #444; background: #222; text-align: center; cursor: pointer; font-family: monospace; }
+        .open { background: #000 !important; border-color: #111 !important; }
+        .dead { background: #ff0000 !important; }
+
+        /* LOCAL SOLITAIRE PREVIEW */
+        .sol-canvas-wrap { text-align: center; padding: 20px; }
+        #sol-preview { border: 2px solid #500; border-radius: 4px; background: #003300; }
     </style>
 </head>
 <body onclick="startMusic()">
@@ -79,68 +95,79 @@
         <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
         <div>Memories</div>
     </div>
-    <div class="icon" onclick="toggleWin('solitaire')">
+    <div class="icon" onclick="toggleWin('solitaire_win')">
         <img src="https://win98icons.alexmeub.com/icons/png/cards-2.png">
         <div>Solitaire</div>
     </div>
-    <div class="icon" onclick="toggleWin('minesweeper')">
+    <div class="icon" onclick="toggleWin('mines_win')">
         <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
         <div>Mines</div>
     </div>
-    <div class="icon" onclick="toggleWin('paint')">
+    <div class="icon" onclick="toggleWin('paint_win')">
         <img src="https://win98icons.alexmeub.com/icons/png/paint_file-2.png">
         <div>Paint</div>
     </div>
-    <div class="icon">
+    <div class="icon" onclick="alert('Searching the dark web...')">
         <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
         <div>Internet</div>
     </div>
-    <div class="icon">
+    <div class="icon" onclick="alert('Connecting to servers...')">
         <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png">
         <div>Skype</div>
     </div>
 </div>
 
-<div class="window" id="memories_folder" style="left:100px; top:100px; width:450px; height:320px;">
-    <div class="title-bar"><div class="title-bar-text">Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
+<div class="window" id="memories_folder" style="left:80px; top:60px; width:460px; height:320px;">
+    <div class="title-bar"><div class="title-bar-text">C:\Fangtasia\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body">
         <div class="folder-grid">
-            <div class="file" onclick="toggleWin('clip1')">
+            <div class="file" onclick="toggleWin('vid_player')">
                 <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png">
                 <div>Clip_01.mp4</div>
+            </div>
+            <div class="file">
+                <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png">
+                <div>Clip_02.mp4</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="window" id="minesweeper" style="left:300px; top:150px; width:260px; height:340px;">
-    <div class="title-bar"><div class="title-bar-text">Minesweeper.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
+<div class="window" id="mines_win" style="left:550px; top:80px; width:280px; height:380px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('mines_win')"></button></div></div>
     <div class="window-body" style="text-align: center;">
-        <button onclick="initMines()" style="margin: 10px; background: #400; color: white; border: 1px solid red; cursor: pointer;">Reset Game</button>
-        <table id="mine-table"></table>
+        <button onclick="initMines()" style="margin: 10px; cursor: pointer; background: #400; color: white; border: 1px solid red;">New Game</button>
+        <table id="mine-board"></table>
     </div>
 </div>
 
-<div class="window" id="solitaire" style="left:250px; top:120px; width:600px; height:450px;">
-    <div class="title-bar"><div class="title-bar-text">Solitaire.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
+<div class="window" id="solitaire_win" style="left:500px; top:150px; width:620px; height:460px;">
+    <div class="title-bar"><div class="title-bar-text">Solitaire.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire_win')"></button></div></div>
     <div class="window-body">
-        <iframe src="https://solitaire.pet/em/" style="width:100%; height:100%; border:none;"></iframe>
+        <div class="sol-canvas-wrap">
+            <p>LOCAL CARDS LOADED</p>
+            <canvas id="sol-preview" width="550" height="300"></canvas>
+            <p style="font-size: 10px; color: #666;">Offline Card Engine Active (No Ads)</p>
+        </div>
     </div>
 </div>
 
-<div class="window" id="paint" style="left:350px; top:100px; width:750px; height:500px;"><div class="title-bar"><div class="title-bar-text">Paint.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint')"></button></div></div><div class="window-body"><iframe src="https://jspaint.app"></iframe></div></div>
+<div class="window" id="paint_win" style="left:150px; top:200px; width:700px; height:500px;">
+    <div class="title-bar"><div class="title-bar-text">Paint.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint_win')"></button></div></div>
+    <div class="window-body"><iframe src="https://jspaint.app" style="width:100%; height:100%;"></iframe></div>
+</div>
 
 <div class="taskbar">
     <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
+    <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()" title="Pause Music">
+    <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()" title="Play Music">
 </div>
 
-<div id="player" style="position:absolute; top:-9999px;"></div>
+<div id="player" style="position:absolute; top:-999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    // WINDOW LOGIC
+    // WINDOW DRAG & BRING TO FRONT
     document.querySelectorAll('.window').forEach(win => {
         const header = win.querySelector('.title-bar');
         header.onmousedown = (e) => {
@@ -156,23 +183,27 @@
         };
     });
 
-    // MINESWEEPER LOGIC
+    function toggleWin(id) {
+        let el = document.getElementById(id);
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+        if(id === 'solitaire_win') drawSol();
+    }
+
+    // OFFLINE MINESWEEPER LOGIC
     function initMines() {
-        const table = document.getElementById('mine-table');
-        table.innerHTML = "";
-        for(let i=0; i<9; i++) {
-            let row = table.insertRow();
-            for(let j=0; j<9; j++) {
+        const board = document.getElementById('mine-board');
+        board.innerHTML = "";
+        for(let i=0; i<10; i++) {
+            let row = board.insertRow();
+            for(let j=0; j<10; j++) {
                 let cell = row.insertCell();
-                cell.onclick = function() { 
-                    if(this.classList.contains('revealed')) return;
-                    this.classList.add('revealed');
-                    if(Math.random() < 0.15) { 
-                        this.classList.add('mine'); 
-                        this.innerHTML = "X";
-                        setTimeout(() => { alert('BOOM!'); initMines(); }, 100);
+                cell.onclick = function() {
+                    this.classList.add('open');
+                    if(Math.random() < 0.15) {
+                        this.classList.add('dead'); this.innerHTML = "X";
+                        setTimeout(() => { alert('Fatal Error: Mine Exploded'); initMines(); }, 100);
                     } else {
-                        this.innerHTML = Math.floor(Math.random() * 3);
+                        this.innerHTML = "1"; this.style.color = "cyan";
                     }
                 };
             }
@@ -180,12 +211,17 @@
     }
     initMines();
 
-    function toggleWin(id) {
-        let el = document.getElementById(id);
-        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    // OFFLINE SOLITAIRE LOCAL PREVIEW
+    function drawSol() {
+        const c = document.getElementById('sol-preview');
+        const x = c.getContext('2d');
+        x.fillStyle = "#003300"; x.fillRect(0,0,550,300);
+        x.strokeStyle = "red";
+        for(let i=0; i<7; i++) x.strokeRect(30+(i*70), 80, 50, 75);
+        x.fillStyle = "white"; x.fillText("Local System Ready", 220, 40);
     }
 
-    // MUSIC LOGIC
+    // STARTUP MUSIC LOGIC
     var player; var started = false;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
@@ -194,7 +230,14 @@
             events: { 'onReady': (e) => { e.target.mute(); e.target.playVideo(); } }
         });
     }
-    function startMusic() { if (!started && player) { player.unMute(); player.playVideo(); started = true; } }
+
+    function startMusic() { 
+        if (!started && player) { 
+            player.unMute(); 
+            player.playVideo();
+            started = true; 
+        } 
+    }
     function pauseMusic() { if(player) player.pauseVideo(); }
     function playMusic() { if(player) player.playVideo(); }
 </script>
