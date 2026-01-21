@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fangtasia OS - Ultimate Edition</title>
+    <title>fangtasia.wtf</title>
     
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/7.css">
@@ -25,54 +25,60 @@
             color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: pointer;
         }
 
-        /* DESKTOP UI */
+        /* DESKTOP */
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px; }
         .icon { width: 100px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; margin-bottom: 15px; }
         .icon img.folder-icon { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
         
         /* WINDOW ENGINE */
-        .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1); display: none; z-index: 10; overflow: hidden; resize: both; min-width: 250px; }
+        .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1); display: none; z-index: 10; overflow: hidden; resize: both; }
         .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
 
-        /* CHAT & MEMBER LIST */
-        .chat-container { display: flex; height: 300px; background: #050000; border-bottom: 1px solid #400; }
+        /* THE LOUNGE */
+        .chat-container { display: flex; height: 350px; background: #050000; border-bottom: 1px solid #400; }
         #chat_logs { flex: 1; overflow-y: scroll; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-        #member_list { width: 115px; border-left: 1px solid #400; padding: 10px; background: #0a0000; font-size: 9px; }
-        .online-dot { color: #00ff00; margin-right: 4px; }
-        
-        .msg { font-size: 11px; line-height: 1.4; border-left: 2px solid #500; padding-left: 8px; }
-        .msg-user { font-weight: bold; text-transform: uppercase; font-size: 9px; }
-        .msg-rank { font-size: 8px; color: #888; font-style: italic; display: block; }
-        .msg-text { color: #ddd; }
+        #member_list { width: 160px; border-left: 1px solid #400; padding: 10px; background: #0a0000; font-size: 13px; }
+        .member-category { color: #555; font-size: 9px; font-weight: bold; margin-top: 10px; border-bottom: 1px solid #222; text-transform: uppercase; }
 
-        /* HARD-CODED RANKS */
-        .rank-technician { color: #00ffea !important; text-shadow: 0 0 5px #00ffea; }
+        /* NEON GRADIENT FOR LOSERSYNDICATE */
+        .rank-technician { 
+            background: linear-gradient(90deg, #ff00ff, #bc13fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            filter: drop-shadow(0 0 5px rgba(255, 0, 255, 0.6));
+            font-size: 15px !important;
+        }
         .rank-admin { color: #ff00ea !important; }
         .rank-mod { color: #00ff00 !important; }
 
-        /* SHARED UI ELEMENTS */
+        /* MEMORIES GALLERY (3 PER ROW) */
+        #memories_grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 25px; 
+            padding: 25px; 
+            justify-items: center;
+        }
+        .pagination-bar { padding: 10px; background: #111; border-top: 1px solid #400; text-align: center; }
+
+        /* UI ELEMENTS */
         .ie-content { padding: 15px; color: #d40000; }
         .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; font-size: 11px; }
         .ie-btn { background: #500; color: white; border: 1px solid #f00; padding: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 5px; }
+        .lounge-entry-btn { background: linear-gradient(#222, #000); border: 1px solid #ff00ff; color: #ff00ff; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; margin-bottom: 20px; font-size: 11px; text-transform: uppercase; }
         
-        /* TASKBAR */
         .taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); border-top: 1px solid rgba(255,0,0,0.3); display: flex; align-items: center; z-index: 100; }
         .sound-controls { display: flex; margin-left: 150px; gap: 45px; }
         .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); opacity: 0.8; }
-        
-        /* PROFILE CARDS */
-        .profile-card-body { text-align: center; color: white; padding: 20px; }
-        .profile-card-pfp { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #8b0000; object-fit: cover; margin-bottom: 10px; }
-        .uploader-info { display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 4px; padding: 2px; }
-        .pfp-mini { width: 18px; height: 18px; border-radius: 50%; border: 1px solid #ff0000; object-fit: cover; background: #222; }
     </style>
 </head>
 <body>
 
 <div id="boot-screen" onclick="beginSession()">
-    <h1 style="font-size: 50px; font-family: 'UnifrakturMaguntia';">Fangtasia</h1>
-    <p>Secure Interface: Click to Initialize</p>
+    <h1 style="font-size: 50px; font-family: 'UnifrakturMaguntia';">fangtasia.wtf</h1>
+    <p>Initialize Secure Session</p>
 </div>
 
 <div id="desktop">
@@ -82,39 +88,46 @@
     </div>
     <div class="icon" onclick="toggleWin('ie_window')">
         <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
-        <div>IE: Member Portal</div>
-    </div>
-    <div class="icon" onclick="openChat()">
-        <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/message_i-0.png">
-        <div>Syndicate Chat</div>
+        <div>Internet Explorer</div>
     </div>
 </div>
 
-<div class="window" id="chat_win" style="left:700px; top:50px; width:450px; height:450px;">
+<div class="window" id="chat_win" style="left:550px; top:50px; width:600px; height:520px;">
     <div class="title-bar">
-        <div class="title-bar-text">Syndicate Encrypted Chat</div>
+        <div class="title-bar-text">The Lounge</div>
         <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('chat_win')"></button></div>
     </div>
     <div class="window-body">
         <div class="chat-container">
             <div id="chat_logs"></div>
             <div id="member_list">
-                <div style="color:#500; font-weight:bold; border-bottom:1px solid #400; margin-bottom:8px;">SYNDICATE</div>
-                <div id="online_users"></div>
+                <div class="member-category">Site Technician</div>
+                <div id="list_technician"></div>
+                <div class="member-category">Admins</div>
+                <div id="list_admin"></div>
+                <div class="member-category">Moderators</div>
+                <div id="list_mod"></div>
             </div>
         </div>
         <div style="padding:10px; background:#111;">
-            <input type="text" id="chat_input" class="ie-input" style="margin-bottom:5px;" placeholder="Transmit message..." onkeypress="if(event.key==='Enter') sendChat()">
-            <button class="ie-btn" onclick="sendChat()">Send Transmission</button>
+            <input type="text" id="chat_input" class="ie-input" style="margin-bottom:5px;" placeholder="send Chat..." onkeypress="if(event.key==='Enter') sendChat()">
+            <button class="ie-btn" onclick="sendChat()">send Chat</button>
         </div>
     </div>
 </div>
 
-<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:480px;">
-    <div class="title-bar">
-        <div class="title-bar-text">Internet Explorer</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie_window')"></button></div>
+<div class="window" id="memories_folder" style="left:50px; top:50px; width:500px; height:550px;">
+    <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
+    <div class="window-body">
+        <div id="memories_grid"></div>
+        <div class="pagination-bar">
+            <button class="ie-btn" style="width:auto; padding: 2px 20px;" onclick="nextPage()">Next Page ></button>
+        </div>
     </div>
+</div>
+
+<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:520px;">
+    <div class="title-bar"><div class="title-bar-text">fangtasia.wtf Portal</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie_window')"></button></div></div>
     <div class="window-body">
         <div class="ie-content" id="ie_login">
             <h2 style="font-family: 'UnifrakturMaguntia';">Secure Login</h2>
@@ -123,68 +136,48 @@
             <button class="ie-btn" onclick="validateIE()">Authorize</button>
         </div>
         <div class="ie-content" id="ie_upload" style="display:none;">
+            <button class="lounge-entry-btn" onclick="openChat()">Enter The Lounge</button>
             <h2 style="font-family: 'UnifrakturMaguntia';">Upload Memory</h2>
-            <p id="logged_in_as" style="font-size: 11px; margin-bottom: 10px; color: #fff;"></p>
+            <p id="logged_in_as" style="font-size: 11px; color: #fff;"></p>
             <input type="text" id="ie_filename" class="ie-input" placeholder="Memory Name">
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
             <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
-            <button class="ie-btn" style="margin-top:20px; background:#222; border-color:#444;" onclick="clearArchive()">Purge Local Cache</button>
         </div>
     </div>
 </div>
 
 <div class="window" id="profile_win" style="left:570px; top:120px; width:300px; height:480px;">
-    <div class="title-bar">
-        <div class="title-bar-text">Identity Settings</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('profile_win')"></button></div>
-    </div>
+    <div class="title-bar"><div class="title-bar-text">Identity</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('profile_win')"></button></div></div>
     <div class="window-body">
         <div class="ie-content">
-            <div style="text-align:center; margin-bottom:15px;">
-                <img id="pfp_preview" src="https://i.pinimg.com/736x/21/20/b0/2120b058f59cb31c5e30522d4ad4076e.jpg" style="width:75px; height:75px; border: 2px solid #8b0000; border-radius: 50%; object-fit: cover;">
-            </div>
-            <label style="font-size:10px;">Upload PFP from PC:</label>
-            <input type="file" id="pfp_file_input" class="ie-input" style="border:none;" accept="image/*">
-            <label style="font-size:10px;">Bio / Status:</label>
-            <textarea id="bio_input" class="ie-input" style="height:60px; resize:none;" placeholder="Tell the syndicate..."></textarea>
-            <button class="ie-btn" id="pfp_save_btn" onclick="saveProfile()">Update Identity</button>
+            <div style="text-align:center;"><img id="pfp_preview" src="https://i.pinimg.com/736x/21/20/b0/2120b058f59cb31c5e30522d4ad4076e.jpg" style="width:75px; height:75px; border: 2px solid #8b0000; border-radius: 50%; object-fit: cover;"></div>
+            <label style="font-size:10px;">New PFP:</label><input type="file" id="pfp_file_input" class="ie-input" accept="image/*">
+            <textarea id="bio_input" class="ie-input" style="height:60px;" placeholder="Status..."></textarea>
+            <button class="ie-btn" onclick="saveProfile()">Update Identity</button>
         </div>
     </div>
 </div>
 
-<div class="window" id="memories_folder" style="left:50px; top:50px; width:450px; height:350px;">
-    <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
-    <div class="window-body">
-        <div id="memories_grid" style="display:grid; grid-template-columns: repeat(auto-fill, 110px); gap:20px; padding:25px;"></div>
-    </div>
-</div>
-
-<div class="taskbar">
-    <div class="sound-controls">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
-    </div>
-</div>
+<div class="taskbar"><div class="sound-controls"><img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()"><img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()"></div></div>
 
 <div id="player" style="position:absolute; top:-999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    // CORE SYSTEM SETTINGS
     const CLOUD_NAME = "fangtasia-14197"; 
     const UPLOAD_PRESET = "fangtasia"; 
     const DEFAULT_PFP = "https://i.pinimg.com/736x/21/20/b0/2120b058f59cb31c5e30522d4ad4076e.jpg";
 
-    // HARD-LOCKED RANKS & DATABASE
     const userDatabase = {
-        "losersyndicate": { pass: "doubledutchie01", rank: "Site Technician", class: "rank-technician" },
-        "buttheadandbeav126": { pass: "wtfomfgfangtasiafordabros21", rank: "Admin", class: "rank-admin" },
-        "bloomhouse8483": { pass: "methybethy89!", rank: "Mod", class: "rank-mod" }
+        "losersyndicate": { pass: "doubledutchie01", rank: "Site Technician", class: "rank-technician", targetList: "list_technician" },
+        "buttheadandbeav126": { pass: "wtfomfgfangtasiafordabros21", rank: "Admin", class: "rank-admin", targetList: "list_admin" },
+        "bloomhouse8483": { pass: "methybethy89!", rank: "Mod", class: "rank-mod", targetList: "list_mod" }
     };
 
     let CURRENT_USER = "";
+    let currentPage = 1;
+    const itemsPerPage = 6; // 2 rows of 3
 
-    // AUTHENTICATION
     function validateIE() {
         const u = document.getElementById('ie_user').value;
         const p = document.getElementById('ie_pass').value;
@@ -192,32 +185,21 @@
             CURRENT_USER = u;
             document.getElementById('ie_login').style.display = 'none';
             document.getElementById('ie_upload').style.display = 'block';
-            document.getElementById('logged_in_as').innerText = `AUTHORIZED: ${u} [${userDatabase[u].rank}]`;
+            document.getElementById('logged_in_as').innerText = `USER: ${u}`;
             document.getElementById('pfp_preview').src = localStorage.getItem(`pfp_${u}`) || DEFAULT_PFP;
-            document.getElementById('bio_input').value = localStorage.getItem(`bio_${u}`) || "";
             toggleWin('profile_win');
             updateMemberList();
-        } else { alert("ACCESS DENIED: Credentials Invalid."); }
+        } else { alert("DENIED."); }
     }
 
-    // CHAT SYSTEM
-    function openChat() {
-        if(!CURRENT_USER) { alert("ERROR: You must be logged in to access the syndicate channel."); return; }
-        toggleWin('chat_win');
-        loadMessages();
-        updateMemberList();
-    }
+    function openChat() { if(CURRENT_USER) { toggleWin('chat_win'); loadMessages(); updateMemberList(); } }
 
     function sendChat() {
         const input = document.getElementById('chat_input');
         if(!input.value.trim()) return;
         const msgs = JSON.parse(localStorage.getItem('fangtasia_global_chat')) || [];
         const u = userDatabase[CURRENT_USER];
-        msgs.push({ 
-            user: CURRENT_USER, text: input.value, 
-            rank: u.rank, rankClass: u.class,
-            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-        });
+        msgs.push({ user: CURRENT_USER, text: input.value, rank: u.rank, rankClass: u.class, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})});
         localStorage.setItem('fangtasia_global_chat', JSON.stringify(msgs.slice(-50)));
         input.value = "";
         loadMessages();
@@ -226,56 +208,25 @@
     function loadMessages() {
         const logs = document.getElementById('chat_logs');
         const msgs = JSON.parse(localStorage.getItem('fangtasia_global_chat')) || [];
-        logs.innerHTML = msgs.map(m => `
-            <div class="msg">
-                <span class="msg-rank ${m.rankClass}">${m.rank}</span>
-                <span class="msg-user ${m.rankClass}">${m.user}</span> <span style="font-size:7px; color:#555;">${m.time}</span><br>
-                <span class="msg-text">${m.text}</span>
-            </div>
-        `).join('');
+        logs.innerHTML = msgs.map(m => `<div class="msg"><span class="msg-rank ${m.rankClass}">${m.rank}</span><span class="msg-user ${m.rankClass}">${m.user}</span><br><span class="msg-text">${m.text}</span></div>`).join('');
         logs.scrollTop = logs.scrollHeight;
     }
 
     function updateMemberList() {
-        const list = document.getElementById('online_users');
+        document.getElementById('list_technician').innerHTML = "";
+        document.getElementById('list_admin').innerHTML = "";
+        document.getElementById('list_mod').innerHTML = "";
         if(!CURRENT_USER) return;
-        const rankClass = userDatabase[CURRENT_USER].class;
-        list.innerHTML = `<div class="${rankClass}"><span class="online-dot">●</span>${CURRENT_USER}</div>`;
+        const u = userDatabase[CURRENT_USER];
+        document.getElementById(u.targetList).innerHTML = `<div class="${u.class}"><span style="color:#0f0">●</span> ${CURRENT_USER}</div>`;
     }
 
-    // PFP & IDENTITY
-    async function saveProfile() {
-        const fileInput = document.getElementById('pfp_file_input');
-        const bio = document.getElementById('bio_input').value;
-        const btn = document.getElementById('pfp_save_btn');
-        
-        if (fileInput.files.length > 0) {
-            btn.innerText = "Uploading...";
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            formData.append('upload_preset', UPLOAD_PRESET);
-            try {
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
-                const data = await res.json();
-                if (res.ok) {
-                    localStorage.setItem(`pfp_${CURRENT_USER}`, data.secure_url);
-                    document.getElementById('pfp_preview').src = data.secure_url;
-                }
-            } catch (e) { alert("PFP Upload failed."); }
-            btn.innerText = "Update Identity";
-        }
-        localStorage.setItem(`bio_${CURRENT_USER}`, bio);
-        alert("Identity Updated.");
-    }
-
-    // MEMORY UPLOADS
     async function processIEUpload() {
         const fileInput = document.getElementById('ie_file_picker');
-        const name = document.getElementById('ie_filename').value || "New Memory";
+        const name = document.getElementById('ie_filename').value || "Video";
         const statusBtn = document.getElementById('upload_status');
-        if(!fileInput.files[0]) return alert("Select a video file.");
-        
-        statusBtn.innerText = "Archiving...";
+        if(!fileInput.files[0]) return;
+        statusBtn.innerText = "Syncing...";
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         formData.append('upload_preset', UPLOAD_PRESET);
@@ -283,109 +234,76 @@
             const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method: 'POST', body: formData });
             const data = await response.json();
             if (response.ok) {
-                const userPfp = localStorage.getItem(`pfp_${CURRENT_USER}`) || DEFAULT_PFP;
-                addIconToMemories(name, data.secure_url, CURRENT_USER, userPfp, true);
-                alert("Archive Synced!");
+                const archive = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
+                archive.push({ name, url: data.secure_url, uploader: CURRENT_USER, pfp: localStorage.getItem(`pfp_${CURRENT_USER}`) || DEFAULT_PFP });
+                localStorage.setItem('fangtasia_archive', JSON.stringify(archive));
+                renderMemories();
                 statusBtn.innerText = "Push to Cloud";
-                fileInput.value = "";
-                document.getElementById('ie_filename').value = "";
             }
-        } catch (err) { alert("Upload failed."); statusBtn.innerText = "Push to Cloud"; }
+        } catch (err) { alert("Fail."); }
     }
 
-    function addIconToMemories(name, url, uploader, pfp, shouldSave) {
+    function renderMemories() {
         const grid = document.getElementById('memories_grid');
-        const div = document.createElement('div');
-        div.className = "icon";
-        const uRankClass = userDatabase[uploader] ? userDatabase[uploader].class : "";
-        div.innerHTML = `
-            <div onclick="spawnVideoWindow('${name}', '${url}', '${uploader}')">
-                <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png">
-                <div style="color:white; font-size:10px; word-wrap:break-word;">${name}</div>
-            </div>
-            <div class="uploader-info" onclick="spawnProfileCard('${uploader}')">
-                <img class="pfp-mini" src="${pfp}">
-                <span class="uploader-tag ${uRankClass}" style="font-size:8px; font-weight:bold;">${uploader}</span>
-            </div>
-        `;
-        grid.appendChild(div);
-        if (shouldSave) {
-            const archive = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
-            archive.push({ name, url, uploader, pfp });
-            localStorage.setItem('fangtasia_archive', JSON.stringify(archive));
-        }
-    }
-
-    // PROFILE CARD SPAWNER
-    function spawnProfileCard(username) {
+        grid.innerHTML = "";
         const archive = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
-        const postCount = archive.filter(m => m.uploader === username).length;
-        const pfp = localStorage.getItem(`pfp_${username}`) || DEFAULT_PFP;
-        const bio = localStorage.getItem(`bio_${username}`) || "No bio available.";
-        const rank = userDatabase[username] ? userDatabase[username].rank : "Member";
-        const rClass = userDatabase[username] ? userDatabase[username].class : "";
-        
-        const winId = 'prof_' + Date.now();
-        const win = document.createElement('div');
-        win.className = 'window'; win.id = winId; win.style.display = 'block';
-        win.style.left = '100px'; win.style.top = '100px'; win.style.width = '260px';
-        win.innerHTML = `
-            <div class="title-bar" id="${winId}_header">
-                <div class="title-bar-text">User Profile</div>
-                <div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${winId}').remove()"></button></div>
-            </div>
-            <div class="window-body"><div class="profile-card-body">
-                <img src="${pfp}" class="profile-card-pfp">
-                <div class="${rClass}" style="font-size:10px; font-weight:bold;">${rank}</div>
-                <h3 style="color:#f00; font-family:'UnifrakturMaguntia'; margin:5px 0;">${username}</h3>
-                <p style="font-size:9px;">Memories Shared: ${postCount}</p>
-                <div class="bio-text">${bio}</div>
-            </div></div>
-        `;
-        document.body.appendChild(win);
-        makeDraggable(winId);
+        const start = (currentPage - 1) * itemsPerPage;
+        const pageItems = archive.slice(start, start + itemsPerPage);
+
+        pageItems.forEach(mem => {
+            const div = document.createElement('div');
+            div.className = "icon";
+            div.innerHTML = `
+                <div onclick="spawnVideoWindow('${mem.name}', '${mem.url}')">
+                    <img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/video_file-0.png">
+                    <div style="font-size:9px;">${mem.name}</div>
+                </div>
+                <div style="font-size:8px; color:#888;">By: ${mem.uploader}</div>
+            `;
+            grid.appendChild(div);
+        });
     }
 
-    // VIDEO PLAYER SPAWNER
-    function spawnVideoWindow(name, url, uploader) {
+    function nextPage() {
+        const archive = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
+        if (currentPage * itemsPerPage < archive.length) { currentPage++; renderMemories(); } else { currentPage = 1; renderMemories(); }
+    }
+
+    async function saveProfile() {
+        const fileInput = document.getElementById('pfp_file_input');
+        if (fileInput.files[0]) {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('upload_preset', UPLOAD_PRESET);
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+            const data = await res.json();
+            localStorage.setItem(`pfp_${CURRENT_USER}`, data.secure_url);
+            document.getElementById('pfp_preview').src = data.secure_url;
+        }
+        localStorage.setItem(`bio_${CURRENT_USER}`, document.getElementById('bio_input').value);
+        alert("Updated.");
+    }
+
+    function spawnVideoWindow(name, url) {
         const winId = 'vid_' + Date.now();
         const win = document.createElement('div');
         win.className = 'window'; win.id = winId; win.style.display = 'block';
-        win.style.left = '200px'; win.style.top = '150px'; win.style.width = '480px'; win.style.height = '360px';
-        win.innerHTML = `
-            <div class="title-bar" id="${winId}_header">
-                <div class="title-bar-text">${name} - From: ${uploader}</div>
-                <div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${winId}').remove()"></button></div>
-            </div>
-            <div class="window-body"><video src="${url}" controls autoplay style="width:100%; height:100%;"></video></div>
-        `;
+        win.style.left = '200px'; win.style.top = '100px'; win.style.width = '500px'; win.style.height = '400px';
+        win.innerHTML = `<div class="title-bar"><div class="title-bar-text">${name}</div><div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${winId}').remove()"></button></div></div>
+            <div class="window-body"><video src="${url}" controls autoplay style="width:100%; height:100%;"></video></div>`;
         document.body.appendChild(win);
         makeDraggable(winId);
     }
 
-    // HELPER FUNCTIONS
     function toggleWin(id) {
         let el = document.getElementById(id);
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
-        if(el.style.display === 'block') {
-            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
-            el.style.zIndex = "200";
-        }
-    }
-
-    function clearArchive() {
-        if(confirm("Purge local browser memories? (Does not affect others)")) {
-            localStorage.removeItem('fangtasia_archive');
-            document.getElementById('memories_grid').innerHTML = "";
-        }
     }
 
     function makeDraggable(winId) {
         const win = document.getElementById(winId);
-        const header = document.getElementById(winId + '_header') || win.querySelector('.title-bar');
+        const header = win.querySelector('.title-bar');
         header.onmousedown = (e) => {
-            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
-            win.style.zIndex = "400";
             let oX = e.clientX - win.offsetLeft, oY = e.clientY - win.offsetTop;
             document.onmousemove = (e) => { win.style.left = (e.clientX - oX) + 'px'; win.style.top = (e.clientY - oY) + 'px'; };
             document.onmouseup = () => document.onmousemove = null;
@@ -393,27 +311,16 @@
     }
 
     ['ie_window', 'memories_folder', 'profile_win', 'chat_win'].forEach(id => makeDraggable(id));
-
     function beginSession() { document.getElementById('boot-screen').style.display = 'none'; if(player) { player.unMute(); player.playVideo(); } }
     
-    // YOUTUBE BACKGROUND AUDIO
     var player;
     function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-            videoId: 'Bi5kyehmeaY',
-            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 },
-            events: { 'onReady': (e) => e.target.mute() }
-        });
+        player = new YT.Player('player', { videoId: 'Bi5kyehmeaY', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 }, events: { 'onReady': (e) => e.target.mute() } });
     }
     function pauseMusic() { if(player) player.pauseVideo(); }
     function playMusic() { if(player) player.playVideo(); }
 
-    // INITIAL LOAD
-    window.addEventListener('load', () => {
-        const savedMemories = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
-        savedMemories.forEach(mem => addIconToMemories(mem.name, mem.url, mem.uploader || "SYSTEM", mem.pfp || DEFAULT_PFP, false));
-        setInterval(loadMessages, 3000); // Live chat refresh
-    });
+    window.addEventListener('load', () => { renderMemories(); setInterval(loadMessages, 3000); });
 </script>
 </body>
 </html>
