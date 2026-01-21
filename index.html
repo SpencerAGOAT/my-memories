@@ -11,14 +11,13 @@
     <style>
         :root { --vamp-red: #8b0000; --glass: rgba(15, 0, 0, 0.9); }
         
-        /* 1. BACKGROUND ENGINE */
+        /* BACKGROUND */
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
                 url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
             font-family: "Segoe UI", Tahoma, sans-serif;
         }
 
@@ -28,22 +27,19 @@
             color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: pointer;
         }
 
-        /* 2. DESKTOP SYSTEM */
+        /* DESKTOP SYSTEM */
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px; }
         .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
         .icon img { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
 
-        /* 3. WINDOWS ARCHITECTURE */
-        .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1); resize: both; overflow: hidden; display: none; z-index: 10; }
+        .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1); display: none; z-index: 10; overflow: hidden; }
         .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
 
-        /* 4. PORTAL UI */
-        .ie-content { padding: 20px; color: #d40000; height: 100%; box-sizing: border-box; }
-        .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; box-sizing: border-box; }
+        .ie-content { padding: 20px; color: #d40000; }
+        .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; }
         .ie-btn { background: #500; color: white; border: 1px solid #f00; padding: 8px; cursor: pointer; width: 100%; font-weight: bold; }
         
-        /* 5. TASKBAR & SOUNDS */
         .taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); border-top: 1px solid rgba(255,0,0,0.3); display: flex; align-items: center; z-index: 100; }
         .sound-controls { display: flex; margin-left: 150px; gap: 45px; }
         .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); opacity: 0.8; }
@@ -83,7 +79,6 @@
             <input type="password" id="ie_pass" class="ie-input" placeholder="Password">
             <button class="ie-btn" onclick="validateIE()">Authorize</button>
         </div>
-
         <div class="ie-content" id="ie_upload" style="display:none;">
             <h2 style="font-family: 'UnifrakturMaguntia';">Upload Memory</h2>
             <input type="text" id="ie_filename" class="ie-input" placeholder="Memory Name">
@@ -96,8 +91,14 @@
 <div class="window" id="memories_folder" style="left:50px; top:50px; width:450px; height:350px;">
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body">
-        <div id="memories_grid" style="display:grid; grid-template-columns: repeat(auto-fill, 90px); gap:20px; padding:25px;">
-            </div>
+        <div id="memories_grid" style="display:grid; grid-template-columns: repeat(auto-fill, 90px); gap:20px; padding:25px;"></div>
+    </div>
+</div>
+
+<div class="window" id="vid_player" style="left:550px; top:120px; width:500px; height:430px;">
+    <div class="title-bar"><div class="title-bar-text">Media Player</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid_player')"></button></div></div>
+    <div class="window-body" style="background: black; display: flex; align-items: center; justify-content: center;">
+        <video id="main_vid" controls style="width:100%; height:100%; background: black;"></video>
     </div>
 </div>
 
@@ -105,13 +106,6 @@
     <div class="title-bar"><div class="title-bar-text">Minesweeper</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('mines_win')"></button></div></div>
     <div class="window-body">
         <iframe src="https://minesweeper.online/classic" style="width:100%; height:100%; border:none;"></iframe>
-    </div>
-</div>
-
-<div class="window" id="vid_player" style="left:550px; top:120px; width:500px; height:430px;">
-    <div class="title-bar"><div class="title-bar-text">Media Player</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid_player')"></button></div></div>
-    <div class="window-body" style="background: black; display: flex; flex-direction: column;">
-        <video id="main_vid" controls style="width:100%; height:100%; background: black;"></video>
     </div>
 </div>
 
@@ -126,9 +120,8 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    // --- UPDATED CLOUDINARY CONFIG ---
     const CLOUD_NAME = "fangtasia-14197"; 
-    const UPLOAD_PRESET = "fangtasia"; // Corrected Preset Name
+    const UPLOAD_PRESET = "fangtasia"; 
 
     const userDatabase = {
         "buttheadandbeav126": "wtfomfgfangtasiafordabros21",
@@ -147,7 +140,7 @@
     async function processIEUpload() {
         const fileInput = document.getElementById('ie_file_picker');
         const file = fileInput.files[0];
-        const name = document.getElementById('ie_filename').value || "new_memory";
+        const name = document.getElementById('ie_filename').value || "New Memory";
         const statusBtn = document.getElementById('upload_status');
 
         if(!file) return alert("Select a file first!");
@@ -168,18 +161,17 @@
             const data = await response.json();
 
             if (response.ok) {
-                alert("Memory Saved to Cloud.");
+                alert("Archive Synced!");
                 addIconToMemories(name, data.secure_url);
                 statusBtn.innerText = "Push to Cloud";
                 document.getElementById('ie_filename').value = "";
                 fileInput.value = "";
             } else {
-                console.error("Cloudinary Error:", data);
-                alert("UPLOAD ERROR: " + (data.error ? data.error.message : "Invalid Preset Configuration"));
+                alert("VOID ERROR: " + (data.error ? data.error.message : "Unknown Error"));
                 statusBtn.innerText = "Push to Cloud";
             }
         } catch (err) {
-            alert("Network Error. Check Cloud Name.");
+            alert("Digital connection failed. Check Cloud Name.");
         } finally {
             statusBtn.disabled = false;
         }
@@ -188,7 +180,8 @@
     function addIconToMemories(name, url) {
         const grid = document.getElementById('memories_grid');
         const div = document.createElement('div');
-        div.style = "text-align:center; cursor:pointer; width:85px;";
+        div.className = "icon";
+        div.style = "text-align:center; cursor:pointer; width:85px; margin: 10px;";
         div.innerHTML = `
             <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png" style="width:38px; filter: sepia(1) hue-rotate(330deg) saturate(2);">
             <div style="color:white; font-size:10px; margin-top:5px; word-wrap: break-word;">${name}</div>
@@ -213,6 +206,7 @@
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     }
 
+    // Windows Draggable Logic
     document.querySelectorAll('.window').forEach(win => {
         win.querySelector('.title-bar').onmousedown = (e) => {
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
@@ -223,6 +217,7 @@
         };
     });
 
+    // YouTube Audio Logic
     var player;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
