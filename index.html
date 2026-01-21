@@ -20,7 +20,6 @@
             cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
         }
 
-        /* LOGO IN BOTTOM RIGHT */
         .main-logo {
             position: fixed;
             bottom: 5px;
@@ -34,7 +33,6 @@
             z-index: 101;
         }
 
-        /* VERTICAL LEFT SIDE ICONS */
         #desktop { 
             display: flex;
             flex-direction: column;
@@ -54,15 +52,17 @@
             font-size: 11px;
         }
 
-        /* UNIFIED RED IMAGE STYLE FOR ALL ICONS */
+        /* FIXED UNIFIED FILTER: BLENDS EVERYTHING INTO THE IE RED STYLE */
         .icon img { 
-            width: 48px; 
+            width: 44px; 
             display: block; 
             margin: 0 auto 5px;
-            filter: sepia(1) saturate(25) hue-rotate(325deg) brightness(0.6) contrast(1.2) drop-shadow(0 0 5px rgba(255,0,0,0.3));
+            /* High contrast, deep red saturation, crystallized shadows */
+            filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 1px rgba(0,0,0,0.9));
+            transition: filter 0.2s;
         }
+        .icon:hover img { filter: grayscale(0) sepia(1) saturate(45) hue-rotate(320deg) brightness(0.75) contrast(1.6) drop-shadow(0 0 8px red); }
 
-        /* WINDOWS */
         .window { 
             position: absolute; width: 450px; height: 350px; z-index: 10; display: none; 
             background: #0a0a0a !important; border: 1px solid #700000 !important; 
@@ -72,23 +72,23 @@
         .window-body { height: calc(100% - 32px); padding: 0 !important; margin: 0 !important; background: black; }
         iframe, video { width: 100%; height: 100%; border: none; background: black; }
 
-        /* TASKBAR & SPREAD MUSIC CONTROLS */
         .taskbar { 
             position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); 
             backdrop-filter: blur(15px); border-top: 1px solid rgba(255,0,0,0.2); 
             display: flex; align-items: center; padding: 0 15px; z-index: 100; 
         }
         
-        .start-btn { width: 32px; filter: grayscale(1) sepia(1) saturate(20) hue-rotate(320deg); cursor: pointer; margin-right: 30px; } 
+        .start-btn { width: 32px; filter: grayscale(1) sepia(1) saturate(20) hue-rotate(320deg); cursor: pointer; margin-right: 40px; } 
         
         .music-ctrl {
-            width: 20px;
+            width: 22px;
             cursor: pointer;
             filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg);
-            margin-right: 25px; /* Spaced out horizontally */
-            transition: transform 0.1s;
+            margin-right: 30px;
+            opacity: 0.8;
+            transition: opacity 0.2s, transform 0.1s;
         }
-        .music-ctrl:hover { transform: scale(1.2); }
+        .music-ctrl:hover { opacity: 1; transform: scale(1.1); }
     </style>
 </head>
 <body onclick="startMusic()">
@@ -105,7 +105,7 @@
         <div>Solitaire</div>
     </div>
     <div class="icon" onclick="toggleWin('minesweeper')">
-        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
+        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-1.png">
         <div>Mines</div>
     </div>
     <div class="icon" onclick="toggleWin('paint')">
@@ -117,36 +117,36 @@
         <div>Internet</div>
     </div>
     <div class="icon">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Skype_logo_%282019%E2%80%93present%29.svg">
+        <img src="https://win98icons.alexmeub.com/icons/png/message_envelope_open-0.png">
         <div>Skype</div>
     </div>
 </div>
 
 <div class="window" id="vid1" style="left:200px; top:100px; width:500px; height:380px;">
     <div class="title-bar"><div class="title-bar-text">Fangtasia_Memory.mp4</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid1')"></button></div></div>
-    <div class="window-body"><video controls><source src="YOUR_VIDEO_URL" type="video/mp4"></video></div>
+    <div class="window-body"><video id="videoPlayer" controls><source src="YOUR_VIDEO_URL" type="video/mp4"></video></div>
 </div>
 
-<div class="window" id="solitaire" style="left:250px; top:150px; width:600px; height:400px;">
-    <div class="title-bar"><div class="title-bar-text">Solitaire</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
+<div class="window" id="solitaire" style="left:250px; top:150px; width:620px; height:450px;">
+    <div class="title-bar"><div class="title-bar-text">Solitaire.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('solitaire')"></button></div></div>
     <div class="window-body"><iframe src="https://solitaire.pet/em/"></iframe></div>
 </div>
 
-<div class="window" id="minesweeper" style="left:300px; top:200px; width:280px; height:360px;">
-    <div class="title-bar"><div class="title-bar-text">Minesweeper</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
-    <div class="window-body"><iframe src="https://minesweeper.online/en/embed/v2/1"></iframe></div>
+<div class="window" id="minesweeper" style="left:300px; top:200px; width:260px; height:370px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('minesweeper')"></button></div></div>
+    <div class="window-body"><iframe src="https://minesweeper.online/en/embed/v2/1?difficulty=1&theme=2"></iframe></div>
 </div>
 
 <div class="window" id="paint" style="left:350px; top:100px; width:750px; height:500px;">
-    <div class="title-bar"><div class="title-bar-text">Paint</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint')"></button></div></div>
+    <div class="title-bar"><div class="title-bar-text">Paint.exe</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('paint')"></button></div></div>
     <div class="window-body"><iframe src="https://jspaint.app"></iframe></div>
 </div>
 
 <div class="taskbar">
     <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Windows_logo_-_2012.svg" class="start-btn">
     
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" id="pauseBtn" onclick="pauseMusic()" title="Pause Music">
-    <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" id="playBtn" onclick="playMusic()" title="Play Music">
+    <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" id="pauseBtn" onclick="pauseMusic()" title="Pause">
+    <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" id="playBtn" onclick="playMusic()" title="Play">
 </div>
 
 <div id="player" style="position:absolute; top:-9999px;"></div>
@@ -168,7 +168,9 @@
     });
 
     // MUSIC LOGIC
-    var player; var started = false;
+    var player; 
+    var started = false;
+
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
             videoId: 'Bi5kyehmeaY',
@@ -185,8 +187,17 @@
         } 
     }
 
-    function pauseMusic() { if(player) player.pauseVideo(); }
-    function playMusic() { if(player) player.playVideo(); }
+    function pauseMusic() { 
+        if(player) player.pauseVideo(); 
+        document.getElementById('pauseBtn').style.opacity = "0.3";
+        document.getElementById('playBtn').style.opacity = "1";
+    }
+
+    function playMusic() { 
+        if(player) player.playVideo(); 
+        document.getElementById('playBtn').style.opacity = "0.3";
+        document.getElementById('pauseBtn').style.opacity = "1";
+    }
 
     function toggleWin(id) {
         let el = document.getElementById(id);
