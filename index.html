@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fangtasia OS - Cloudinary Edition</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/7.css">
+    
+    <style>
+        :root { --vamp-red: #8b0000; --glass: rgba(15, 0, 0, 0.9); }
+        
+        /* 1. CORE SYSTEM STYLES */
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
+        body {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&');
+            background-size: cover;
+            background-position: center;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+        }
+
+        #boot-screen {
+            position: fixed; inset: 0; background: black; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: pointer;
+        }
+
+        #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px; }
+        
+        /* 2. ICON & WINDOW ENGINE */
+        .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
+        .icon img { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
+
+        .window { 
+            position: absolute; 
+            background: #0d0d0d !important; 
+            border: 1px solid #700000 !important; 
+            box-shadow: 0 15px 40px rgba(0,0,0,1); 
+            display: none; 
+            z-index: 10; 
+            overflow: hidden; 
+            resize: both; /* Makes windows resizable */
+            min-width: 250px; 
+            min-height: 200px; 
+        }
+        .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
+        .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
+
+        /* 3. UI COMPONENTS */
+        .ie-content { padding: 20px; color: #d40000; }
+        .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; }
+        .ie-btn { background: #500; color: white; border: 1px solid #f00; padding: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        
+        .taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); border-top: 1px solid rgba(255,0,0,0.3); display: flex; align-items: center; z-index: 100; }
+        .sound-controls { display: flex; margin-left: 150px; gap: 45px; }
+        .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+<div id="boot-screen" onclick="beginSession()">
+    <h1 style="font-size: 50px;">Fangtasia</h1>
+    <p>Click to Initialize Secure OS</p>
+</div>
+
+<div id="desktop">
+    <div class="icon" onclick="toggleWin('memories_folder')">
+        <img src="https://win98icons.alexmeub.com/icons/png/directory_open_file_mydocs-4.png">
+        <div>Memories</div>
+    </div>
+    <div class="icon" onclick="toggleWin('ie_window')">
+        <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
+        <div>Internet Explorer</div>
+    </div>
+    <div class="icon" onclick="toggleWin('mines_win')">
+        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
+        <div>Mines</div>
+    </div>
+</div>
+
+<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:450px;">
+    <div class="title-bar">
+        <div class="title-bar-text">Internet Explorer - Member Portal</div>
+        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie_window')"></button></div>
+    </div>
+    <div class="window-body">
+        <div class="ie-content" id="ie_login">
+            <h2 style="font-family: 'UnifrakturMaguntia';">Secure Login</h2>
+            <input type="text" id="ie_user" class="ie-input" placeholder="Username">
+            <input type="password" id="ie_pass" class="ie-input" placeholder="Password">
+            <button class="ie-btn" onclick="validateIE()">Authorize</button>
+        </div>
+        <div class="ie-content" id="ie_upload" style="display:none;">
+            <h2 style="font-family: 'UnifrakturMaguntia';">Upload Memory</h2>
+            <input type="text" id="ie_filename" class="ie-input" placeholder="Memory Name">
+            <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
+            <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
+            <button class="ie-btn" style="margin-top:20px; background:#222; border-color:#444;" onclick="clearArchive()">Purge Local Cache</button>
+        </div>
+    </div>
+</div>
+
+<div class="window" id="memories_folder" style="left:50px; top:50px; width:450px; height:350px;">
+    <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
+    <div class="window-body">
+        <div id="memories_grid" style="display:grid; grid-template-columns: repeat(auto-fill, 90px); gap:20px; padding:25px;"></div>
+    </div>
+</div>
+
+<div class="window" id="mines_win" style="left:600px; top:50px; width:300px; height:350px;">
+    <div class="title-bar"><div class="title-bar-text">Minesweeper</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('mines_win')"></button></div></div>
+    <div class="window-body">
+        <iframe src="https://minesweeper.online/classic" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+</div>
+
+<div class="taskbar">
+    <div class="sound-controls">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
+    </div>
+</div>
+
+<div id="player" style="position:absolute; top:-999px;"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+    // --- CONFIGURATION ---
+    const CLOUD_NAME = "fangtasia-14197"; 
+    const UPLOAD_PRESET = "fangtasia"; 
+
+    const userDatabase = {
+        "buttheadandbeav126": "wtfomfgfangtasiafordabros21",
+        "bloomhouse8483": "methybethy89!"
+    };
+
+    // --- INITIALIZATION ---
+    window.addEventListener('load', () => {
+        const savedMemories = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
+        savedMemories.forEach(mem => addIconToMemories(mem.name, mem.url, false));
+    });
+
+    function validateIE() {
+        const u = document.getElementById('ie_user').value;
+        const p = document.getElementById('ie_pass').value;
+        if(userDatabase[u] === p) {
+            document.getElementById('ie_login').style.display = 'none';
+            document.getElementById('ie_upload').style.display = 'block';
+        } else { alert("ACCESS DENIED"); }
+    }
+
+    // --- CLOUDINARY UPLOAD ENGINE ---
+    async function processIEUpload() {
+        const fileInput = document.getElementById('ie_file_picker');
+        const file = fileInput.files[0];
+        const name = document.getElementById('ie_filename').value || "New Memory";
+        const statusBtn = document.getElementById('upload_status');
+
+        if(!file) return alert("Select a file first!");
+
+        statusBtn.innerText = "Syncing...";
+        statusBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', UPLOAD_PRESET);
+
+        try {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Archive Synced!");
+                addIconToMemories(name, data.secure_url, true);
+                statusBtn.innerText = "Push to Cloud";
+                document.getElementById('ie_filename').value = "";
+                fileInput.value = "";
+            } else {
+                alert("UPLOAD ERROR: Check Cloudinary Preset");
+                statusBtn.innerText = "Push to Cloud";
+            }
+        } catch (err) {
+            alert("Connection lost.");
+        } finally {
+            statusBtn.disabled = false;
+        }
+    }
+
+    // --- MEMORY FOLDER ENGINE ---
+    function addIconToMemories(name, url, shouldSave) {
+        const grid = document.getElementById('memories_grid');
+        const div = document.createElement('div');
+        div.className = "icon";
+        div.style = "text-align:center; cursor:pointer; width:85px; margin: 10px;";
+        div.innerHTML = `
+            <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png" style="width:38px; filter: sepia(1) hue-rotate(330deg) saturate(2);">
+            <div style="color:white; font-size:10px; margin-top:5px; word-wrap: break-word;">${name}</div>
+        `;
+        
+        div.onclick = () => spawnVideoWindow(name, url);
+        grid.appendChild(div);
+
+        if (shouldSave) {
+            const archive = JSON.parse(localStorage.getItem('fangtasia_archive')) || [];
+            archive.push({ name, url });
+            localStorage.setItem('fangtasia_archive', JSON.stringify(archive));
+        }
+    }
+
+    // --- RESIZABLE VIDEO WINDOW SPAWNER ---
+    function spawnVideoWindow(name, url) {
+        if(player) player.pauseVideo(); 
+
+        const winId = 'vwin_' + Date.now();
+        const win = document.createElement('div');
+        win.className = 'window';
+        win.id = winId;
+        win.style.display = 'block';
+        win.style.left = (Math.random() * 100 + 300) + 'px'; // Random offset
+        win.style.top = (Math.random() * 100 + 100) + 'px';
+        win.style.width = '480px';
+        win.style.height = '360px';
+        win.style.zIndex = '200';
+
+        win.innerHTML = `
+            <div class="title-bar" id="${winId}_header">
+                <div class="title-bar-text">Media Player - ${name}</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Close" onclick="document.getElementById('${winId}').remove()"></button>
+                </div>
+            </div>
+            <div class="window-body" style="background: black; display: flex; align-items: center; justify-content: center; height: calc(100% - 32px);">
+                <video src="${url}" controls autoplay style="width:100%; height:100%; background: black; object-fit: contain;"></video>
+            </div>
+        `;
+
+        document.body.appendChild(win);
+        makeDraggable(winId);
+    }
+
+    function clearArchive() {
+        if(confirm("Purge all memories from this device?")) {
+            localStorage.removeItem('fangtasia_archive');
+            document.getElementById('memories_grid').innerHTML = "";
+        }
+    }
+
+    // --- WINDOW MANAGEMENT ---
+    function beginSession() { 
+        document.getElementById('boot-screen').style.display = 'none'; 
+        if (player) { player.unMute(); player.playVideo(); }
+    }
+    
+    function toggleWin(id) {
+        let el = document.getElementById(id);
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+        if(el.style.display === 'block') {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+            el.style.zIndex = "100";
+        }
+    }
+
+    function makeDraggable(winId) {
+        const win = document.getElementById(winId);
+        const header = document.getElementById(winId + '_header') || win.querySelector('.title-bar');
+        
+        header.onmousedown = (e) => {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+            win.style.zIndex = "100";
+            let oX = e.clientX - win.offsetLeft, oY = e.clientY - win.offsetTop;
+            document.onmousemove = (e) => {
+                win.style.left = (e.clientX - oX) + 'px';
+                win.style.top = (e.clientY - oY) + 'px';
+            };
+            document.onmouseup = () => document.onmousemove = null;
+        };
+    }
+
+    // Initialize drag for main windows
+    ['ie_window', 'memories_folder', 'mines_win'].forEach(id => makeDraggable(id));
+
+    // --- YOUTUBE BACKGROUND ENGINE ---
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            videoId: 'Bi5kyehmeaY',
+            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 },
+            events: { 'onReady': (e) => { e.target.mute(); } }
+        });
+    }
+    function pauseMusic() { if(player) player.pauseVideo(); }
+    function playMusic() { if(player) player.playVideo(); }
+</script>
+</body>
+</html>
