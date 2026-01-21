@@ -22,29 +22,24 @@
             font-family: "Segoe UI", Tahoma, sans-serif;
         }
 
-        /* 2. BOOT SCREEN */
         #boot-screen {
             position: fixed; inset: 0; background: black; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: pointer;
         }
 
-        /* 3. DESKTOP SYSTEM */
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px; }
         .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
         .icon img { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
 
-        /* 4. WINDOWS ARCHITECTURE */
         .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1); resize: both; overflow: hidden; display: none; z-index: 10; }
         .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
 
-        /* 5. IE PORTAL STYLING */
         .ie-content { padding: 20px; color: #d40000; height: 100%; box-sizing: border-box; }
         .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; box-sizing: border-box; }
         .ie-btn { background: #500; color: white; border: 1px solid #f00; padding: 8px; cursor: pointer; width: 100%; font-weight: bold; }
         
-        /* 6. TASKBAR & MUSIC */
         .taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); border-top: 1px solid rgba(255,0,0,0.3); display: flex; align-items: center; z-index: 100; }
         .sound-controls { display: flex; margin-left: 150px; gap: 45px; }
         .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); opacity: 0.8; }
@@ -91,7 +86,7 @@
         <div class="ie-content" id="ie_upload" style="display:none;">
             <h2 style="font-family: 'UnifrakturMaguntia';">Upload Memory</h2>
             <input type="text" id="ie_filename" class="ie-input" placeholder="Clip Name">
-            <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
+            <input type="file" id="ie_file_picker" class="ie-input" style="border:none;">
             <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
         </div>
     </div>
@@ -101,7 +96,7 @@
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body">
         <div id="memories_grid" style="display:grid; grid-template-columns: repeat(auto-fill, 90px); gap:20px; padding:25px;">
-            </div>
+        </div>
     </div>
 </div>
 
@@ -130,23 +125,13 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    // --- CLOUDINARY CONFIGURATION ---
+    // --- UPDATED CLOUDINARY CONFIG ---
     const CLOUD_NAME = "fangtasia-14197"; 
-    const UPLOAD_PRESET = "ml_default"; 
-
-    // --- PERMANENT MEMORIES (Add your Cloudinary URLs here so they stay after refresh) ---
-    const hardcodedMemories = [
-        { name: "First Entry", url: "https://res.cloudinary.com/demo/video/upload/dog.mp4" }
-    ];
+    const UPLOAD_PRESET = "m1_default"; 
 
     const userDatabase = {
         "buttheadandbeav126": "wtfomfgfangtasiafordabros21",
         "bloomhouse8483": "methybethy89!"
-    };
-
-    // Load hardcoded memories on startup
-    window.onload = () => {
-        hardcodedMemories.forEach(mem => addIconToMemories(mem.name, mem.url));
     };
 
     function validateIE() {
@@ -158,16 +143,15 @@
         } else { alert("Access Denied"); }
     }
 
-    // --- UPDATED UPLOAD LOGIC ---
     async function processIEUpload() {
         const fileInput = document.getElementById('ie_file_picker');
         const file = fileInput.files[0];
-        const name = document.getElementById('ie_filename').value || "unnamed_memory";
+        const name = document.getElementById('ie_filename').value || "unnamed";
         const statusBtn = document.getElementById('upload_status');
 
         if(!file) return alert("Select a file first!");
 
-        statusBtn.innerText = "Syncing with Cloud...";
+        statusBtn.innerText = "Syncing...";
         statusBtn.disabled = true;
 
         const formData = new FormData();
@@ -175,7 +159,8 @@
         formData.append('upload_preset', UPLOAD_PRESET);
 
         try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, {
+            // Updated to use /auto/upload for better compatibility
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -183,19 +168,20 @@
             const data = await response.json();
 
             if (response.ok) {
-                alert("Memory Preserved!");
+                alert("Archive Synced!");
                 addIconToMemories(name, data.secure_url);
                 statusBtn.innerText = "Push to Cloud";
                 document.getElementById('ie_filename').value = "";
                 fileInput.value = "";
             } else {
+                // This will tell you if the preset is wrong
                 console.error("Cloudinary Error:", data);
-                alert("VOID ERROR: " + (data.error ? data.error.message : "Check Cloud Name/Preset"));
+                alert("VOID ERROR: " + (data.error ? data.error.message : "Check console"));
                 statusBtn.innerText = "Push to Cloud";
             }
         } catch (err) {
-            console.error("Fetch Error:", err);
-            alert("Digital connection failed. Check your internet or Cloud Name.");
+            alert("Connection error. Check Cloud Name.");
+            statusBtn.disabled = false;
         } finally {
             statusBtn.disabled = false;
         }
@@ -212,7 +198,7 @@
         div.onclick = () => {
             const v = document.getElementById('main_vid');
             v.src = url;
-            if(document.getElementById('vid_player').style.display === 'none') toggleWin('vid_player');
+            toggleWin('vid_player');
             v.play();
         };
         grid.appendChild(div);
