@@ -448,7 +448,7 @@
 </div>
 
 <!-- REGISTRATION WINDOW - Shows after approval -->
-<div class="window" id="register_window" style="left:180px; top:100px; width:340px; height:350px; display:none;">
+<div class="window" id="register_window" style="left:180px; top:100px; width:340px; height:400px; display:none;">
     <div class="title-bar">
         <div class="title-bar-text">✓ Complete Registration</div>
         <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('register_window')"></button></div>
@@ -460,11 +460,12 @@
             <input type="text" id="reg_username" class="ie-input" placeholder="Username" maxlength="20">
             <input type="password" id="reg_password" class="ie-input" placeholder="Password">
             <input type="password" id="reg_password2" class="ie-input" placeholder="Confirm Password">
+            <div style="border: 1px dashed #ffd700; padding: 8px; margin: 10px 0; background: rgba(255,215,0,0.05);">
+                <label style="color: #ffd700; font-size: 9px;">🌟 VIP Invite Code (optional)</label>
+                <input type="text" id="reg_vip_code" class="ie-input" placeholder="Enter VIP code for instant VIP rank" style="margin-bottom:0;">
+            </div>
             <button class="ie-btn" onclick="completeRegistration()">🦇 Complete Registration</button>
             <div id="reg_result" style="margin-top: 10px;"></div>
-        </div>
-    </div>
-</div>
         </div>
     </div>
 </div>
@@ -636,23 +637,50 @@
                 <h4 style="color: #d40000; border-bottom: 1px solid #400; padding-bottom: 5px;">📊 Stats</h4>
                 <div id="admin_stats" style="color: #888; font-size: 11px;"></div>
             </div>
+            
+            <!-- ST ONLY SECTION -->
+            <div class="admin-section" id="st_section" style="display:none; border: 1px solid #ff00ff; padding: 10px; margin-top: 10px;">
+                <h4 style="color: #ff00ff; border-bottom: 1px solid #ff00ff; padding-bottom: 5px;">🔮 Site Technician Only</h4>
+                <div style="margin-bottom: 10px;">
+                    <label style="color:#888; font-size:9px;">Elevate User Permissions</label>
+                    <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
+                    <select id="elevate_rank" class="ie-input">
+                        <option value="member">Member</option>
+                        <option value="vip">VIP</option>
+                        <option value="mod">Moderator</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button class="ie-btn" onclick="elevateUser()">Elevate</button>
+                </div>
+                <div>
+                    <label style="color:#888; font-size:9px;">Generate VIP Invite Code</label>
+                    <button class="ie-btn" onclick="generateVIPCode()">Generate Code</button>
+                    <div id="vip_code_display" style="margin-top:5px; color:#ffd700; font-family:monospace;"></div>
+                </div>
+                <div style="margin-top:10px;">
+                    <label style="color:#888; font-size:9px;">Active VIP Codes</label>
+                    <div id="active_codes" style="font-size:9px; color:#666; max-height:60px; overflow-y:auto;"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="window" id="memories_folder" style="left:50px; top:50px; width:550px; height:580px;">
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
-    <div class="window-body">
-        <div id="memories_grid"></div>
-        <div class="pagination-bar">
-            <button class="ie-btn" style="width:auto; padding: 2px 25px;" onclick="nextPage()">Next Page ></button>
+    <div class="window-body" style="display:flex; flex-direction:column; height:100%;">
+        <div id="memories_grid" style="flex:1; overflow-y:auto;"></div>
+        <div class="pagination-bar" style="display:flex; justify-content:center; gap:10px;">
+            <button class="ie-btn" style="width:auto; padding: 4px 20px;" onclick="prevPage()">< Prev</button>
+            <span id="page_indicator" style="color:#888; font-size:11px; line-height:28px;">Page 1</span>
+            <button class="ie-btn" style="width:auto; padding: 4px 20px;" onclick="nextPage()">Next ></button>
         </div>
     </div>
 </div>
 
-<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:580px;">
+<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:620px;">
     <div class="title-bar"><div class="title-bar-text">fangtasia.wtf Portal</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie_window')"></button></div></div>
-    <div class="window-body">
+    <div class="window-body" style="overflow-y:auto;">
         <div class="ie-content" id="ie_login">
             <h2 style="">Member Login</h2>
             <input type="text" id="ie_user" class="ie-input" placeholder="Username">
@@ -661,7 +689,6 @@
             
             <div class="guest-section">
                 <p style="color: #666; font-size: 10px; text-align: center; margin-bottom: 10px;">— OR —</p>
-                <button class="guest-btn" onclick="toggleWin('removed_guestbook')">📖 Sign the Guestbook</button>
                 <button class="guest-btn" onclick="toggleWin('about_window')">❓ About This Place</button>
                 <button class="guest-btn" onclick="enterGuestChat()">👁️ Lurk the Lounge (Read-Only)</button>
                 <p style="color: #555; font-size: 9px; text-align: center; margin-top: 15px;">
@@ -671,23 +698,32 @@
         </div>
         <div class="ie-content" id="ie_upload" style="display:none;">
             <button class="lounge-entry-btn" onclick="openChat()">🩸 Enter The Lounge</button>
-            <h2 style="">Upload Memory</h2>
             <p id="logged_in_as" style="font-size: 11px; color: #fff;"></p>
+            
+            <h3 style="color:#d40000; margin: 15px 0 5px 0; font-size: 13px;">📹 Upload Memory</h3>
             <input type="text" id="ie_filename" class="ie-input" placeholder="Memory Name">
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
             <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
-            <button class="ie-btn" style="background: #222; margin-top: 10px;" onclick="logout()">Logout</button>
+            
+            <!-- VIP IMAGE HOSTING -->
+            <div id="vip_image_section" style="display:none; margin-top:15px; border-top:1px solid #400; padding-top:15px;">
+                <h3 style="color:#ffd700; margin: 0 0 5px 0; font-size: 13px;">🌟 VIP Image Hosting</h3>
+                <p style="color:#888; font-size:9px;">Upload images and get shareable embed links.</p>
+                <input type="file" id="vip_image_picker" class="ie-input" style="border:none;" accept="image/*">
+                <button class="ie-btn" style="background:#5a4a00;" onclick="uploadVIPImage()">Upload Image</button>
+                <div id="vip_image_result" style="margin-top:8px;"></div>
+                <div id="vip_image_gallery" style="margin-top:10px; max-height:120px; overflow-y:auto;"></div>
+            </div>
+            
+            <button class="ie-btn" style="background: #222; margin-top: 15px;" onclick="logout()">Logout</button>
         </div>
     </div>
 </div>
 
 <div class="taskbar">
-    <button class="start-btn" onclick="toggleStartMenu()">
-        <span style="font-size: 16px;">🦇</span> Start
-    </button>
-    <div class="sound-controls">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()" title="Pause">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()" title="Play">
+    <div class="sound-controls" style="margin-left: 10px; display: flex; gap: 8px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()" title="Play" style="width:18px; height:18px; cursor:pointer; filter: invert(1) brightness(0.7);">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()" title="Pause" style="width:18px; height:18px; cursor:pointer; filter: invert(1) brightness(0.7);">
     </div>
     <div style="margin-left: auto; margin-right: 15px; color: #888; font-size: 11px;" id="taskbar_clock"></div>
 </div>
@@ -701,7 +737,7 @@
     
     // Registered users database - includes dynamic members
     let userDatabase = {
-        "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", target: "list_technician", isAdmin: true },
+        "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", target: "list_technician", isAdmin: true, isST: true },
         "buttheadandbeav126": { pass: "wtfomfgfangtasiafordabros21", rank: "ᗝᓬ⊢", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
         "bloomhouse8483": { pass: "methybethy89!", rank: "MOD", fullRank: "Moderator", style: "mod-style", target: "list_mod", isAdmin: true }
     };
@@ -940,16 +976,51 @@
     function validateIE() {
         const u = document.getElementById('ie_user').value;
         const p = document.getElementById('ie_pass').value;
+        
+        // Check if user is banned
+        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
+        const ban = bans[u];
+        if (ban) {
+            const now = Date.now();
+            if (ban.expiry === 0 || ban.expiry > now) {
+                if (ban.type === 'hardban') {
+                    alert('This account has been permanently banned.');
+                    return;
+                } else if (ban.type === 'softban') {
+                    const expStr = ban.expiry === 0 ? 'permanently' : 'until ' + new Date(ban.expiry).toLocaleString();
+                    alert('This account is suspended ' + expStr + '.\nReason: ' + (ban.reason || 'No reason given'));
+                    return;
+                }
+            } else {
+                // Ban expired, remove it
+                delete bans[u];
+                localStorage.setItem('f_bans', JSON.stringify(bans));
+            }
+        }
+        
         if(userDatabase[u] && userDatabase[u].pass === p) {
             CURRENT_USER = u;
             IS_GUEST = false;
             document.getElementById('ie_login').style.display = 'none';
             document.getElementById('ie_upload').style.display = 'block';
-            document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u}`;
+            document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
             loadProfile();
             updateMemberList();
+            
+            // Show admin icon for admins
             if (userDatabase[u].isAdmin) {
                 document.getElementById('admin_icon').style.display = 'block';
+            }
+            
+            // Show ST section for Site Technician
+            if (userDatabase[u].isST) {
+                document.getElementById('st_section').style.display = 'block';
+            }
+            
+            // Show VIP image hosting for VIP+
+            if (userDatabase[u].rank === 'VIP' || userDatabase[u].isAdmin || userDatabase[u].isST) {
+                document.getElementById('vip_image_section').style.display = 'block';
+                loadVIPGallery();
             }
         } else { alert("DENIED."); }
     }
@@ -961,6 +1032,9 @@
         document.getElementById('ie_upload').style.display = 'none';
         document.getElementById('ie_user').value = '';
         document.getElementById('ie_pass').value = '';
+        document.getElementById('admin_icon').style.display = 'none';
+        document.getElementById('st_section').style.display = 'none';
+        document.getElementById('vip_image_section').style.display = 'none';
         toggleWin('chat_win');
     }
 
@@ -1334,6 +1408,7 @@
         const username = document.getElementById('reg_username').value.trim();
         const pass = document.getElementById('reg_password').value;
         const pass2 = document.getElementById('reg_password2').value;
+        const vipCode = document.getElementById('reg_vip_code').value.trim();
         
         if (!username || !pass) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Fill all fields.</span>'; return; }
         if (pass !== pass2) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Passwords do not match.</span>'; return; }
@@ -1346,8 +1421,28 @@
             return;
         }
         
+        // Check VIP code if provided
+        let isVIP = false;
+        if (vipCode) {
+            const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
+            const codeIdx = codes.findIndex(c => c.code === vipCode && !c.used);
+            if (codeIdx !== -1) {
+                codes[codeIdx].used = true;
+                codes[codeIdx].usedBy = username;
+                localStorage.setItem('f_vip_codes', JSON.stringify(codes));
+                isVIP = true;
+            } else {
+                document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Invalid or already used VIP code.</span>';
+                return;
+            }
+        }
+        
         // Add new member
-        members[username] = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+        if (isVIP) {
+            members[username] = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
+        } else {
+            members[username] = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
+        }
         localStorage.setItem('f_members', JSON.stringify(members));
         userDatabase[username] = members[username];
         
@@ -1356,7 +1451,8 @@
         const idx = apps.findIndex(a => a.username.toLowerCase() === username.toLowerCase());
         if (idx !== -1) { apps[idx].status = 'registered'; localStorage.setItem('f_applications', JSON.stringify(apps)); }
         
-        document.getElementById('reg_result').innerHTML = '<span style="color:#0f0;">Registration complete! You can now log in.</span>';
+        const rankMsg = isVIP ? '🌟 VIP Registration complete!' : 'Registration complete!';
+        document.getElementById('reg_result').innerHTML = '<span style="color:#0f0;">' + rankMsg + ' You can now log in.</span>';
         setTimeout(() => { toggleWin('register_window'); toggleWin('ie_window'); }, 2000);
     }
 
@@ -1457,6 +1553,95 @@
         return false;
     }
 
+    // ST-ONLY: ELEVATE USER
+    function elevateUser() {
+        if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
+        const username = document.getElementById('elevate_user').value.trim();
+        const newRank = document.getElementById('elevate_rank').value;
+        
+        if (!username) { alert('Enter username.'); return; }
+        
+        const members = JSON.parse(localStorage.getItem('f_members') || '{}');
+        if (!members[username] && !userDatabase[username]) { alert('User not found.'); return; }
+        
+        const rankConfig = {
+            'member': { rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false },
+            'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false },
+            'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', target: 'list_mod', isAdmin: true },
+            'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', target: 'list_admin', isAdmin: true }
+        };
+        
+        if (members[username]) {
+            members[username] = { ...members[username], ...rankConfig[newRank] };
+            localStorage.setItem('f_members', JSON.stringify(members));
+            userDatabase[username] = members[username];
+        }
+        
+        alert(username + ' elevated to ' + rankConfig[newRank].fullRank);
+    }
+
+    // ST-ONLY: GENERATE VIP CODE
+    function generateVIPCode() {
+        if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
+        const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
+        codes.push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false });
+        localStorage.setItem('f_vip_codes', JSON.stringify(codes));
+        document.getElementById('vip_code_display').textContent = code;
+        loadActiveCodes();
+    }
+
+    function loadActiveCodes() {
+        const codes = JSON.parse(localStorage.getItem('f_vip_codes') || '[]');
+        const active = codes.filter(c => !c.used);
+        const container = document.getElementById('active_codes');
+        if (container) {
+            container.innerHTML = active.length ? active.map(c => c.code).join('<br>') : 'None';
+        }
+    }
+
+    // VIP IMAGE HOSTING
+    function uploadVIPImage() {
+        const file = document.getElementById('vip_image_picker').files[0];
+        if (!file) { alert('Select an image.'); return; }
+        if (!file.type.startsWith('image/')) { alert('Images only.'); return; }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const images = JSON.parse(localStorage.getItem('f_vip_images_' + CURRENT_USER) || '[]');
+            const id = Date.now().toString(36);
+            const imgData = { id: id, data: e.target.result, name: file.name, date: new Date().toLocaleDateString() };
+            images.push(imgData);
+            localStorage.setItem('f_vip_images_' + CURRENT_USER, JSON.stringify(images.slice(-20))); // Keep last 20
+            
+            // Create embed link (simulated - in real app would be server URL)
+            const embedLink = 'fangtasia.wtf/i/' + CURRENT_USER + '/' + id;
+            document.getElementById('vip_image_result').innerHTML = '<div style="background:#111; padding:5px; margin-top:5px;"><span style="color:#0f0; font-size:9px;">Uploaded!</span><br><input type="text" value="' + embedLink + '" style="width:100%; font-size:9px; background:#000; border:1px solid #333; color:#ffd700; padding:2px;" onclick="this.select()"></div>';
+            loadVIPGallery();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function loadVIPGallery() {
+        const images = JSON.parse(localStorage.getItem('f_vip_images_' + CURRENT_USER) || '[]');
+        const container = document.getElementById('vip_image_gallery');
+        if (!container) return;
+        container.innerHTML = images.slice(-6).reverse().map(img => '<img src="' + img.data + '" style="width:50px; height:50px; object-fit:cover; border:1px solid #333; margin:2px; cursor:pointer;" onclick="copyImageLink(\'' + img.id + '\')" title="Click to copy link">').join('');
+    }
+
+    function copyImageLink(id) {
+        const link = 'fangtasia.wtf/i/' + CURRENT_USER + '/' + id;
+        navigator.clipboard.writeText(link).then(() => alert('Link copied: ' + link));
+    }
+
+    // PREV PAGE FOR MEMORIES
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderMemories();
+        }
+    }
+
     function loadMessages() {
         const logs = document.getElementById('chat_logs');
         if (!logs) return;
@@ -1523,6 +1708,12 @@
         const grid = document.getElementById('memories_grid');
         grid.innerHTML = "";
         const archive = JSON.parse(localStorage.getItem('f_archive')) || [];
+        const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
+        
+        // Update page indicator
+        const indicator = document.getElementById('page_indicator');
+        if (indicator) indicator.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+        
         if (archive.length === 0) {
             grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories archived yet...</p>';
             return;
@@ -1542,8 +1733,11 @@
 
     function nextPage() {
         const archive = JSON.parse(localStorage.getItem('f_archive')) || [];
-        currentPage = (currentPage * itemsPerPage < archive.length) ? currentPage + 1 : 1;
-        renderMemories();
+        const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderMemories();
+        }
     }
 
     function spawnVideoWindow(name, url) {
@@ -1561,13 +1755,13 @@
 
     function toggleWin(id) {
         let el = document.getElementById(id);
+        if (!el) return;
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
         if(el.style.display === 'block') { 
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
             el.style.zIndex = "200"; 
         }
-        if (id === 'removed_guestbook') loadGuestbook();
-        if (id === 'admin_window') { loadPendingImages(); loadPendingApps(); loadAdminStats(); }
+        if (id === 'admin_window') { loadPendingImages(); loadPendingApps(); loadAdminStats(); loadActiveCodes(); }
     }
 
     function makeDraggable(winId) {
