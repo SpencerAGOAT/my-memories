@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fangtasia OS - Secure Edition</title>
+    <title>Fangtasia OS - Permanent Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/7.css">
@@ -12,7 +12,7 @@
         :root { --vamp-red: #8b0000; --glass: rgba(15, 0, 0, 0.9); }
         
         /* 1. BACKGROUND ENGINE */
-        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; cursor: crosshair; }
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
                 url('https://cdn.discordapp.com/attachments/1459009893540434114/1463462838659186875/IMG_9667.jpg?ex=6971eb7a&is=697099fa&hm=be1f64186d5b932c2dc640bd86f5d9bea844d381648c55f880790a02a561f6f9&');
@@ -22,43 +22,36 @@
             font-family: "Segoe UI", Tahoma, sans-serif;
         }
 
-        /* 2. BOOT SCREEN */
         #boot-screen {
             position: fixed; inset: 0; background: black; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: #d40000; font-family: 'UnifrakturMaguntia', cursive; cursor: pointer;
         }
 
-        /* 3. DESKTOP SYSTEM */
+        /* 2. DESKTOP SYSTEM */
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 50px); gap: 20px; }
         .icon { width: 80px; text-align: center; color: white; text-shadow: 1px 1px 3px black; cursor: pointer; font-size: 11px; z-index: 5; }
-        .icon img { 
-            width: 44px; display: block; margin: 0 auto 6px; 
-            filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5) drop-shadow(2px 2px 5px red); 
-        }
+        .icon img { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
 
-        /* 4. WINDOWS ARCHITECTURE */
+        /* 3. WINDOWS ARCHITECTURE */
         .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1); resize: both; overflow: hidden; display: none; z-index: 10; }
         .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; cursor: move; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
 
-        /* 5. INTERNET EXPLORER PORTAL */
-        .ie-content { padding: 25px; color: #d40000; height: 100%; box-sizing: border-box; }
-        .ie-input { width: 100%; background: #050505; color: #ff0000; border: 1px solid #700000; padding: 8px; margin-bottom: 15px; box-sizing: border-box; }
-        .ie-btn { background: #500; color: white; border: 1px solid #f00; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; font-family: 'UnifrakturMaguntia'; font-size: 18px; }
-        .hwid-tag { font-size: 9px; color: #444; margin-bottom: 10px; text-align: center; letter-spacing: 1px; }
-
-        /* 6. TASKBAR & MUSIC */
+        /* 4. IE PORTAL STYLING */
+        .ie-content { padding: 20px; color: #d40000; height: 100%; box-sizing: border-box; }
+        .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; box-sizing: border-box; }
+        .ie-btn { background: #500; color: white; border: 1px solid #f00; padding: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        
+        /* 5. TASKBAR */
         .taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); border-top: 1px solid rgba(255,0,0,0.3); display: flex; align-items: center; z-index: 100; }
-        .sound-controls { display: flex; margin-left: 150px; gap: 45px; }
-        .music-ctrl { width: 22px; cursor: pointer; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); opacity: 0.8; }
     </style>
 </head>
 <body>
 
 <div id="boot-screen" onclick="beginSession()">
-    <h1 style="font-size: 60px; text-shadow: 0 0 20px red;">Fangtasia</h1>
-    <p>Initialize Secure Session & Auth HWID</p>
+    <h1 style="font-size: 50px;">Fangtasia</h1>
+    <p>Click to Initialize Secure OS</p>
 </div>
 
 <div id="desktop">
@@ -70,46 +63,29 @@
         <img src="https://win98icons.alexmeub.com/icons/png/msie1-2.png">
         <div>Internet Explorer</div>
     </div>
-    <div class="icon" onclick="toggleWin('mines_win')">
-        <img src="https://win98icons.alexmeub.com/icons/png/minesweeper_gear-0.png">
-        <div>Mines</div>
-    </div>
 </div>
 
-<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:500px;">
+<div class="window" id="ie_window" style="left:150px; top:100px; width:400px; height:450px;">
     <div class="title-bar">
-        <div class="title-bar-text">Internet Explorer - Portal</div>
+        <div class="title-bar-text">Internet Explorer - Member Portal</div>
         <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('ie_window')"></button></div>
     </div>
     <div class="window-body">
-        <div class="ie-content" id="ie_login" style="position: relative;">
-            <h2 style="font-family: 'UnifrakturMaguntia'; border-bottom: 1px solid #400; margin-bottom: 20px;">Member Access</h2>
-            <div class="hwid-tag" id="hwid_display">HWID: Generating Signature...</div>
-            
-            <label style="font-size: 10px; color: #8b0000;">IDENTIFICATION</label>
+        <div class="ie-content" id="ie_login">
+            <h2 style="font-family: 'UnifrakturMaguntia';">Secure Login</h2>
             <input type="text" id="ie_user" class="ie-input" placeholder="Username">
-            
-            <label style="font-size: 10px; color: #8b0000;">KEYCODE</label>
-            <input type="password" id="ie_pass" class="ie-input" placeholder="••••••••">
-            
-            <button class="ie-btn" onclick="validateIE()">Authorize</button>
-
-            <div style="position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center;">
-                 <span style="font-family: 'UnifrakturMaguntia'; color: #d40000; font-size: 32px; text-shadow: 0 0 10px red; opacity: 0.8;">Fangtasia</span>
+            <input type="password" id="ie_pass" class="ie-input" placeholder="Password">
+            <button class="ie-btn" id="loginBtn">Authorize</button>
+            <div style="position: absolute; bottom: 20px; width: calc(100% - 40px); text-align: center;">
+                 <span style="font-family: 'UnifrakturMaguntia'; font-size: 28px;">Fangtasia</span>
             </div>
         </div>
 
         <div class="ie-content" id="ie_upload" style="display:none;">
-            <h2 style="font-family: 'UnifrakturMaguntia';">Clip Manager</h2>
-            <p style="font-size:11px;">Signed in: <span id="display_user" style="color:#fff;"></span></p>
-            
-            <label style="font-size: 10px; color: #8b0000;">NEW FILENAME</label>
-            <input type="text" id="ie_filename" class="ie-input" placeholder="night_01.mp4">
-            
-            <label style="font-size: 10px; color: #8b0000;">SOURCE FILE</label>
+            <h2 style="font-family: 'UnifrakturMaguntia';">Upload Memory</h2>
+            <input type="text" id="ie_filename" class="ie-input" placeholder="Clip Name">
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;">
-            
-            <button class="ie-btn" onclick="processIEUpload()">Push to Memories</button>
+            <button class="ie-btn" id="uploadBtn">Push to Cloud</button>
         </div>
     </div>
 </div>
@@ -118,85 +94,101 @@
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body">
         <div id="memories_grid" style="display:grid; grid-template-columns: repeat(auto-fill, 90px); gap:20px; padding:25px;">
-            <div style="text-align:center; cursor:pointer;" onclick="toggleWin('vid_player')">
-                <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png" style="width:38px; filter: sepia(1) hue-rotate(330deg) saturate(2);">
-                <div style="color:white; font-size:10px; margin-top:5px;">mob_jackass.mp4</div>
             </div>
-        </div>
     </div>
 </div>
 
 <div class="window" id="vid_player" style="left:550px; top:120px; width:500px; height:400px;">
     <div class="title-bar"><div class="title-bar-text">Media Player</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('vid_player')"></button></div></div>
     <div class="window-body">
-        <video id="main_vid" controls style="width:100%; height:100%; background:black;">
-            <source src="https://raw.githubusercontent.com/SpencerAGOAT/my-memories/main/mob_jackass.mp4.mp4" type="video/mp4">
-        </video>
+        <video id="main_vid" controls style="width:100%; height:100%; background:black;"></video>
     </div>
 </div>
 
-<div class="taskbar">
-    <div class="sound-controls">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()">
-    </div>
-</div>
+<div class="taskbar"></div>
 
-<div id="player" style="position:absolute; top:-999px;"></div>
-<script src="https://www.youtube.com/iframe_api"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-<script>
-    // --- AUTHENTICATION & DATABASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyB7GeyT9SY7zFBeT-lfCM6iHZ_ipFXvemU",
+        authDomain: "fangtasia-14197.firebaseapp.com",
+        projectId: "fangtasia-14197",
+        storageBucket: "fangtasia-14197.firebasestorage.app",
+        messagingSenderId: "735588641679",
+        appId: "1:735588641679:web:b45f8582f48f35632f79fa"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
     const userDatabase = {
         "buttheadandbeav126": "wtfomfgfangtasiafordabros21",
         "bloomhouse8483": "methybethy89!"
     };
 
-    // HWID Signature Generator
-    function getHWID() {
-        const fingerprint = navigator.userAgent + screen.width + navigator.hardwareConcurrency;
-        return btoa(fingerprint).substring(0, 12).toLowerCase();
-    }
-    const currentHWID = getHWID();
-    document.getElementById('hwid_display').innerText = "HWID: " + currentHWID;
-
-    function validateIE() {
+    // 1. LOGIN LOGIC
+    window.validateIE = function() {
         const u = document.getElementById('ie_user').value;
         const p = document.getElementById('ie_pass').value;
-
-        if(userDatabase[u] && userDatabase[u] === p) {
+        if(userDatabase[u] === p) {
             document.getElementById('ie_login').style.display = 'none';
             document.getElementById('ie_upload').style.display = 'block';
-            document.getElementById('display_user').innerText = u;
-        } else {
-            alert("ACCESS DENIED: Authentication Failed.");
-        }
-    }
+        } else { alert("Access Denied"); }
+    };
+    document.getElementById('loginBtn').onclick = validateIE;
 
-    function processIEUpload() {
-        const name = document.getElementById('ie_filename').value || "new_clip.mp4";
-        alert("Upload Successful: " + name + " is now in Memories.");
-        
+    // 2. UPLOAD LOGIC
+    window.processIEUpload = async function() {
+        const file = document.getElementById('ie_file_picker').files[0];
+        const name = document.getElementById('ie_filename').value || "unnamed.mp4";
+        if(!file) return alert("Select a file!");
+
+        alert("Uploading to Fangtasia Cloud...");
+        const storageRef = ref(storage, 'memories/' + Date.now() + "_" + name);
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+
+        await addDoc(collection(db, "clips"), {
+            name: name,
+            url: url,
+            time: serverTimestamp()
+        });
+        alert("Synced!");
+    };
+    document.getElementById('uploadBtn').onclick = processIEUpload;
+
+    // 3. LOAD CLIPS AUTOMATICALLY
+    const q = query(collection(db, "clips"), orderBy("time", "desc"));
+    onSnapshot(q, (snapshot) => {
         const grid = document.getElementById('memories_grid');
-        grid.innerHTML += `
-            <div style="text-align:center; cursor:pointer;">
-                <img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png" style="width:38px; filter: sepia(1) hue-rotate(330deg) saturate(2);">
-                <div style="color:white; font-size:10px; margin-top:5px;">${name}</div>
-            </div>`;
-    }
+        grid.innerHTML = '';
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const div = document.createElement('div');
+            div.style = "text-align:center; cursor:pointer;";
+            div.innerHTML = `<img src="https://win98icons.alexmeub.com/icons/png/mplayer_13-0.png" style="width:38px; filter: sepia(1) hue-rotate(330deg);"><div style="color:white; font-size:10px;">${data.name}</div>`;
+            div.onclick = () => {
+                const v = document.getElementById('main_vid');
+                v.src = data.url;
+                toggleWin('vid_player');
+                v.play();
+            };
+            grid.appendChild(div);
+        });
+    });
+</script>
 
-    // --- CORE OS FUNCTIONS ---
-    function beginSession() {
-        document.getElementById('boot-screen').style.display = 'none';
-        if (player) { player.unMute(); player.playVideo(); }
-    }
-
+<script>
+    // WINDOW DRAG & UI LOGIC
+    function beginSession() { document.getElementById('boot-screen').style.display = 'none'; }
     function toggleWin(id) {
         let el = document.getElementById(id);
-        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+        el.style.display = (el.style.display === 'none') ? 'block' : 'none';
     }
-
-    // Dragging Logic
     document.querySelectorAll('.window').forEach(win => {
         win.querySelector('.title-bar').onmousedown = (e) => {
             document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
@@ -206,18 +198,6 @@
             document.onmouseup = () => document.onmousemove = null;
         };
     });
-
-    // YouTube Background Music
-    var player;
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-            videoId: 'Bi5kyehmeaY',
-            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 },
-            events: { 'onReady': (e) => { e.target.mute(); } }
-        });
-    }
-    function pauseMusic() { player.pauseVideo(); }
-    function playMusic() { player.playVideo(); }
 </script>
 </body>
 </html>
