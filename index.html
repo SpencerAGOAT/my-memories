@@ -16,7 +16,6 @@
             --blood-glow: 0 0 10px rgba(139, 0, 0, 0.8);
         }
         
-        /* ANIMATED BAT CURSOR */
         .bat-cursor {
             position: fixed;
             width: 32px;
@@ -47,10 +46,8 @@
             100% { transform: scaleX(0.85) rotate(-8deg); }
         }
         
-        /* Hide default cursor */
         * { cursor: none !important; }
         
-        /* SYSTEM CORE */
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
         body {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
@@ -58,16 +55,14 @@
             background-size: cover; background-position: center; font-family: "Segoe UI", Tahoma, sans-serif;
         }
 
-        /* BOOT SCREEN WITH GLITCH */
         #boot-screen {
             position: fixed; inset: 0; background: black; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #d40000;  cursor: none !important;
+            color: #d40000; cursor: none !important;
         }
         
         .boot-title {
             font-size: 60px;
-            
             animation: bloodPulse 2s ease-in-out infinite;
             text-shadow: 0 0 20px rgba(212, 0, 0, 0.5), 0 0 40px rgba(212, 0, 0, 0.3);
         }
@@ -96,32 +91,28 @@
             50% { transform: translateY(-15px) rotate(5deg); }
         }
 
-        /* DESKTOP UI */
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 40px); gap: 20px; }
         .icon { width: 110px; text-align: center; color: white; text-shadow: 1px 1px 3px black; font-size: 11px; z-index: 5; margin-bottom: 15px; transition: transform 0.2s, filter 0.2s; }
         .icon:hover { transform: scale(1.1); filter: brightness(1.2); }
         .icon img.folder-icon { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
         .icon img.video-icon { width: 40px; display: block; margin: 0 auto 6px; }
 
-        /* WINDOW ENGINE */
         .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1), 0 0 30px rgba(139, 0, 0, 0.2); display: none; z-index: 10; overflow: hidden; resize: both; }
         .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
 
-        /* THE LOUNGE CHAT - BIGGER */
         .chat-container { display: flex; height: 420px; background: #050000; border-bottom: 1px solid #400; }
         #chat_logs { flex: 1; overflow-y: scroll; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
         
-        /* CHAT MESSAGE TAGS */
         .chat-entry { display: flex; flex-direction: column; gap: 2px; }
         .chat-header { display: flex; align-items: center; gap: 8px; }
         .rank-tag { font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 2px; border: 1px solid; text-transform: uppercase; min-width: 25px; text-align: center; }
         
         #member_list { width: 180px; border-left: 1px solid #400; padding: 12px; background: #0a0000; }
-        .member-category { color: #d40000; font-size: 14px; font-weight: bold; margin-top: 15px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px;  }
-        .member-item { font-size: 14px; font-weight: bold; margin-top: 6px; }
+        .member-category { color: #d40000; font-size: 14px; font-weight: bold; margin-top: 15px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px; }
+        .member-item { font-size: 14px; font-weight: bold; margin-top: 6px; cursor: pointer; padding: 3px 5px; border-radius: 3px; transition: all 0.2s; }
+        .member-item:hover { background: rgba(139, 0, 0, 0.3); }
 
-        /* RANK STYLING - Clean readable text */
         .st-style { color: #ff00ff; border-color: #ff00ff; }
         .a-style { color: #ffffff; border-color: #ffffff; }
         .mod-style { color: #00ff00; border-color: #00ff00; }
@@ -130,11 +121,9 @@
         .member-style { color: #ff4444; border-color: #ff4444; }
         .bot-style { color: #d40000; border-color: #d40000; }
 
-        /* MEMORIES 3-COLUMN GRID */
         #memories_grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; justify-items: center; }
         .pagination-bar { padding: 10px; background: #111; border-top: 1px solid #400; text-align: center; }
 
-        /* UI ELEMENTS */
         .ie-content { padding: 15px; color: #d40000; }
         .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; font-size: 11px; box-sizing: border-box; }
         .ie-input:focus { outline: none; border-color: #ff0000; box-shadow: 0 0 5px rgba(255, 0, 0, 0.3); }
@@ -143,18 +132,10 @@
         .lounge-entry-btn { background: linear-gradient(#222, #000); border: 1px solid #ff00ff; color: #ff00ff; padding: 10px; width: 100%; font-weight: bold; margin-bottom: 20px; font-size: 11px; text-transform: uppercase; transition: all 0.3s; }
         .lounge-entry-btn:hover { background: linear-gradient(#330033, #110011); box-shadow: 0 0 15px rgba(255, 0, 255, 0.5); }
         
-        /* GUEST PORTAL STYLES */
         .guest-section { border-top: 1px solid #400; margin-top: 20px; padding-top: 15px; }
         .guest-btn { background: linear-gradient(#1a1a1a, #0a0a0a); border: 1px solid #444; color: #888; padding: 10px; width: 100%; font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; transition: all 0.3s; }
         .guest-btn:hover { border-color: #666; color: #aaa; background: linear-gradient(#222, #111); }
         
-        /* GUESTBOOK STYLES */
-        .guestbook-entry { background: #0a0000; border: 1px solid #300; padding: 10px; margin-bottom: 8px; border-radius: 2px; }
-        .guestbook-name { color: #d40000; font-weight: bold; font-size: 12px; }
-        .guestbook-date { color: #555; font-size: 9px; float: right; }
-        .guestbook-msg { color: #999; font-size: 11px; margin-top: 5px; }
-        
-        /* VISITOR COUNTER */
         .visitor-counter { 
             background: #000; 
             border: 1px solid #400; 
@@ -166,32 +147,20 @@
             text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
         
-        /* PROFILE CUSTOMIZATION */
-        .color-picker-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
-        .color-swatch { width: 24px; height: 24px; border: 2px solid #333; transition: all 0.2s; }
+        .color-picker-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
+        .color-swatch { width: 24px; height: 24px; border: 2px solid #333; transition: all 0.2s; cursor: pointer; }
         .color-swatch:hover { transform: scale(1.2); border-color: #fff; }
         .color-swatch.selected { border-color: #fff; box-shadow: 0 0 8px currentColor; }
         
-        /* AVATAR SELECTION */
-        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .avatar-option { width: 40px; height: 40px; border: 2px solid #333; background: #111; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all 0.2s; }
-        .avatar-option:hover { border-color: #700; transform: scale(1.1); }
-        .avatar-option.selected { border-color: #f00; box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
-        
         .taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); border-top: 1px solid rgba(255,0,0,0.3); display: flex; align-items: center; z-index: 100; }
-        .start-btn { background: linear-gradient(to bottom, #8b0000, #2a0000); border: 1px solid #500; color: #fff; padding: 5px 15px; margin-left: 5px; font-weight: bold; font-size: 12px; display: flex; align-items: center; gap: 5px; }
-        .start-btn:hover { background: linear-gradient(to bottom, #a00000, #3a0000); }
-        .sound-controls { display: flex; margin-left: 100px; gap: 45px; }
         .music-ctrl { width: 22px; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); opacity: 0.8; transition: opacity 0.2s; }
         .music-ctrl:hover { opacity: 1; }
         
-        /* SCROLLBAR STYLING */
         ::-webkit-scrollbar { width: 12px; }
         ::-webkit-scrollbar-track { background: #0a0000; }
         ::-webkit-scrollbar-thumb { background: #400; border: 1px solid #600; }
         ::-webkit-scrollbar-thumb:hover { background: #500; }
         
-        /* SCREENSAVER */
         #screensaver { position: fixed; inset: 0; background: black; z-index: 99998; display: none; overflow: hidden; }
         .screensaver-bat { position: absolute; font-size: 30px; filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.8)); }
         @keyframes flyAround {
@@ -202,73 +171,47 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* CHAT THEMES */
         .chat-theme-default { background: #050000; }
         .chat-theme-coffin { background: linear-gradient(135deg, #1a0f0a 0%, #0d0805 100%); }
         .chat-theme-blood { background: linear-gradient(180deg, #1a0000 0%, #0a0000 50%, #150000 100%); }
         .chat-theme-crypt { background: repeating-linear-gradient(0deg, #0a0a0a, #0a0a0a 2px, #0f0f0f 2px, #0f0f0f 4px); }
         .chat-theme-neon { background: linear-gradient(135deg, #0a000a 0%, #000a0a 100%); }
 
-        /* PROFILE CARD */
-        .profile-card { position: fixed; width: 260px; background: linear-gradient(135deg, #1a0000, #0a0000); border: 1px solid #700; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 9000; display: none; padding: 12px; }
-        .profile-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .profile-card-avatar { font-size: 36px; }
-        .profile-card-name { font-weight: bold; font-size: 14px; }
-        .profile-card-title { font-size: 9px; color: #888; }
-        .profile-card-bio { font-size: 10px; color: #aaa; border-top: 1px solid #400; padding-top: 8px; margin-top: 8px; }
-        .profile-card-btn { background: #500; color: #fff; border: 1px solid #800; padding: 5px 10px; font-size: 9px; margin-top: 10px; width: 100%; }
+        .profile-card { 
+            position: fixed; 
+            width: 340px; 
+            max-height: 600px;
+            background: linear-gradient(135deg, #1a0000, #0a0000); 
+            border: 2px solid #700; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 30px rgba(139, 0, 0, 0.3); 
+            z-index: 9000; 
+            display: none; 
+            overflow-y: auto;
+        }
+        .profile-card-header { display: flex; align-items: center; gap: 12px; padding: 15px; background: linear-gradient(180deg, #200000, #100000); border-bottom: 1px solid #500; }
+        .profile-card-avatar { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; background: #111; display: flex; align-items: center; justify-content: center; font-size: 35px; border: 3px solid #700; flex-shrink: 0; }
+        .profile-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-card-name { font-weight: bold; font-size: 16px; }
+        .profile-card-title { font-size: 10px; color: #888; margin-top: 2px; }
+        .profile-card-bio { font-size: 11px; color: #aaa; padding: 12px 15px; border-bottom: 1px solid #300; line-height: 1.5; }
+        .profile-card-btn { background: #500; color: #fff; border: 1px solid #800; padding: 6px 12px; font-size: 10px; cursor: pointer; transition: all 0.2s; }
+        .profile-card-btn:hover { background: #700; box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
 
-        /* DM WINDOW */
-        .dm-logs { height: 250px; overflow-y: auto; padding: 8px; background: #050000; }
-        .dm-pinned { background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; padding: 5px; margin: 5px; font-size: 9px; }
-
-        /* SHRINE */
-        .shrine-container { text-align: center; padding: 15px; background: linear-gradient(180deg, #0a0000, #000); }
-        .candle-row { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
-        .candle { font-size: 36px; filter: grayscale(1) brightness(0.5); transition: all 0.3s; }
-        .candle.lit { filter: none; animation: candleGlow 1s ease-in-out infinite alternate; }
-        @keyframes candleGlow { 0% { filter: drop-shadow(0 0 5px #ff6600); } 100% { filter: drop-shadow(0 0 15px #ff6600); } }
-        .offering-input { background: transparent; border: none; border-bottom: 1px solid #400; color: #d40000; text-align: center; width: 180px; padding: 4px; }
-        .offerings-list { margin-top: 15px; max-height: 120px; overflow-y: auto; }
-        .offering-item { color: #555; font-size: 9px; margin: 2px 0; }
-
-        /* MINIGAME */
-        .stakes-grid { display: grid; grid-template-columns: repeat(9, 26px); gap: 1px; justify-content: center; }
-        .stakes-cell { width: 26px; height: 26px; background: #222; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .stakes-cell.revealed { background: #111; }
-        .stakes-cell.stake { background: #500; }
-        .game-status { text-align: center; margin: 8px 0; color: #d40000; font-size: 11px; }
-
-        /* APPLICATION */
-        .app-status { padding: 8px; margin-top: 8px; border: 1px solid; font-size: 10px; }
-        .app-pending { border-color: #ffd700; color: #ffd700; background: rgba(255, 215, 0, 0.1); }
-
-        /* TABS */
-        .tab-bar { display: flex; background: #111; border-bottom: 1px solid #400; }
-        .tab { padding: 6px 12px; color: #666; font-size: 10px; border-right: 1px solid #333; }
-        .tab:hover { background: #1a1a1a; color: #999; }
-        .tab.active { background: #0a0000; color: #d40000; }
-
-        /* ADMIN */
-        .admin-section { margin-bottom: 12px; }
-        .admin-section h4 { color: #d40000;  margin-bottom: 6px; font-size: 12px; }
-        .approval-item { display: flex; gap: 8px; padding: 8px; border: 1px solid #333; margin-bottom: 6px; align-items: center; }
-        .approval-item img { max-width: 60px; max-height: 45px; }
-
-        /* CHAT EXTRAS */
         .chat-action { color: #888; font-style: italic; }
         .chat-bot { background: rgba(139, 0, 0, 0.1); border-left: 2px solid #8b0000; padding: 6px; margin: 4px 0; }
         .pinned-msg { background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; padding: 6px; margin-bottom: 8px; font-size: 10px; }
         .chat-image { max-width: 150px; max-height: 100px; border: 1px solid #400; margin-top: 4px; }
-        .pending-image { opacity: 0.5; border: 1px dashed #666; }
-        .bot-style { color: #d40000; border-color: #d40000; }
 
-        /* THEME SELECTOR */
-        .theme-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
-        .theme-option { width: 28px; height: 28px; border: 2px solid #333; }
-        .theme-option.selected { border-color: #f00; }
+        .tab-bar { display: flex; background: #111; border-bottom: 1px solid #400; }
+        .tab { padding: 6px 12px; color: #666; font-size: 10px; border-right: 1px solid #333; cursor: pointer; transition: all 0.2s; }
+        .tab:hover { background: #1a1a1a; color: #999; }
+        .tab.active { background: #0a0000; color: #d40000; }
 
-        /* TYPING INDICATOR */
+        .admin-section { margin-bottom: 12px; }
+        .admin-section h4 { color: #d40000; margin-bottom: 6px; font-size: 12px; }
+        .approval-item { display: flex; gap: 8px; padding: 8px; border: 1px solid #333; margin-bottom: 6px; align-items: center; }
+        .approval-item img { max-width: 60px; max-height: 45px; }
+
         .typing-indicator { 
             display: flex; 
             gap: 4px; 
@@ -292,27 +235,27 @@
             30% { transform: translateY(-4px); opacity: 1; }
         }
         
-        /* BLOOD DRIP EFFECT */
-        .blood-drip {
-            position: absolute;
-            top: 0;
-            width: 3px;
-            height: 0;
-            background: linear-gradient(to bottom, #8b0000, #4a0000);
-            border-radius: 0 0 3px 3px;
-            animation: drip 4s ease-in infinite;
+        .chat-username {
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        
-        @keyframes drip {
-            0% { height: 0; opacity: 1; }
-            70% { height: 30px; opacity: 1; }
-            100% { height: 40px; opacity: 0; }
+        .chat-username:hover {
+            text-decoration: underline;
+            text-shadow: 0 0 8px currentColor;
         }
+
+        .app-status { padding: 8px; margin-top: 8px; border: 1px solid; font-size: 10px; }
+        .app-pending { border-color: #ffd700; color: #ffd700; background: rgba(255, 215, 0, 0.1); }
+
+        .stakes-grid { display: grid; grid-template-columns: repeat(9, 26px); gap: 1px; justify-content: center; }
+        .stakes-cell { width: 26px; height: 26px; background: #222; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .stakes-cell.revealed { background: #111; }
+        .stakes-cell.stake { background: #500; }
+        .game-status { text-align: center; margin: 8px 0; color: #d40000; font-size: 11px; }
     </style>
 </head>
 <body>
 
-<!-- ANIMATED BAT CURSOR -->
 <div class="bat-cursor" id="batCursor">
     <svg viewBox="0 0 32 32" fill="#8b0000">
         <g class="wing-left">
@@ -321,38 +264,33 @@
         <g class="wing-right">
             <path d="M16 14 L24 8 L26 12 L22 14 L26 16 L28 14 L30 18 L24 18 L20 16 L16 16 Z" style="transform-origin: 16px 14px;"/>
         </g>
-        <!-- Body -->
         <ellipse cx="16" cy="16" rx="4" ry="5" fill="#8b0000"/>
-        <!-- Head -->
         <circle cx="16" cy="11" r="3" fill="#8b0000"/>
-        <!-- Ears -->
         <path d="M13 9 L12 6 L14 8 Z" fill="#8b0000"/>
         <path d="M19 9 L20 6 L18 8 Z" fill="#8b0000"/>
-        <!-- Eyes -->
         <circle cx="15" cy="10" r="0.8" fill="#ff0000"/>
         <circle cx="17" cy="10" r="0.8" fill="#ff0000"/>
     </svg>
 </div>
 
-<!-- SCREENSAVER -->
 <div id="screensaver"></div>
 
-<!-- PROFILE CARD POPUP - ENHANCED -->
-<div class="profile-card" id="profile_card" style="width:340px; max-height:550px; overflow-y:auto;">
+<div class="profile-card" id="profile_card">
     <div class="profile-card-header">
-        <div class="profile-card-avatar" id="pc_avatar" style="width:65px; height:65px; border-radius:50%; overflow:hidden; background:#111; display:flex; align-items:center; justify-content:center; font-size:30px; border:2px solid #700;">🦇</div>
-        <div>
+        <div class="profile-card-avatar" id="pc_avatar">🦇</div>
+        <div style="flex:1;">
             <div class="profile-card-name" id="pc_name">Username</div>
             <div class="profile-card-title" id="pc_title">Member</div>
-            <div id="pc_status" style="color:#666; font-size:9px; margin-top:3px;"></div>
+            <div id="pc_status" style="color:#888; font-size:10px; margin-top:4px;"></div>
+            <div id="pc_mood" style="color:#666; font-size:9px; margin-top:2px;"></div>
         </div>
     </div>
     <div style="display:flex; padding:10px 15px; gap:20px; border-bottom:1px solid #300; background:#0a0000;">
-        <div style="text-align:center;">
+        <div style="text-align:center; flex:1;">
             <div id="pc_rep" style="color:#ff4444; font-size:18px; font-weight:bold;">0</div>
             <div style="color:#666; font-size:8px;">REPUTATION</div>
         </div>
-        <div style="text-align:center;">
+        <div style="text-align:center; flex:1;">
             <div id="pc_comment_count" style="color:#ff4444; font-size:18px; font-weight:bold;">0</div>
             <div style="color:#666; font-size:8px;">COMMENTS</div>
         </div>
@@ -453,7 +391,7 @@
     </div>
     <div class="window-body">
         <div style="padding: 10px;">
-            <h3 style=" color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
+            <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
             <p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes! Left-click reveal, right-click flag.</p>
             <div class="game-status" id="game_status">🦇 Stakes: 10</div>
             <div class="stakes-grid" id="stakes_grid"></div>
@@ -487,30 +425,7 @@
     </div>
 </div>
 
-<!-- REGISTRATION WINDOW - Shows after approval -->
-<div class="window" id="register_window" style="left:180px; top:100px; width:340px; height:400px; display:none;">
-    <div class="title-bar">
-        <div class="title-bar-text">✓ Complete Registration</div>
-        <div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('register_window')"></button></div>
-    </div>
-    <div class="window-body">
-        <div class="ie-content">
-            <h2 style="margin-top: 0; font-size: 16px; color: #00ff00;">🩸 Application Approved!</h2>
-            <p style="color: #888; font-size: 10px; margin-bottom: 15px;">Complete your registration to join the coven.</p>
-            <input type="text" id="reg_username" class="ie-input" placeholder="Username" maxlength="20">
-            <input type="password" id="reg_password" class="ie-input" placeholder="Password">
-            <input type="password" id="reg_password2" class="ie-input" placeholder="Confirm Password">
-            <div style="border: 1px dashed #ffd700; padding: 8px; margin: 10px 0; background: rgba(255,215,0,0.05);">
-                <label style="color: #ffd700; font-size: 9px;">🌟 VIP Invite Code (optional)</label>
-                <input type="text" id="reg_vip_code" class="ie-input" placeholder="Enter VIP code for instant VIP rank" style="margin-bottom:0;">
-            </div>
-            <button class="ie-btn" onclick="completeRegistration()">🦇 Complete Registration</button>
-            <div id="reg_result" style="margin-top: 10px;"></div>
-        </div>
-    </div>
-</div>
-
-<!-- CHAT WINDOW - BIGGER -->
+<!-- CHAT WINDOW -->
 <div class="window" id="chat_win" style="left:400px; top:30px; width:820px; height:620px;">
     <div class="title-bar">
         <div class="title-bar-text">🩸 The Lounge</div>
@@ -628,7 +543,6 @@
             <button class="ie-btn" style="margin-top:20px; padding:12px; background:#700;" onclick="saveProfile()">💾 Save All Changes</button>
         </div>
         
-        <!-- Remove old settings tab -->
         <div id="chat_settings" style="display: none;"></div>
     </div>
 </div>
@@ -703,7 +617,6 @@
                 <div id="admin_stats" style="color: #888; font-size: 11px;"></div>
             </div>
             
-            <!-- ST ONLY SECTION -->
             <div class="admin-section" id="st_section" style="display:none; border: 1px solid #ff00ff; padding: 10px; margin-top: 10px;">
                 <h4 style="color: #ff00ff; border-bottom: 1px solid #ff00ff; padding-bottom: 5px;">🔮 Site Technician Only</h4>
                 <div style="margin-bottom: 10px;">
@@ -818,7 +731,6 @@
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
             <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
             
-            <!-- VIP IMAGE HOSTING -->
             <div id="vip_image_section" style="display:none; margin-top:15px; border-top:1px solid #400; padding-top:15px;">
                 <h3 style="color:#ffd700; margin: 0 0 5px 0; font-size: 13px;">🌟 VIP Image Hosting</h3>
                 <p style="color:#888; font-size:9px;">Upload images and get shareable embed links.</p>
@@ -844,7 +756,6 @@
 <div id="player" style="position:absolute; top:-999px;"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
@@ -860,24 +771,20 @@
         appId: "1:735588641679:web:5e0b9c5c5c84166b2f79fa"
     };
     
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     const CLOUD_NAME = "fangtasia-14197"; 
     const UPLOAD_PRESET = "fangtasia"; 
     
-    // Core admin accounts (hardcoded for security)
     const coreAdmins = {
         "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", target: "list_technician", isAdmin: true, isST: true },
         "noseeyedear": { pass: "wtfomfgfangtasiafordabros21", rank: "ᗝᓬ⊢", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
         "oleg": { pass: "methybethy89!", rank: "ᗝᓬ⊢", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true }
     };
     
-    // User database starts with core admins
     let userDatabase = { ...coreAdmins };
     
-    // Load members from Firebase on startup
     db.ref('members').on('value', (snapshot) => {
         const members = snapshot.val() || {};
         userDatabase = { ...coreAdmins, ...members };
@@ -887,12 +794,12 @@
     let IS_GUEST = false;
     let currentPage = 1;
     const itemsPerPage = 9;
-    let userProfile = { color: "#ff0000", status: "", bio: "", theme: "default", mood: "" };
+    let userProfile = { color: "#ff0000", status: "", bio: "", theme: "default", mood: "", avatar: "", music: "" };
     let currentProfileUser = "";
     let idleTime = 0;
     let screensaverActive = false;
 
-    // BAT CURSOR MOVEMENT
+    // BAT CURSOR
     document.addEventListener('mousemove', (e) => {
         const bat = document.getElementById('batCursor');
         bat.style.left = e.clientX + 'px';
@@ -902,7 +809,6 @@
     document.addEventListener('keypress', resetIdle);
     document.addEventListener('click', resetIdle);
 
-    // SCREENSAVER
     function resetIdle() {
         idleTime = 0;
         if (screensaverActive) {
@@ -910,6 +816,7 @@
             screensaverActive = false;
         }
     }
+    
     function activateScreensaver() {
         screensaverActive = true;
         const ss = document.getElementById('screensaver');
@@ -926,6 +833,7 @@
             ss.appendChild(bat);
         }
     }
+    
     setInterval(() => {
         idleTime++;
         if (idleTime > 90 && !screensaverActive && document.getElementById('boot-screen').style.display === 'none') {
@@ -933,7 +841,6 @@
         }
     }, 1000);
 
-    // VISITOR COUNTER
     function updateVisitorCount() {
         let count = parseInt(localStorage.getItem('f_visitors') || '0');
         if (!sessionStorage.getItem('counted')) {
@@ -941,97 +848,32 @@
             localStorage.setItem('f_visitors', count);
             sessionStorage.setItem('counted', 'true');
         }
-        const formatted = count.toString().padStart(6, '0');
-        document.getElementById('visitor_count').textContent = formatted;
-        const aboutCounter = document.getElementById('visitor_count_about');
-        if (aboutCounter) aboutCounter.textContent = formatted;
+        document.getElementById('visitor_count').textContent = count.toString().padStart(6, '0');
     }
 
-    // CLOCK
     function updateClock() {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const mins = now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('taskbar_clock').textContent = `${hours}:${mins}`;
+        document.getElementById('taskbar_clock').textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // GUESTBOOK
-    function loadGuestbook() {
-        const entries = JSON.parse(localStorage.getItem('f_guestbook')) || [];
-        const container = document.getElementById('guestbook_entries');
-        if (entries.length === 0) {
-            container.innerHTML = '<p style="color: #555; text-align: center; font-style: italic;">No signatures yet. Be the first...</p>';
-            return;
-        }
-        container.innerHTML = entries.slice(-20).reverse().map(e => `
-            <div class="guestbook-entry">
-                <span class="guestbook-name">${escapeHtml(e.name)}</span>
-                <span class="guestbook-date">${e.date}</span>
-                <div class="guestbook-msg">${escapeHtml(e.message)}</div>
-            </div>
-        `).join('');
-    }
-
-    function signGuestbook() {
-        const name = document.getElementById('gb_name').value.trim();
-        const message = document.getElementById('gb_message').value.trim();
-        if (!name || !message) { alert('Fill in both fields.'); return; }
-        
-        const entries = JSON.parse(localStorage.getItem('f_guestbook')) || [];
-        const date = new Date().toLocaleDateString();
-        entries.push({ name, message, date });
-        localStorage.setItem('f_guestbook', JSON.stringify(entries.slice(-100)));
-        
-        document.getElementById('gb_name').value = '';
-        document.getElementById('gb_message').value = '';
-        loadGuestbook();
-    }
-
     function escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 
-    // SHRINE
-    let litCandles = JSON.parse(localStorage.getItem('f_candles') || '[false,false,false,false,false]');
-    function renderCandles() {
-        const candles = document.querySelectorAll('.candle');
-        candles.forEach((c, i) => c.classList.toggle('lit', litCandles[i]));
-        const msgs = ['"In darkness, we find our light."', '"One flame pierces the void."', '"The shadows retreat."', '"The altar awakens."', '"Power gathers here."', '"The ritual is complete."'];
-        document.getElementById('shrine_message').textContent = msgs[litCandles.filter(c => c).length];
-    }
-    function toggleCandle(i) {
-        litCandles[i] = !litCandles[i];
-        localStorage.setItem('f_candles', JSON.stringify(litCandles));
-        renderCandles();
-    }
-    function leaveOffering() {
-        const text = document.getElementById('offering_input').value.trim();
-        if (!text) return;
-        const offerings = JSON.parse(localStorage.getItem('f_offerings') || '[]');
-        offerings.push({ text, date: new Date().toLocaleDateString() });
-        localStorage.setItem('f_offerings', JSON.stringify(offerings.slice(-50)));
-        document.getElementById('offering_input').value = '';
-        renderOfferings();
-    }
-    function renderOfferings() {
-        const offerings = JSON.parse(localStorage.getItem('f_offerings') || '[]');
-        document.getElementById('offerings_list').innerHTML = offerings.slice(-8).reverse().map(o => `<div class="offering-item">🩸 "${escapeHtml(o.text)}"</div>`).join('');
-    }
-
     // SILVER STAKES GAME
     let stakesBoard = [], stakesRevealed = [], stakesFlagged = [], gameOver = false;
-    const BOARD_SIZE = 9, NUM_STAKES = 10;
     function initStakesGame() {
         stakesBoard = Array(81).fill(0);
         stakesRevealed = Array(81).fill(false);
         stakesFlagged = Array(81).fill(false);
         gameOver = false;
         let placed = 0;
-        while (placed < NUM_STAKES) {
+        while (placed < 10) {
             const pos = Math.floor(Math.random() * 81);
             if (stakesBoard[pos] !== -1) { stakesBoard[pos] = -1; placed++; }
         }
@@ -1050,6 +892,7 @@
         renderStakes();
         document.getElementById('game_status').textContent = '🦇 Stakes: 10';
     }
+    
     function renderStakes() {
         const grid = document.getElementById('stakes_grid');
         grid.innerHTML = '';
@@ -1066,6 +909,7 @@
             grid.appendChild(cell);
         }
     }
+    
     function revealCell(i) {
         if (gameOver || stakesRevealed[i] || stakesFlagged[i]) return;
         stakesRevealed[i] = true;
@@ -1087,7 +931,7 @@
         renderStakes();
     }
 
-    // APPLICATION
+    // APPLICATION SYSTEM
     function submitApplication() {
         const username = document.getElementById('app_username').value.trim();
         const reason = document.getElementById('app_reason').value.trim();
@@ -1104,7 +948,6 @@
             timestamp: firebase.database.ServerValue.TIMESTAMP
         };
         
-        // Save to Firebase
         db.ref('applications/' + appData.id).set(appData);
         
         document.getElementById('app_form').style.display = 'none';
@@ -1112,7 +955,36 @@
         document.getElementById('app_result').style.display = 'block';
     }
 
-    // GUEST LURK MODE
+    function checkAppStatus() {
+        const username = document.getElementById('app_username').value.trim();
+        if (!username) { alert('Enter your username to check status.'); return; }
+        
+        db.ref('applications').orderByChild('username').equalTo(username).once('value', (snapshot) => {
+            let app = null;
+            snapshot.forEach((child) => { app = child.val(); });
+            
+            const resultDiv = document.getElementById('app_result');
+            document.getElementById('app_form').style.display = 'none';
+            resultDiv.style.display = 'block';
+            
+            if (!app) {
+                resultDiv.innerHTML = '<div class="app-status" style="border-color:#888; color:#888;">No application found.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+            } else if (app.status === 'pending') {
+                resultDiv.innerHTML = '<div class="app-status app-pending">🕐 Your application is pending review.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+            } else if (app.status === 'approved') {
+                resultDiv.innerHTML = '<div class="app-status" style="border-color:#0f0; color:#0f0;">✓ Approved! Complete registration in Portal.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+            } else if (app.status === 'denied') {
+                resultDiv.innerHTML = '<div class="app-status" style="border-color:#f00; color:#f00;">✗ Application denied.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
+            }
+        });
+    }
+
+    function resetAppForm() {
+        document.getElementById('app_form').style.display = 'block';
+        document.getElementById('app_result').style.display = 'none';
+    }
+
+    // GUEST MODE
     function enterGuestChat() {
         IS_GUEST = true;
         CURRENT_USER = "Guest_" + Math.floor(Math.random() * 9999);
@@ -1122,33 +994,20 @@
         document.getElementById('chat_input').disabled = true;
     }
 
+    // LOGIN
     function validateIE() {
         const u = document.getElementById('ie_user').value;
         const p = document.getElementById('ie_pass').value;
         
         if (!u || !p) { alert("Enter username and password."); return; }
         
-        // Check if user is banned (from Firebase)
         db.ref('bans/' + u).once('value', (snapshot) => {
             const ban = snapshot.val();
-            if (ban) {
-                const now = Date.now();
-                if (ban.expiry === 0 || ban.expiry > now) {
-                    if (ban.type === 'hardban') {
-                        alert('This account has been permanently banned.');
-                        return;
-                    } else if (ban.type === 'softban') {
-                        const expStr = ban.expiry === 0 ? 'permanently' : 'until ' + new Date(ban.expiry).toLocaleString();
-                        alert('This account is suspended ' + expStr + '.\nReason: ' + (ban.reason || 'No reason given'));
-                        return;
-                    }
-                } else {
-                    // Ban expired, remove it
-                    db.ref('bans/' + u).remove();
-                }
+            if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
+                alert('This account is ' + (ban.type === 'hardban' ? 'permanently banned' : 'suspended') + '.');
+                return;
             }
             
-            // Proceed with login
             if(userDatabase[u] && userDatabase[u].pass === p) {
                 CURRENT_USER = u;
                 IS_GUEST = false;
@@ -1158,31 +1017,23 @@
                 loadProfile();
                 updateMemberList();
                 
-                // Show admin icon for admins
                 if (userDatabase[u].isAdmin) {
                     document.getElementById('admin_icon').style.display = 'block';
                     document.getElementById('management_icon').style.display = 'block';
                 }
-                
-                // Show ST section for Site Technician
                 if (userDatabase[u].isST) {
-                    const stSection = document.getElementById('st_section');
-                    if (stSection) stSection.style.display = 'block';
+                    document.getElementById('st_section').style.display = 'block';
                 }
-                
-                // Show VIP image hosting for VIP+
                 if (userDatabase[u].rank === 'VIP' || userDatabase[u].isAdmin || userDatabase[u].isST) {
-                    const vipSection = document.getElementById('vip_image_section');
-                    if (vipSection) {
-                        vipSection.style.display = 'block';
-                        loadVIPGallery();
-                    }
+                    document.getElementById('vip_image_section').style.display = 'block';
+                    loadVIPGallery();
                 }
             } else { alert("DENIED."); }
         });
     }
 
     function logout() {
+        if (CURRENT_USER) db.ref('online/' + CURRENT_USER).remove();
         CURRENT_USER = "";
         IS_GUEST = false;
         document.getElementById('ie_login').style.display = 'block';
@@ -1203,11 +1054,10 @@
             updateMemberList();
             setUserOnline();
             document.getElementById('chat_input').disabled = false;
-            document.getElementById('chat_input').placeholder = "Type your message...";
+            document.getElementById('chat_input').placeholder = "/help for commands...";
         } 
     }
     
-    // ONLINE PRESENCE
     function setUserOnline() {
         if (!CURRENT_USER || IS_GUEST) return;
         const user = userDatabase[CURRENT_USER];
@@ -1218,7 +1068,6 @@
             fullRank: user ? user.fullRank : 'Member',
             lastSeen: firebase.database.ServerValue.TIMESTAMP
         });
-        // Remove on disconnect
         db.ref('online/' + CURRENT_USER).onDisconnect().remove();
     }
     
@@ -1236,132 +1085,31 @@
             }
             
             container.innerHTML = users.map(u => `
-                <div class="member-item ${u.style}" style="cursor:pointer; padding:3px 0;" onclick="showProfileCard('${u.username}', event)">
+                <div class="member-item ${u.style}" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                     <span style="color:#0f0; font-size:8px;">●</span> ${escapeHtml(u.username)}
                 </div>
             `).join('');
         });
     }
-
-    // PROFILE SYSTEM
-    function loadProfile() {
-        const saved = localStorage.getItem('f_profile_' + CURRENT_USER);
-        if (saved) userProfile = { ...userProfile, ...JSON.parse(saved) };
-        document.getElementById('user_status').value = userProfile.status || '';
-        document.getElementById('user_bio').value = userProfile.bio || '';
-        if (document.getElementById('user_mood')) document.getElementById('user_mood').value = userProfile.mood || '';
-        document.querySelectorAll('.color-swatch').forEach(el => el.classList.toggle('selected', el.dataset.color === userProfile.color));
-        document.querySelectorAll('.theme-option').forEach(el => el.classList.toggle('selected', el.dataset.theme === userProfile.theme));
-        applyChatTheme();
+:8px;">${m.time || ''}</span>
+                    <div style="color:#ccc; font-size:10px; padding-left:5px;">${escapeHtml(m.text)}</div>
+                </div>
+            `).join('');
+            logs.scrollTop = logs.scrollHeight;
+        });
     }
 
-    function saveProfile() {
-        userProfile.status = document.getElementById('user_status').value;
-        userProfile.bio = document.getElementById('user_bio').value;
-        if (document.getElementById('user_mood')) userProfile.mood = document.getElementById('user_mood').value;
-        localStorage.setItem('f_profile_' + CURRENT_USER, JSON.stringify(userProfile));
-        updateMemberList();
-    }
-
-    function selectColor(el) {
-        document.querySelectorAll('.color-swatch').forEach(e => e.classList.remove('selected'));
-        el.classList.add('selected');
-        userProfile.color = el.dataset.color;
-        saveProfile();
-    }
-
-    function selectTheme(el) {
-        document.querySelectorAll('.theme-option').forEach(e => e.classList.remove('selected'));
-        el.classList.add('selected');
-        userProfile.theme = el.dataset.theme;
-        saveProfile();
-        applyChatTheme();
-    }
-
-    function applyChatTheme() {
-        const container = document.getElementById('chat_container');
-        if (container) container.className = 'chat-container chat-theme-' + (userProfile.theme || 'default');
-    }
-
-    // PROFILE CARD
-    function showProfileCard(username, event) {
-        if (IS_GUEST) return;
-        currentProfileUser = username;
-        const card = document.getElementById('profile_card');
-        const userData = userDatabase[username];
-        const profile = JSON.parse(localStorage.getItem('f_profile_' + username) || '{}');
-        document.getElementById('pc_avatar').textContent = '🦇';
-        document.getElementById('pc_name').textContent = username;
-        document.getElementById('pc_name').className = 'profile-card-name ' + (userData?.style || '');
-        document.getElementById('pc_title').textContent = userData?.fullRank || 'Member';
-        
-        let bioText = profile.bio || 'No bio set.';
-        if (profile.mood) bioText = profile.mood + '<br><br>' + bioText;
-        document.getElementById('pc_bio').innerHTML = bioText;
-        
-        card.style.display = 'block';
-        card.style.left = Math.min(event.clientX, window.innerWidth - 280) + 'px';
-        card.style.top = Math.min(event.clientY, window.innerHeight - 200) + 'px';
-    }
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.profile-card') && !e.target.closest('.chat-username')) {
-            document.getElementById('profile_card').style.display = 'none';
-        }
-    });
-
-    // DM SYSTEM
-    function openDM(username) {
-        if (!username || username === CURRENT_USER || IS_GUEST) return;
-        document.getElementById('profile_card').style.display = 'none';
-        const dmId = 'dm_' + [CURRENT_USER, username].sort().join('_');
-        let dmWin = document.getElementById(dmId);
-        if (!dmWin) {
-            dmWin = document.createElement('div');
-            dmWin.className = 'window';
-            dmWin.id = dmId;
-            dmWin.style.cssText = 'left:' + (300 + Math.random()*100) + 'px; top:' + (100 + Math.random()*50) + 'px; width:320px; height:380px; display:block;';
-            dmWin.innerHTML = '<div class="title-bar"><div class="title-bar-text">💬 ' + username + '</div><div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById(\'' + dmId + '\').style.display=\'none\'"></button></div></div><div class="window-body"><div class="dm-pinned" id="' + dmId + '_pin" style="display:none;"></div><div class="dm-logs" id="' + dmId + '_logs"></div><div style="padding:8px; background:#111;"><input type="text" class="ie-input" style="margin:0;" id="' + dmId + '_input" placeholder="Message..." onkeypress="if(event.key===\'Enter\')sendDM(\'' + dmId + '\',\'' + username + '\')"><div style="display:flex; gap:5px; margin-top:5px;"><button class="ie-btn" style="flex:1;" onclick="sendDM(\'' + dmId + '\',\'' + username + '\')">Send</button><button class="ie-btn" style="width:40px;" onclick="pinDM(\'' + dmId + '\')">📌</button></div></div></div>';
-            document.body.appendChild(dmWin);
-            makeDraggable(dmId);
-        } else { dmWin.style.display = 'block'; }
-        loadDM(dmId);
-    }
-    function sendDM(dmId, toUser) {
-        const input = document.getElementById(dmId + '_input');
-        if (!input.value.trim()) return;
-        const dms = JSON.parse(localStorage.getItem('f_dm_' + dmId) || '[]');
-        const profile = JSON.parse(localStorage.getItem('f_profile_' + CURRENT_USER) || '{}');
-        dms.push({ from: CURRENT_USER, text: input.value, avatar: profile.avatar || '🦇', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        localStorage.setItem('f_dm_' + dmId, JSON.stringify(dms.slice(-100)));
-        input.value = '';
-        loadDM(dmId);
-    }
-    function loadDM(dmId) {
-        const logs = document.getElementById(dmId + '_logs');
-        const dms = JSON.parse(localStorage.getItem('f_dm_' + dmId) || '[]');
-        logs.innerHTML = dms.map(m => '<div style="margin-bottom:6px;"><span style="font-size:12px;">' + (m.avatar||'🦇') + '</span> <span style="font-weight:bold; font-size:10px; color:#d40000;">' + m.from + '</span> <span style="color:#444; font-size:8px;">' + m.time + '</span><div style="color:#ccc; font-size:10px; padding-left:20px;">' + escapeHtml(m.text) + '</div></div>').join('');
-        logs.scrollTop = logs.scrollHeight;
-        const pinned = localStorage.getItem('f_dm_pin_' + dmId);
-        const pinEl = document.getElementById(dmId + '_pin');
-        if (pinned) { pinEl.style.display = 'block'; pinEl.innerHTML = '📌 ' + escapeHtml(pinned); }
-        else { pinEl.style.display = 'none'; }
-    }
-    function pinDM(dmId) {
-        const msg = prompt('Pin message:');
-        if (msg) { localStorage.setItem('f_dm_pin_' + dmId, msg); loadDM(dmId); }
-    }
-
-    // CHAT TABS
+    // ============================================
+    // CHAT SYSTEM - FIXED
+    // ============================================
+    
     function switchChatTab(tab, el) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
         document.getElementById('chat_main').style.display = tab === 'main' ? 'block' : 'none';
         document.getElementById('chat_avatar').style.display = tab === 'avatar' ? 'block' : 'none';
-        document.getElementById('chat_settings').style.display = tab === 'settings' ? 'block' : 'none';
         
-        if (tab === 'avatar') {
-            loadAvatarTab();
-        }
+        if (tab === 'avatar') loadAvatarTab();
     }
     
     function loadAvatarTab() {
@@ -1386,21 +1134,22 @@
         });
     }
 
-    // TYPING INDICATOR
     function handleTyping() {
-        if (IS_GUEST) return;
-        localStorage.setItem('f_typing', JSON.stringify({ user: CURRENT_USER, time: Date.now() }));
+        if (IS_GUEST || !CURRENT_USER) return;
+        db.ref('typing').set({ user: CURRENT_USER, time: Date.now() });
     }
 
     function checkTyping() {
-        const typing = JSON.parse(localStorage.getItem('f_typing') || '{}');
-        const area = document.getElementById('typing_area');
-        if (typing.user && typing.user !== CURRENT_USER && (Date.now() - typing.time) < 2000) {
-            document.getElementById('typing_user').textContent = typing.user;
-            area.style.display = 'block';
-        } else {
-            area.style.display = 'none';
-        }
+        db.ref('typing').once('value', (snapshot) => {
+            const typing = snapshot.val();
+            const area = document.getElementById('typing_area');
+            if (typing && typing.user && typing.user !== CURRENT_USER && (Date.now() - typing.time) < 2000) {
+                document.getElementById('typing_user').textContent = typing.user;
+                area.style.display = 'block';
+            } else {
+                area.style.display = 'none';
+            }
+        });
     }
     setInterval(checkTyping, 500);
 
@@ -1408,7 +1157,6 @@
         if (event.key === 'Enter') sendChat();
     }
 
-    // CHAT COMMANDS
     const chatCommands = {
         '/help': () => ({ type: 'system', text: 'Commands: /me, /shrug, /tableflip, /blood, /bat, /bite' }),
         '/me': (args) => ({ type: 'action', text: CURRENT_USER + ' ' + args }),
@@ -1419,7 +1167,6 @@
         '/bite': (args) => ({ type: 'action', text: CURRENT_USER + ' 🧛 *bites ' + (args || 'the air') + '*' }),
     };
 
-    // BOT RESPONSES
     const botResponses = [
         { trigger: /hello|hi|hey/i, response: "Greetings, mortal. 🦇" },
         { trigger: /vampire|vamp/i, response: "Did someone say vampire? *fangs glisten*" },
@@ -1431,24 +1178,16 @@
     function sendChat() {
         if (IS_GUEST) return;
         
-        // Check for timeout (from Firebase bans)
-        db.ref('bans/' + CURRENT_USER).once('value', (snapshot) => {
-            const ban = snapshot.val();
-            if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
-                if (ban.type === 'timeout') {
-                    alert('You are timed out and cannot send messages.');
-                    return;
-                }
-            }
+        const input = document.getElementById('chat_input');
+        const text = input.value.trim();
+        if(!text) return;
+        
+        const u = userDatabase[CURRENT_USER];
+        
+        // Load user profile for color
+        db.ref('profiles/' + CURRENT_USER).once('value', (profileSnap) => {
+            const profile = profileSnap.val() || {};
             
-            const input = document.getElementById('chat_input');
-            const text = input.value.trim();
-            if(!text) return;
-            
-            const u = userDatabase[CURRENT_USER];
-            const profile = JSON.parse(localStorage.getItem('f_profile_' + CURRENT_USER) || '{}');
-            
-            // Check for commands
             const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
             if (cmdMatch && chatCommands[cmdMatch[1]]) {
                 const result = chatCommands[cmdMatch[1]](cmdMatch[2] || '');
@@ -1459,7 +1198,6 @@
                     logs.scrollTop = logs.scrollHeight;
                     return;
                 } else {
-                    // Push action to Firebase
                     db.ref('chat').push({ 
                         user: CURRENT_USER, 
                         text: result.text, 
@@ -1471,7 +1209,6 @@
                     });
                 }
             } else {
-                // Push message to Firebase
                 db.ref('chat').push({ 
                     user: CURRENT_USER, 
                     text: text, 
@@ -1482,7 +1219,7 @@
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 
-                // Trigger bot response
+                // Bot response
                 for (const br of botResponses) {
                     if (br.trigger.test(text)) {
                         setTimeout(() => {
@@ -1504,31 +1241,77 @@
         });
     }
 
-    // ADMIN: BOT MESSAGE
-    function sendBotMessage() {
-        const text = document.getElementById('bot_message').value.trim();
-        if (!text) return;
-        db.ref('chat').push({ 
-            user: 'Eric Northman', 
-            text: text, 
-            tag: 'BOT', 
-            style: 'bot-style', 
-            isBot: true, 
-            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-            timestamp: firebase.database.ServerValue.TIMESTAMP
+    // CHAT REAL-TIME LISTENER - FIXED WITH CLICKABLE USERNAMES
+    let chatListenerSet = false;
+    function setupChatListener() {
+        if (chatListenerSet) return;
+        chatListenerSet = true;
+        
+        db.ref('chat').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
+            const logs = document.getElementById('chat_logs');
+            if (!logs) return;
+            
+            const msgs = [];
+            snapshot.forEach((child) => msgs.push(child.val()));
+            
+            // Pinned message
+            db.ref('pinned').once('value', (pinSnap) => {
+                const pinned = pinSnap.val();
+                const pinnedContainer = document.getElementById('pinned_container');
+                if (pinnedContainer) {
+                    pinnedContainer.innerHTML = pinned ? '<div class="pinned-msg"><span style="color:#ffd700; font-size:8px;">📌 PINNED</span><br>' + escapeHtml(pinned) + '</div>' : '';
+                }
+            });
+            
+            logs.innerHTML = msgs.map(m => {
+                if (m.isAction) {
+                    return '<div class="chat-action" style="padding:4px 0; font-size:11px;">* ' + escapeHtml(m.text) + '</div>';
+                }
+                const botClass = m.isBot ? ' chat-bot' : '';
+                const imgHtml = m.imageData ? '<img class="chat-image" src="' + m.imageData + '">' : '';
+                const colorStyle = m.color ? 'color:' + m.color + ' !important;' : '';
+                
+                // FIXED: Clickable username with proper event handling
+                return `<div class="chat-entry${botClass}">
+                    <div class="chat-header">
+                        <span class="rank-tag ${m.style}">${m.tag}</span>
+                        <span class="chat-username ${m.style}" style="${colorStyle}" onclick="showProfileCard('${escapeHtml(m.user)}', event)">${escapeHtml(m.user)}</span>
+                        <span style="color:#444; font-size:8px; margin-left:auto;">${m.time || ''}</span>
+                    </div>
+                    <div style="color:#ccc; font-size:11px; padding-left:30px;">${escapeHtml(m.text)}${imgHtml}</div>
+                </div>`;
+            }).join('');
+            logs.scrollTop = logs.scrollHeight;
         });
-        document.getElementById('bot_message').value = '';
     }
 
-    // ADMIN: PIN MESSAGE
-    function pinMessage() {
-        const text = document.getElementById('pin_message').value.trim();
-        if (!text) return;
-        db.ref('pinned').set(text);
-        document.getElementById('pin_message').value = '';
+    function loadMessages() {
+        setupChatListener();
     }
 
-    // IMAGE UPLOAD
+    function updateMemberList() {
+        ['list_technician', 'list_admin', 'list_mod', 'list_vip', 'list_member'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = "";
+        });
+        
+        if(!CURRENT_USER || IS_GUEST) return;
+        
+        const u = userDatabase[CURRENT_USER];
+        
+        db.ref('profiles/' + CURRENT_USER).once('value', (snapshot) => {
+            const profile = snapshot.val() || {};
+            const targetEl = document.getElementById(u.target);
+            if (targetEl) {
+                targetEl.innerHTML = `
+                    <div class="member-item ${u.style}" onclick="showProfileCard('${CURRENT_USER}', event)">
+                        <span style="font-size: 14px;">🦇</span> ${CURRENT_USER}
+                        ${profile.status ? '<div style="font-size:9px; color:#666; margin-left:20px;">' + escapeHtml(profile.status) + '</div>' : ''}
+                    </div>`;
+            }
+        });
+    }
+
     function uploadChatImage() {
         if (IS_GUEST) return;
         const file = document.getElementById('chat_image').files[0];
@@ -1547,33 +1330,76 @@
         document.getElementById('chat_image').value = '';
     }
 
+    // ============================================
+    // ADMIN FUNCTIONS
+    // ============================================
+    
+    function sendBotMessage() {
+        const text = document.getElementById('bot_message').value.trim();
+        if (!text) return;
+        db.ref('chat').push({ 
+            user: 'Eric Northman', 
+            text: text, 
+            tag: 'BOT', 
+            style: 'bot-style', 
+            isBot: true, 
+            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        document.getElementById('bot_message').value = '';
+    }
+
+    function pinMessage() {
+        const text = document.getElementById('pin_message').value.trim();
+        if (!text) return;
+        db.ref('pinned').set(text);
+        document.getElementById('pin_message').value = '';
+    }
+
+    function clearPin() { db.ref('pinned').remove(); }
+
+    function clearChat() {
+        if (confirm('Clear ALL chat messages?')) {
+            db.ref('chat').remove();
+        }
+    }
+
+    function exportChat() {
+        db.ref('chat').orderByChild('timestamp').once('value', (snapshot) => {
+            const msgs = [];
+            snapshot.forEach((child) => msgs.push(child.val()));
+            const text = msgs.map(m => '[' + m.time + '] ' + m.user + ': ' + m.text).join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
+            a.click();
+        });
+    }
+
     function loadPendingImages() {
         const container = document.getElementById('pending_images');
         if (!container) return;
         
         db.ref('pending_images').once('value', (snapshot) => {
             const pending = [];
-            snapshot.forEach((child) => {
-                pending.push({ ...child.val(), key: child.key });
-            });
+            snapshot.forEach((child) => pending.push({ ...child.val(), key: child.key }));
             
             if (pending.length === 0) { 
                 container.innerHTML = '<span style="color:#666; font-size:9px;">None</span>'; 
                 return; 
             }
-            container.innerHTML = pending.map(p => '<div class="approval-item"><img src="' + p.data + '"><div><div style="color:#d40000; font-size:10px;">' + p.user + '</div><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; margin:2px;" onclick="approveImage(\'' + p.key + '\',\'' + p.user + '\',\'' + p.data.substring(0,50) + '\')">✓</button><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; background:#333;" onclick="denyImage(\'' + p.key + '\')">✗</button></div></div>').join('');
+            container.innerHTML = pending.map(p => '<div class="approval-item"><img src="' + p.data + '"><div><div style="color:#d40000; font-size:10px;">' + p.user + '</div><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; margin:2px;" onclick="approveImage(\'' + p.key + '\')">✓</button><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; background:#333;" onclick="denyImage(\'' + p.key + '\')">✗</button></div></div>').join('');
         });
     }
 
-    function approveImage(key, user, dataPreview) {
-        // Get full image data from Firebase
+    function approveImage(key) {
         db.ref('pending_images/' + key).once('value', (snapshot) => {
             const img = snapshot.val();
             if (!img) return;
             
             const u = userDatabase[img.user] || { rank: 'M', style: 'member-style' };
             
-            // Add to chat
             db.ref('chat').push({ 
                 user: img.user, 
                 text: '[Image]', 
@@ -1584,7 +1410,6 @@
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
-            // Remove from pending
             db.ref('pending_images/' + key).remove();
             loadPendingImages();
         });
@@ -1601,9 +1426,7 @@
         
         db.ref('applications').orderByChild('status').equalTo('pending').once('value', (snapshot) => {
             const apps = [];
-            snapshot.forEach((child) => {
-                apps.push(child.val());
-            });
+            snapshot.forEach((child) => apps.push(child.val()));
             
             if (apps.length === 0) { 
                 container.innerHTML = '<span style="color:#666; font-size:9px;">No pending applications</span>'; 
@@ -1612,14 +1435,13 @@
             
             container.innerHTML = apps.map(a => `
                 <div style="border:1px solid #400; padding:8px; margin-bottom:8px; background:#0a0000;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; justify-content:space-between;">
                         <span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(a.username)}</span>
                         <span style="color:#555; font-size:8px;">${a.date}</span>
                     </div>
                     <div style="color:#888; font-size:9px; margin:5px 0;">
                         <strong>Referral:</strong> ${escapeHtml(a.referral || 'None')}<br>
-                        <strong>Reason:</strong> ${escapeHtml(a.reason)}<br>
-                        <strong>Offering:</strong> ${escapeHtml(a.offering || 'None')}
+                        <strong>Reason:</strong> ${escapeHtml(a.reason)}
                     </div>
                     <div style="display:flex; gap:5px; margin-top:8px;">
                         <button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#050;" onclick="approveApp(${a.id})">✓ Accept</button>
@@ -1640,57 +1462,25 @@
         loadPendingApps();
     }
 
-    // ADMIN FUNCTIONS
-    function clearPin() {
-        db.ref('pinned').remove();
-    }
-
-    function clearChat() {
-        if (confirm('Clear ALL chat messages? This cannot be undone.')) {
-            db.ref('chat').remove();
-        }
-    }
-
-    function exportChat() {
-        db.ref('chat').orderByChild('timestamp').once('value', (snapshot) => {
-            const msgs = [];
-            snapshot.forEach((child) => msgs.push(child.val()));
-            const text = msgs.map(m => `[${m.time}] ${m.user}: ${m.text}`).join('\n');
-            const blob = new Blob([text], { type: 'text/plain' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
-            a.click();
-        });
-    }
-
     function loadAdminStats() {
         const stats = document.getElementById('admin_stats');
         if (!stats) return;
         
         const visitors = localStorage.getItem('f_visitors') || '0';
         
-        // Get counts from Firebase
         Promise.all([
             db.ref('chat').once('value'),
             db.ref('applications').once('value'),
-            db.ref('pending_images').once('value'),
             db.ref('members').once('value')
-        ]).then(([chatSnap, appsSnap, pendingSnap, membersSnap]) => {
-            let chatCount = 0, appCount = 0, pendingAppCount = 0, pendingImgCount = 0, memberCount = 0;
-            
+        ]).then(([chatSnap, appsSnap, membersSnap]) => {
+            let chatCount = 0, appCount = 0, memberCount = 0;
             chatSnap.forEach(() => chatCount++);
-            appsSnap.forEach((child) => {
-                appCount++;
-                if (child.val().status === 'pending') pendingAppCount++;
-            });
-            pendingSnap.forEach(() => pendingImgCount++);
+            appsSnap.forEach(() => appCount++);
             membersSnap.forEach(() => memberCount++);
             
             stats.innerHTML = `
                 Total Messages: ${chatCount}<br>
-                Pending Images: ${pendingImgCount}<br>
-                Applications: ${appCount} (${pendingAppCount} pending)<br>
+                Applications: ${appCount}<br>
                 Registered Members: ${memberCount}<br>
                 Total Visitors: ${visitors}
             `;
@@ -1699,198 +1489,6 @@
         loadBannedUsers();
     }
 
-    // APPLICATION STATUS CHECK
-    function checkAppStatus() {
-        const username = document.getElementById('app_username').value.trim();
-        if (!username) { alert('Enter your username to check status.'); return; }
-        
-        const resultDiv = document.getElementById('app_result');
-        document.getElementById('app_form').style.display = 'none';
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = '<div style="color:#888;">Checking...</div>';
-        
-        // Search Firebase for application
-        db.ref('applications').orderByChild('username').equalTo(username).once('value', (snapshot) => {
-            let app = null;
-            snapshot.forEach((child) => {
-                app = child.val();
-            });
-            
-            if (!app) {
-                // Try case-insensitive search
-                db.ref('applications').once('value', (allSnap) => {
-                    allSnap.forEach((child) => {
-                        const a = child.val();
-                        if (a.username.toLowerCase() === username.toLowerCase()) {
-                            app = a;
-                        }
-                    });
-                    renderAppStatus(app, resultDiv);
-                });
-            } else {
-                renderAppStatus(app, resultDiv);
-            }
-        });
-    }
-    
-    function renderAppStatus(app, resultDiv) {
-        if (!app) {
-            resultDiv.innerHTML = '<div class="app-status" style="border-color:#888; color:#888;">No application found for this username.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
-        } else if (app.status === 'pending') {
-            resultDiv.innerHTML = '<div class="app-status app-pending">🕐 Your application is pending review.<br><small>Check back soon!</small></div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
-        } else if (app.status === 'approved') {
-            resultDiv.innerHTML = `
-                <div class="app-status" style="border-color:#0f0; color:#0f0; margin-bottom:15px;">✓ Application Approved!</div>
-                <h3 style="color:#d40000; margin:0 0 10px 0; font-size:13px;">Complete Registration</h3>
-                <input type="text" id="inline_reg_user" class="ie-input" value="${escapeHtml(app.username)}" readonly style="background:#111;">
-                <input type="password" id="inline_reg_pass" class="ie-input" placeholder="Choose Password">
-                <input type="password" id="inline_reg_pass2" class="ie-input" placeholder="Confirm Password">
-                <div style="border:1px dashed #ffd700; padding:6px; margin:8px 0; background:rgba(255,215,0,0.05);">
-                    <label style="color:#ffd700; font-size:8px;">🌟 VIP Code (optional)</label>
-                    <input type="text" id="inline_vip_code" class="ie-input" placeholder="Enter VIP invite code" style="margin:0;">
-                </div>
-                <button class="ie-btn" onclick="completeInlineRegistration(${app.id})">🦇 Complete Registration</button>
-                <div id="inline_reg_result" style="margin-top:8px;"></div>
-            `;
-        } else if (app.status === 'denied') {
-            resultDiv.innerHTML = '<div class="app-status" style="border-color:#f00; color:#f00;">✗ Your application was denied.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
-        } else if (app.status === 'registered') {
-            resultDiv.innerHTML = '<div class="app-status" style="border-color:#0f0; color:#0f0;">✓ Already registered! Please log in via Portal.</div><button class="ie-btn" style="margin-top:10px; background:#333;" onclick="resetAppForm()">Back</button>';
-        }
-    }
-
-    function resetAppForm() {
-        document.getElementById('app_form').style.display = 'block';
-        document.getElementById('app_result').style.display = 'none';
-    }
-
-    function completeInlineRegistration(appId) {
-        const username = document.getElementById('inline_reg_user').value.trim();
-        const pass = document.getElementById('inline_reg_pass').value;
-        const pass2 = document.getElementById('inline_reg_pass2').value;
-        const vipCode = document.getElementById('inline_vip_code').value.trim();
-        const resultEl = document.getElementById('inline_reg_result');
-        
-        if (!pass) { resultEl.innerHTML = '<span style="color:#f00;">Enter a password.</span>'; return; }
-        if (pass !== pass2) { resultEl.innerHTML = '<span style="color:#f00;">Passwords do not match.</span>'; return; }
-        if (pass.length < 6) { resultEl.innerHTML = '<span style="color:#f00;">Password must be 6+ characters.</span>'; return; }
-        
-        if (userDatabase[username]) {
-            resultEl.innerHTML = '<span style="color:#f00;">Username already registered.</span>';
-            return;
-        }
-        
-        // Check VIP code if provided (from Firebase)
-        if (vipCode) {
-            db.ref('vip_codes').orderByChild('code').equalTo(vipCode).once('value', (snapshot) => {
-                let codeData = null;
-                let codeKey = null;
-                snapshot.forEach((child) => {
-                    if (!child.val().used) {
-                        codeData = child.val();
-                        codeKey = child.key;
-                    }
-                });
-                
-                if (codeData) {
-                    // Mark code as used
-                    db.ref('vip_codes/' + codeKey).update({ used: true, usedBy: username });
-                    finishRegistration(username, pass, true, appId, resultEl);
-                } else {
-                    resultEl.innerHTML = '<span style="color:#f00;">Invalid or used VIP code.</span>';
-                }
-            });
-        } else {
-            finishRegistration(username, pass, false, appId, resultEl);
-        }
-    }
-    
-    function finishRegistration(username, pass, isVIP, appId, resultEl) {
-        // Create member data
-        let memberData;
-        if (isVIP) {
-            memberData = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
-        } else {
-            memberData = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
-        }
-        
-        // Save to Firebase
-        db.ref('members/' + username).set(memberData);
-        userDatabase[username] = memberData;
-        
-        // Update application status
-        if (appId) {
-            db.ref('applications/' + appId).update({ status: 'registered' });
-        }
-        
-        const msg = isVIP ? '🌟 VIP Registration complete!' : '✓ Registration complete!';
-        resultEl.innerHTML = '<span style="color:#0f0;">' + msg + '</span>';
-        setTimeout(() => { toggleWin('apply_window'); toggleWin('ie_window'); }, 1500);
-    }
-
-    function showRegistration(username) {
-        document.getElementById('reg_username').value = username;
-        toggleWin('apply_window');
-        toggleWin('register_window');
-    }
-
-    function completeRegistration() {
-        const username = document.getElementById('reg_username').value.trim();
-        const pass = document.getElementById('reg_password').value;
-        const pass2 = document.getElementById('reg_password2').value;
-        const vipCode = document.getElementById('reg_vip_code').value.trim();
-        
-        if (!username || !pass) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Fill all fields.</span>'; return; }
-        if (pass !== pass2) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Passwords do not match.</span>'; return; }
-        if (pass.length < 6) { document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Password must be 6+ characters.</span>'; return; }
-        
-        // Check if username already exists
-        if (userDatabase[username]) {
-            document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Username already taken.</span>';
-            return;
-        }
-        
-        // Check VIP code if provided (from Firebase)
-        if (vipCode) {
-            db.ref('vip_codes').orderByChild('code').equalTo(vipCode).once('value', (snapshot) => {
-                let codeData = null;
-                let codeKey = null;
-                snapshot.forEach((child) => {
-                    if (!child.val().used) {
-                        codeData = child.val();
-                        codeKey = child.key;
-                    }
-                });
-                
-                if (codeData) {
-                    db.ref('vip_codes/' + codeKey).update({ used: true, usedBy: username });
-                    saveNewMember(username, pass, true);
-                } else {
-                    document.getElementById('reg_result').innerHTML = '<span style="color:#f00;">Invalid or already used VIP code.</span>';
-                }
-            });
-        } else {
-            saveNewMember(username, pass, false);
-        }
-    }
-    
-    function saveNewMember(username, pass, isVIP) {
-        let memberData;
-        if (isVIP) {
-            memberData = { pass: pass, rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false };
-        } else {
-            memberData = { pass: pass, rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false };
-        }
-        
-        db.ref('members/' + username).set(memberData);
-        userDatabase[username] = memberData;
-        
-        const rankMsg = isVIP ? '🌟 VIP Registration complete!' : 'Registration complete!';
-        document.getElementById('reg_result').innerHTML = '<span style="color:#0f0;">' + rankMsg + ' You can now log in.</span>';
-        setTimeout(() => { toggleWin('register_window'); toggleWin('ie_window'); }, 2000);
-    }
-
-    // MODERATION FUNCTIONS
     function executeModAction() {
         const username = document.getElementById('mod_username').value.trim();
         const action = document.getElementById('mod_action').value;
@@ -1899,31 +1497,24 @@
         
         if (!username || !action) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Select user and action.</span>'; return; }
         
-        // Don't allow moderation of core admins
-        const protectedAdmins = ['losersyndicate', 'buttheadandbeav126', 'bloomhouse8483'];
+        const protectedAdmins = ['losersyndicate', 'noseeyedear', 'oleg'];
         if (protectedAdmins.includes(username.toLowerCase())) {
             document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Cannot moderate core admins.</span>';
             return;
         }
         
-        const now = Date.now();
-        const expiry = duration === 0 ? 0 : now + (duration * 60 * 1000);
+        const expiry = duration === 0 ? 0 : Date.now() + (duration * 60 * 1000);
         
         if (action === 'kick') {
-            document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' has been kicked.</span>';
-        } else if (action === 'timeout') {
-            db.ref('bans/' + username).set({ type: 'timeout', expiry: expiry, reason: reason, by: CURRENT_USER });
-            document.getElementById('mod_result').innerHTML = '<span style="color:#ffd700;">' + username + ' timed out for ' + (duration === 0 ? 'permanently' : duration + ' mins') + '.</span>';
-        } else if (action === 'softban') {
-            db.ref('bans/' + username).set({ type: 'softban', expiry: expiry, reason: reason, by: CURRENT_USER });
-            document.getElementById('mod_result').innerHTML = '<span style="color:#ff6600;">' + username + ' soft banned (suspended).</span>';
-        } else if (action === 'hardban') {
-            db.ref('bans/' + username).set({ type: 'hardban', expiry: 0, reason: reason, by: CURRENT_USER });
-            db.ref('members/' + username).remove();
-            delete userDatabase[username];
-            document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">' + username + ' HARD BANNED (account deleted).</span>';
+            document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' kicked.</span>';
+        } else {
+            db.ref('bans/' + username).set({ type: action, expiry: expiry, reason: reason, by: CURRENT_USER });
+            if (action === 'hardban') {
+                db.ref('members/' + username).remove();
+                delete userDatabase[username];
+            }
+            document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' ' + action + '.</span>';
         }
-        
         loadBannedUsers();
     }
 
@@ -1950,42 +1541,12 @@
         loadBannedUsers();
     }
 
-    // Check if current user is banned/timed out
-    function checkUserBan() {
-        if (!CURRENT_USER) return false;
-        const bans = JSON.parse(localStorage.getItem('f_bans') || '{}');
-        const ban = bans[CURRENT_USER];
-        if (!ban) return false;
-        
-        const now = Date.now();
-        if (ban.expiry !== 0 && ban.expiry < now) {
-            // Ban expired, remove it
-            delete bans[CURRENT_USER];
-            localStorage.setItem('f_bans', JSON.stringify(bans));
-            return false;
-        }
-        
-        if (ban.type === 'hardban' || ban.type === 'softban') {
-            alert('Your account has been suspended. Reason: ' + (ban.reason || 'No reason given'));
-            logout();
-            return true;
-        }
-        
-        if (ban.type === 'timeout') {
-            return true; // Can view but not send
-        }
-        
-        return false;
-    }
-
-    // ST-ONLY: ELEVATE USER
     function elevateUser() {
         if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
         const username = document.getElementById('elevate_user').value.trim();
         const newRank = document.getElementById('elevate_rank').value;
         
-        if (!username) { alert('Enter username.'); return; }
-        if (!userDatabase[username]) { alert('User not found.'); return; }
+        if (!username || !userDatabase[username]) { alert('User not found.'); return; }
         
         const rankConfig = {
             'member': { rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false },
@@ -1994,14 +1555,11 @@
             'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', target: 'list_admin', isAdmin: true }
         };
         
-        // Update in Firebase
         db.ref('members/' + username).update(rankConfig[newRank]);
         userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] };
-        
         alert(username + ' elevated to ' + rankConfig[newRank].fullRank);
     }
 
-    // ST-ONLY: GENERATE VIP CODE
     function generateVIPCode() {
         if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
         const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -2021,29 +1579,23 @@
         });
     }
 
-    // VIP IMAGE HOSTING - CLOUDINARY FOR REAL DISCORD EMBEDS
     function uploadVIPImage() {
         const user = userDatabase[CURRENT_USER];
-        if (!user) { alert('Not logged in.'); return; }
-        const isVIPorStaff = user.rank === 'VIP' || user.isAdmin || user.isST;
-        if (!isVIPorStaff) { alert('VIP Image Hosting is exclusive to VIP members and staff.'); return; }
+        if (!user || !(user.rank === 'VIP' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
         
         const file = document.getElementById('vip_image_picker').files[0];
-        if (!file) { alert('Select an image.'); return; }
-        if (!file.type.startsWith('image/')) { alert('Images only.'); return; }
+        if (!file || !file.type.startsWith('image/')) { alert('Select an image.'); return; }
         
-        document.getElementById('vip_image_result').innerHTML = '<div style="color:#888; font-size:10px;">Uploading to cloud...</div>';
+        document.getElementById('vip_image_result').innerHTML = '<div style="color:#888; font-size:10px;">Uploading...</div>';
         
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', UPLOAD_PRESET);
         
-        fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
+        fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
-                console.log('Cloudinary response:', data);
                 if (data.secure_url) {
-                    // Save to Firebase for persistence
                     db.ref('hosted_images').push({
                         url: data.secure_url,
                         user: CURRENT_USER,
@@ -2054,21 +1606,14 @@
                     
                     document.getElementById('vip_image_result').innerHTML = `
                         <div style="background:#0a0a00; border:1px solid #ffd700; padding:10px; margin-top:8px;">
-                            <div style="color:#0f0; font-size:10px; margin-bottom:8px;">✓ Uploaded! Discord-embeddable link:</div>
-                            <input type="text" value="${data.secure_url}" style="width:100%; font-size:10px; background:#000; border:1px solid #ffd700; color:#ffd700; padding:6px;" onclick="this.select(); document.execCommand('copy'); alert('Link copied!');" readonly>
-                            <img src="${data.secure_url}" style="max-width:100%; max-height:120px; margin-top:8px; border:1px solid #400;">
+                            <div style="color:#0f0; font-size:10px; margin-bottom:8px;">✓ Uploaded!</div>
+                            <input type="text" value="${data.secure_url}" style="width:100%; font-size:10px; background:#000; border:1px solid #ffd700; color:#ffd700; padding:6px;" onclick="this.select(); document.execCommand('copy'); alert('Copied!');" readonly>
                         </div>
                     `;
                     loadVIPGallery();
-                } else if (data.error) {
-                    document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Error: ' + data.error.message + '<br><br><span style="color:#888;">Make sure Cloudinary upload preset "' + UPLOAD_PRESET + '" exists and is set to unsigned.</span></div>';
                 } else {
-                    document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Upload failed. Check console for details.</div>';
+                    document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Upload failed.</div>';
                 }
-            })
-            .catch(err => {
-                console.error('Upload error:', err);
-                document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Upload error: ' + err.message + '</div>';
             });
     }
 
@@ -2081,377 +1626,22 @@
             snapshot.forEach(child => images.push(child.val()));
             
             if (images.length === 0) {
-                container.innerHTML = '<div style="color:#666; font-size:9px;">No images uploaded yet.</div>';
+                container.innerHTML = '<div style="color:#666; font-size:9px;">No images yet.</div>';
                 return;
             }
             
             container.innerHTML = images.reverse().map(img => `
                 <img src="${img.url}" style="width:50px; height:50px; object-fit:cover; border:1px solid #333; margin:2px; cursor:pointer;" 
-                     onclick="navigator.clipboard.writeText('${img.url}'); alert('URL copied: ${img.url}')" 
-                     title="Click to copy embed URL">
+                     onclick="navigator.clipboard.writeText('${img.url}'); alert('URL copied!')" 
+                     title="Click to copy">
             `).join('');
         });
     }
 
-    function copyImageLink(url) {
-        navigator.clipboard.writeText(url).then(() => alert('Link copied!'));
-    }
-
-    // PREV PAGE FOR MEMORIES
-    function prevPage() {
-        if (currentPage > 1) {
-            currentPage--;
-            renderMemories();
-        }
-    }
-
-    // Setup real-time chat listener
-    let chatListenerSet = false;
-    function setupChatListener() {
-        if (chatListenerSet) return;
-        chatListenerSet = true;
-        
-        db.ref('chat').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
-            const logs = document.getElementById('chat_logs');
-            if (!logs) return;
-            
-            const msgs = [];
-            snapshot.forEach((child) => {
-                msgs.push(child.val());
-            });
-            
-            // Get pinned message
-            db.ref('pinned').once('value', (pinSnap) => {
-                const pinned = pinSnap.val();
-                const pinnedContainer = document.getElementById('pinned_container');
-                if (pinnedContainer) {
-                    pinnedContainer.innerHTML = pinned ? '<div class="pinned-msg"><span style="color:#ffd700; font-size:8px;">📌 PINNED</span><br>' + escapeHtml(pinned) + '</div>' : '';
-                }
-            });
-            
-            logs.innerHTML = msgs.map(m => {
-                if (m.isAction) {
-                    return '<div class="chat-action" style="padding:4px 0; font-size:11px;">* ' + escapeHtml(m.text) + '</div>';
-                }
-                const botClass = m.isBot ? ' chat-bot' : '';
-                const imgHtml = m.imageData ? '<img class="chat-image" src="' + m.imageData + '">' : '';
-                return '<div class="chat-entry' + botClass + '"><div class="chat-header"><span class="rank-tag ' + m.style + '">' + m.tag + '</span><span class="chat-username ' + m.style + '" onclick="showProfileCard(\'' + m.user + '\', event)" style="' + (m.color ? 'color:' + m.color + ' !important;' : '') + '">' + m.user + '</span><span style="color:#444; font-size:8px; margin-left:auto;">' + (m.time || '') + '</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">' + escapeHtml(m.text) + imgHtml + '</div></div>';
-            }).join('');
-            logs.scrollTop = logs.scrollHeight;
-        });
-    }
-
-    function loadMessages() {
-        setupChatListener();
-    }
-
-    function updateMemberList() {
-        document.getElementById('list_technician').innerHTML = "";
-        document.getElementById('list_admin').innerHTML = "";
-        document.getElementById('list_mod').innerHTML = "";
-        document.getElementById('list_vip').innerHTML = "";
-        document.getElementById('list_member').innerHTML = "";
-        if(!CURRENT_USER || IS_GUEST) return;
-        const u = userDatabase[CURRENT_USER];
-        const profile = JSON.parse(localStorage.getItem('f_profile_' + CURRENT_USER) || '{}');
-        document.getElementById(u.target).innerHTML = `
-            <div class="member-item ${u.style}">
-                <span style="font-size: 14px;">🦇</span> ${CURRENT_USER}
-                ${profile.status ? `<div style="font-size:9px; color:#666; margin-left:20px;">${escapeHtml(profile.status)}</div>` : ''}
-            </div>`;
-    }
-
-    async function processIEUpload() {
-        const fileInput = document.getElementById('ie_file_picker');
-        const name = document.getElementById('ie_filename').value || "Video";
-        if(!fileInput.files[0]) return;
-        document.getElementById('upload_status').innerText = "Syncing...";
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        formData.append('upload_preset', UPLOAD_PRESET);
-        try {
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method: 'POST', body: formData });
-            const data = await res.json();
-            if (res.ok) {
-                // Save to Firebase
-                db.ref('archive').push({ 
-                    name, 
-                    url: data.secure_url, 
-                    uploader: CURRENT_USER,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-                renderMemories();
-                document.getElementById('upload_status').innerText = "Push to Cloud";
-                document.getElementById('ie_filename').value = "";
-                fileInput.value = "";
-            }
-        } catch (e) { alert("Error."); }
-    }
-
-    function renderMemories() {
-        const grid = document.getElementById('memories_grid');
-        grid.innerHTML = "";
-        
-        db.ref('archive').orderByChild('timestamp').once('value', (snapshot) => {
-            const archive = [];
-            snapshot.forEach((child) => archive.push(child.val()));
-            
-            const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
-            
-            // Update page indicator
-            const indicator = document.getElementById('page_indicator');
-            if (indicator) indicator.textContent = 'Page ' + currentPage + ' of ' + totalPages;
-            
-            if (archive.length === 0) {
-                grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories archived yet...</p>';
-                return;
-            }
-            
-            const start = (currentPage - 1) * itemsPerPage;
-            archive.slice(start, start + itemsPerPage).forEach(mem => {
-                const div = document.createElement('div');
-                div.className = "icon";
-                div.innerHTML = `<div onclick="spawnVideoWindow('${escapeHtml(mem.name)}', '${mem.url}')">
-                    <img class="video-icon" src="https://win98icons.alexmeub.com/icons/png/video_file-0.png">
-                    <div style="font-size:10px;">${escapeHtml(mem.name)}</div>
-                    <div style="font-size:8px; color:#666;">${escapeHtml(mem.uploader)}</div>
-                </div>`;
-                grid.appendChild(div);
-            });
-        });
-    }
-
-    function nextPage() {
-        db.ref('archive').once('value', (snapshot) => {
-            let count = 0;
-            snapshot.forEach(() => count++);
-            const totalPages = Math.ceil(count / itemsPerPage) || 1;
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderMemories();
-            }
-        });
-    }
-
-    function spawnVideoWindow(name, url) {
-        const id = 'v_' + Date.now();
-        const win = document.createElement('div');
-        win.className = 'window'; win.id = id; win.style.display = 'block';
-        win.style.left = (150 + Math.random() * 100) + 'px'; 
-        win.style.top = (100 + Math.random() * 50) + 'px'; 
-        win.style.width = '520px'; win.style.height = '420px';
-        win.innerHTML = `<div class="title-bar"><div class="title-bar-text">▶ ${name}</div><div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${id}').remove()"></button></div></div>
-            <div class="window-body"><video src="${url}" controls autoplay style="width:100%; height:100%; background:#000;"></video></div>`;
-        document.body.appendChild(win);
-        makeDraggable(id);
-    }
-
-    function toggleWin(id) {
-        let el = document.getElementById(id);
-        if (!el) return;
-        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
-        if(el.style.display === 'block') { 
-            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
-            el.style.zIndex = "200"; 
-        }
-        if (id === 'admin_window') { loadPendingImages(); loadPendingApps(); loadAdminStats(); loadActiveCodes(); }
-    }
-
-    function makeDraggable(winId) {
-        const win = document.getElementById(winId);
-        const header = win.querySelector('.title-bar');
-        header.onmousedown = (e) => {
-            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
-            win.style.zIndex = "400";
-            let oX = e.clientX - win.offsetLeft, oY = e.clientY - win.offsetTop;
-            document.onmousemove = (e) => { 
-                win.style.left = (e.clientX - oX) + 'px'; 
-                win.style.top = (e.clientY - oY) + 'px'; 
-            };
-            document.onmouseup = () => document.onmousemove = null;
-        };
-    }
-
-    ['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'register_window'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) makeDraggable(id);
-    });
-    
-    function beginSession() { 
-        document.getElementById('boot-screen').style.display = 'none'; 
-        if(player) { player.unMute(); player.playVideo(); } 
-    }
-    
-    var player;
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', { 
-            videoId: 'Bi5kyehmeaY', 
-            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 }, 
-            events: { 'onReady': (e) => e.target.mute() } 
-        });
-    }
-    function pauseMusic() { if(player) player.pauseVideo(); }
-    function playMusic() { if(player) player.playVideo(); }
-
-    // AVATAR FUNCTIONS
-    function updateAvatar() {
-        const url = document.getElementById('avatar_url').value.trim();
-        const fileInput = document.getElementById('avatar_upload');
-        
-        if (url) {
-            userProfile.avatar = url;
-            db.ref('profiles/' + CURRENT_USER).update({ avatar: url });
-            document.getElementById('avatar_preview').innerHTML = '<img src="' + url + '" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #700;">';
-            alert('Avatar updated!');
-        } else if (fileInput && fileInput.files[0]) {
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            formData.append('upload_preset', UPLOAD_PRESET);
-            
-            fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.secure_url) {
-                        userProfile.avatar = data.secure_url;
-                        db.ref('profiles/' + CURRENT_USER).update({ avatar: data.secure_url });
-                        document.getElementById('avatar_preview').innerHTML = '<img src="' + data.secure_url + '" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #700;">';
-                        alert('Avatar uploaded!');
-                    }
-                });
-        } else {
-            alert('Enter a URL or select a file.');
-        }
-    }
-
-    function updateProfileMusic() {
-        const url = document.getElementById('profile_music').value.trim();
-        userProfile.music = url;
-        db.ref('profiles/' + CURRENT_USER).update({ music: url });
-        alert('Profile music set!');
-    }
-
-    // ENHANCED PROFILE CARD
-    function showProfileCard(username, event) {
-        if (event) event.stopPropagation();
-        currentProfileUser = username;
-        const card = document.getElementById('profile_card');
-        
-        db.ref('profiles/' + username).once('value', (snapshot) => {
-            const profile = snapshot.val() || {};
-            const user = userDatabase[username] || { rank: 'M', fullRank: 'Member' };
-            
-            document.getElementById('pc_name').textContent = username;
-            document.getElementById('pc_title').textContent = user.fullRank || 'Member';
-            document.getElementById('pc_bio').textContent = profile.bio || 'No bio set.';
-            document.getElementById('pc_status').textContent = profile.status || '';
-            
-            // Avatar
-            const avatarEl = document.getElementById('pc_avatar');
-            if (profile.avatar) {
-                avatarEl.innerHTML = '<img src="' + profile.avatar + '" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            } else {
-                avatarEl.innerHTML = '🦇';
-            }
-            
-            // Load reputation
-            db.ref('reputation/' + username).once('value', (repSnap) => {
-                const rep = repSnap.val() || { score: 0 };
-                document.getElementById('pc_rep').textContent = rep.score || 0;
-            });
-            
-            // Load comments
-            db.ref('profile_comments/' + username).orderByChild('timestamp').limitToLast(10).once('value', (commSnap) => {
-                const comments = [];
-                commSnap.forEach(c => comments.push(c.val()));
-                document.getElementById('pc_comment_count').textContent = comments.length;
-                
-                const commentsList = document.getElementById('pc_comments_list');
-                if (comments.length === 0) {
-                    commentsList.innerHTML = '<div style="color:#555; font-size:10px;">No comments yet.</div>';
-                } else {
-                    commentsList.innerHTML = comments.reverse().map(c => `
-                        <div style="background:#0a0000; padding:6px; margin-bottom:4px; border-left:2px solid #500;">
-                            <span style="color:#d40000; font-weight:bold; font-size:10px;">${escapeHtml(c.from)}</span>
-                            <span style="color:#444; font-size:8px;"> - ${c.date}</span>
-                            <div style="color:#999; font-size:10px; margin-top:2px;">${escapeHtml(c.text)}</div>
-                        </div>
-                    `).join('');
-                }
-            });
-            
-            // Music player
-            const musicSection = document.getElementById('pc_music_section');
-            const musicPlayer = document.getElementById('pc_music_player');
-            if (profile.music) {
-                musicSection.style.display = 'block';
-                if (profile.music.includes('soundcloud.com')) {
-                    musicPlayer.innerHTML = `<iframe width="100%" height="80" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(profile.music)}&color=%23ff0000&auto_play=true&hide_related=true&show_comments=false&show_user=false"></iframe>`;
-                } else if (profile.music.includes('spotify.com')) {
-                    const spotifyMatch = profile.music.match(/track\/([a-zA-Z0-9]+)/);
-                    if (spotifyMatch) {
-                        musicPlayer.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${spotifyMatch[1]}" width="100%" height="80" frameborder="0" allow="encrypted-media"></iframe>`;
-                    }
-                } else {
-                    musicPlayer.innerHTML = '<div style="color:#666; font-size:9px;">Invalid music URL</div>';
-                }
-            } else {
-                musicSection.style.display = 'none';
-            }
-            
-            // Rep buttons - VIP+ only
-            const canRep = CURRENT_USER && userDatabase[CURRENT_USER] && (userDatabase[CURRENT_USER].rank === 'VIP' || userDatabase[CURRENT_USER].isAdmin || userDatabase[CURRENT_USER].isST);
-            document.getElementById('btn_rep_pos').style.display = canRep && username !== CURRENT_USER ? 'inline-block' : 'none';
-            document.getElementById('btn_rep_neg').style.display = canRep && username !== CURRENT_USER ? 'inline-block' : 'none';
-            
-            card.style.display = 'block';
-            card.style.left = Math.min(event.clientX || 200, window.innerWidth - 360) + 'px';
-            card.style.top = Math.min(event.clientY || 100, window.innerHeight - 500) + 'px';
-        });
-    }
-
-    function closeProfileCard() {
-        document.getElementById('profile_card').style.display = 'none';
-        // Stop any playing music
-        document.getElementById('pc_music_player').innerHTML = '';
-    }
-
-    function giveRep(amount) {
-        if (!CURRENT_USER || currentProfileUser === CURRENT_USER) return;
-        const canRep = userDatabase[CURRENT_USER] && (userDatabase[CURRENT_USER].rank === 'VIP' || userDatabase[CURRENT_USER].isAdmin || userDatabase[CURRENT_USER].isST);
-        if (!canRep) { alert('Only VIP+ members can give reputation!'); return; }
-        
-        db.ref('reputation/' + currentProfileUser).once('value', (snapshot) => {
-            const current = snapshot.val() || { score: 0, givers: {} };
-            if (current.givers && current.givers[CURRENT_USER]) {
-                alert('You already gave rep to this user!');
-                return;
-            }
-            current.score = (current.score || 0) + amount;
-            current.givers = current.givers || {};
-            current.givers[CURRENT_USER] = amount;
-            db.ref('reputation/' + currentProfileUser).set(current);
-            document.getElementById('pc_rep').textContent = current.score;
-            alert(amount > 0 ? '+Rep given!' : '-Rep given!');
-        });
-    }
-
-    function leaveProfileComment() {
-        if (!CURRENT_USER || IS_GUEST) { alert('Must be logged in to comment!'); return; }
-        const text = document.getElementById('profile_comment_input').value.trim();
-        if (!text) return;
-        
-        db.ref('profile_comments/' + currentProfileUser).push({
-            from: CURRENT_USER,
-            text: text,
-            date: new Date().toLocaleDateString(),
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        document.getElementById('profile_comment_input').value = '';
-        // Refresh profile card
-        showProfileCard(currentProfileUser, { clientX: parseInt(document.getElementById('profile_card').style.left), clientY: parseInt(document.getElementById('profile_card').style.top), stopPropagation: () => {} });
-    }
-
+    // ============================================
     // MANAGEMENT FUNCTIONS
+    // ============================================
+    
     function switchMgmtTab(tab, el) {
         document.querySelectorAll('.mgmt-tab').forEach(t => { t.style.color = '#666'; });
         el.style.color = '#d40000';
@@ -2488,20 +1678,18 @@
                 const statusColor = { pending: '#ffd700', approved: '#00ff00', denied: '#ff4444', registered: '#4488ff' }[a.status] || '#888';
                 return `
                     <div style="background:#0a0000; border:1px solid #400; padding:12px; margin-bottom:10px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <strong style="color:#d40000; font-size:14px;">${escapeHtml(a.username)}</strong>
-                            <span style="background:${statusColor}22; color:${statusColor}; padding:2px 10px; font-size:10px; border-radius:3px;">${a.status.toUpperCase()}</span>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <strong style="color:#d40000;">${escapeHtml(a.username)}</strong>
+                            <span style="color:${statusColor}; font-size:10px;">${a.status.toUpperCase()}</span>
                         </div>
-                        <div style="color:#888; font-size:11px; margin-bottom:8px;">
-                            <div><strong>Date:</strong> ${a.date}</div>
-                            <div><strong>Referral:</strong> ${escapeHtml(a.referral || 'None')}</div>
-                            <div><strong>Reason:</strong> ${escapeHtml(a.reason)}</div>
-                            <div><strong>Offering:</strong> ${escapeHtml(a.offering || 'None')}</div>
+                        <div style="color:#888; font-size:10px;">
+                            <div>Date: ${a.date}</div>
+                            <div>Reason: ${escapeHtml(a.reason)}</div>
                         </div>
                         ${a.status === 'pending' ? `
-                            <div style="display:flex; gap:8px;">
-                                <button class="ie-btn" style="padding:6px 15px; font-size:11px; background:#050; flex:1;" onclick="approveApp(${a.id})">✓ Approve</button>
-                                <button class="ie-btn" style="padding:6px 15px; font-size:11px; background:#500; flex:1;" onclick="denyApp(${a.id})">✗ Deny</button>
+                            <div style="display:flex; gap:8px; margin-top:8px;">
+                                <button class="ie-btn" style="padding:6px; font-size:10px; background:#050; flex:1;" onclick="approveApp(${a.id})">✓ Approve</button>
+                                <button class="ie-btn" style="padding:6px; font-size:10px; background:#500; flex:1;" onclick="denyApp(${a.id})">✗ Deny</button>
                             </div>
                         ` : ''}
                     </div>
@@ -2518,7 +1706,6 @@
             const members = [];
             snapshot.forEach(child => members.push({ username: child.key, ...child.val() }));
             
-            // Include core admins
             Object.keys(coreAdmins).forEach(name => {
                 if (!members.find(m => m.username === name)) {
                     members.push({ username: name, ...coreAdmins[name], isCore: true });
@@ -2526,13 +1713,11 @@
             });
             
             container.innerHTML = members.map(m => `
-                <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
                     <div>
                         <span class="${m.style}" style="font-weight:bold;">${escapeHtml(m.username)}</span>
                         <span style="color:#666; font-size:10px;"> [${m.fullRank}]</span>
-                        ${m.isCore ? '<span style="color:#ff00ff; font-size:9px;"> (Core)</span>' : ''}
                     </div>
-                    ${!m.isCore ? `<button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="if(confirm('Delete ${m.username}?')) { db.ref('members/${m.username}').remove(); loadAllMembers(); }">Delete</button>` : ''}
                 </div>
             `).join('');
         });
@@ -2542,20 +1727,19 @@
         const container = document.getElementById('all_hosted_images');
         if (!container) return;
         
-        db.ref('hosted_images').orderByChild('timestamp').limitToLast(50).once('value', (snapshot) => {
+        db.ref('hosted_images').limitToLast(50).once('value', (snapshot) => {
             const images = [];
-            snapshot.forEach(child => images.push({ ...child.val(), key: child.key }));
+            snapshot.forEach(child => images.push(child.val()));
             
             if (images.length === 0) {
-                container.innerHTML = '<div style="color:#666; grid-column:1/-1; text-align:center; padding:20px;">No hosted images.</div>';
+                container.innerHTML = '<div style="color:#666; grid-column:1/-1; text-align:center;">No images.</div>';
                 return;
             }
             
             container.innerHTML = images.reverse().map(img => `
                 <div style="background:#0a0000; border:1px solid #400; padding:5px; text-align:center;">
-                    <img src="${img.url}" style="width:100%; height:80px; object-fit:cover; cursor:pointer;" onclick="window.open('${img.url}', '_blank')">
-                    <div style="font-size:9px; color:#888; margin-top:3px;">${escapeHtml(img.user)}</div>
-                    <div style="font-size:8px; color:#555;">${img.date}</div>
+                    <img src="${img.url}" style="width:100%; height:60px; object-fit:cover;" onclick="window.open('${img.url}')">
+                    <div style="font-size:8px; color:#888;">${escapeHtml(img.user)}</div>
                 </div>
             `).join('');
         });
@@ -2565,25 +1749,22 @@
         const container = document.getElementById('all_videos');
         if (!container) return;
         
-        db.ref('archive').orderByChild('timestamp').once('value', (snapshot) => {
+        db.ref('archive').once('value', (snapshot) => {
             const videos = [];
             snapshot.forEach(child => videos.push({ ...child.val(), key: child.key }));
             
             if (videos.length === 0) {
-                container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No videos in archive.</div>';
+                container.innerHTML = '<div style="color:#666; text-align:center;">No videos.</div>';
                 return;
             }
             
             container.innerHTML = videos.reverse().map(v => `
-                <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between;">
                     <div>
                         <strong style="color:#d40000;">${escapeHtml(v.name)}</strong>
                         <span style="color:#666; font-size:10px;"> by ${escapeHtml(v.uploader)}</span>
                     </div>
-                    <div style="display:flex; gap:5px;">
-                        <button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto;" onclick="window.open('${v.url}', '_blank')">View</button>
-                        <button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="if(confirm('Delete this video?')) { db.ref('archive/${v.key}').remove(); loadAllVideos(); renderMemories(); }">Delete</button>
-                    </div>
+                    <button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto;" onclick="window.open('${v.url}')">View</button>
                 </div>
             `).join('');
         });
@@ -2593,45 +1774,176 @@
         const container = document.getElementById('all_vip_codes');
         if (!container) return;
         
-        db.ref('vip_codes').orderByChild('created').once('value', (snapshot) => {
+        db.ref('vip_codes').once('value', (snapshot) => {
             const codes = [];
-            snapshot.forEach(child => codes.push({ ...child.val(), key: child.key }));
+            snapshot.forEach(child => codes.push(child.val()));
             
             if (codes.length === 0) {
-                container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No VIP codes generated.</div>';
+                container.innerHTML = '<div style="color:#666; text-align:center;">No codes.</div>';
                 return;
             }
             
             container.innerHTML = codes.reverse().map(c => `
-                <div style="background:#0a0000; border:1px solid ${c.used ? '#333' : '#ffd700'}; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span style="color:${c.used ? '#666' : '#ffd700'}; font-family:monospace; font-size:14px;">${c.code}</span>
-                        <span style="color:#555; font-size:10px;"> - Created by ${c.createdBy}</span>
-                        ${c.used ? `<span style="color:#0f0; font-size:10px;"> (Used by ${c.usedBy})</span>` : ''}
-                    </div>
-                    ${!c.used ? `<button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="if(confirm('Delete this code?')) { db.ref('vip_codes/${c.key}').remove(); loadAllVIPCodes(); }">Delete</button>` : ''}
+                <div style="background:#0a0000; border:1px solid ${c.used ? '#333' : '#ffd700'}; padding:10px; margin-bottom:8px;">
+                    <span style="color:${c.used ? '#666' : '#ffd700'}; font-family:monospace;">${c.code}</span>
+                    ${c.used ? '<span style="color:#0f0; font-size:10px;"> (Used by ' + c.usedBy + ')</span>' : ''}
                 </div>
             `).join('');
         });
     }
 
-    // Real-time refresh for admin panel
-    function refreshAdminIfOpen() {
-        const adminWin = document.getElementById('admin_window');
-        if (adminWin && adminWin.style.display === 'block') {
-            loadPendingApps();
-            loadPendingImages();
-            loadAdminStats();
+    // ============================================
+    // MEMORIES / VIDEO ARCHIVE
+    // ============================================
+    
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderMemories();
         }
     }
 
+    function nextPage() {
+        db.ref('archive').once('value', (snapshot) => {
+            let count = 0;
+            snapshot.forEach(() => count++);
+            const totalPages = Math.ceil(count / itemsPerPage) || 1;
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderMemories();
+            }
+        });
+    }
+
+    function renderMemories() {
+        const grid = document.getElementById('memories_grid');
+        grid.innerHTML = "";
+        
+        db.ref('archive').orderByChild('timestamp').once('value', (snapshot) => {
+            const archive = [];
+            snapshot.forEach((child) => archive.push(child.val()));
+            
+            const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
+            document.getElementById('page_indicator').textContent = 'Page ' + currentPage + ' of ' + totalPages;
+            
+            if (archive.length === 0) {
+                grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories archived yet...</p>';
+                return;
+            }
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            archive.slice(start, start + itemsPerPage).forEach(mem => {
+                const div = document.createElement('div');
+                div.className = "icon";
+                div.innerHTML = `<div onclick="spawnVideoWindow('${escapeHtml(mem.name)}', '${mem.url}')">
+                    <img class="video-icon" src="https://win98icons.alexmeub.com/icons/png/video_file-0.png">
+                    <div style="font-size:10px;">${escapeHtml(mem.name)}</div>
+                    <div style="font-size:8px; color:#666;">${escapeHtml(mem.uploader)}</div>
+                </div>`;
+                grid.appendChild(div);
+            });
+        });
+    }
+
+    function spawnVideoWindow(name, url) {
+        const id = 'v_' + Date.now();
+        const win = document.createElement('div');
+        win.className = 'window'; win.id = id; win.style.display = 'block';
+        win.style.left = (150 + Math.random() * 100) + 'px'; 
+        win.style.top = (100 + Math.random() * 50) + 'px'; 
+        win.style.width = '520px'; win.style.height = '420px';
+        win.innerHTML = `<div class="title-bar"><div class="title-bar-text">▶ ${name}</div><div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${id}').remove()"></button></div></div>
+            <div class="window-body"><video src="${url}" controls autoplay style="width:100%; height:100%; background:#000;"></video></div>`;
+        document.body.appendChild(win);
+        makeDraggable(id);
+    }
+
+    async function processIEUpload() {
+        const fileInput = document.getElementById('ie_file_picker');
+        const name = document.getElementById('ie_filename').value || "Video";
+        if(!fileInput.files[0]) return;
+        document.getElementById('upload_status').innerText = "Syncing...";
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('upload_preset', UPLOAD_PRESET);
+        try {
+            const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/auto/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (res.ok) {
+                db.ref('archive').push({ 
+                    name, 
+                    url: data.secure_url, 
+                    uploader: CURRENT_USER,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                renderMemories();
+                document.getElementById('upload_status').innerText = "Push to Cloud";
+                document.getElementById('ie_filename').value = "";
+                fileInput.value = "";
+            }
+        } catch (e) { alert("Error."); }
+    }
+
+    // ============================================
+    // WINDOW MANAGEMENT
+    // ============================================
+    
+    function toggleWin(id) {
+        let el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+        if(el.style.display === 'block') { 
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
+            el.style.zIndex = "200"; 
+        }
+        if (id === 'admin_window') { loadPendingImages(); loadPendingApps(); loadAdminStats(); loadActiveCodes(); }
+    }
+
+    function makeDraggable(winId) {
+        const win = document.getElementById(winId);
+        if (!win) return;
+        const header = win.querySelector('.title-bar');
+        if (!header) return;
+        
+        header.onmousedown = (e) => {
+            document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
+            win.style.zIndex = "400";
+            let oX = e.clientX - win.offsetLeft, oY = e.clientY - win.offsetTop;
+            document.onmousemove = (e) => { 
+                win.style.left = (e.clientX - oX) + 'px'; 
+                win.style.top = (e.clientY - oY) + 'px'; 
+            };
+            document.onmouseup = () => document.onmousemove = null;
+        };
+    }
+
+    ['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'management_window'].forEach(id => {
+        makeDraggable(id);
+    });
+    
+    function beginSession() { 
+        document.getElementById('boot-screen').style.display = 'none'; 
+        if(player) { player.unMute(); player.playVideo(); } 
+    }
+    
+    // YouTube Background Music
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', { 
+            videoId: 'Bi5kyehmeaY', 
+            playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Bi5kyehmeaY', 'controls': 0 }, 
+            events: { 'onReady': (e) => e.target.mute() } 
+        });
+    }
+    function pauseMusic() { if(player) player.pauseVideo(); }
+    function playMusic() { if(player) player.playVideo(); }
+
+    // Initialize
     window.addEventListener('load', () => { 
         renderMemories(); 
         updateVisitorCount();
         initStakesGame();
         loadOnlineUsers();
-        setInterval(loadMessages, 1000);
-        setInterval(refreshAdminIfOpen, 2000);
     });
 </script>
 </body>
