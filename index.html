@@ -26,21 +26,24 @@
         .icon { width: 110px; text-align: center; color: white; text-shadow: 1px 1px 3px black; font-size: 11px; z-index: 5; margin-bottom: 15px; transition: transform 0.2s, filter 0.2s; }
         .icon:hover { transform: scale(1.1); filter: brightness(1.2); }
         .icon img.folder-icon { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
-        .window { position: absolute; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1), 0 0 30px rgba(139, 0, 0, 0.2); display: none; z-index: 10; overflow: hidden; resize: both; }
-        .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; }
+        .window { position: fixed; background: #0d0d0d !important; border: 1px solid #700000 !important; box-shadow: 0 15px 40px rgba(0,0,0,1), 0 0 30px rgba(139, 0, 0, 0.2); display: none; z-index: 10; overflow: hidden; resize: both; min-width: 200px; min-height: 150px; }
+        .title-bar { background: linear-gradient(to bottom, #8b0000, #2a0000) !important; user-select: none; }
         .window-body { height: calc(100% - 32px); padding: 0; background: black; overflow: auto; }
         .chat-container { display: flex; height: 420px; background: #050000; border-bottom: 1px solid #400; }
         #chat_logs { flex: 1; overflow-y: scroll; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
         .chat-entry { display: flex; flex-direction: column; gap: 2px; }
         .chat-header { display: flex; align-items: center; gap: 8px; }
         .rank-tag { font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 2px; border: 1px solid; text-transform: uppercase; min-width: 25px; text-align: center; }
-        #member_list { width: 180px; border-left: 1px solid #400; padding: 12px; background: #0a0000; overflow-y: auto; }
-        .member-category { color: #d40000; font-size: 14px; font-weight: bold; margin-top: 15px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px; }
-        .member-item { font-size: 14px; font-weight: bold; margin-top: 6px; cursor: pointer; padding: 3px 5px; border-radius: 3px; transition: all 0.2s; }
+        #member_list { width: 200px; border-left: 1px solid #400; padding: 12px; background: #0a0000; overflow-y: auto; }
+        .member-category { color: #d40000; font-size: 12px; font-weight: bold; margin-top: 12px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px; }
+        .member-category:first-child { margin-top: 0; }
+        .member-item { font-size: 12px; font-weight: bold; margin-top: 4px; cursor: pointer; padding: 3px 5px; border-radius: 3px; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
         .member-item:hover { background: rgba(139, 0, 0, 0.3); }
+        .member-tag { font-size: 8px; padding: 1px 3px; border-radius: 2px; border: 1px solid; }
         .st-style { color: #ff00ff; border-color: #ff00ff; }
         .a-style { color: #ffffff; border-color: #ffffff; }
         .mod-style { color: #00ff00; border-color: #00ff00; }
+        .contrib-style { color: #ff8c00; border-color: #ff8c00; }
         .guest-style { color: #888; border-color: #555; }
         .vip-style { color: #ffd700; border-color: #ffd700; }
         .member-style { color: #ff4444; border-color: #ff4444; }
@@ -56,10 +59,6 @@
         .guest-section { border-top: 1px solid #400; margin-top: 20px; padding-top: 15px; }
         .guest-btn { background: linear-gradient(#1a1a1a, #0a0a0a); border: 1px solid #444; color: #888; padding: 10px; width: 100%; font-weight: bold; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; }
         .visitor-counter { background: #000; border: 1px solid #400; padding: 8px 15px; display: inline-block; font-family: 'Courier New', monospace; color: #0f0; font-size: 14px; }
-        .color-picker-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
-        .color-swatch { width: 24px; height: 24px; border: 2px solid #333; transition: all 0.2s; cursor: pointer; }
-        .color-swatch:hover { transform: scale(1.2); border-color: #fff; }
-        .color-swatch.selected { border-color: #fff; box-shadow: 0 0 8px currentColor; }
         .taskbar { position: fixed; bottom: 0; width: 100%; height: 40px; background: var(--glass); border-top: 1px solid rgba(255,0,0,0.3); display: flex; align-items: center; z-index: 100; }
         .music-ctrl { width: 22px; filter: invert(1) sepia(1) saturate(10) hue-rotate(330deg); opacity: 0.8; }
         ::-webkit-scrollbar { width: 12px; }
@@ -68,7 +67,7 @@
         #screensaver { position: fixed; inset: 0; background: black; z-index: 99998; display: none; overflow: hidden; }
         .screensaver-bat { position: absolute; font-size: 30px; }
         @keyframes flyAround { 0% { transform: translate(0, 0); } 25% { transform: translate(80vw, 20vh); } 50% { transform: translate(40vw, 80vh); } 75% { transform: translate(10vw, 50vh); } 100% { transform: translate(0, 0); } }
-        .profile-card { position: fixed; width: 340px; max-height: 600px; background: linear-gradient(135deg, #1a0000, #0a0000); border: 2px solid #700; box-shadow: 0 10px 40px rgba(0,0,0,0.9); z-index: 9000; display: none; overflow-y: auto; }
+        .profile-card { position: fixed; width: 340px; max-height: 650px; background: linear-gradient(135deg, #1a0000, #0a0000); border: 2px solid #700; box-shadow: 0 10px 40px rgba(0,0,0,0.9); z-index: 9000; display: none; overflow-y: auto; }
         .profile-card-header { display: flex; align-items: center; gap: 12px; padding: 15px; background: linear-gradient(180deg, #200000, #100000); border-bottom: 1px solid #500; }
         .profile-card-avatar { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; background: #111; display: flex; align-items: center; justify-content: center; font-size: 35px; border: 3px solid #700; flex-shrink: 0; }
         .profile-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -83,8 +82,8 @@
         .tab-bar { display: flex; background: #111; border-bottom: 1px solid #400; }
         .tab { padding: 6px 12px; color: #666; font-size: 10px; border-right: 1px solid #333; cursor: pointer; }
         .tab.active { background: #0a0000; color: #d40000; }
-        .admin-section { margin-bottom: 12px; }
-        .admin-section h4 { color: #d40000; margin-bottom: 6px; font-size: 12px; }
+        .admin-section { margin-bottom: 15px; background: #0a0000; border: 1px solid #400; padding: 12px; }
+        .admin-section h4 { color: #d40000; margin: 0 0 10px 0; font-size: 12px; border-bottom: 1px solid #400; padding-bottom: 5px; }
         .typing-indicator { display: flex; gap: 4px; padding: 8px 12px; color: #666; font-size: 11px; font-style: italic; }
         .typing-dot { width: 6px; height: 6px; background: #d40000; border-radius: 50%; animation: typingBounce 1s infinite; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -99,6 +98,12 @@
         .stakes-cell.revealed { background: #111; }
         .stakes-cell.stake { background: #500; }
         .game-status { text-align: center; margin: 8px 0; color: #d40000; font-size: 11px; }
+        .mgmt-sidebar { width: 160px; background: #0a0000; border-right: 1px solid #400; }
+        .mgmt-sidebar-item { padding: 10px 12px; color: #888; font-size: 11px; cursor: pointer; border-bottom: 1px solid #300; transition: all 0.2s; }
+        .mgmt-sidebar-item:hover { background: #150000; color: #d40000; }
+        .mgmt-sidebar-item.active { background: #200000; color: #d40000; border-left: 3px solid #d40000; }
+        .mgmt-content { flex: 1; padding: 15px; overflow-y: auto; }
+        .user-id-display { font-family: monospace; color: #555; font-size: 9px; background: #050000; padding: 8px; border-top: 1px solid #300; margin-top: 10px; }
         /* MOBILE */
         @media screen and (max-width: 900px) {
             * { cursor: auto !important; }
@@ -114,14 +119,14 @@
             .boot-title { font-size: 36px; }
             #chat_avatar { padding: 10px !important; }
             #chat_avatar > div:first-child { flex-direction: column; align-items: center; }
-            #chat_avatar div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
-            .color-picker-row { justify-content: center; }
             .taskbar { height: 35px; }
             #memories_grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; padding: 10px !important; }
             .stakes-grid { grid-template-columns: repeat(9, 22px) !important; }
             .stakes-cell { width: 22px !important; height: 22px !important; font-size: 10px !important; }
             .ie-input { padding: 8px; font-size: 14px; }
             .ie-btn { padding: 10px; font-size: 12px; }
+            .mgmt-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #400; display: flex; flex-wrap: wrap; }
+            .mgmt-sidebar-item { flex: 1; min-width: 80px; text-align: center; border-bottom: none; }
         }
         @media screen and (max-width: 500px) {
             .boot-title { font-size: 28px; }
@@ -165,6 +170,7 @@
         <input type="text" id="profile_comment_input" class="ie-input" placeholder="Leave a comment..." style="margin-bottom:5px; padding:6px; font-size:10px;">
         <button class="ie-btn" style="padding:6px; font-size:10px;" onclick="leaveProfileComment()">Post Comment</button>
     </div>
+    <div class="user-id-display" id="pc_user_id">User ID: ...</div>
     <button class="profile-card-btn" style="margin:10px 15px; width:calc(100% - 30px);" onclick="closeProfileCard()">Close</button>
 </div>
 <div id="boot-screen" onclick="beginSession()">
@@ -203,15 +209,7 @@
             <div class="chat-container" id="chat_container">
                 <div id="chat_logs"></div>
                 <div id="member_list">
-                    <div style="color:#0f0; font-size:10px; text-align:center; padding:5px; background:#001100; margin-bottom:10px;">● ONLINE NOW</div>
-                    <div id="online_users"></div>
-                    <div style="border-top:1px solid #400; margin-top:15px; padding-top:10px;">
-                        <div class="member-category">Site Technician</div><div id="list_technician"></div>
-                        <div class="member-category">Admins</div><div id="list_admin"></div>
-                        <div class="member-category">Moderators</div><div id="list_mod"></div>
-                        <div class="member-category">VIP</div><div id="list_vip"></div>
-                        <div class="member-category">Members</div><div id="list_member"></div>
-                    </div>
+                    <div id="online_member_list"></div>
                 </div>
             </div>
             <div id="typing_area" style="padding: 5px 12px; background: #080000; display: none;"><div class="typing-indicator"><span id="typing_user"></span>&nbsp;is typing<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>
@@ -239,22 +237,11 @@
                     <button class="ie-btn" style="padding:8px; margin-bottom:15px;" onclick="updateAvatar()">Update Avatar</button>
                 </div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div style="display:grid; grid-template-columns:1fr; gap:15px;">
                 <div>
                     <label style="color:#888; font-size:10px;">Profile Music (SoundCloud/Spotify URL)</label>
                     <input type="text" id="profile_music" class="ie-input" placeholder="https://soundcloud.com/...">
                     <button class="ie-btn" style="padding:8px;" onclick="updateProfileMusic()">Set Music</button>
-                    <label style="color:#888; font-size:10px; margin-top:15px; display:block;">Name Color</label>
-                    <div class="color-picker-row">
-                        <div class="color-swatch" style="background:#ff0000;" data-color="#ff0000" onclick="selectColor(this)"></div>
-                        <div class="color-swatch" style="background:#ff00ff;" data-color="#ff00ff" onclick="selectColor(this)"></div>
-                        <div class="color-swatch" style="background:#00ff00;" data-color="#00ff00" onclick="selectColor(this)"></div>
-                        <div class="color-swatch" style="background:#00ffff;" data-color="#00ffff" onclick="selectColor(this)"></div>
-                        <div class="color-swatch" style="background:#ffd700;" data-color="#ffd700" onclick="selectColor(this)"></div>
-                        <div class="color-swatch" style="background:#ff6600;" data-color="#ff6600" onclick="selectColor(this)"></div>
-                        <div class="color-swatch" style="background:#ff69b4;" data-color="#ff69b4" onclick="selectColor(this)"></div>
-                        <div class="color-swatch" style="background:#ffffff;" data-color="#ffffff" onclick="selectColor(this)"></div>
-                    </div>
                 </div>
                 <div>
                     <label style="color:#888; font-size:10px;">Mood Status</label>
@@ -271,28 +258,116 @@
         </div>
     </div>
 </div>
-<div class="window" id="admin_window" style="left:300px; top:60px; width:480px; height:580px; display:none;">
+<!-- ADMIN PANEL - Management UI Style -->
+<div class="window" id="admin_window" style="left:100px; top:40px; width:750px; height:550px; display:none;">
     <div class="title-bar"><div class="title-bar-text">👑 Admin Control Panel</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('admin_window')"></button></div></div>
-    <div class="window-body" style="overflow-y: auto;"><div class="ie-content">
-        <div class="admin-section"><h4>🖼️ Pending Images</h4><div id="pending_images">None</div></div>
-        <div class="admin-section"><h4>📝 Applications</h4><div id="pending_apps">None</div></div>
-        <div class="admin-section"><h4>⚠️ User Moderation</h4>
-            <input type="text" id="mod_username" class="ie-input" placeholder="Username...">
-            <select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select>
-            <select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="0">Permanent</option></select>
-            <button class="ie-btn" style="background: #800;" onclick="executeModAction()">Execute</button>
-            <div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div>
+    <div class="window-body" style="display:flex; height:100%;">
+        <div class="mgmt-sidebar">
+            <div class="mgmt-sidebar-item active" onclick="switchAdminTab('apps', this)">📝 Applications</div>
+            <div class="mgmt-sidebar-item" onclick="switchAdminTab('members', this)">👥 Members</div>
+            <div class="mgmt-sidebar-item" onclick="switchAdminTab('images', this)">🖼️ Pending Images</div>
+            <div class="mgmt-sidebar-item" onclick="switchAdminTab('moderation', this)">⚠️ Moderation</div>
+            <div class="mgmt-sidebar-item" onclick="switchAdminTab('announcements', this)">📌 Announcements</div>
+            <div class="mgmt-sidebar-item" onclick="switchAdminTab('bot', this)">🧛 Eric Bot</div>
+            <div class="mgmt-sidebar-item" onclick="switchAdminTab('videos', this)">📹 Videos</div>
+            <div class="mgmt-sidebar-item" onclick="switchAdminTab('vip', this)">🌟 VIP Codes</div>
+            <div class="mgmt-sidebar-item" id="st_tab" style="display:none;" onclick="switchAdminTab('st', this)">🔮 ST Tools</div>
         </div>
-        <div class="admin-section"><h4>📌 Announcement</h4><input type="text" id="pin_message" class="ie-input" placeholder="Message to pin..."><button class="ie-btn" onclick="pinMessage()">Pin</button><button class="ie-btn" style="background: #333;" onclick="clearPin()">Clear</button></div>
-        <div class="admin-section"><h4>🧛 Eric Northman Bot</h4><input type="text" id="bot_message" class="ie-input" placeholder="Eric says..."><button class="ie-btn" onclick="sendBotMessage()">Send as Eric</button></div>
-        <div class="admin-section"><h4>🗑️ Chat Management</h4><button class="ie-btn" style="background: #500;" onclick="clearChat()">Clear All Messages</button></div>
-        <div class="admin-section" id="st_section" style="display:none; border: 1px solid #ff00ff; padding: 10px; margin-top: 10px;">
-            <h4 style="color: #ff00ff;">🔮 Site Technician Only</h4>
-            <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
-            <select id="elevate_rank" class="ie-input"><option value="member">Member</option><option value="vip">VIP</option><option value="mod">Moderator</option><option value="admin">Admin</option></select>
-            <button class="ie-btn" onclick="elevateUser()">Elevate</button>
+        <div class="mgmt-content">
+            <!-- Applications Tab -->
+            <div id="admin_tab_apps">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()">
+                        <option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option>
+                    </select>
+                    <input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()">
+                </div>
+                <div id="all_applications" style="max-height:380px; overflow-y:auto;"></div>
+            </div>
+            <!-- Members Tab -->
+            <div id="admin_tab_members" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3>
+                <div id="all_members" style="max-height:420px; overflow-y:auto;"></div>
+            </div>
+            <!-- Pending Images Tab -->
+            <div id="admin_tab_images" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Pending Image Approvals</h3>
+                <div id="pending_images" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-height:420px; overflow-y:auto;"></div>
+            </div>
+            <!-- Moderation Tab -->
+            <div id="admin_tab_moderation" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3>
+                <div class="admin-section">
+                    <h4>Take Action</h4>
+                    <input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate...">
+                    <select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select>
+                    <select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="0">Permanent</option></select>
+                    <input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)">
+                    <button class="ie-btn" style="background: #800;" onclick="executeModAction()">Execute Action</button>
+                    <div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div>
+                </div>
+                <div class="admin-section">
+                    <h4>Banned/Suspended Users</h4>
+                    <div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div>
+                </div>
+            </div>
+            <!-- Announcements Tab -->
+            <div id="admin_tab_announcements" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Lounge Announcements</h3>
+                <div class="admin-section">
+                    <h4>Pin Message</h4>
+                    <input type="text" id="pin_message" class="ie-input" placeholder="Message to pin in the lounge...">
+                    <div style="display:flex; gap:10px;">
+                        <button class="ie-btn" style="flex:1;" onclick="pinMessage()">📌 Pin Message</button>
+                        <button class="ie-btn" style="flex:1; background:#333;" onclick="clearPin()">Clear Pin</button>
+                    </div>
+                </div>
+                <div class="admin-section">
+                    <h4>Chat Management</h4>
+                    <button class="ie-btn" style="background: #500;" onclick="clearChat()">🗑️ Clear All Messages</button>
+                    <button class="ie-btn" style="background: #333; margin-top:5px;" onclick="exportChat()">📥 Export Chat Log</button>
+                </div>
+            </div>
+            <!-- Bot Tab -->
+            <div id="admin_tab_bot" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Eric Northman Bot</h3>
+                <div class="admin-section">
+                    <h4>Send as Eric</h4>
+                    <textarea id="bot_message" class="ie-input" placeholder="Eric says..." style="height:80px; resize:none;"></textarea>
+                    <button class="ie-btn" onclick="sendBotMessage()">🧛 Send Message</button>
+                </div>
+            </div>
+            <!-- Videos Tab -->
+            <div id="admin_tab_videos" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Video Archive Management</h3>
+                <div id="all_videos" style="max-height:420px; overflow-y:auto;"></div>
+            </div>
+            <!-- VIP Codes Tab -->
+            <div id="admin_tab_vip" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3>
+                <button class="ie-btn" style="width:auto; padding:10px 20px; margin-bottom:15px;" onclick="generateVIPCode()">🌟 Generate New Code</button>
+                <div id="vip_code_display" style="margin-bottom:15px; color:#ffd700; font-family:monospace; font-size:16px;"></div>
+                <div id="all_vip_codes" style="max-height:350px; overflow-y:auto;"></div>
+            </div>
+            <!-- ST Tools Tab -->
+            <div id="admin_tab_st" style="display:none;">
+                <h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">Elevate User Permissions</h4>
+                    <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
+                    <select id="elevate_rank" class="ie-input">
+                        <option value="member">Member</option>
+                        <option value="vip">VIP</option>
+                        <option value="contrib">Contributor</option>
+                        <option value="mod">Moderator</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Elevate User</button>
+                </div>
+            </div>
         </div>
-    </div></div>
+    </div>
 </div>
 <div class="window" id="memories_folder" style="left:50px; top:50px; width:550px; height:580px;">
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
@@ -344,22 +419,7 @@
     <div style="margin-left: auto; margin-right: 15px; color: #888; font-size: 11px;" id="taskbar_clock"></div>
 </div>
 <div id="player" style="position:absolute; top:-999px;"></div>
-<script src="https://www.youtube.com/iframe_api">
-function beginSession() {
-    const boot = document.getElementById('boot-screen');
-    if (!boot) return;
-
-    boot.style.display = 'none';
-    document.body.style.overflow = 'hidden';
-    sessionStorage.setItem('fangtasia_session_started', 'true');
-}
-
-if (sessionStorage.getItem('fangtasia_session_started') === 'true') {
-    const boot = document.getElementById('boot-screen');
-    if (boot) boot.style.display = 'none';
-}
-
-</script>
+<script src="https://www.youtube.com/iframe_api"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
@@ -378,7 +438,7 @@ const db = firebase.database();
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
 
-// USER DATABASE - Added "north" as Member
+// USER DATABASE - Added "north" and Contributor role
 const coreAdmins = {
     "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", target: "list_technician", isAdmin: true, isST: true },
     "noseeyedear": { pass: "wtfomfgfangtasiafordabros21", rank: "A", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
@@ -386,16 +446,27 @@ const coreAdmins = {
     "north": { pass: "lmaolegacy12!$$", rank: "M", fullRank: "Member", style: "member-style", target: "list_member", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
-db.ref('members').on('value', (s) => { userDatabase = { ...coreAdmins, ...(s.val() || {}) }; });
+db.ref('members').on('value', (s) => { userDatabase = { ...coreAdmins, ...(s.val() || {}) }; updateOnlineMemberList(); });
 
 let CURRENT_USER = "", IS_GUEST = false, currentPage = 1, itemsPerPage = 9;
-let userProfile = { color: "#ff0000", status: "", bio: "", mood: "", avatar: "", music: "" };
+let userProfile = { status: "", bio: "", mood: "", avatar: "", music: "" };
 let currentProfileUser = "", idleTime = 0, screensaverActive = false;
 
-// REAL-TIME PROFILE CACHE - Sitewide updates
+// REAL-TIME PROFILE CACHE
 let profileCache = {};
 db.ref('profiles').on('value', (s) => { profileCache = s.val() || {}; });
 function getProfile(username) { return profileCache[username] || {}; }
+
+// Generate unique user ID from username
+function generateUserId(username) {
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+        const char = username.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return 'FNG-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+}
 
 // BAT CURSOR
 document.addEventListener('mousemove', (e) => {
@@ -513,8 +584,12 @@ function validateIE() {
             document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
             loadProfile();
             if (userDatabase[u].isAdmin) { document.getElementById('admin_icon').style.display = 'block'; }
-            if (userDatabase[u].isST) { document.getElementById('st_section').style.display = 'block'; }
-            if (userDatabase[u].rank === 'VIP' || userDatabase[u].isAdmin || userDatabase[u].isST) { document.getElementById('vip_image_section').style.display = 'block'; }
+            if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
+            // VIP, Contributor, Admin, ST can use image hosting
+            const rank = userDatabase[u].rank;
+            if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
+                document.getElementById('vip_image_section').style.display = 'block'; 
+            }
         } else { alert("DENIED."); }
     });
 }
@@ -526,32 +601,88 @@ function logout() {
     document.getElementById('ie_user').value = '';
     document.getElementById('ie_pass').value = '';
     document.getElementById('admin_icon').style.display = 'none';
-    document.getElementById('st_section').style.display = 'none';
+    document.getElementById('st_tab').style.display = 'none';
     document.getElementById('vip_image_section').style.display = 'none';
     toggleWin('chat_win');
 }
-function openChat() { if(CURRENT_USER && !IS_GUEST) { toggleWin('chat_win'); loadMessages(); setUserOnline(); document.getElementById('chat_input').disabled = false; document.getElementById('chat_input').placeholder = "/help for commands..."; } }
+function openChat() { 
+    if(CURRENT_USER && !IS_GUEST) { 
+        toggleWin('chat_win'); 
+        loadMessages(); 
+        setUserOnline(); 
+        document.getElementById('chat_input').disabled = false; 
+        document.getElementById('chat_input').placeholder = "/help for commands..."; 
+    } 
+}
 function setUserOnline() {
     if (!CURRENT_USER || IS_GUEST) return;
     const user = userDatabase[CURRENT_USER];
-    db.ref('online/' + CURRENT_USER).set({ username: CURRENT_USER, rank: user ? user.rank : 'M', style: user ? user.style : 'member-style', fullRank: user ? user.fullRank : 'Member', lastSeen: firebase.database.ServerValue.TIMESTAMP });
+    db.ref('online/' + CURRENT_USER).set({ 
+        username: CURRENT_USER, 
+        rank: user ? user.rank : 'M', 
+        style: user ? user.style : 'member-style', 
+        fullRank: user ? user.fullRank : 'Member', 
+        lastSeen: firebase.database.ServerValue.TIMESTAMP 
+    });
     db.ref('online/' + CURRENT_USER).onDisconnect().remove();
 }
-function loadOnlineUsers() {
+
+// Update online member list - grouped by rank with tags
+function updateOnlineMemberList() {
     db.ref('online').on('value', (s) => {
-        const container = document.getElementById('online_users'); if (!container) return;
-        const users = []; s.forEach(c => users.push(c.val()));
-        if (users.length === 0) { container.innerHTML = '<div style="color:#555; font-size:10px; text-align:center;">No one online</div>'; return; }
-        container.innerHTML = users.map(u => `<div class="member-item ${u.style}" onclick="showProfileCard('${escapeHtml(u.username)}', event)"><span style="color:#0f0; font-size:8px;">●</span> ${escapeHtml(u.username)}</div>`).join('');
+        const container = document.getElementById('online_member_list'); 
+        if (!container) return;
+        
+        const users = [];
+        s.forEach(c => users.push(c.val()));
+        
+        // Group by rank
+        const ranks = {
+            'ST': { name: 'Site Technician', style: 'st-style', users: [] },
+            'A': { name: 'Admins', style: 'a-style', users: [] },
+            'MOD': { name: 'Moderators', style: 'mod-style', users: [] },
+            'CONTRIB': { name: 'Contributors', style: 'contrib-style', users: [] },
+            'VIP': { name: 'VIP', style: 'vip-style', users: [] },
+            'M': { name: 'Members', style: 'member-style', users: [] }
+        };
+        
+        users.forEach(u => {
+            const rank = u.rank || 'M';
+            if (ranks[rank]) ranks[rank].users.push(u);
+            else ranks['M'].users.push(u);
+        });
+        
+        let html = '<div style="color:#0f0; font-size:10px; text-align:center; padding:5px; background:#001100; margin-bottom:10px;">● ONLINE: ' + users.length + '</div>';
+        
+        Object.keys(ranks).forEach(key => {
+            if (ranks[key].users.length > 0) {
+                html += `<div class="member-category">${ranks[key].name}</div>`;
+                ranks[key].users.forEach(u => {
+                    html += `<div class="member-item ${u.style}" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
+                        <span class="member-tag ${u.style}">${u.rank}</span>
+                        <span style="color:#0f0; font-size:8px;">●</span> 
+                        ${escapeHtml(u.username)}
+                    </div>`;
+                });
+            }
+        });
+        
+        container.innerHTML = html;
     });
 }
 
-// PROFILE SYSTEM - REAL-TIME
+// PROFILE SYSTEM - Avatar saves properly
 function loadProfile() {
     if (!CURRENT_USER) return;
     db.ref('profiles/' + CURRENT_USER).once('value', (s) => {
         const p = s.val() || {};
-        userProfile = { color: p.color || "#ff0000", status: p.status || "", bio: p.bio || "", mood: p.mood || "", avatar: p.avatar || "", music: p.music || "" };
+        userProfile = { 
+            status: p.status || "", 
+            bio: p.bio || "", 
+            mood: p.mood || "", 
+            avatar: p.avatar || "", 
+            music: p.music || "" 
+        };
         const statusEl = document.getElementById('user_status');
         const bioEl = document.getElementById('user_bio');
         const moodEl = document.getElementById('user_mood');
@@ -562,9 +693,15 @@ function loadProfile() {
         if (moodEl) moodEl.value = userProfile.mood;
         if (avatarUrlEl) avatarUrlEl.value = userProfile.avatar;
         if (musicEl) musicEl.value = userProfile.music;
-        document.querySelectorAll('.color-swatch').forEach(el => el.classList.toggle('selected', el.dataset.color === userProfile.color));
+        
+        // Display avatar
+        const avatarDisplay = document.getElementById('my_avatar_display');
+        if (avatarDisplay && userProfile.avatar) {
+            avatarDisplay.innerHTML = '<img src="' + userProfile.avatar + '" style="width:100%; height:100%; object-fit:cover;">';
+        }
     });
 }
+
 function saveProfile() {
     if (!CURRENT_USER) return;
     const statusEl = document.getElementById('user_status');
@@ -573,18 +710,20 @@ function saveProfile() {
     userProfile.status = statusEl ? statusEl.value : '';
     userProfile.bio = bioEl ? bioEl.value : '';
     userProfile.mood = moodEl ? moodEl.value : '';
-    db.ref('profiles/' + CURRENT_USER).update({ status: userProfile.status, bio: userProfile.bio, mood: userProfile.mood, color: userProfile.color, avatar: userProfile.avatar, music: userProfile.music });
+    // Only update status, bio, mood - NOT avatar (avatar only updates when explicitly changed)
+    db.ref('profiles/' + CURRENT_USER).update({ 
+        status: userProfile.status, 
+        bio: userProfile.bio, 
+        mood: userProfile.mood,
+        music: userProfile.music
+    });
     alert('Profile saved!');
 }
-function selectColor(el) {
-    document.querySelectorAll('.color-swatch').forEach(e => e.classList.remove('selected'));
-    el.classList.add('selected');
-    userProfile.color = el.dataset.color;
-    if (CURRENT_USER) db.ref('profiles/' + CURRENT_USER).update({ color: userProfile.color });
-}
+
 function updateAvatar() {
     const url = document.getElementById('avatar_url').value.trim();
     const fileInput = document.getElementById('avatar_upload');
+    
     if (url) {
         userProfile.avatar = url;
         db.ref('profiles/' + CURRENT_USER).update({ avatar: url });
@@ -601,11 +740,14 @@ function updateAvatar() {
                     db.ref('profiles/' + CURRENT_USER).update({ avatar: data.secure_url });
                     document.getElementById('my_avatar_display').innerHTML = '<img src="' + data.secure_url + '" style="width:100%; height:100%; object-fit:cover;">';
                     document.getElementById('avatar_url').value = data.secure_url;
-                    alert('Avatar uploaded!');
+                    alert('Avatar uploaded and saved!');
                 }
             });
-    } else { alert('Enter URL or select file.'); }
+    } else { 
+        alert('Enter URL or select file.'); 
+    }
 }
+
 function updateProfileMusic() {
     const url = document.getElementById('profile_music').value.trim();
     userProfile.music = url;
@@ -613,7 +755,7 @@ function updateProfileMusic() {
     alert('Profile music set!');
 }
 
-// PROFILE CARD - Click username to open
+// PROFILE CARD - With User ID display
 function showProfileCard(username, event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     if (!username) return;
@@ -624,6 +766,9 @@ function showProfileCard(username, event) {
     document.getElementById('pc_name').textContent = username;
     document.getElementById('pc_name').className = 'profile-card-name ' + (userData.style || 'member-style');
     document.getElementById('pc_title').textContent = userData.fullRank || 'Member';
+    
+    // Show User ID
+    document.getElementById('pc_user_id').textContent = 'User ID: ' + generateUserId(username);
     
     // Use real-time cached profile
     const profile = getProfile(username);
@@ -668,11 +813,14 @@ function showProfileCard(username, event) {
     if (window.innerWidth <= 900) { posX = 10; posY = 60; }
     card.style.left = posX + 'px'; card.style.top = posY + 'px'; card.style.display = 'block';
 }
+
 function closeProfileCard() { document.getElementById('profile_card').style.display = 'none'; document.getElementById('pc_music_player').innerHTML = ''; }
+
 document.addEventListener('click', (e) => {
     const card = document.getElementById('profile_card');
     if (card.style.display === 'block' && !e.target.closest('.profile-card') && !e.target.closest('.chat-username') && !e.target.closest('.member-item')) closeProfileCard();
 });
+
 function giveRep(amount) {
     if (!CURRENT_USER || IS_GUEST || currentProfileUser === CURRENT_USER) return;
     db.ref('reputation/' + currentProfileUser).once('value', (s) => {
@@ -686,6 +834,7 @@ function giveRep(amount) {
         alert(amount > 0 ? '+Rep given!' : '-Rep given!');
     });
 }
+
 function leaveProfileComment() {
     if (!CURRENT_USER || IS_GUEST) { alert('Must be logged in!'); return; }
     const text = document.getElementById('profile_comment_input').value.trim();
@@ -694,6 +843,7 @@ function leaveProfileComment() {
     document.getElementById('profile_comment_input').value = '';
     showProfileCard(currentProfileUser, null);
 }
+
 function openDM(username) {
     if (!username || username === CURRENT_USER || IS_GUEST) return;
     closeProfileCard();
@@ -702,12 +852,13 @@ function openDM(username) {
 
 // CHAT SYSTEM
 function switchChatTab(tab, el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#chat_win .tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('chat_main').style.display = tab === 'main' ? 'block' : 'none';
     document.getElementById('chat_avatar').style.display = tab === 'avatar' ? 'block' : 'none';
     if (tab === 'avatar') loadAvatarTab();
 }
+
 function loadAvatarTab() {
     if (!CURRENT_USER) return;
     const user = userDatabase[CURRENT_USER];
@@ -723,6 +874,7 @@ function loadAvatarTab() {
     document.getElementById('user_bio').value = profile.bio || '';
     if (profile.mood) document.getElementById('user_mood').value = profile.mood;
 }
+
 function handleTyping() { if (IS_GUEST || !CURRENT_USER) return; db.ref('typing').set({ user: CURRENT_USER, time: Date.now() }); }
 function checkTyping() {
     db.ref('typing').once('value', (s) => {
@@ -758,7 +910,6 @@ function sendChat() {
     const text = input.value.trim();
     if(!text) return;
     const u = userDatabase[CURRENT_USER];
-    const profile = getProfile(CURRENT_USER);
     
     const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
     if (cmdMatch && chatCommands[cmdMatch[1]]) {
@@ -766,7 +917,7 @@ function sendChat() {
         if (result.type === 'system') { input.value = ''; const logs = document.getElementById('chat_logs'); logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; logs.scrollTop = logs.scrollHeight; return; }
         else { db.ref('chat').push({ user: CURRENT_USER, text: result.text, isAction: true, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }
     } else {
-        db.ref('chat').push({ user: CURRENT_USER, text: text, tag: u.rank, style: u.style, color: profile.color || null, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP });
+        db.ref('chat').push({ user: CURRENT_USER, text: text, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP });
         for (const br of botResponses) {
             if (br.trigger.test(text)) {
                 setTimeout(() => { db.ref('chat').push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }, 1000 + Math.random() * 1000);
@@ -793,8 +944,7 @@ function setupChatListener() {
             if (m.isAction) return '<div class="chat-action" style="padding:4px 0; font-size:11px;">* ' + escapeHtml(m.text) + '</div>';
             const botClass = m.isBot ? ' chat-bot' : '';
             const imgHtml = m.imageData ? '<img class="chat-image" src="' + m.imageData + '">' : '';
-            const colorStyle = m.color ? 'color:' + m.color + ' !important;' : '';
-            return `<div class="chat-entry${botClass}"><div class="chat-header"><span class="rank-tag ${m.style}">${m.tag}</span><span class="chat-username ${m.style}" style="${colorStyle}" onclick="showProfileCard('${escapeHtml(m.user)}', event)">${escapeHtml(m.user)}</span><span style="color:#444; font-size:8px; margin-left:auto;">${m.time || ''}</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">${escapeHtml(m.text)}${imgHtml}</div></div>`;
+            return `<div class="chat-entry${botClass}"><div class="chat-header"><span class="rank-tag ${m.style}">${m.tag}</span><span class="chat-username ${m.style}" onclick="showProfileCard('${escapeHtml(m.user)}', event)">${escapeHtml(m.user)}</span><span style="color:#444; font-size:8px; margin-left:auto;">${m.time || ''}</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">${escapeHtml(m.text)}${imgHtml}</div></div>`;
         }).join('');
         logs.scrollTop = logs.scrollHeight;
     });
@@ -809,17 +959,102 @@ function uploadChatImage() {
     document.getElementById('chat_image').value = '';
 }
 
+// ADMIN PANEL - Tab Switching
+function switchAdminTab(tab, el) {
+    document.querySelectorAll('.mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    ['apps', 'members', 'images', 'moderation', 'announcements', 'bot', 'videos', 'vip', 'st'].forEach(t => {
+        const panel = document.getElementById('admin_tab_' + t);
+        if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    });
+    // Load data for tab
+    if (tab === 'apps') loadAllApplications();
+    if (tab === 'members') loadAllMembers();
+    if (tab === 'images') loadPendingImages();
+    if (tab === 'moderation') loadBannedUsers();
+    if (tab === 'videos') loadAllVideos();
+    if (tab === 'vip') loadAllVIPCodes();
+}
+
 // ADMIN FUNCTIONS
-function sendBotMessage() { const text = document.getElementById('bot_message').value.trim(); if (!text) return; db.ref('chat').push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); document.getElementById('bot_message').value = ''; }
-function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; }
-function clearPin() { db.ref('pinned').remove(); }
+function sendBotMessage() { 
+    const text = document.getElementById('bot_message').value.trim(); 
+    if (!text) return; 
+    db.ref('chat').push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); 
+    document.getElementById('bot_message').value = ''; 
+}
+function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; alert('Message pinned!'); }
+function clearPin() { db.ref('pinned').remove(); alert('Pin cleared!'); }
 function clearChat() { if (confirm('Clear ALL chat?')) db.ref('chat').remove(); }
+function exportChat() {
+    db.ref('chat').orderByChild('timestamp').once('value', (s) => {
+        const msgs = []; s.forEach(c => msgs.push(c.val()));
+        const text = msgs.map(m => '[' + (m.time || '') + '] ' + m.user + ': ' + m.text).join('\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
+        a.click();
+    });
+}
+
+function loadAllApplications() {
+    const container = document.getElementById('all_applications'); if (!container) return;
+    const filter = document.getElementById('app_filter')?.value || 'all';
+    const search = document.getElementById('app_search')?.value.toLowerCase() || '';
+    
+    db.ref('applications').orderByChild('timestamp').once('value', (s) => {
+        const apps = []; s.forEach(c => apps.push({ ...c.val(), key: c.key }));
+        let filtered = apps.reverse();
+        if (filter !== 'all') filtered = filtered.filter(a => a.status === filter);
+        if (search) filtered = filtered.filter(a => a.username.toLowerCase().includes(search));
+        
+        if (filtered.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No applications found.</div>'; return; }
+        
+        container.innerHTML = filtered.map(a => {
+            const statusColor = { pending: '#ffd700', approved: '#00ff00', denied: '#ff4444' }[a.status] || '#888';
+            return `<div style="background:#0a0000; border:1px solid #400; padding:12px; margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color:#d40000;">${escapeHtml(a.username)}</strong><span style="color:${statusColor}; font-size:10px;">${a.status?.toUpperCase()}</span></div>
+                <div style="color:#888; font-size:10px;"><div>Date: ${a.date}</div><div>Referral: ${escapeHtml(a.referral || 'None')}</div><div>Reason: ${escapeHtml(a.reason)}</div></div>
+                ${a.status === 'pending' ? `<div style="display:flex; gap:8px; margin-top:8px;"><button class="ie-btn" style="padding:6px; font-size:10px; background:#050; flex:1;" onclick="approveApp('${a.key}')">✓ Approve</button><button class="ie-btn" style="padding:6px; font-size:10px; background:#500; flex:1;" onclick="denyApp('${a.key}')">✗ Deny</button></div>` : ''}
+            </div>`;
+        }).join('');
+    });
+}
+
+function approveApp(key) { db.ref('applications/' + key).update({ status: 'approved' }); loadAllApplications(); }
+function denyApp(key) { db.ref('applications/' + key).update({ status: 'denied' }); loadAllApplications(); }
+
+function loadAllMembers() {
+    const container = document.getElementById('all_members'); if (!container) return;
+    
+    const members = [];
+    Object.keys(userDatabase).forEach(name => {
+        if (!coreAdmins[name]) members.push({ username: name, ...userDatabase[name] });
+    });
+    Object.keys(coreAdmins).forEach(name => members.push({ username: name, ...coreAdmins[name], isCore: true }));
+    
+    container.innerHTML = members.map(m => `
+        <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+            <div><span class="${m.style}" style="font-weight:bold;">${escapeHtml(m.username)}</span><span style="color:#666; font-size:10px;"> [${m.fullRank}]</span></div>
+            <span style="color:#555; font-size:9px;">ID: ${generateUserId(m.username)}</span>
+        </div>
+    `).join('');
+}
+
 function loadPendingImages() {
     const container = document.getElementById('pending_images'); if (!container) return;
     db.ref('pending_images').once('value', (s) => {
         const pending = []; s.forEach((c) => pending.push({ ...c.val(), key: c.key }));
-        if (pending.length === 0) { container.innerHTML = '<span style="color:#666; font-size:9px;">None</span>'; return; }
-        container.innerHTML = pending.map(p => '<div style="border:1px solid #333; padding:8px; margin-bottom:6px;"><img src="' + p.data + '" style="max-width:60px; max-height:45px;"><div style="color:#d40000; font-size:10px;">' + p.user + '</div><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; margin:2px;" onclick="approveImage(\'' + p.key + '\')">✓</button><button class="ie-btn" style="padding:2px 6px; font-size:9px; width:auto; background:#333;" onclick="denyImage(\'' + p.key + '\')">✗</button></div>').join('');
+        if (pending.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center; grid-column:1/-1;">No pending images</div>'; return; }
+        container.innerHTML = pending.map(p => `<div style="background:#0a0000; border:1px solid #400; padding:8px; text-align:center;">
+            <img src="${p.data}" style="max-width:100%; max-height:80px; margin-bottom:5px;">
+            <div style="color:#d40000; font-size:10px;">${escapeHtml(p.user)}</div>
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <button class="ie-btn" style="padding:4px; font-size:9px; flex:1;" onclick="approveImage('${p.key}')">✓</button>
+                <button class="ie-btn" style="padding:4px; font-size:9px; flex:1; background:#333;" onclick="denyImage('${p.key}')">✗</button>
+            </div>
+        </div>`).join('');
     });
 }
 function approveImage(key) {
@@ -832,39 +1067,92 @@ function approveImage(key) {
     });
 }
 function denyImage(key) { db.ref('pending_images/' + key).remove(); loadPendingImages(); }
-function loadPendingApps() {
-    const container = document.getElementById('pending_apps'); if (!container) return;
-    db.ref('applications').orderByChild('status').equalTo('pending').once('value', (s) => {
-        const apps = []; s.forEach((c) => apps.push(c.val()));
-        if (apps.length === 0) { container.innerHTML = '<span style="color:#666; font-size:9px;">None</span>'; return; }
-        container.innerHTML = apps.map(a => `<div style="border:1px solid #400; padding:8px; margin-bottom:8px;"><strong style="color:#d40000;">${escapeHtml(a.username)}</strong><div style="color:#888; font-size:9px;">${escapeHtml(a.reason)}</div><button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#050;" onclick="approveApp('${a.id || a.timestamp}')">✓</button><button class="ie-btn" style="padding:3px 12px; font-size:9px; width:auto; background:#500;" onclick="denyApp('${a.id || a.timestamp}')">✗</button></div>`).join('');
+
+function loadBannedUsers() {
+    const container = document.getElementById('banned_users'); if (!container) return;
+    db.ref('bans').once('value', (s) => {
+        const bans = s.val() || {};
+        const now = Date.now();
+        const activeBans = Object.entries(bans).filter(([u, b]) => b.expiry === 0 || b.expiry > now);
+        if (activeBans.length === 0) { container.innerHTML = 'None'; return; }
+        container.innerHTML = activeBans.map(([user, ban]) => {
+            const exp = ban.expiry === 0 ? 'Permanent' : new Date(ban.expiry).toLocaleString();
+            return `<div style="border-bottom:1px solid #333; padding:5px 0;"><strong style="color:#ff4444;">${escapeHtml(user)}</strong> [${ban.type}] - ${exp} <button class="ie-btn" style="padding:2px 6px; font-size:8px; width:auto;" onclick="unbanUser('${user}')">Unban</button></div>`;
+        }).join('');
     });
 }
-function approveApp(id) { db.ref('applications').orderByChild('timestamp').once('value', (s) => { s.forEach(c => { if (c.val().timestamp == id || c.key == id) db.ref('applications/' + c.key).update({ status: 'approved' }); }); loadPendingApps(); }); }
-function denyApp(id) { db.ref('applications').orderByChild('timestamp').once('value', (s) => { s.forEach(c => { if (c.val().timestamp == id || c.key == id) db.ref('applications/' + c.key).update({ status: 'denied' }); }); loadPendingApps(); }); }
+function unbanUser(username) { db.ref('bans/' + username).remove(); loadBannedUsers(); alert(username + ' unbanned.'); }
+
 function executeModAction() {
     const username = document.getElementById('mod_username').value.trim();
     const action = document.getElementById('mod_action').value;
     const duration = parseInt(document.getElementById('mod_duration').value);
+    const reason = document.getElementById('mod_reason').value;
     if (!username || !action) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Select user and action.</span>'; return; }
     const protectedAdmins = ['losersyndicate', 'noseeyedear', 'oleg'];
     if (protectedAdmins.includes(username.toLowerCase())) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Cannot moderate core admins.</span>'; return; }
     const expiry = duration === 0 ? 0 : Date.now() + (duration * 60 * 1000);
-    if (action === 'kick') { document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' kicked.</span>'; }
-    else { db.ref('bans/' + username).set({ type: action, expiry: expiry, by: CURRENT_USER }); if (action === 'hardban') { db.ref('members/' + username).remove(); delete userDatabase[username]; } document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' ' + action + '.</span>'; }
+    if (action === 'kick') { db.ref('online/' + username).remove(); document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' kicked.</span>'; }
+    else { db.ref('bans/' + username).set({ type: action, expiry: expiry, reason: reason, by: CURRENT_USER }); if (action === 'hardban') { db.ref('members/' + username).remove(); } document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' ' + action + '.</span>'; loadBannedUsers(); }
 }
+
+function loadAllVideos() {
+    const container = document.getElementById('all_videos'); if (!container) return;
+    db.ref('archive').once('value', (s) => {
+        const videos = []; s.forEach(c => videos.push({ ...c.val(), key: c.key }));
+        if (videos.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center;">No videos.</div>'; return; }
+        container.innerHTML = videos.reverse().map(v => `
+            <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div><strong style="color:#d40000;">${escapeHtml(v.name)}</strong><span style="color:#666; font-size:10px;"> by ${escapeHtml(v.uploader)}</span></div>
+                <div><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; margin-right:5px;" onclick="window.open('${v.url}')">View</button><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="deleteVideo('${v.key}')">Delete</button></div>
+            </div>
+        `).join('');
+    });
+}
+function deleteVideo(key) { if (confirm('Delete this video?')) { db.ref('archive/' + key).remove(); loadAllVideos(); } }
+
+function generateVIPCode() {
+    const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    db.ref('vip_codes').push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false });
+    document.getElementById('vip_code_display').textContent = '✨ ' + code;
+    loadAllVIPCodes();
+}
+function loadAllVIPCodes() {
+    const container = document.getElementById('all_vip_codes'); if (!container) return;
+    db.ref('vip_codes').once('value', (s) => {
+        const codes = []; s.forEach(c => codes.push({ ...c.val(), key: c.key }));
+        if (codes.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center;">No codes generated yet.</div>'; return; }
+        container.innerHTML = codes.reverse().map(c => `
+            <div style="background:#0a0000; border:1px solid ${c.used ? '#333' : '#ffd700'}; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:${c.used ? '#666' : '#ffd700'}; font-family:monospace; font-size:14px;">${c.code}</span>
+                <span style="color:#555; font-size:9px;">${c.used ? 'Used by ' + c.usedBy : 'Available'}</span>
+            </div>
+        `).join('');
+    });
+}
+
 function elevateUser() {
     if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
     const username = document.getElementById('elevate_user').value.trim();
     const newRank = document.getElementById('elevate_rank').value;
     if (!username || !userDatabase[username]) { alert('User not found.'); return; }
-    const rankConfig = { 'member': { rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false }, 'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false }, 'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', target: 'list_mod', isAdmin: true }, 'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', target: 'list_admin', isAdmin: true } };
+    
+    const rankConfig = { 
+        'member': { rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false }, 
+        'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false }, 
+        'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', target: 'list_contrib', isAdmin: false },
+        'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', target: 'list_mod', isAdmin: true }, 
+        'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', target: 'list_admin', isAdmin: true } 
+    };
+    
     db.ref('members/' + username).update(rankConfig[newRank]);
     userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] };
     alert(username + ' elevated to ' + rankConfig[newRank].fullRank);
 }
+
 function uploadVIPImage() {
-    const user = userDatabase[CURRENT_USER]; if (!user || !(user.rank === 'VIP' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
+    const user = userDatabase[CURRENT_USER]; 
+    if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
     const file = document.getElementById('vip_image_picker').files[0]; if (!file) { alert('Select image.'); return; }
     document.getElementById('vip_image_result').innerHTML = '<div style="color:#888; font-size:10px;">Uploading...</div>';
     const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', UPLOAD_PRESET);
@@ -917,32 +1205,55 @@ async function processIEUpload() {
     } catch (e) { alert("Error."); }
 }
 
-// WINDOW MANAGEMENT
+// WINDOW MANAGEMENT - Draggable ANYWHERE on screen
 function toggleWin(id) {
     let el = document.getElementById(id); if (!el) return;
     el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     if(el.style.display === 'block') { document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); el.style.zIndex = "200"; }
-    if (id === 'admin_window') { loadPendingImages(); loadPendingApps(); }
+    if (id === 'admin_window') { loadAllApplications(); }
 }
+
 function makeDraggable(winId) {
     const win = document.getElementById(winId); if (!win) return;
     const header = win.querySelector('.title-bar'); if (!header) return;
+    
+    // Mouse drag - works ANYWHERE on screen
     header.onmousedown = (e) => {
-        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); win.style.zIndex = "400";
-        let oX = e.clientX - win.offsetLeft, oY = e.clientY - win.offsetTop;
-        document.onmousemove = (e) => { win.style.left = (e.clientX - oX) + 'px'; win.style.top = (e.clientY - oY) + 'px'; };
-        document.onmouseup = () => document.onmousemove = null;
+        e.preventDefault();
+        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
+        win.style.zIndex = "400";
+        let startX = e.clientX, startY = e.clientY;
+        let startLeft = win.offsetLeft, startTop = win.offsetTop;
+        
+        document.onmousemove = (e) => { 
+            const newLeft = startLeft + (e.clientX - startX);
+            const newTop = startTop + (e.clientY - startY);
+            win.style.left = newLeft + 'px'; 
+            win.style.top = newTop + 'px'; 
+        };
+        document.onmouseup = () => { document.onmousemove = null; document.onmouseup = null; };
     };
-    // Touch support for mobile
+    
+    // Touch drag for mobile - works ANYWHERE
     header.ontouchstart = (e) => {
         const touch = e.touches[0];
-        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); win.style.zIndex = "400";
-        let oX = touch.clientX - win.offsetLeft, oY = touch.clientY - win.offsetTop;
-        document.ontouchmove = (e) => { const t = e.touches[0]; win.style.left = (t.clientX - oX) + 'px'; win.style.top = (t.clientY - oY) + 'px'; };
-        document.ontouchend = () => document.ontouchmove = null;
+        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
+        win.style.zIndex = "400";
+        let startX = touch.clientX, startY = touch.clientY;
+        let startLeft = win.offsetLeft, startTop = win.offsetTop;
+        
+        document.ontouchmove = (e) => { 
+            const t = e.touches[0]; 
+            const newLeft = startLeft + (t.clientX - startX);
+            const newTop = startTop + (t.clientY - startY);
+            win.style.left = newLeft + 'px'; 
+            win.style.top = newTop + 'px'; 
+        };
+        document.ontouchend = () => { document.ontouchmove = null; document.ontouchend = null; };
     };
 }
 
+// Make all windows draggable
 ['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window'].forEach(id => makeDraggable(id));
 
 // *** CRITICAL FIX: beginSession must be globally accessible ***
@@ -969,7 +1280,7 @@ window.addEventListener('load', () => {
     updateVisitorCount();
     updateClock();
     initStakesGame();
-    loadOnlineUsers();
+    updateOnlineMemberList();
 });
 </script>
 </body>
