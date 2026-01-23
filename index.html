@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>fangtasia.wtf</title>
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/bahram" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/7.css">
     <style>
         :root { --vamp-red: #8b0000; --glass: rgba(15, 0, 0, 0.9); --neon-pink: #ff00ff; }
@@ -15,7 +16,7 @@
         @keyframes flapWings { 0% { transform: scaleX(1) rotate(0deg); } 100% { transform: scaleX(0.85) rotate(-8deg); } }
         * { cursor: none !important; }
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background-color: black; overflow: hidden; }
-        body { background: radial-gradient(ellipse at center, #1a0a0a 0%, #0d0000 40%, #000000 100%); background-size: cover; background-position: center; font-family: "Segoe UI", Tahoma, sans-serif; position: relative; }
+        body { background: radial-gradient(ellipse at center, #1a0a0a 0%, #0d0000 40%, #000000 100%); background-size: cover; background-position: center; font-family: "Segoe UI", Tahoma, sans-serif; }
         body::before { content: ''; position: fixed; inset: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="80" fill="rgba(139,0,0,0.03)">🦇</text></svg>') repeat; background-size: 80px; pointer-events: none; z-index: 0; }
         #boot-screen { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #d40000; }
         .boot-title { font-size: 60px; animation: bloodPulse 2s ease-in-out infinite; text-shadow: 0 0 20px rgba(212, 0, 0, 0.5), 0 0 40px rgba(212, 0, 0, 0.3); }
@@ -23,7 +24,7 @@
         .boot-subtitle { animation: flicker 3s infinite; margin-top: 20px; }
         @keyframes flicker { 0%, 100% { opacity: 1; } 93% { opacity: 0.3; } 94% { opacity: 1; } 96% { opacity: 0.5; } }
         @keyframes batFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
-        #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 40px); gap: 20px; }
+        #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 40px); gap: 20px; position: relative; z-index: 1; }
         .icon { width: 110px; text-align: center; color: white; text-shadow: 1px 1px 3px black; font-size: 11px; z-index: 5; margin-bottom: 15px; transition: transform 0.2s, filter 0.2s; }
         .icon:hover { transform: scale(1.1); filter: brightness(1.2); }
         .icon img.folder-icon { width: 44px; display: block; margin: 0 auto 6px; filter: grayscale(0.3) sepia(1) saturate(35) hue-rotate(320deg) brightness(0.55) contrast(1.5); }
@@ -35,22 +36,22 @@
         .chat-entry { display: flex; flex-direction: column; gap: 2px; }
         .chat-header { display: flex; align-items: center; gap: 8px; }
         .rank-tag { font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 3px; border: 1px solid; text-transform: uppercase; min-width: 25px; text-align: center; display: inline-block; }
-        #member_list { width: 200px; border-left: 1px solid #400; padding: 12px; background: #0a0000; overflow-y: auto; }
-        .member-category { color: #d40000; font-size: 11px; font-weight: bold; margin-top: 12px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px; }
+        #member_list { width: 200px; border-left: 1px solid #400; padding: 0; background: #0a0000; overflow-y: auto; }
+        .member-category { color: #d40000; font-size: 11px; font-weight: bold; margin-top: 12px; border-bottom: 1px solid #400; text-transform: uppercase; padding-bottom: 4px; padding-left: 8px; }
         .member-category:first-child { margin-top: 0; }
-        .member-item { font-size: 12px; font-weight: bold; margin-top: 4px; cursor: pointer; padding: 5px 6px; border-radius: 3px; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .member-item { font-size: 12px; font-weight: bold; margin-top: 4px; cursor: pointer; padding: 5px 8px; border-radius: 3px; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
         .member-item:hover { background: rgba(139, 0, 0, 0.3); }
         .member-tag { font-size: 8px; padding: 2px 4px; border-radius: 2px; border: 1px solid; display: inline-block; }
         .st-style { color: #ff00ff; border-color: #ff00ff; background: rgba(255, 0, 255, 0.15); }
         .a-style { color: #ffffff; border-color: #ffffff; background: rgba(255, 255, 255, 0.1); }
         .mod-style { color: #00ff00; border-color: #00ff00; background: rgba(0, 255, 0, 0.1); }
-        .contrib-style { color: #ff8c00; border-color: #ff8c00; background: rgba(255, 140, 0, 0.15); }
+        .contrib-style { color: #1781ff; border-color: #1781ff; background: #001128; font-family: 'Bahram', sans-serif; }
         .guest-style { color: #888; border-color: #555; background: rgba(85, 85, 85, 0.1); }
         .vip-style { color: #ffd700; border-color: #ffd700; background: rgba(255, 215, 0, 0.15); }
         .member-style { color: #ff4444; border-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
         .bot-style { color: #d40000; border-color: #d40000; background: rgba(212, 0, 0, 0.2); }
         #memories_grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; justify-items: center; }
-        .pagination-bar { padding: 10px; background: #111; border-top: 1px solid #400; text-align: center; }
+        .pagination-bar { padding: 15px; background: #111; border-top: 2px solid #500; text-align: center; }
         .ie-content { padding: 15px; color: #d40000; }
         .ie-input { width: 100%; background: #111; color: #ff0000; border: 1px solid #700000; padding: 6px; margin-bottom: 12px; font-size: 11px; box-sizing: border-box; }
         .ie-input:focus { outline: none; border-color: #ff0000; }
@@ -103,7 +104,6 @@
         .mgmt-sidebar-item { padding: 10px 12px; color: #888; font-size: 11px; cursor: pointer; border-bottom: 1px solid #300; transition: all 0.2s; }
         .mgmt-sidebar-item:hover { background: #150000; color: #d40000; }
         .mgmt-sidebar-item.active { background: #200000; color: #d40000; border-left: 3px solid #d40000; }
-        .mgmt-content { flex: 1; padding: 15px; overflow-y: auto; }
         .user-id-display { font-family: monospace; color: #555; font-size: 9px; background: #050000; padding: 8px; border-top: 1px solid #300; margin-top: 10px; }
         /* MOBILE */
         @media screen and (max-width: 900px) {
@@ -145,10 +145,10 @@
     </svg>
 </div>
 <div id="screensaver"></div>
+<!-- Profile Window -->
 <div class="window" id="profile_window" style="left:250px; top:80px; width:450px; height:580px; display:none; z-index:9000;">
     <div class="title-bar"><div class="title-bar-text" id="pw_title">👤 Profile</div><div class="title-bar-controls"><button aria-label="Close" onclick="closeProfileWindow()"></button></div></div>
     <div class="window-body" style="overflow-y:auto; padding:0;">
-        <!-- Profile Header -->
         <div style="background:linear-gradient(180deg, #200000, #100000); padding:20px; text-align:center; border-bottom:2px solid #500;">
             <div id="pw_avatar" style="width:100px; height:100px; border-radius:50%; background:#111; border:4px solid #700; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden;">🦇</div>
             <div id="pw_name" style="font-size:22px; font-weight:bold; color:#d40000;"></div>
@@ -156,10 +156,8 @@
             <div id="pw_status" style="font-size:11px; color:#aaa; margin-top:8px; font-style:italic;"></div>
             <div id="pw_mood" style="font-size:10px; color:#666; margin-top:4px;"></div>
         </div>
-        
-        <!-- Stats Row -->
-        <div style="display:flex; background:#0a0000; border-bottom:1px solid #300;">
-            <div style="flex:1; text-align:center; padding:15px; border-right:1px solid #300;">
+        <div style="display:flex; background:#0a0000; border-bottom:1px solid #400;">
+            <div style="flex:1; text-align:center; padding:15px; border-right:1px solid #400;">
                 <div id="pw_rep" style="color:#ff4444; font-size:24px; font-weight:bold;">0</div>
                 <div style="color:#666; font-size:9px; text-transform:uppercase;">Reputation</div>
             </div>
@@ -168,27 +166,19 @@
                 <div style="color:#666; font-size:9px; text-transform:uppercase;">Comments</div>
             </div>
         </div>
-        
-        <!-- Bio Section -->
-        <div style="padding:15px; border-bottom:1px solid #300;">
+        <div style="padding:15px; border-bottom:1px solid #400;">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">📜 ABOUT</div>
             <div id="pw_bio" style="color:#aaa; font-size:12px; line-height:1.6;">No bio set.</div>
         </div>
-        
-        <!-- Music Section -->
-        <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #300; display:none;">
+        <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">🎵 PROFILE MUSIC</div>
             <div id="pw_music_player"></div>
         </div>
-        
-        <!-- Action Buttons -->
-        <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #300;">
+        <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #400;">
             <button class="ie-btn" style="flex:1; min-width:100px; margin:0;" onclick="openDM(currentProfileUser)">💬 Message</button>
-            <button class="ie-btn" id="pw_btn_rep_pos" style="flex:1; min-width:80px; margin:0; background:#050; border-color:#0a0; display:none;" onclick="giveRep(1)">👍 +Rep</button>
+            <button class="ie-btn" id="pw_btn_rep_pos" style="flex:1; min-width:80px; margin:0; background:#030; border-color:#0a0; display:none;" onclick="giveRep(1)">👍 +Rep</button>
             <button class="ie-btn" id="pw_btn_rep_neg" style="flex:1; min-width:80px; margin:0; background:#500; border-color:#a00; display:none;" onclick="giveRep(-1)">👎 -Rep</button>
         </div>
-        
-        <!-- Comments Section -->
         <div style="padding:15px;">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">💬 PROFILE COMMENTS</div>
             <div id="pw_comments_list" style="max-height:150px; overflow-y:auto; margin-bottom:15px;">
@@ -199,9 +189,7 @@
                 <button class="ie-btn" style="padding:8px;" onclick="leaveProfileComment()">Post Comment</button>
             </div>
         </div>
-        
-        <!-- User ID Footer -->
-        <div style="padding:12px 15px; background:#050000; border-top:1px solid #300;">
+        <div style="padding:12px 15px; background:#050000; border-top:1px solid #400;">
             <div style="color:#444; font-size:9px; font-family:monospace;" id="pw_user_id">User ID: ...</div>
         </div>
     </div>
@@ -242,7 +230,6 @@
             <div class="chat-container" id="chat_container">
                 <div id="chat_logs"></div>
                 <div id="member_list">
-                    <div style="color:#d40000; font-size:12px; font-weight:bold; padding:8px; background:#150000; border-bottom:1px solid #400; text-align:center;">👥 ONLINE MEMBERS</div>
                     <div id="online_member_list" style="padding:8px;"></div>
                 </div>
             </div>
@@ -292,7 +279,7 @@
         </div>
     </div>
 </div>
-<!-- ADMIN PANEL - Management UI Style -->
+<!-- ADMIN PANEL -->
 <div class="window" id="admin_window" style="left:100px; top:40px; width:750px; height:550px; display:none;">
     <div class="title-bar"><div class="title-bar-text">👑 Admin Control Panel</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('admin_window')"></button></div></div>
     <div class="window-body" style="display:flex; height:100%;">
@@ -307,99 +294,16 @@
             <div class="mgmt-sidebar-item" onclick="switchAdminTab('vip', this)">🌟 VIP Codes</div>
             <div class="mgmt-sidebar-item" id="st_tab" style="display:none;" onclick="switchAdminTab('st', this)">🔮 ST Tools</div>
         </div>
-        <div class="mgmt-content">
-            <!-- Applications Tab -->
-            <div id="admin_tab_apps">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3>
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()">
-                        <option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option>
-                    </select>
-                    <input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()">
-                </div>
-                <div id="all_applications" style="max-height:380px; overflow-y:auto;"></div>
-            </div>
-            <!-- Members Tab -->
-            <div id="admin_tab_members" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3>
-                <div id="all_members" style="max-height:420px; overflow-y:auto;"></div>
-            </div>
-            <!-- Pending Images Tab -->
-            <div id="admin_tab_images" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Pending Image Approvals</h3>
-                <div id="pending_images" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-height:420px; overflow-y:auto;"></div>
-            </div>
-            <!-- Moderation Tab -->
-            <div id="admin_tab_moderation" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3>
-                <div class="admin-section">
-                    <h4>Take Action</h4>
-                    <input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate...">
-                    <select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select>
-                    <select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="0">Permanent</option></select>
-                    <input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)">
-                    <button class="ie-btn" style="background: #800;" onclick="executeModAction()">Execute Action</button>
-                    <div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div>
-                </div>
-                <div class="admin-section">
-                    <h4>Banned/Suspended Users</h4>
-                    <div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div>
-                </div>
-            </div>
-            <!-- Announcements Tab -->
-            <div id="admin_tab_announcements" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Lounge Announcements</h3>
-                <div class="admin-section">
-                    <h4>Pin Message</h4>
-                    <input type="text" id="pin_message" class="ie-input" placeholder="Message to pin in the lounge...">
-                    <div style="display:flex; gap:10px;">
-                        <button class="ie-btn" style="flex:1;" onclick="pinMessage()">📌 Pin Message</button>
-                        <button class="ie-btn" style="flex:1; background:#333;" onclick="clearPin()">Clear Pin</button>
-                    </div>
-                </div>
-                <div class="admin-section">
-                    <h4>Chat Management</h4>
-                    <button class="ie-btn" style="background: #500;" onclick="clearChat()">🗑️ Clear All Messages</button>
-                    <button class="ie-btn" style="background: #333; margin-top:5px;" onclick="exportChat()">📥 Export Chat Log</button>
-                </div>
-            </div>
-            <!-- Bot Tab -->
-            <div id="admin_tab_bot" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Eric Northman Bot</h3>
-                <div class="admin-section">
-                    <h4>Send as Eric</h4>
-                    <textarea id="bot_message" class="ie-input" placeholder="Eric says..." style="height:80px; resize:none;"></textarea>
-                    <button class="ie-btn" onclick="sendBotMessage()">🧛 Send Message</button>
-                </div>
-            </div>
-            <!-- Videos Tab -->
-            <div id="admin_tab_videos" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Video Archive Management</h3>
-                <div id="all_videos" style="max-height:420px; overflow-y:auto;"></div>
-            </div>
-            <!-- VIP Codes Tab -->
-            <div id="admin_tab_vip" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3>
-                <button class="ie-btn" style="width:auto; padding:10px 20px; margin-bottom:15px;" onclick="generateVIPCode()">🌟 Generate New Code</button>
-                <div id="vip_code_display" style="margin-bottom:15px; color:#ffd700; font-family:monospace; font-size:16px;"></div>
-                <div id="all_vip_codes" style="max-height:350px; overflow-y:auto;"></div>
-            </div>
-            <!-- ST Tools Tab -->
-            <div id="admin_tab_st" style="display:none;">
-                <h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">Elevate User Permissions</h4>
-                    <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
-                    <select id="elevate_rank" class="ie-input">
-                        <option value="member">Member</option>
-                        <option value="vip">VIP</option>
-                        <option value="contrib">Contributor</option>
-                        <option value="mod">Moderator</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Elevate User</button>
-                </div>
-            </div>
+        <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
+            <div id="admin_tab_apps"><h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option></select><input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()"></div><div id="all_applications" style="max-height:380px; overflow-y:auto;"></div></div>
+            <div id="admin_tab_members" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3><div id="all_members" style="max-height:420px; overflow-y:auto;"></div></div>
+            <div id="admin_tab_images" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Pending Image Approvals</h3><div id="pending_images" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-height:420px; overflow-y:auto;"></div></div>
+            <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
+            <div id="admin_tab_announcements" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Lounge Announcements</h3><div class="admin-section"><h4>Pin Message</h4><input type="text" id="pin_message" class="ie-input" placeholder="Message to pin in the lounge..."><div style="display:flex; gap:10px;"><button class="ie-btn" style="flex:1;" onclick="pinMessage()">📌 Pin Message</button><button class="ie-btn" style="flex:1; background:#333;" onclick="clearPin()">Clear Pin</button></div></div><div class="admin-section"><h4>Chat Management</h4><button class="ie-btn" style="background: #500;" onclick="clearChat()">🗑️ Clear All Messages</button><button class="ie-btn" style="background: #333; margin-top:5px;" onclick="exportChat()">📥 Export Chat Log</button></div></div>
+            <div id="admin_tab_bot" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Eric Northman Bot</h3><div class="admin-section"><h4>Send as Eric</h4><textarea id="bot_message" class="ie-input" placeholder="Eric says..." style="height:80px; resize:none;"></textarea><button class="ie-btn" onclick="sendBotMessage()">🧛 Send Message</button></div></div>
+            <div id="admin_tab_videos" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Video Archive Management</h3><div id="all_videos" style="max-height:420px; overflow-y:auto;"></div></div>
+            <div id="admin_tab_vip" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3><button class="ie-btn" style="width:auto; padding:10px 20px; margin-bottom:15px;" onclick="generateVIPCode()">🌟 Generate New Code</button><div id="vip_code_display" style="margin-bottom:15px; color:#ffd700; font-family:monospace; font-size:16px;"></div><div id="all_vip_codes" style="max-height:350px; overflow-y:auto;"></div></div>
+            <div id="admin_tab_st" style="display:none;"><h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3><div class="admin-section" style="border-color:#ff00ff;"><h4 style="color:#ff00ff;">Elevate User Permissions</h4><input type="text" id="elevate_user" class="ie-input" placeholder="Username"><select id="elevate_rank" class="ie-input"><option value="member">Member</option><option value="vip">VIP</option><option value="contrib">Contributor</option><option value="mod">Moderator</option><option value="admin">Admin</option></select><button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Elevate User</button></div></div>
         </div>
     </div>
 </div>
@@ -407,7 +311,7 @@
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body" style="display:flex; flex-direction:column; height:calc(100% - 32px); overflow:hidden;">
         <div id="memories_grid" style="flex:1; overflow-y:auto; padding:15px; min-height:0;"></div>
-        <div style="background:#111; border-top:2px solid #500; padding:15px; display:flex; justify-content:center; align-items:center; gap:20px;">
+        <div style="background:#111; border-top:2px solid #500; padding:15px; display:flex; justify-content:center; align-items:center; gap:20px; flex-shrink:0;">
             <button class="ie-btn" style="width:100px; padding:10px 15px; margin:0; font-size:12px;" onclick="prevPage()">◀ Prev</button>
             <span id="page_indicator" style="color:#d40000; font-size:12px; font-weight:bold; min-width:100px; text-align:center;">Page 1</span>
             <button class="ie-btn" style="width:100px; padding:10px 15px; margin:0; font-size:12px;" onclick="nextPage()">Next ▶</button>
@@ -441,14 +345,14 @@
                 <button class="ie-btn" style="background:#5a4a00;" onclick="uploadVIPImage()">Upload Image</button>
                 <div id="vip_image_result" style="margin-top:8px;"></div>
             </div>
-            <button class="ie-btn" style="background: #222; margin-top: 15px;" onclick="logout()">Logout</button>
+            <button class="ie-btn" style="background: #333; margin-top: 15px;" onclick="logout()">Logout</button>
         </div>
     </div>
 </div>
 <div class="taskbar">
     <div style="margin-left: 10px; display: flex; gap: 8px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()" title="Play" style="width:18px; height:18px; cursor:pointer; filter: invert(1) brightness(0.7);">
-        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()" title="Pause" style="width:18px; height:18px; cursor:pointer; filter: invert(1) brightness(0.7);">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" class="music-ctrl" onclick="playMusic()" title="Play" style="width:18px; height:18px; cursor:pointer;">
+        <img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" class="music-ctrl" onclick="pauseMusic()" title="Pause" style="width:18px; height:18px; cursor:pointer;">
     </div>
     <div style="margin-left: auto; margin-right: 15px; color: #888; font-size: 11px;" id="taskbar_clock"></div>
 </div>
@@ -472,15 +376,18 @@ const db = firebase.database();
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
 
-// USER DATABASE - Added "north" and Contributor role
+// USER DATABASE
 const coreAdmins = {
-    "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", target: "list_technician", isAdmin: true, isST: true },
-    "noseeyedear": { pass: "wtfomfgfangtasiafordabros21", rank: "A", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
-    "oleg": { pass: "methybethy89!", rank: "A", fullRank: "Admin", style: "a-style", target: "list_admin", isAdmin: true },
-    "north": { pass: "lmaolegacy12!$$", rank: "M", fullRank: "Member", style: "member-style", target: "list_member", isAdmin: false }
+    "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
+    "noseeyedear": { pass: "wtfomfgfangtasiafordabros21", rank: "A", fullRank: "Admin", style: "a-style", isAdmin: true },
+    "oleg": { pass: "methybethy89!", rank: "A", fullRank: "Admin", style: "a-style", isAdmin: true },
+    "north": { pass: "lmaolegacy12!$$", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
-db.ref('members').on('value', (s) => { userDatabase = { ...coreAdmins, ...(s.val() || {}) }; updateOnlineMemberList(); });
+db.ref('members').on('value', (s) => { 
+    userDatabase = { ...coreAdmins, ...(s.val() || {}) }; 
+    updateMemberList();
+});
 
 let CURRENT_USER = "", IS_GUEST = false, currentPage = 1, itemsPerPage = 9;
 let userProfile = { status: "", bio: "", mood: "", avatar: "", music: "" };
@@ -500,6 +407,14 @@ function generateUserId(username) {
         hash = hash & hash;
     }
     return 'FNG-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+}
+
+// Get rank tag HTML - K badge for contributors
+function getRankTag(rank, style) {
+    if (rank === 'CONTRIB') {
+        return '<span class="rank-tag contrib-style" style="font-family:\'Bahram\',sans-serif;">K</span>';
+    }
+    return `<span class="rank-tag ${style || 'member-style'}">${rank || 'M'}</span>`;
 }
 
 // BAT CURSOR
@@ -601,7 +516,7 @@ function checkAppStatus() {
     });
 }
 function resetAppForm() { document.getElementById('app_form').style.display = 'block'; document.getElementById('app_result').style.display = 'none'; }
-function enterGuestChat() { IS_GUEST = true; CURRENT_USER = "Guest_" + Math.floor(Math.random() * 9999); toggleWin('chat_win'); loadMessages(); document.getElementById('chat_input').placeholder = "Lurking (read-only)..."; document.getElementById('chat_input').disabled = true; }
+function enterGuestChat() { IS_GUEST = true; CURRENT_USER = "Guest_" + Math.floor(Math.random() * 9999); toggleWin('chat_win'); loadMessages(); startOnlineListener(); document.getElementById('chat_input').placeholder = "Lurking (read-only)..."; document.getElementById('chat_input').disabled = true; }
 
 // LOGIN SYSTEM
 function validateIE() {
@@ -619,7 +534,6 @@ function validateIE() {
             loadProfile();
             if (userDatabase[u].isAdmin) { document.getElementById('admin_icon').style.display = 'block'; }
             if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
-            // VIP, Contributor, Admin, ST can use image hosting
             const rank = userDatabase[u].rank;
             if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
                 document.getElementById('vip_image_section').style.display = 'block'; 
@@ -640,24 +554,19 @@ function logout() {
     toggleWin('chat_win');
 }
 function openChat() { 
-    console.log('openChat called. CURRENT_USER:', CURRENT_USER, 'IS_GUEST:', IS_GUEST);
     if(CURRENT_USER && !IS_GUEST) { 
         toggleWin('chat_win'); 
         loadMessages(); 
-        setUserOnline(); 
+        setUserOnline();
+        startOnlineListener();
         document.getElementById('chat_input').disabled = false; 
         document.getElementById('chat_input').placeholder = "/help for commands..."; 
     } else {
-        console.log('openChat failed - user not logged in');
         alert('Please log in first!');
     }
 }
 function setUserOnline() {
-    if (!CURRENT_USER || IS_GUEST) {
-        console.log('setUserOnline skipped - no user or guest');
-        return;
-    }
-    console.log('Setting user online:', CURRENT_USER);
+    if (!CURRENT_USER || IS_GUEST) return;
     const user = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style', fullRank: 'Member' };
     db.ref('online/' + CURRENT_USER).set({ 
         username: CURRENT_USER, 
@@ -665,179 +574,124 @@ function setUserOnline() {
         style: user.style || 'member-style', 
         fullRank: user.fullRank || 'Member', 
         lastSeen: firebase.database.ServerValue.TIMESTAMP 
-    }).then(() => {
-        console.log('User set online successfully');
-    }).catch(err => {
-        console.error('Error setting user online:', err);
     });
     db.ref('online/' + CURRENT_USER).onDisconnect().remove();
 }
 
-// Update online member list - grouped by rank with tags
-let onlineListenerSet = false;
-function updateOnlineMemberList() {
-    const container = document.getElementById('online_member_list'); 
-    if (!container) {
-        console.log('Member list container not found');
-        return;
-    }
-    
-    if (onlineListenerSet) return;
-    onlineListenerSet = true;
-    
-    console.log('Setting up online member listener...');
+// ONLINE MEMBER LIST - Shows Online Users + All Members (NO EMOJIS)
+let onlineListenerStarted = false;
+let onlineUsers = [];
+
+function startOnlineListener() {
+    if (onlineListenerStarted) return;
+    onlineListenerStarted = true;
     
     db.ref('online').on('value', (snapshot) => {
-        console.log('Online data received:', snapshot.val());
-        
-        const users = [];
+        onlineUsers = [];
         snapshot.forEach(child => {
-            const userData = child.val();
-            if (userData && userData.username) {
-                users.push(userData);
-            }
+            const u = child.val();
+            if (u && u.username) onlineUsers.push(u);
         });
-        
-        console.log('Parsed users:', users);
-        
-        // Group by rank
-        const rankGroups = {
-            'ST': { name: '👑 Site Technician', users: [] },
-            'A': { name: '⚔️ Admins', users: [] },
-            'MOD': { name: '🛡️ Moderators', users: [] },
-            'CONTRIB': { name: '🌟 Contributors', users: [] },
-            'VIP': { name: '💎 VIP', users: [] },
-            'M': { name: '🦇 Members', users: [] }
-        };
-        
-        users.forEach(u => {
-            const rank = u.rank || 'M';
-            if (rankGroups[rank]) {
-                rankGroups[rank].users.push(u);
-            } else {
-                rankGroups['M'].users.push(u);
-            }
-        });
-        
-        let html = '<div style="color:#0f0; font-size:11px; text-align:center; padding:8px; background:linear-gradient(#002000, #001000); margin-bottom:8px; border:1px solid #040; border-radius:3px;">● ' + users.length + ' ONLINE</div>';
-        
-        let hasUsers = false;
-        Object.keys(rankGroups).forEach(rankKey => {
-            const group = rankGroups[rankKey];
-            if (group.users.length > 0) {
-                hasUsers = true;
-                html += `<div style="color:#d40000; font-size:10px; font-weight:bold; margin:10px 0 5px 0; padding-bottom:3px; border-bottom:1px solid #300;">${group.name}</div>`;
-                group.users.forEach(u => {
-                    const style = u.style || 'member-style';
-                    const displayRank = u.rank || 'M';
-                    html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)" style="cursor:pointer; padding:6px; margin:2px 0; border-radius:3px;">
-                        <span class="member-tag ${style}">${displayRank}</span>
-                        <span style="color:#0f0; font-size:10px;">●</span>
-                        <span class="${style}" style="font-weight:bold;">${escapeHtml(u.username)}</span>
-                    </div>`;
-                });
-            }
-        });
-        
-        if (!hasUsers) {
-            html += '<div style="color:#555; font-size:11px; text-align:center; padding:20px;">No one online yet...</div>';
-        }
-        
-        container.innerHTML = html;
-    }, (error) => {
-        console.error('Firebase online listener error:', error);
-        container.innerHTML = '<div style="color:#f00; font-size:10px; padding:10px;">Error loading members</div>';
+        updateMemberList();
     });
 }
 
-// PROFILE SYSTEM - Avatar saves properly
+function updateMemberList() {
+    const container = document.getElementById('online_member_list');
+    if (!container) return;
+    
+    let html = '';
+    
+    // ONLINE SECTION
+    html += `<div style="color:#0f0; font-size:11px; text-align:center; padding:8px; background:#001100; border:1px solid #030; margin-bottom:10px;">● ${onlineUsers.length} ONLINE</div>`;
+    
+    if (onlineUsers.length > 0) {
+        onlineUsers.forEach(u => {
+            const rankTag = getRankTag(u.rank, u.style);
+            html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
+                ${rankTag}
+                <span style="color:#0f0; font-size:8px;">●</span>
+                <span class="${u.style || 'member-style'}">${escapeHtml(u.username)}</span>
+            </div>`;
+        });
+    } else {
+        html += '<div style="color:#555; font-size:10px; text-align:center; padding:10px;">No one online</div>';
+    }
+    
+    // ALL MEMBERS SECTION
+    html += '<div style="border-top:1px solid #400; margin-top:15px; padding-top:10px;">';
+    html += '<div style="color:#d40000; font-size:10px; font-weight:bold; text-align:center; margin-bottom:10px;">ALL MEMBERS</div>';
+    
+    const allMembers = { 'ST': [], 'A': [], 'MOD': [], 'CONTRIB': [], 'VIP': [], 'M': [] };
+    const rankNames = { 'ST': 'Site Technician', 'A': 'Admins', 'MOD': 'Moderators', 'CONTRIB': 'Contributors', 'VIP': 'VIP', 'M': 'Members' };
+    
+    Object.keys(userDatabase).forEach(username => {
+        const user = userDatabase[username];
+        const rank = user.rank || 'M';
+        if (allMembers[rank]) {
+            allMembers[rank].push({ username, ...user });
+        } else {
+            allMembers['M'].push({ username, ...user });
+        }
+    });
+    
+    Object.keys(allMembers).forEach(rank => {
+        if (allMembers[rank].length > 0) {
+            html += `<div class="member-category">${rankNames[rank]}</div>`;
+            allMembers[rank].forEach(u => {
+                const isOnline = onlineUsers.some(ou => ou.username === u.username);
+                const rankTag = getRankTag(u.rank, u.style);
+                html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
+                    ${rankTag}
+                    ${isOnline ? '<span style="color:#0f0; font-size:8px;">●</span>' : '<span style="color:#555; font-size:8px;">○</span>'}
+                    <span class="${u.style || 'member-style'}">${escapeHtml(u.username)}</span>
+                </div>`;
+            });
+        }
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// PROFILE SYSTEM
 function loadProfile() {
     if (!CURRENT_USER) return;
     db.ref('profiles/' + CURRENT_USER).once('value', (s) => {
         const p = s.val() || {};
-        userProfile = { 
-            status: p.status || "", 
-            bio: p.bio || "", 
-            mood: p.mood || "", 
-            avatar: p.avatar || "", 
-            music: p.music || "" 
-        };
-        const statusEl = document.getElementById('user_status');
-        const bioEl = document.getElementById('user_bio');
-        const moodEl = document.getElementById('user_mood');
-        const avatarUrlEl = document.getElementById('avatar_url');
-        const musicEl = document.getElementById('profile_music');
-        if (statusEl) statusEl.value = userProfile.status;
-        if (bioEl) bioEl.value = userProfile.bio;
-        if (moodEl) moodEl.value = userProfile.mood;
-        if (avatarUrlEl) avatarUrlEl.value = userProfile.avatar;
-        if (musicEl) musicEl.value = userProfile.music;
-        
-        // Display avatar
-        const avatarDisplay = document.getElementById('my_avatar_display');
-        if (avatarDisplay && userProfile.avatar) {
-            avatarDisplay.innerHTML = '<img src="' + userProfile.avatar + '" style="width:100%; height:100%; object-fit:cover;">';
+        userProfile = { status: p.status || "", bio: p.bio || "", mood: p.mood || "", avatar: p.avatar || "", music: p.music || "" };
+        if (document.getElementById('user_status')) document.getElementById('user_status').value = userProfile.status;
+        if (document.getElementById('user_bio')) document.getElementById('user_bio').value = userProfile.bio;
+        if (document.getElementById('user_mood')) document.getElementById('user_mood').value = userProfile.mood;
+        if (document.getElementById('avatar_url')) document.getElementById('avatar_url').value = userProfile.avatar;
+        if (document.getElementById('profile_music')) document.getElementById('profile_music').value = userProfile.music;
+        if (userProfile.avatar) {
+            const avatarDisplay = document.getElementById('my_avatar_display');
+            if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + userProfile.avatar + '" style="width:100%; height:100%; object-fit:cover;">';
         }
     });
 }
-
 function saveProfile() {
     if (!CURRENT_USER) { alert('Please log in first.'); return; }
-    
-    const statusEl = document.getElementById('user_status');
-    const bioEl = document.getElementById('user_bio');
-    const moodEl = document.getElementById('user_mood');
-    const musicEl = document.getElementById('profile_music');
-    
-    // Get current values
-    const newStatus = statusEl ? statusEl.value.trim() : '';
-    const newBio = bioEl ? bioEl.value.trim() : '';
-    const newMood = moodEl ? moodEl.value : '';
-    const newMusic = musicEl ? musicEl.value.trim() : '';
-    
-    // Update local profile object
-    userProfile.status = newStatus;
-    userProfile.bio = newBio;
-    userProfile.mood = newMood;
-    userProfile.music = newMusic;
-    
-    // Save to Firebase - include all profile fields
-    const profileData = {
-        status: newStatus,
-        bio: newBio,
-        mood: newMood,
-        music: newMusic,
-        lastUpdated: firebase.database.ServerValue.TIMESTAMP
-    };
-    
-    // Only include avatar if it exists
-    if (userProfile.avatar) {
-        profileData.avatar = userProfile.avatar;
-    }
-    
-    db.ref('profiles/' + CURRENT_USER).update(profileData)
-        .then(() => {
-            alert('Profile saved successfully!');
-        })
-        .catch((err) => {
-            console.error('Error saving profile:', err);
-            alert('Failed to save profile. Please try again.');
-        });
+    const newStatus = document.getElementById('user_status')?.value.trim() || '';
+    const newBio = document.getElementById('user_bio')?.value.trim() || '';
+    const newMood = document.getElementById('user_mood')?.value || '';
+    const newMusic = document.getElementById('profile_music')?.value.trim() || '';
+    userProfile.status = newStatus; userProfile.bio = newBio; userProfile.mood = newMood; userProfile.music = newMusic;
+    const profileData = { status: newStatus, bio: newBio, mood: newMood, music: newMusic, lastUpdated: firebase.database.ServerValue.TIMESTAMP };
+    if (userProfile.avatar) profileData.avatar = userProfile.avatar;
+    db.ref('profiles/' + CURRENT_USER).update(profileData).then(() => { alert('Profile saved!'); }).catch(() => { alert('Failed to save.'); });
 }
-
 function updateAvatar() {
     const url = document.getElementById('avatar_url').value.trim();
     const fileInput = document.getElementById('avatar_upload');
-    
     if (url) {
         userProfile.avatar = url;
         db.ref('profiles/' + CURRENT_USER).update({ avatar: url });
         document.getElementById('my_avatar_display').innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;">';
         alert('Avatar updated!');
     } else if (fileInput && fileInput.files[0]) {
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        formData.append('upload_preset', UPLOAD_PRESET);
+        const formData = new FormData(); formData.append('file', fileInput.files[0]); formData.append('upload_preset', UPLOAD_PRESET);
         fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
             .then(res => res.json()).then(data => {
                 if (data.secure_url) {
@@ -845,14 +699,11 @@ function updateAvatar() {
                     db.ref('profiles/' + CURRENT_USER).update({ avatar: data.secure_url });
                     document.getElementById('my_avatar_display').innerHTML = '<img src="' + data.secure_url + '" style="width:100%; height:100%; object-fit:cover;">';
                     document.getElementById('avatar_url').value = data.secure_url;
-                    alert('Avatar uploaded and saved!');
+                    alert('Avatar uploaded!');
                 }
             });
-    } else { 
-        alert('Enter URL or select file.'); 
-    }
+    } else { alert('Enter URL or select file.'); }
 }
-
 function updateProfileMusic() {
     const url = document.getElementById('profile_music').value.trim();
     userProfile.music = url;
@@ -860,130 +711,59 @@ function updateProfileMusic() {
     alert('Profile music set!');
 }
 
-// PROFILE CARD - With User ID display
-// PROFILE WINDOW - Full profile viewing
+// PROFILE WINDOW
 function showProfileCard(username, event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     if (!username) return;
     openProfileWindow(username);
 }
-
 function openProfileWindow(username) {
     if (!username) return;
     currentProfileUser = username;
-    
     const win = document.getElementById('profile_window');
     const userData = userDatabase[username] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-    
-    // Set window title
     document.getElementById('pw_title').textContent = '👤 ' + username + "'s Profile";
-    
-    // Set basic info
     document.getElementById('pw_name').textContent = username;
     document.getElementById('pw_name').className = userData.style || 'member-style';
     document.getElementById('pw_rank').textContent = userData.fullRank || 'Member';
     document.getElementById('pw_user_id').textContent = 'User ID: ' + generateUserId(username);
-    
-    // Get profile from real-time cache
     const profile = getProfile(username);
-    
-    // Set profile data
     document.getElementById('pw_status').textContent = profile.status || '';
     document.getElementById('pw_mood').textContent = profile.mood || '';
     document.getElementById('pw_bio').textContent = profile.bio || 'No bio set.';
-    
-    // Set avatar
     const avatarEl = document.getElementById('pw_avatar');
-    if (profile.avatar) {
-        avatarEl.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-    } else {
-        avatarEl.innerHTML = '🦇';
-    }
-    
-    // Load reputation
-    db.ref('reputation/' + username).once('value', (s) => { 
-        const rep = s.val() || { score: 0 }; 
-        document.getElementById('pw_rep').textContent = rep.score || 0; 
-    });
-    
-    // Load comments
+    if (profile.avatar) avatarEl.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+    else avatarEl.innerHTML = '🦇';
+    db.ref('reputation/' + username).once('value', (s) => { document.getElementById('pw_rep').textContent = (s.val()?.score || 0); });
     db.ref('profile_comments/' + username).orderByChild('timestamp').limitToLast(20).once('value', (s) => {
-        const comments = []; 
-        s.forEach(c => comments.push(c.val()));
+        const comments = []; s.forEach(c => comments.push(c.val()));
         document.getElementById('pw_comments_count').textContent = comments.length;
-        
         const cl = document.getElementById('pw_comments_list');
-        if (comments.length === 0) {
-            cl.innerHTML = '<div style="color:#555; font-size:11px; text-align:center; padding:10px;">No comments yet. Be the first!</div>';
-        } else {
-            cl.innerHTML = comments.reverse().map(c => `
-                <div style="background:#0a0000; padding:10px; margin-bottom:8px; border-left:3px solid #500; border-radius:0 4px 4px 0;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                        <span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(c.from)}</span>
-                        <span style="color:#444; font-size:9px;">${c.date || ''}</span>
-                    </div>
-                    <div style="color:#aaa; font-size:11px; line-height:1.4;">${escapeHtml(c.text)}</div>
-                </div>
-            `).join('');
-        }
+        if (comments.length === 0) cl.innerHTML = '<div style="color:#555; font-size:11px; text-align:center; padding:10px;">No comments yet.</div>';
+        else cl.innerHTML = comments.reverse().map(c => `<div style="background:#0a0000; padding:10px; margin-bottom:8px; border-left:3px solid #500; border-radius:0 4px 4px 0;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(c.from)}</span><span style="color:#444; font-size:9px;">${c.date || ''}</span></div><div style="color:#aaa; font-size:11px; line-height:1.4;">${escapeHtml(c.text)}</div></div>`).join('');
     });
-    
-    // Music player
-    const musicSection = document.getElementById('pw_music_section');
-    const musicPlayer = document.getElementById('pw_music_player');
+    const musicSection = document.getElementById('pw_music_section'), musicPlayer = document.getElementById('pw_music_player');
     if (profile.music) {
         musicSection.style.display = 'block';
-        if (profile.music.includes('soundcloud.com')) {
-            musicPlayer.innerHTML = '<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=false&hide_related=true&show_comments=false&show_user=true"></iframe>';
-        } else if (profile.music.includes('spotify.com')) { 
-            const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); 
-            if (m) {
-                musicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0" allow="encrypted-media"></iframe>';
-            } else {
-                musicPlayer.innerHTML = '<div style="color:#666; font-size:10px;">Invalid Spotify URL</div>';
-            }
-        } else {
-            musicPlayer.innerHTML = '<div style="color:#666; font-size:10px;">🔗 <a href="' + escapeHtml(profile.music) + '" target="_blank" style="color:#d40000;">' + escapeHtml(profile.music) + '</a></div>';
-        }
-    } else { 
-        musicSection.style.display = 'none'; 
-        musicPlayer.innerHTML = ''; 
-    }
-    
-    // Rep buttons - only for logged in users viewing other profiles
+        if (profile.music.includes('soundcloud.com')) musicPlayer.innerHTML = '<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=false&hide_related=true"></iframe>';
+        else if (profile.music.includes('spotify.com')) { const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); if (m) musicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0"></iframe>'; }
+        else musicPlayer.innerHTML = '';
+    } else { musicSection.style.display = 'none'; musicPlayer.innerHTML = ''; }
     const canRep = CURRENT_USER && !IS_GUEST && username !== CURRENT_USER;
     document.getElementById('pw_btn_rep_pos').style.display = canRep ? 'block' : 'none';
     document.getElementById('pw_btn_rep_neg').style.display = canRep ? 'block' : 'none';
-    
-    // Comment form - only for logged in users
     document.getElementById('pw_comment_form').style.display = (CURRENT_USER && !IS_GUEST) ? 'block' : 'none';
-    
-    // Show window
     win.style.display = 'block';
     document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
     win.style.zIndex = "500";
-    
-    // Make draggable
     makeDraggable('profile_window');
 }
-
-function closeProfileWindow() { 
-    document.getElementById('profile_window').style.display = 'none'; 
-    document.getElementById('pw_music_player').innerHTML = ''; 
-}
-
-document.addEventListener('click', (e) => {
-    const win = document.getElementById('profile_window');
-    if (win.style.display === 'block' && !e.target.closest('#profile_window') && !e.target.closest('.chat-username') && !e.target.closest('.member-item')) {
-        // Don't auto-close profile window on click outside - users should use X button
-    }
-});
-
+function closeProfileWindow() { document.getElementById('profile_window').style.display = 'none'; document.getElementById('pw_music_player').innerHTML = ''; }
 function giveRep(amount) {
     if (!CURRENT_USER || IS_GUEST || currentProfileUser === CURRENT_USER) return;
     db.ref('reputation/' + currentProfileUser).once('value', (s) => {
         const current = s.val() || { score: 0, givers: {} };
-        if (current.givers && current.givers[CURRENT_USER]) { alert('You already gave rep to this user!'); return; }
+        if (current.givers && current.givers[CURRENT_USER]) { alert('Already gave rep!'); return; }
         current.score = (current.score || 0) + amount;
         current.givers = current.givers || {};
         current.givers[CURRENT_USER] = amount;
@@ -992,29 +772,19 @@ function giveRep(amount) {
         alert(amount > 0 ? '+1 Rep given!' : '-1 Rep given!');
     });
 }
-
 function leaveProfileComment() {
     if (!CURRENT_USER || IS_GUEST) { alert('Must be logged in!'); return; }
     const text = document.getElementById('pw_comment_input').value.trim();
-    if (!text) { alert('Please enter a comment.'); return; }
-    if (text.length > 200) { alert('Comment too long (max 200 characters).'); return; }
-    
-    db.ref('profile_comments/' + currentProfileUser).push({ 
-        from: CURRENT_USER, 
-        text: text, 
-        date: new Date().toLocaleDateString(), 
-        timestamp: firebase.database.ServerValue.TIMESTAMP 
-    }).then(() => {
+    if (!text) return;
+    db.ref('profile_comments/' + currentProfileUser).push({ from: CURRENT_USER, text: text, date: new Date().toLocaleDateString(), timestamp: firebase.database.ServerValue.TIMESTAMP }).then(() => {
         document.getElementById('pw_comment_input').value = '';
-        // Refresh profile to show new comment
         openProfileWindow(currentProfileUser);
     });
 }
-
 function openDM(username) {
     if (!username || username === CURRENT_USER || IS_GUEST) return;
     closeProfileWindow();
-    alert('DM feature coming soon! For now, mention @' + username + ' in chat.');
+    alert('DM feature coming soon! Mention @' + username + ' in chat.');
 }
 
 // CHAT SYSTEM
@@ -1025,7 +795,6 @@ function switchChatTab(tab, el) {
     document.getElementById('chat_avatar').style.display = tab === 'avatar' ? 'block' : 'none';
     if (tab === 'avatar') loadAvatarTab();
 }
-
 function loadAvatarTab() {
     if (!CURRENT_USER) return;
     const user = userDatabase[CURRENT_USER];
@@ -1035,13 +804,12 @@ function loadAvatarTab() {
     const avatarDisplay = document.getElementById('my_avatar_display');
     if (profile.avatar) avatarDisplay.innerHTML = '<img src="' + profile.avatar + '" style="width:100%; height:100%; object-fit:cover;">';
     else avatarDisplay.innerHTML = '🦇';
-    document.getElementById('avatar_url').value = profile.avatar || '';
-    document.getElementById('profile_music').value = profile.music || '';
-    document.getElementById('user_status').value = profile.status || '';
-    document.getElementById('user_bio').value = profile.bio || '';
-    if (profile.mood) document.getElementById('user_mood').value = profile.mood;
+    if (document.getElementById('avatar_url')) document.getElementById('avatar_url').value = profile.avatar || '';
+    if (document.getElementById('profile_music')) document.getElementById('profile_music').value = profile.music || '';
+    if (document.getElementById('user_status')) document.getElementById('user_status').value = profile.status || '';
+    if (document.getElementById('user_bio')) document.getElementById('user_bio').value = profile.bio || '';
+    if (profile.mood && document.getElementById('user_mood')) document.getElementById('user_mood').value = profile.mood;
 }
-
 function handleTyping() { if (IS_GUEST || !CURRENT_USER) return; db.ref('typing').set({ user: CURRENT_USER, time: Date.now() }); }
 function checkTyping() {
     db.ref('typing').once('value', (s) => {
@@ -1072,90 +840,25 @@ const botResponses = [
 ];
 
 function sendChat() {
-    console.log('sendChat called. CURRENT_USER:', CURRENT_USER, 'IS_GUEST:', IS_GUEST);
-    
-    if (IS_GUEST) { 
-        alert('Guests cannot send messages. Please log in!'); 
-        return; 
-    }
-    if (!CURRENT_USER) { 
-        alert('Please log in first!'); 
-        return; 
-    }
-    
+    if (IS_GUEST) { alert('Guests cannot send messages.'); return; }
+    if (!CURRENT_USER) { alert('Please log in!'); return; }
     const input = document.getElementById('chat_input');
-    if (!input) { console.error('Chat input not found'); return; }
-    
     const text = input.value.trim();
     if (!text) return;
-    
-    console.log('Sending message:', text);
-    
-    // Get user data with fallbacks
-    const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style', fullRank: 'Member' };
+    const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style' };
     const userRank = u.rank || 'M';
     const userStyle = u.style || 'member-style';
     const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    
-    // Check for commands
     const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
     if (cmdMatch && chatCommands[cmdMatch[1]]) {
         const result = chatCommands[cmdMatch[1]](cmdMatch[2] || '');
-        if (result.type === 'system') { 
-            input.value = ''; 
-            const logs = document.getElementById('chat_logs'); 
-            if (logs) {
-                logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; 
-                logs.scrollTop = logs.scrollHeight;
-            }
-            return; 
-        } else { 
-            // Action command
-            db.ref('chat').push({ 
-                user: CURRENT_USER, 
-                text: result.text, 
-                isAction: true, 
-                tag: userRank, 
-                style: userStyle, 
-                time: timeNow, 
-                timestamp: firebase.database.ServerValue.TIMESTAMP 
-            }).then(() => {
-                console.log('Action message sent successfully');
-            }).catch(err => {
-                console.error('Error sending action:', err);
-                alert('Failed to send message. Please try again.');
-            }); 
-        }
+        if (result.type === 'system') { input.value = ''; const logs = document.getElementById('chat_logs'); logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; logs.scrollTop = logs.scrollHeight; return; }
+        else { db.ref('chat').push({ user: CURRENT_USER, text: result.text, isAction: true, tag: userRank, style: userStyle, time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP }); }
     } else {
-        // Regular message
-        db.ref('chat').push({ 
-            user: CURRENT_USER, 
-            text: text, 
-            tag: userRank, 
-            style: userStyle, 
-            time: timeNow, 
-            timestamp: firebase.database.ServerValue.TIMESTAMP 
-        }).then(() => {
-            console.log('Message sent successfully');
-        }).catch(err => {
-            console.error('Error sending message:', err);
-            alert('Failed to send message. Please try again.');
-        });
-        
-        // Bot responses
+        db.ref('chat').push({ user: CURRENT_USER, text: text, tag: userRank, style: userStyle, time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP });
         for (const br of botResponses) {
             if (br.trigger.test(text)) {
-                setTimeout(() => { 
-                    db.ref('chat').push({ 
-                        user: 'Eric Northman', 
-                        text: br.response, 
-                        tag: 'BOT', 
-                        style: 'bot-style', 
-                        isBot: true, 
-                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), 
-                        timestamp: firebase.database.ServerValue.TIMESTAMP 
-                    }); 
-                }, 1000 + Math.random() * 1000);
+                setTimeout(() => { db.ref('chat').push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }, 1000 + Math.random() * 1000);
                 break;
             }
         }
@@ -1167,154 +870,55 @@ let chatListenerSet = false;
 function setupChatListener() {
     if (chatListenerSet) return;
     chatListenerSet = true;
-    
-    console.log('Setting up chat listener...');
-    
     db.ref('chat').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
-        console.log('Chat data received');
-        
-        const logs = document.getElementById('chat_logs'); 
-        if (!logs) {
-            console.error('Chat logs element not found');
-            return;
-        }
-        
-        const msgs = []; 
-        snapshot.forEach((child) => {
-            const msgData = child.val();
-            if (msgData) msgs.push(msgData);
-        });
-        
-        console.log('Messages loaded:', msgs.length);
-        
-        // Load pinned message
+        const logs = document.getElementById('chat_logs');
+        if (!logs) return;
+        const msgs = []; snapshot.forEach(c => { if (c.val()) msgs.push(c.val()); });
         db.ref('pinned').once('value', (ps) => {
             const pinned = ps.val();
             const pc = document.getElementById('pinned_container');
-            if (pc) {
-                pc.innerHTML = pinned ? '<div class="pinned-msg"><span style="color:#ffd700; font-size:8px;">📌 PINNED</span><br>' + escapeHtml(pinned) + '</div>' : '';
-            }
+            if (pc) pc.innerHTML = pinned ? '<div class="pinned-msg"><span style="color:#ffd700; font-size:8px;">📌 PINNED</span><br>' + escapeHtml(pinned) + '</div>' : '';
         });
-        
-        // Render messages
-        if (msgs.length === 0) {
-            logs.innerHTML = '<div style="color:#555; text-align:center; padding:40px;">No messages yet. Be the first to say something!</div>';
-        } else {
-            logs.innerHTML = msgs.map(m => {
-                if (!m) return '';
-                
-                // Handle action messages
-                if (m.isAction) {
-                    return '<div style="padding:6px 0; font-size:11px; color:#888; font-style:italic; border-bottom:1px solid #200;">* ' + escapeHtml(m.text || '') + '</div>';
-                }
-                
-                // Get message data with fallbacks
-                const msgUser = m.user || 'Unknown';
-                const msgText = m.text || '';
-                const msgTag = m.tag || 'M';
-                const msgStyle = m.style || 'member-style';
-                const msgTime = m.time || '';
-                const isBot = m.isBot || false;
-                
-                const botClass = isBot ? ' chat-bot' : '';
-                
-                // Handle different media types
-                let mediaHtml = '';
-                if (m.imageData) {
-                    mediaHtml = '<img src="' + m.imageData + '" style="max-width:200px; max-height:150px; border:1px solid #400; margin-top:6px; border-radius:4px;">';
-                } else if (m.mediaUrl) {
-                    if (m.mediaType === 'image') {
-                        mediaHtml = '<img src="' + m.mediaUrl + '" style="max-width:250px; max-height:200px; border:1px solid #400; margin-top:6px; border-radius:4px; cursor:pointer;" onclick="window.open(\'' + m.mediaUrl + '\')">';
-                    } else if (m.mediaType === 'video') {
-                        mediaHtml = '<video src="' + m.mediaUrl + '" controls style="max-width:280px; max-height:200px; border:1px solid #400; margin-top:6px; border-radius:4px;"></video>';
-                    } else if (m.mediaType === 'audio') {
-                        mediaHtml = '<audio src="' + m.mediaUrl + '" controls style="width:250px; margin-top:6px;"></audio>';
-                    }
-                }
-                
-                return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #200; margin-bottom:2px;">
-                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                        <span class="rank-tag ${msgStyle}">${msgTag}</span>
-                        <span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span>
-                        <span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span>
-                    </div>
-                    <div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${escapeHtml(msgText)}${mediaHtml}</div>
-                </div>`;
-            }).join('');
-        }
-        
+        if (msgs.length === 0) { logs.innerHTML = '<div style="color:#555; text-align:center; padding:40px;">No messages yet.</div>'; return; }
+        logs.innerHTML = msgs.map(m => {
+            if (!m) return '';
+            if (m.isAction) return '<div style="padding:6px 0; font-size:11px; color:#888; font-style:italic; border-bottom:1px solid #300;">* ' + escapeHtml(m.text || '') + '</div>';
+            const msgUser = m.user || 'Unknown', msgText = m.text || '', msgTag = m.tag || 'M', msgStyle = m.style || 'member-style', msgTime = m.time || '';
+            const botClass = m.isBot ? ' chat-bot' : '';
+            let mediaHtml = '';
+            if (m.imageData) mediaHtml = '<img src="' + m.imageData + '" style="max-width:200px; max-height:150px; border:1px solid #400; margin-top:6px; border-radius:4px;">';
+            else if (m.mediaUrl) {
+                if (m.mediaType === 'image') mediaHtml = '<img src="' + m.mediaUrl + '" style="max-width:250px; max-height:200px; border:1px solid #400; margin-top:6px; border-radius:4px; cursor:pointer;" onclick="window.open(\'' + m.mediaUrl + '\')">';
+                else if (m.mediaType === 'video') mediaHtml = '<video src="' + m.mediaUrl + '" controls style="max-width:280px; max-height:200px; border:1px solid #400; margin-top:6px; border-radius:4px;"></video>';
+                else if (m.mediaType === 'audio') mediaHtml = '<audio src="' + m.mediaUrl + '" controls style="width:250px; margin-top:6px;"></audio>';
+            }
+            const rankTag = getRankTag(msgTag, msgStyle);
+            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div><div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${escapeHtml(msgText)}${mediaHtml}</div></div>`;
+        }).join('');
         logs.scrollTop = logs.scrollHeight;
-    }, (error) => {
-        console.error('Firebase chat listener error:', error);
-        const logs = document.getElementById('chat_logs');
-        if (logs) {
-            logs.innerHTML = '<div style="color:#f00; text-align:center; padding:20px;">Error loading messages. Please refresh.</div>';
-        }
     });
 }
-
-function loadMessages() { 
-    console.log('loadMessages called');
-    setupChatListener(); 
-}
+function loadMessages() { setupChatListener(); }
 function uploadChatFile() {
     if (IS_GUEST || !CURRENT_USER) { alert('Must be logged in!'); return; }
-    const fileInput = document.getElementById('chat_file');
-    const file = fileInput.files[0]; 
-    if (!file) return;
-    
-    const fileType = file.type;
-    const isImage = fileType.startsWith('image/');
-    const isVideo = fileType.startsWith('video/');
-    const isAudio = fileType.startsWith('audio/');
-    
-    // Upload to Cloudinary for direct embedding
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', UPLOAD_PRESET);
-    
-    // Show uploading status
+    const file = document.getElementById('chat_file').files[0]; if (!file) return;
+    const isImage = file.type.startsWith('image/'), isVideo = file.type.startsWith('video/'), isAudio = file.type.startsWith('audio/');
     alert('Uploading file...');
-    
+    const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', UPLOAD_PRESET);
     const resourceType = isVideo ? 'video' : isAudio ? 'video' : 'image';
-    
-    fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, { 
-        method: 'POST', 
-        body: formData 
-    })
-    .then(res => res.json())
-    .then(data => {
+    fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, { method: 'POST', body: formData })
+    .then(res => res.json()).then(data => {
         if (data.secure_url) {
             const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style' };
             const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            let mediaType = 'image';
-            if (isVideo) mediaType = 'video';
-            if (isAudio) mediaType = 'audio';
-            
-            db.ref('chat').push({ 
-                user: CURRENT_USER, 
-                text: '[' + mediaType.charAt(0).toUpperCase() + mediaType.slice(1) + ']',
-                mediaUrl: data.secure_url,
-                mediaType: mediaType,
-                tag: u.rank || 'M', 
-                style: u.style || 'member-style', 
-                time: timeNow, 
-                timestamp: firebase.database.ServerValue.TIMESTAMP 
-            });
-        } else {
-            alert('Upload failed. Try again.');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Upload failed.');
-    });
-    
-    fileInput.value = '';
+            let mediaType = isVideo ? 'video' : isAudio ? 'audio' : 'image';
+            db.ref('chat').push({ user: CURRENT_USER, text: '[' + mediaType.charAt(0).toUpperCase() + mediaType.slice(1) + ']', mediaUrl: data.secure_url, mediaType: mediaType, tag: u.rank || 'M', style: u.style || 'member-style', time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP });
+        } else { alert('Upload failed.'); }
+    }).catch(() => { alert('Upload failed.'); });
+    document.getElementById('chat_file').value = '';
 }
 
-// ADMIN PANEL - Tab Switching
+// ADMIN PANEL
 function switchAdminTab(tab, el) {
     document.querySelectorAll('.mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
@@ -1322,7 +926,6 @@ function switchAdminTab(tab, el) {
         const panel = document.getElementById('admin_tab_' + t);
         if (panel) panel.style.display = t === tab ? 'block' : 'none';
     });
-    // Load data for tab
     if (tab === 'apps') loadAllApplications();
     if (tab === 'members') loadAllMembers();
     if (tab === 'images') loadPendingImages();
@@ -1330,86 +933,49 @@ function switchAdminTab(tab, el) {
     if (tab === 'videos') loadAllVideos();
     if (tab === 'vip') loadAllVIPCodes();
 }
-
-// ADMIN FUNCTIONS
-function sendBotMessage() { 
-    const text = document.getElementById('bot_message').value.trim(); 
-    if (!text) return; 
-    db.ref('chat').push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); 
-    document.getElementById('bot_message').value = ''; 
-}
-function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; alert('Message pinned!'); }
-function clearPin() { db.ref('pinned').remove(); alert('Pin cleared!'); }
+function sendBotMessage() { const text = document.getElementById('bot_message').value.trim(); if (!text) return; db.ref('chat').push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); document.getElementById('bot_message').value = ''; }
+function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; alert('Pinned!'); }
+function clearPin() { db.ref('pinned').remove(); alert('Cleared!'); }
 function clearChat() { if (confirm('Clear ALL chat?')) db.ref('chat').remove(); }
 function exportChat() {
     db.ref('chat').orderByChild('timestamp').once('value', (s) => {
         const msgs = []; s.forEach(c => msgs.push(c.val()));
         const text = msgs.map(m => '[' + (m.time || '') + '] ' + m.user + ': ' + m.text).join('\n');
         const blob = new Blob([text], { type: 'text/plain' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'fangtasia-chat-' + new Date().toISOString().split('T')[0] + '.txt';
-        a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fangtasia-chat.txt'; a.click();
     });
 }
-
 function loadAllApplications() {
     const container = document.getElementById('all_applications'); if (!container) return;
     const filter = document.getElementById('app_filter')?.value || 'all';
     const search = document.getElementById('app_search')?.value.toLowerCase() || '';
-    
     db.ref('applications').orderByChild('timestamp').once('value', (s) => {
         const apps = []; s.forEach(c => apps.push({ ...c.val(), key: c.key }));
         let filtered = apps.reverse();
         if (filter !== 'all') filtered = filtered.filter(a => a.status === filter);
         if (search) filtered = filtered.filter(a => a.username.toLowerCase().includes(search));
-        
         if (filtered.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No applications found.</div>'; return; }
-        
         container.innerHTML = filtered.map(a => {
             const statusColor = { pending: '#ffd700', approved: '#00ff00', denied: '#ff4444' }[a.status] || '#888';
-            return `<div style="background:#0a0000; border:1px solid #400; padding:12px; margin-bottom:10px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color:#d40000;">${escapeHtml(a.username)}</strong><span style="color:${statusColor}; font-size:10px;">${a.status?.toUpperCase()}</span></div>
-                <div style="color:#888; font-size:10px;"><div>Date: ${a.date}</div><div>Referral: ${escapeHtml(a.referral || 'None')}</div><div>Reason: ${escapeHtml(a.reason)}</div></div>
-                ${a.status === 'pending' ? `<div style="display:flex; gap:8px; margin-top:8px;"><button class="ie-btn" style="padding:6px; font-size:10px; background:#050; flex:1;" onclick="approveApp('${a.key}')">✓ Approve</button><button class="ie-btn" style="padding:6px; font-size:10px; background:#500; flex:1;" onclick="denyApp('${a.key}')">✗ Deny</button></div>` : ''}
-            </div>`;
+            return `<div style="background:#050000; border:1px solid #400; padding:12px; margin-bottom:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color:#d40000;">${escapeHtml(a.username)}</strong><span style="color:${statusColor}; font-size:10px;">${a.status?.toUpperCase()}</span></div><div style="color:#888; font-size:10px;"><div>Date: ${a.date}</div><div>Referral: ${escapeHtml(a.referral || 'None')}</div><div>Reason: ${escapeHtml(a.reason)}</div></div>${a.status === 'pending' ? `<div style="display:flex; gap:8px; margin-top:8px;"><button class="ie-btn" style="padding:6px; font-size:10px; background:#030; flex:1;" onclick="approveApp('${a.key}')">✓ Approve</button><button class="ie-btn" style="padding:6px; font-size:10px; background:#300; flex:1;" onclick="denyApp('${a.key}')">✗ Deny</button></div>` : ''}</div>`;
         }).join('');
     });
 }
-
 function approveApp(key) { db.ref('applications/' + key).update({ status: 'approved' }); loadAllApplications(); }
 function denyApp(key) { db.ref('applications/' + key).update({ status: 'denied' }); loadAllApplications(); }
-
 function loadAllMembers() {
     const container = document.getElementById('all_members'); if (!container) return;
-    
     const members = [];
-    Object.keys(userDatabase).forEach(name => {
-        if (!coreAdmins[name]) members.push({ username: name, ...userDatabase[name] });
-    });
+    Object.keys(userDatabase).forEach(name => { if (!coreAdmins[name]) members.push({ username: name, ...userDatabase[name] }); });
     Object.keys(coreAdmins).forEach(name => members.push({ username: name, ...coreAdmins[name], isCore: true }));
-    
-    container.innerHTML = members.map(m => `
-        <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-            <div><span class="${m.style}" style="font-weight:bold;">${escapeHtml(m.username)}</span><span style="color:#666; font-size:10px;"> [${m.fullRank}]</span></div>
-            <span style="color:#555; font-size:9px;">ID: ${generateUserId(m.username)}</span>
-        </div>
-    `).join('');
+    container.innerHTML = members.map(m => `<div style="background:#050000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><span class="${m.style}" style="font-weight:bold;">${escapeHtml(m.username)}</span><span style="color:#666; font-size:10px;"> [${m.fullRank}]</span></div><span style="color:#555; font-size:9px;">ID: ${generateUserId(m.username)}</span></div>`).join('');
 }
-
 function loadPendingImages() {
     const container = document.getElementById('pending_images'); if (!container) return;
     db.ref('pending_images').once('value', (s) => {
         const pending = []; s.forEach((c) => pending.push({ ...c.val(), key: c.key }));
         if (pending.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center; grid-column:1/-1;">No pending images</div>'; return; }
-        container.innerHTML = pending.map(p => `<div style="background:#0a0000; border:1px solid #400; padding:8px; text-align:center;">
-            <img src="${p.data}" style="max-width:100%; max-height:80px; margin-bottom:5px;">
-            <div style="color:#d40000; font-size:10px;">${escapeHtml(p.user)}</div>
-            <div style="display:flex; gap:5px; margin-top:5px;">
-                <button class="ie-btn" style="padding:4px; font-size:9px; flex:1;" onclick="approveImage('${p.key}')">✓</button>
-                <button class="ie-btn" style="padding:4px; font-size:9px; flex:1; background:#333;" onclick="denyImage('${p.key}')">✗</button>
-            </div>
-        </div>`).join('');
+        container.innerHTML = pending.map(p => `<div style="background:#050000; border:1px solid #400; padding:8px; text-align:center;"><img src="${p.data}" style="max-width:100%; max-height:80px; margin-bottom:5px;"><div style="color:#d40000; font-size:10px;">${escapeHtml(p.user)}</div><div style="display:flex; gap:5px; margin-top:5px;"><button class="ie-btn" style="padding:4px; font-size:9px; flex:1;" onclick="approveImage('${p.key}')">✓</button><button class="ie-btn" style="padding:4px; font-size:9px; flex:1; background:#333;" onclick="denyImage('${p.key}')">✗</button></div></div>`).join('');
     });
 }
 function approveImage(key) {
@@ -1417,143 +983,87 @@ function approveImage(key) {
         const img = s.val(); if (!img) return;
         const u = userDatabase[img.user] || { rank: 'M', style: 'member-style' };
         db.ref('chat').push({ user: img.user, text: '[Image]', imageData: img.data, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP });
-        db.ref('pending_images/' + key).remove();
-        loadPendingImages();
+        db.ref('pending_images/' + key).remove(); loadPendingImages();
     });
 }
 function denyImage(key) { db.ref('pending_images/' + key).remove(); loadPendingImages(); }
-
 function loadBannedUsers() {
     const container = document.getElementById('banned_users'); if (!container) return;
     db.ref('bans').once('value', (s) => {
-        const bans = s.val() || {};
-        const now = Date.now();
+        const bans = s.val() || {}; const now = Date.now();
         const activeBans = Object.entries(bans).filter(([u, b]) => b.expiry === 0 || b.expiry > now);
         if (activeBans.length === 0) { container.innerHTML = 'None'; return; }
         container.innerHTML = activeBans.map(([user, ban]) => {
             const exp = ban.expiry === 0 ? 'Permanent' : new Date(ban.expiry).toLocaleString();
-            return `<div style="border-bottom:1px solid #333; padding:5px 0;"><strong style="color:#ff4444;">${escapeHtml(user)}</strong> [${ban.type}] - ${exp} <button class="ie-btn" style="padding:2px 6px; font-size:8px; width:auto;" onclick="unbanUser('${user}')">Unban</button></div>`;
+            return `<div style="border-bottom:1px solid #300; padding:5px 0;"><strong style="color:#ff4444;">${escapeHtml(user)}</strong> [${ban.type}] - ${exp} <button class="ie-btn" style="padding:2px 6px; font-size:8px; width:auto;" onclick="unbanUser('${user}')">Unban</button></div>`;
         }).join('');
     });
 }
 function unbanUser(username) { db.ref('bans/' + username).remove(); loadBannedUsers(); alert(username + ' unbanned.'); }
-
 function executeModAction() {
-    const username = document.getElementById('mod_username').value.trim();
-    const action = document.getElementById('mod_action').value;
-    const duration = parseInt(document.getElementById('mod_duration').value);
-    const reason = document.getElementById('mod_reason').value;
+    const username = document.getElementById('mod_username').value.trim(), action = document.getElementById('mod_action').value, duration = parseInt(document.getElementById('mod_duration').value), reason = document.getElementById('mod_reason').value;
     if (!username || !action) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Select user and action.</span>'; return; }
-    const protectedAdmins = ['losersyndicate', 'noseeyedear', 'oleg'];
-    if (protectedAdmins.includes(username.toLowerCase())) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Cannot moderate core admins.</span>'; return; }
+    if (['losersyndicate', 'noseeyedear', 'oleg'].includes(username.toLowerCase())) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Cannot moderate core admins.</span>'; return; }
     const expiry = duration === 0 ? 0 : Date.now() + (duration * 60 * 1000);
     if (action === 'kick') { db.ref('online/' + username).remove(); document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' kicked.</span>'; }
     else { db.ref('bans/' + username).set({ type: action, expiry: expiry, reason: reason, by: CURRENT_USER }); if (action === 'hardban') { db.ref('members/' + username).remove(); } document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' ' + action + '.</span>'; loadBannedUsers(); }
 }
-
 function loadAllVideos() {
     const container = document.getElementById('all_videos'); if (!container) return;
     db.ref('archive').once('value', (s) => {
         const videos = []; s.forEach(c => videos.push({ ...c.val(), key: c.key }));
         if (videos.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center;">No videos.</div>'; return; }
-        container.innerHTML = videos.reverse().map(v => `
-            <div style="background:#0a0000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                <div><strong style="color:#d40000;">${escapeHtml(v.name)}</strong><span style="color:#666; font-size:10px;"> by ${escapeHtml(v.uploader)}</span></div>
-                <div><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; margin-right:5px;" onclick="window.open('${v.url}')">View</button><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#500;" onclick="deleteVideo('${v.key}')">Delete</button></div>
-            </div>
-        `).join('');
+        container.innerHTML = videos.reverse().map(v => `<div style="background:#050000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><strong style="color:#d40000;">${escapeHtml(v.name)}</strong><span style="color:#666; font-size:10px;"> by ${escapeHtml(v.uploader)}</span></div><div><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; margin-right:5px;" onclick="window.open('${v.url}')">View</button><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#300;" onclick="deleteVideo('${v.key}')">Delete</button></div></div>`).join('');
     });
 }
-function deleteVideo(key) { if (confirm('Delete this video?')) { db.ref('archive/' + key).remove(); loadAllVideos(); } }
-
-function generateVIPCode() {
-    const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-    db.ref('vip_codes').push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false });
-    document.getElementById('vip_code_display').textContent = '✨ ' + code;
-    loadAllVIPCodes();
-}
+function deleteVideo(key) { if (confirm('Delete?')) { db.ref('archive/' + key).remove(); loadAllVideos(); } }
+function generateVIPCode() { const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase(); db.ref('vip_codes').push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false }); document.getElementById('vip_code_display').textContent = '✨ ' + code; loadAllVIPCodes(); }
 function loadAllVIPCodes() {
     const container = document.getElementById('all_vip_codes'); if (!container) return;
     db.ref('vip_codes').once('value', (s) => {
         const codes = []; s.forEach(c => codes.push({ ...c.val(), key: c.key }));
-        if (codes.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center;">No codes generated yet.</div>'; return; }
-        container.innerHTML = codes.reverse().map(c => `
-            <div style="background:#0a0000; border:1px solid ${c.used ? '#333' : '#ffd700'}; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:${c.used ? '#666' : '#ffd700'}; font-family:monospace; font-size:14px;">${c.code}</span>
-                <span style="color:#555; font-size:9px;">${c.used ? 'Used by ' + c.usedBy : 'Available'}</span>
-            </div>
-        `).join('');
+        if (codes.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center;">No codes.</div>'; return; }
+        container.innerHTML = codes.reverse().map(c => `<div style="background:#050000; border:1px solid ${c.used ? '#333' : '#ffd700'}; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><span style="color:${c.used ? '#666' : '#ffd700'}; font-family:monospace; font-size:14px;">${c.code}</span><span style="color:#555; font-size:9px;">${c.used ? 'Used by ' + c.usedBy : 'Available'}</span></div>`).join('');
     });
 }
-
 function elevateUser() {
     if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
-    const username = document.getElementById('elevate_user').value.trim();
-    const newRank = document.getElementById('elevate_rank').value;
+    const username = document.getElementById('elevate_user').value.trim(), newRank = document.getElementById('elevate_rank').value;
     if (!username || !userDatabase[username]) { alert('User not found.'); return; }
-    
-    const rankConfig = { 
-        'member': { rank: 'M', fullRank: 'Member', style: 'member-style', target: 'list_member', isAdmin: false }, 
-        'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', target: 'list_vip', isAdmin: false }, 
-        'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', target: 'list_contrib', isAdmin: false },
-        'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', target: 'list_mod', isAdmin: true }, 
-        'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', target: 'list_admin', isAdmin: true } 
-    };
-    
-    db.ref('members/' + username).update(rankConfig[newRank]);
-    userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] };
-    alert(username + ' elevated to ' + rankConfig[newRank].fullRank);
+    const rankConfig = { 'member': { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false }, 'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', isAdmin: false }, 'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', isAdmin: false }, 'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', isAdmin: true }, 'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', isAdmin: true } };
+    db.ref('members/' + username).update(rankConfig[newRank]); userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] }; alert(username + ' elevated to ' + rankConfig[newRank].fullRank);
 }
-
 function uploadVIPImage() {
-    const user = userDatabase[CURRENT_USER]; 
-    if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
+    const user = userDatabase[CURRENT_USER]; if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
     const file = document.getElementById('vip_image_picker').files[0]; if (!file) { alert('Select image.'); return; }
     document.getElementById('vip_image_result').innerHTML = '<div style="color:#888; font-size:10px;">Uploading...</div>';
     const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', UPLOAD_PRESET);
     fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: formData })
         .then(res => res.json()).then(data => {
-            if (data.secure_url) { document.getElementById('vip_image_result').innerHTML = `<div style="background:#0a0a00; border:1px solid #ffd700; padding:10px;"><div style="color:#0f0; font-size:10px;">✓ Uploaded!</div><input type="text" value="${data.secure_url}" style="width:100%; font-size:10px; background:#000; border:1px solid #ffd700; color:#ffd700; padding:6px;" onclick="this.select();" readonly></div>`; }
+            if (data.secure_url) { document.getElementById('vip_image_result').innerHTML = `<div style="background:#0a0000; border:1px solid #ffd700; padding:10px;"><div style="color:#0f0; font-size:10px;">✓ Uploaded!</div><input type="text" value="${data.secure_url}" style="width:100%; font-size:10px; background:#000; border:1px solid #ffd700; color:#ffd700; padding:6px;" onclick="this.select();" readonly></div>`; }
             else document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Failed.</div>';
         });
 }
 
-// MEMORIES / VIDEO ARCHIVE
+// MEMORIES
 function prevPage() { if (currentPage > 1) { currentPage--; renderMemories(); } }
 function nextPage() { db.ref('archive').once('value', (s) => { let count = 0; s.forEach(() => count++); const totalPages = Math.ceil(count / itemsPerPage) || 1; if (currentPage < totalPages) { currentPage++; renderMemories(); } }); }
 function renderMemories() {
-    const grid = document.getElementById('memories_grid'); 
-    if (!grid) return;
-    grid.innerHTML = "";
-    grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-    grid.style.gap = '20px';
-    grid.style.justifyItems = 'center';
-    
+    const grid = document.getElementById('memories_grid'); if (!grid) return;
+    grid.innerHTML = ""; grid.style.display = 'grid'; grid.style.gridTemplateColumns = 'repeat(3, 1fr)'; grid.style.gap = '20px'; grid.style.justifyItems = 'center';
     db.ref('archive').orderByChild('timestamp').once('value', (s) => {
         const archive = []; s.forEach((c) => archive.push(c.val()));
         const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
         document.getElementById('page_indicator').textContent = 'Page ' + currentPage + ' of ' + totalPages;
-        
-        if (archive.length === 0) { 
-            grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories yet...</p>'; 
-            return; 
-        }
-        
+        if (archive.length === 0) { grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories yet...</p>'; return; }
         const start = (currentPage - 1) * itemsPerPage;
-        const pageItems = archive.slice(start, start + itemsPerPage);
-        
-        pageItems.forEach(mem => {
+        archive.slice(start, start + itemsPerPage).forEach(mem => {
             const div = document.createElement('div');
             div.style.cssText = 'width:120px; text-align:center; cursor:pointer; padding:10px; border-radius:5px; transition:all 0.2s;';
             div.onmouseover = function() { this.style.background = 'rgba(139,0,0,0.2)'; };
             div.onmouseout = function() { this.style.background = 'transparent'; };
             div.onclick = function() { spawnVideoWindow(mem.name, mem.url); };
-            div.innerHTML = `
-                <div style="width:60px; height:60px; margin:0 auto 8px; background:#1a0000; border:2px solid #500; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px;">🎬</div>
-                <div style="font-size:11px; color:#d40000; font-weight:bold; word-break:break-word;">${escapeHtml(mem.name)}</div>
-                <div style="font-size:9px; color:#666; margin-top:2px;">${escapeHtml(mem.uploader || 'Unknown')}</div>
-            `;
+            div.innerHTML = `<div style="width:60px; height:60px; margin:0 auto 8px; background:#200000; border:2px solid #500; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px;">🎬</div><div style="font-size:11px; color:#d40000; font-weight:bold; word-break:break-word;">${escapeHtml(mem.name)}</div><div style="font-size:9px; color:#666; margin-top:2px;">${escapeHtml(mem.uploader || 'Unknown')}</div>`;
             grid.appendChild(div);
         });
     });
@@ -1563,119 +1073,59 @@ function spawnVideoWindow(name, url) {
     const win = document.createElement('div');
     win.className = 'window'; win.id = id; win.style.display = 'block';
     win.style.left = (150 + Math.random() * 100) + 'px'; win.style.top = (100 + Math.random() * 50) + 'px'; win.style.width = '520px'; win.style.height = '420px'; win.style.zIndex = '500';
-    
-    // Determine if video or audio based on URL
     const isAudio = url.match(/\.(mp3|wav|ogg|m4a)(\?|$)/i);
-    
-    let mediaHtml;
-    if (isAudio) {
-        mediaHtml = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:#0a0000;"><div style="font-size:60px; margin-bottom:20px;">🎵</div><audio src="${url}" controls autoplay style="width:90%;"></audio></div>`;
-    } else {
-        mediaHtml = `<video src="${url}" controls autoplay style="width:100%; height:100%; background:#000;"></video>`;
-    }
-    
+    let mediaHtml = isAudio ? `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:#050000;"><div style="font-size:60px; margin-bottom:20px;">🎵</div><audio src="${url}" controls autoplay style="width:90%;"></audio></div>` : `<video src="${url}" controls autoplay style="width:100%; height:100%; background:#000;"></video>`;
     win.innerHTML = `<div class="title-bar"><div class="title-bar-text">▶ ${escapeHtml(name)}</div><div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${id}').remove()"></button></div></div><div class="window-body" style="height:calc(100% - 32px); overflow:hidden;">${mediaHtml}</div>`;
-    document.body.appendChild(win);
-    makeDraggable(id);
+    document.body.appendChild(win); makeDraggable(id);
 }
 async function processIEUpload() {
     const fileInput = document.getElementById('ie_file_picker');
     const name = document.getElementById('ie_filename').value.trim() || "Video_" + Date.now();
-    if(!fileInput.files[0]) { alert('Please select a file.'); return; }
-    if(!CURRENT_USER) { alert('Please log in first.'); return; }
-    
-    document.getElementById('upload_status').innerText = "Uploading...";
-    document.getElementById('upload_status').disabled = true;
-    
-    const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
-    formData.append('upload_preset', UPLOAD_PRESET);
-    
+    if(!fileInput.files[0]) { alert('Select a file.'); return; }
+    if(!CURRENT_USER) { alert('Log in first.'); return; }
+    document.getElementById('upload_status').innerText = "Uploading..."; document.getElementById('upload_status').disabled = true;
+    const formData = new FormData(); formData.append('file', fileInput.files[0]); formData.append('upload_preset', UPLOAD_PRESET);
     try {
         const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/auto/upload', { method: 'POST', body: formData });
         const data = await res.json();
-        if (res.ok && data.secure_url) { 
-            await db.ref('archive').push({ 
-                name: name, 
-                url: data.secure_url, 
-                uploader: CURRENT_USER, 
-                timestamp: firebase.database.ServerValue.TIMESTAMP 
-            }); 
-            renderMemories(); 
-            document.getElementById('upload_status').innerText = "Push to Cloud"; 
-            document.getElementById('ie_filename').value = ""; 
-            fileInput.value = "";
-            alert('Memory uploaded successfully!');
-        } else {
-            alert('Upload failed: ' + (data.error?.message || 'Unknown error'));
-            document.getElementById('upload_status').innerText = "Push to Cloud";
-        }
-    } catch (e) { 
-        console.error(e);
-        alert("Upload error. Please try again."); 
-        document.getElementById('upload_status').innerText = "Push to Cloud";
-    }
+        if (res.ok && data.secure_url) { await db.ref('archive').push({ name: name, url: data.secure_url, uploader: CURRENT_USER, timestamp: firebase.database.ServerValue.TIMESTAMP }); renderMemories(); document.getElementById('upload_status').innerText = "Push to Cloud"; document.getElementById('ie_filename').value = ""; fileInput.value = ""; alert('Uploaded!'); }
+        else { alert('Failed: ' + (data.error?.message || 'Unknown')); document.getElementById('upload_status').innerText = "Push to Cloud"; }
+    } catch (e) { alert("Error."); document.getElementById('upload_status').innerText = "Push to Cloud"; }
     document.getElementById('upload_status').disabled = false;
 }
 
-// WINDOW MANAGEMENT - Draggable ANYWHERE on screen
+// WINDOW MANAGEMENT
 function toggleWin(id) {
     let el = document.getElementById(id); if (!el) return;
     el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     if(el.style.display === 'block') { document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); el.style.zIndex = "200"; }
     if (id === 'admin_window') { loadAllApplications(); }
 }
-
 function makeDraggable(winId) {
     const win = document.getElementById(winId); if (!win) return;
     const header = win.querySelector('.title-bar'); if (!header) return;
-    
-    // Mouse drag - works ANYWHERE on screen
     header.onmousedown = (e) => {
         e.preventDefault();
-        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
-        win.style.zIndex = "400";
-        let startX = e.clientX, startY = e.clientY;
-        let startLeft = win.offsetLeft, startTop = win.offsetTop;
-        
-        document.onmousemove = (e) => { 
-            const newLeft = startLeft + (e.clientX - startX);
-            const newTop = startTop + (e.clientY - startY);
-            win.style.left = newLeft + 'px'; 
-            win.style.top = newTop + 'px'; 
-        };
+        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); win.style.zIndex = "400";
+        let startX = e.clientX, startY = e.clientY, startLeft = win.offsetLeft, startTop = win.offsetTop;
+        document.onmousemove = (e) => { win.style.left = (startLeft + e.clientX - startX) + 'px'; win.style.top = (startTop + e.clientY - startY) + 'px'; };
         document.onmouseup = () => { document.onmousemove = null; document.onmouseup = null; };
     };
-    
-    // Touch drag for mobile - works ANYWHERE
     header.ontouchstart = (e) => {
         const touch = e.touches[0];
-        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); 
-        win.style.zIndex = "400";
-        let startX = touch.clientX, startY = touch.clientY;
-        let startLeft = win.offsetLeft, startTop = win.offsetTop;
-        
-        document.ontouchmove = (e) => { 
-            const t = e.touches[0]; 
-            const newLeft = startLeft + (t.clientX - startX);
-            const newTop = startTop + (t.clientY - startY);
-            win.style.left = newLeft + 'px'; 
-            win.style.top = newTop + 'px'; 
-        };
+        document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); win.style.zIndex = "400";
+        let startX = touch.clientX, startY = touch.clientY, startLeft = win.offsetLeft, startTop = win.offsetTop;
+        document.ontouchmove = (e) => { const t = e.touches[0]; win.style.left = (startLeft + t.clientX - startX) + 'px'; win.style.top = (startTop + t.clientY - startY) + 'px'; };
         document.ontouchend = () => { document.ontouchmove = null; document.ontouchend = null; };
     };
 }
-
-// Make all windows draggable
 ['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'profile_window'].forEach(id => makeDraggable(id));
 
-// *** CRITICAL FIX: beginSession must be globally accessible ***
 window.beginSession = function() {
     document.getElementById('boot-screen').style.display = 'none';
     if(player) { player.unMute(); player.playVideo(); }
 };
 
-// YouTube Background Music
 var player;
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('player', {
@@ -1687,13 +1137,12 @@ window.onYouTubeIframeAPIReady = function() {
 function pauseMusic() { if(player) player.pauseVideo(); }
 function playMusic() { if(player) player.playVideo(); }
 
-// Initialize
 window.addEventListener('load', () => {
     renderMemories();
     updateVisitorCount();
     updateClock();
     initStakesGame();
-    updateOnlineMemberList();
+    startOnlineListener();
 });
 </script>
 </body>
