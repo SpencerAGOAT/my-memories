@@ -616,12 +616,12 @@ function openChat() {
 }
 function setUserOnline() {
     if (!CURRENT_USER || IS_GUEST) return;
-    const user = userDatabase[CURRENT_USER];
+    const user = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style', fullRank: 'Member' };
     db.ref('online/' + CURRENT_USER).set({ 
         username: CURRENT_USER, 
-        rank: user ? user.rank : 'M', 
-        style: user ? user.style : 'member-style', 
-        fullRank: user ? user.fullRank : 'Member', 
+        rank: user.rank || 'M', 
+        style: user.style || 'member-style', 
+        fullRank: user.fullRank || 'Member', 
         lastSeen: firebase.database.ServerValue.TIMESTAMP 
     });
     db.ref('online/' + CURRENT_USER).onDisconnect().remove();
@@ -905,22 +905,59 @@ const botResponses = [
 ];
 
 function sendChat() {
-    if (IS_GUEST) return;
+    if (IS_GUEST || !CURRENT_USER) return;
     const input = document.getElementById('chat_input');
     const text = input.value.trim();
     if(!text) return;
-    const u = userDatabase[CURRENT_USER];
+    
+    // Get user data with fallbacks
+    const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style', fullRank: 'Member' };
+    const userRank = u.rank || 'M';
+    const userStyle = u.style || 'member-style';
+    const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
     const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
     if (cmdMatch && chatCommands[cmdMatch[1]]) {
         const result = chatCommands[cmdMatch[1]](cmdMatch[2] || '');
-        if (result.type === 'system') { input.value = ''; const logs = document.getElementById('chat_logs'); logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; logs.scrollTop = logs.scrollHeight; return; }
-        else { db.ref('chat').push({ user: CURRENT_USER, text: result.text, isAction: true, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }
+        if (result.type === 'system') { 
+            input.value = ''; 
+            const logs = document.getElementById('chat_logs'); 
+            logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; 
+            logs.scrollTop = logs.scrollHeight; 
+            return; 
+        } else { 
+            db.ref('chat').push({ 
+                user: CURRENT_USER, 
+                text: result.text, 
+                isAction: true, 
+                tag: userRank, 
+                style: userStyle, 
+                time: timeNow, 
+                timestamp: firebase.database.ServerValue.TIMESTAMP 
+            }); 
+        }
     } else {
-        db.ref('chat').push({ user: CURRENT_USER, text: text, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP });
+        db.ref('chat').push({ 
+            user: CURRENT_USER, 
+            text: text, 
+            tag: userRank, 
+            style: userStyle, 
+            time: timeNow, 
+            timestamp: firebase.database.ServerValue.TIMESTAMP 
+        });
         for (const br of botResponses) {
             if (br.trigger.test(text)) {
-                setTimeout(() => { db.ref('chat').push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }, 1000 + Math.random() * 1000);
+                setTimeout(() => { 
+                    db.ref('chat').push({ 
+                        user: 'Eric Northman', 
+                        text: br.response, 
+                        tag: 'BOT', 
+                        style: 'bot-style', 
+                        isBot: true, 
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), 
+                        timestamp: firebase.database.ServerValue.TIMESTAMP 
+                    }); 
+                }, 1000 + Math.random() * 1000);
                 break;
             }
         }
@@ -951,12 +988,26 @@ function setupChatListener() {
 }
 function loadMessages() { setupChatListener(); }
 function uploadChatImage() {
-    if (IS_GUEST) return;
-    const file = document.getElementById('chat_image').files[0]; if (!file) return;
+    if (IS_GUEST || !CURRENT_USER) { alert('Must be logged in!'); return; }
+    const fileInput = document.getElementById('chat_image');
+    const file = fileInput.files[0]; 
+    if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(e) { db.ref('pending_images').push({ data: e.target.result, user: CURRENT_USER, id: Date.now(), timestamp: firebase.database.ServerValue.TIMESTAMP }); alert('Image submitted for approval!'); };
+    reader.onload = function(e) { 
+        db.ref('pending_images').push({ 
+            data: e.target.result, 
+            user: CURRENT_USER, 
+            id: Date.now(), 
+            timestamp: firebase.database.ServerValue.TIMESTAMP 
+        }).then(() => {
+            alert('Image submitted for approval!');
+        }).catch(err => {
+            alert('Failed to submit image.');
+            console.error(err);
+        });
+    };
     reader.readAsDataURL(file);
-    document.getElementById('chat_image').value = '';
+    fileInput.value = '';
 }
 
 // ADMIN PANEL - Tab Switching
