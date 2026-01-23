@@ -144,34 +144,66 @@
     </svg>
 </div>
 <div id="screensaver"></div>
-<div class="profile-card" id="profile_card">
-    <div class="profile-card-header">
-        <div class="profile-card-avatar" id="pc_avatar">🦇</div>
-        <div style="flex:1;">
-            <div class="profile-card-name" id="pc_name">Username</div>
-            <div class="profile-card-title" id="pc_title">Member</div>
-            <div id="pc_status" style="color:#888; font-size:10px; margin-top:4px;"></div>
-            <div id="pc_mood" style="color:#666; font-size:9px; margin-top:2px;"></div>
+<div class="window" id="profile_window" style="left:250px; top:80px; width:450px; height:580px; display:none; z-index:9000;">
+    <div class="title-bar"><div class="title-bar-text" id="pw_title">👤 Profile</div><div class="title-bar-controls"><button aria-label="Close" onclick="closeProfileWindow()"></button></div></div>
+    <div class="window-body" style="overflow-y:auto; padding:0;">
+        <!-- Profile Header -->
+        <div style="background:linear-gradient(180deg, #200000, #100000); padding:20px; text-align:center; border-bottom:2px solid #500;">
+            <div id="pw_avatar" style="width:100px; height:100px; border-radius:50%; background:#111; border:4px solid #700; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden;">🦇</div>
+            <div id="pw_name" style="font-size:22px; font-weight:bold; color:#d40000;"></div>
+            <div id="pw_rank" style="font-size:12px; color:#888; margin-top:5px;"></div>
+            <div id="pw_status" style="font-size:11px; color:#aaa; margin-top:8px; font-style:italic;"></div>
+            <div id="pw_mood" style="font-size:10px; color:#666; margin-top:4px;"></div>
+        </div>
+        
+        <!-- Stats Row -->
+        <div style="display:flex; background:#0a0000; border-bottom:1px solid #300;">
+            <div style="flex:1; text-align:center; padding:15px; border-right:1px solid #300;">
+                <div id="pw_rep" style="color:#ff4444; font-size:24px; font-weight:bold;">0</div>
+                <div style="color:#666; font-size:9px; text-transform:uppercase;">Reputation</div>
+            </div>
+            <div style="flex:1; text-align:center; padding:15px;">
+                <div id="pw_comments_count" style="color:#ff4444; font-size:24px; font-weight:bold;">0</div>
+                <div style="color:#666; font-size:9px; text-transform:uppercase;">Comments</div>
+            </div>
+        </div>
+        
+        <!-- Bio Section -->
+        <div style="padding:15px; border-bottom:1px solid #300;">
+            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">📜 ABOUT</div>
+            <div id="pw_bio" style="color:#aaa; font-size:12px; line-height:1.6;">No bio set.</div>
+        </div>
+        
+        <!-- Music Section -->
+        <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #300; display:none;">
+            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">🎵 PROFILE MUSIC</div>
+            <div id="pw_music_player"></div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #300;">
+            <button class="ie-btn" style="flex:1; min-width:100px; margin:0;" onclick="openDM(currentProfileUser)">💬 Message</button>
+            <button class="ie-btn" id="pw_btn_rep_pos" style="flex:1; min-width:80px; margin:0; background:#050; border-color:#0a0; display:none;" onclick="giveRep(1)">👍 +Rep</button>
+            <button class="ie-btn" id="pw_btn_rep_neg" style="flex:1; min-width:80px; margin:0; background:#500; border-color:#a00; display:none;" onclick="giveRep(-1)">👎 -Rep</button>
+        </div>
+        
+        <!-- Comments Section -->
+        <div style="padding:15px;">
+            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">💬 PROFILE COMMENTS</div>
+            <div id="pw_comments_list" style="max-height:150px; overflow-y:auto; margin-bottom:15px;">
+                <div style="color:#555; font-size:10px;">No comments yet.</div>
+            </div>
+            <div id="pw_comment_form" style="display:none;">
+                <input type="text" id="pw_comment_input" class="ie-input" placeholder="Leave a comment..." style="margin-bottom:8px;">
+                <button class="ie-btn" style="padding:8px;" onclick="leaveProfileComment()">Post Comment</button>
+            </div>
+        </div>
+        
+        <!-- User ID Footer -->
+        <div style="padding:12px 15px; background:#050000; border-top:1px solid #300;">
+            <div style="color:#444; font-size:9px; font-family:monospace;" id="pw_user_id">User ID: ...</div>
         </div>
     </div>
-    <div style="display:flex; padding:10px 15px; gap:20px; border-bottom:1px solid #300; background:#0a0000;">
-        <div style="text-align:center; flex:1;"><div id="pc_rep" style="color:#ff4444; font-size:18px; font-weight:bold;">0</div><div style="color:#666; font-size:8px;">REPUTATION</div></div>
-        <div style="text-align:center; flex:1;"><div id="pc_comment_count" style="color:#ff4444; font-size:18px; font-weight:bold;">0</div><div style="color:#666; font-size:8px;">COMMENTS</div></div>
-    </div>
-    <div class="profile-card-bio" id="pc_bio">No bio set.</div>
-    <div id="pc_music_section" style="display:none; padding:10px 15px; border-bottom:1px solid #300;"><div style="color:#888; font-size:9px; margin-bottom:5px;">🎵 Profile Music</div><div id="pc_music_player"></div></div>
-    <div id="pc_comments_list" style="padding:10px 15px; max-height:120px; overflow-y:auto; border-bottom:1px solid #300;"><div style="color:#555; font-size:10px;">No comments yet.</div></div>
-    <div style="padding:10px 15px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="profile-card-btn" onclick="openDM(currentProfileUser)">💬 Message</button>
-        <button class="profile-card-btn" id="btn_rep_pos" style="background:#030; border-color:#070; display:none;" onclick="giveRep(1)">👍 +Rep</button>
-        <button class="profile-card-btn" id="btn_rep_neg" style="background:#300; border-color:#700; display:none;" onclick="giveRep(-1)">👎 -Rep</button>
-    </div>
-    <div style="padding:10px 15px; border-top:1px solid #300;">
-        <input type="text" id="profile_comment_input" class="ie-input" placeholder="Leave a comment..." style="margin-bottom:5px; padding:6px; font-size:10px;">
-        <button class="ie-btn" style="padding:6px; font-size:10px;" onclick="leaveProfileComment()">Post Comment</button>
-    </div>
-    <div class="user-id-display" id="pc_user_id">User ID: ...</div>
-    <button class="profile-card-btn" style="margin:10px 15px; width:calc(100% - 30px);" onclick="closeProfileCard()">Close</button>
 </div>
 <div id="boot-screen" onclick="beginSession()">
     <div style="font-size: 80px; margin-bottom: 20px; animation: batFloat 3s ease-in-out infinite;">🦇</div>
@@ -216,7 +248,7 @@
             <div style="padding:10px; background:#111;">
                 <div style="display: flex; gap: 5px; margin-bottom: 5px;">
                     <input type="text" id="chat_input" class="ie-input" style="margin:0; flex:1;" placeholder="/help for commands..." onkeypress="handleChatKey(event)" onkeyup="handleTyping()">
-                    <label class="ie-btn" style="width: 35px; margin: 0; display: flex; align-items: center; justify-content: center; padding: 0;">📷<input type="file" id="chat_image" accept="image/*" style="display:none;" onchange="uploadChatImage()"></label>
+                    <label class="ie-btn" style="width: 35px; margin: 0; display: flex; align-items: center; justify-content: center; padding: 0;">📎<input type="file" id="chat_file" accept="image/*,video/*,audio/*,.gif" style="display:none;" onchange="uploadChatFile()"></label>
                 </div>
                 <button class="ie-btn" onclick="sendChat()">Send</button>
             </div>
@@ -372,11 +404,11 @@
 <div class="window" id="memories_folder" style="left:50px; top:50px; width:550px; height:580px;">
     <div class="title-bar"><div class="title-bar-text">C:\Memories</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('memories_folder')"></button></div></div>
     <div class="window-body" style="display:flex; flex-direction:column; height:100%;">
-        <div id="memories_grid" style="flex:1; overflow-y:auto;"></div>
-        <div class="pagination-bar" style="display:flex; justify-content:center; gap:10px;">
-            <button class="ie-btn" style="width:auto; padding: 4px 20px;" onclick="prevPage()">< Prev</button>
-            <span id="page_indicator" style="color:#888; font-size:11px; line-height:28px;">Page 1</span>
-            <button class="ie-btn" style="width:auto; padding: 4px 20px;" onclick="nextPage()">Next ></button>
+        <div id="memories_grid" style="flex:1; overflow-y:auto; padding:15px;"></div>
+        <div class="pagination-bar" style="display:flex; justify-content:center; align-items:center; gap:15px; padding:12px; flex-shrink:0;">
+            <button class="ie-btn" style="width:80px; padding: 6px 12px; margin:0;" onclick="prevPage()">◀ Prev</button>
+            <span id="page_indicator" style="color:#888; font-size:11px; min-width:80px; text-align:center;">Page 1</span>
+            <button class="ie-btn" style="width:80px; padding: 6px 12px; margin:0;" onclick="nextPage()">Next ▶</button>
         </div>
     </div>
 </div>
@@ -703,21 +735,47 @@ function loadProfile() {
 }
 
 function saveProfile() {
-    if (!CURRENT_USER) return;
+    if (!CURRENT_USER) { alert('Please log in first.'); return; }
+    
     const statusEl = document.getElementById('user_status');
     const bioEl = document.getElementById('user_bio');
     const moodEl = document.getElementById('user_mood');
-    userProfile.status = statusEl ? statusEl.value : '';
-    userProfile.bio = bioEl ? bioEl.value : '';
-    userProfile.mood = moodEl ? moodEl.value : '';
-    // Only update status, bio, mood - NOT avatar (avatar only updates when explicitly changed)
-    db.ref('profiles/' + CURRENT_USER).update({ 
-        status: userProfile.status, 
-        bio: userProfile.bio, 
-        mood: userProfile.mood,
-        music: userProfile.music
-    });
-    alert('Profile saved!');
+    const musicEl = document.getElementById('profile_music');
+    
+    // Get current values
+    const newStatus = statusEl ? statusEl.value.trim() : '';
+    const newBio = bioEl ? bioEl.value.trim() : '';
+    const newMood = moodEl ? moodEl.value : '';
+    const newMusic = musicEl ? musicEl.value.trim() : '';
+    
+    // Update local profile object
+    userProfile.status = newStatus;
+    userProfile.bio = newBio;
+    userProfile.mood = newMood;
+    userProfile.music = newMusic;
+    
+    // Save to Firebase - include all profile fields
+    const profileData = {
+        status: newStatus,
+        bio: newBio,
+        mood: newMood,
+        music: newMusic,
+        lastUpdated: firebase.database.ServerValue.TIMESTAMP
+    };
+    
+    // Only include avatar if it exists
+    if (userProfile.avatar) {
+        profileData.avatar = userProfile.avatar;
+    }
+    
+    db.ref('profiles/' + CURRENT_USER).update(profileData)
+        .then(() => {
+            alert('Profile saved successfully!');
+        })
+        .catch((err) => {
+            console.error('Error saving profile:', err);
+            alert('Failed to save profile. Please try again.');
+        });
 }
 
 function updateAvatar() {
@@ -756,97 +814,159 @@ function updateProfileMusic() {
 }
 
 // PROFILE CARD - With User ID display
+// PROFILE WINDOW - Full profile viewing
 function showProfileCard(username, event) {
     if (event) { event.preventDefault(); event.stopPropagation(); }
     if (!username) return;
+    openProfileWindow(username);
+}
+
+function openProfileWindow(username) {
+    if (!username) return;
     currentProfileUser = username;
-    const card = document.getElementById('profile_card');
+    
+    const win = document.getElementById('profile_window');
     const userData = userDatabase[username] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
     
-    document.getElementById('pc_name').textContent = username;
-    document.getElementById('pc_name').className = 'profile-card-name ' + (userData.style || 'member-style');
-    document.getElementById('pc_title').textContent = userData.fullRank || 'Member';
+    // Set window title
+    document.getElementById('pw_title').textContent = '👤 ' + username + "'s Profile";
     
-    // Show User ID
-    document.getElementById('pc_user_id').textContent = 'User ID: ' + generateUserId(username);
+    // Set basic info
+    document.getElementById('pw_name').textContent = username;
+    document.getElementById('pw_name').className = userData.style || 'member-style';
+    document.getElementById('pw_rank').textContent = userData.fullRank || 'Member';
+    document.getElementById('pw_user_id').textContent = 'User ID: ' + generateUserId(username);
     
-    // Use real-time cached profile
+    // Get profile from real-time cache
     const profile = getProfile(username);
-    document.getElementById('pc_status').textContent = profile.status || '';
-    document.getElementById('pc_mood').textContent = profile.mood || '';
-    document.getElementById('pc_bio').textContent = profile.bio || 'No bio set.';
     
-    const avatarEl = document.getElementById('pc_avatar');
-    if (profile.avatar) avatarEl.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" onerror="this.parentElement.innerHTML=\'🦇\'">';
-    else avatarEl.innerHTML = '🦇';
+    // Set profile data
+    document.getElementById('pw_status').textContent = profile.status || '';
+    document.getElementById('pw_mood').textContent = profile.mood || '';
+    document.getElementById('pw_bio').textContent = profile.bio || 'No bio set.';
+    
+    // Set avatar
+    const avatarEl = document.getElementById('pw_avatar');
+    if (profile.avatar) {
+        avatarEl.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+    } else {
+        avatarEl.innerHTML = '🦇';
+    }
     
     // Load reputation
-    db.ref('reputation/' + username).once('value', (s) => { const rep = s.val() || { score: 0 }; document.getElementById('pc_rep').textContent = rep.score || 0; });
+    db.ref('reputation/' + username).once('value', (s) => { 
+        const rep = s.val() || { score: 0 }; 
+        document.getElementById('pw_rep').textContent = rep.score || 0; 
+    });
     
     // Load comments
-    db.ref('profile_comments/' + username).orderByChild('timestamp').limitToLast(10).once('value', (s) => {
-        const comments = []; s.forEach(c => comments.push(c.val()));
-        document.getElementById('pc_comment_count').textContent = comments.length;
-        const cl = document.getElementById('pc_comments_list');
-        if (comments.length === 0) cl.innerHTML = '<div style="color:#555; font-size:10px;">No comments yet.</div>';
-        else cl.innerHTML = comments.reverse().map(c => `<div style="background:#0a0000; padding:6px; margin-bottom:4px; border-left:2px solid #500;"><span style="color:#d40000; font-weight:bold; font-size:10px;">${escapeHtml(c.from)}</span><span style="color:#444; font-size:8px;"> - ${c.date || ''}</span><div style="color:#999; font-size:10px; margin-top:2px;">${escapeHtml(c.text)}</div></div>`).join('');
+    db.ref('profile_comments/' + username).orderByChild('timestamp').limitToLast(20).once('value', (s) => {
+        const comments = []; 
+        s.forEach(c => comments.push(c.val()));
+        document.getElementById('pw_comments_count').textContent = comments.length;
+        
+        const cl = document.getElementById('pw_comments_list');
+        if (comments.length === 0) {
+            cl.innerHTML = '<div style="color:#555; font-size:11px; text-align:center; padding:10px;">No comments yet. Be the first!</div>';
+        } else {
+            cl.innerHTML = comments.reverse().map(c => `
+                <div style="background:#0a0000; padding:10px; margin-bottom:8px; border-left:3px solid #500; border-radius:0 4px 4px 0;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(c.from)}</span>
+                        <span style="color:#444; font-size:9px;">${c.date || ''}</span>
+                    </div>
+                    <div style="color:#aaa; font-size:11px; line-height:1.4;">${escapeHtml(c.text)}</div>
+                </div>
+            `).join('');
+        }
     });
     
     // Music player
-    const musicSection = document.getElementById('pc_music_section');
-    const musicPlayer = document.getElementById('pc_music_player');
+    const musicSection = document.getElementById('pw_music_section');
+    const musicPlayer = document.getElementById('pw_music_player');
     if (profile.music) {
         musicSection.style.display = 'block';
-        if (profile.music.includes('soundcloud.com')) musicPlayer.innerHTML = '<iframe width="100%" height="80" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=true&hide_related=true&show_comments=false"></iframe>';
-        else if (profile.music.includes('spotify.com')) { const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); if (m) musicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0"></iframe>'; }
-        else musicPlayer.innerHTML = '';
-    } else { musicSection.style.display = 'none'; musicPlayer.innerHTML = ''; }
+        if (profile.music.includes('soundcloud.com')) {
+            musicPlayer.innerHTML = '<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=false&hide_related=true&show_comments=false&show_user=true"></iframe>';
+        } else if (profile.music.includes('spotify.com')) { 
+            const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); 
+            if (m) {
+                musicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0" allow="encrypted-media"></iframe>';
+            } else {
+                musicPlayer.innerHTML = '<div style="color:#666; font-size:10px;">Invalid Spotify URL</div>';
+            }
+        } else {
+            musicPlayer.innerHTML = '<div style="color:#666; font-size:10px;">🔗 <a href="' + escapeHtml(profile.music) + '" target="_blank" style="color:#d40000;">' + escapeHtml(profile.music) + '</a></div>';
+        }
+    } else { 
+        musicSection.style.display = 'none'; 
+        musicPlayer.innerHTML = ''; 
+    }
     
-    // Rep buttons
+    // Rep buttons - only for logged in users viewing other profiles
     const canRep = CURRENT_USER && !IS_GUEST && username !== CURRENT_USER;
-    document.getElementById('btn_rep_pos').style.display = canRep ? 'inline-block' : 'none';
-    document.getElementById('btn_rep_neg').style.display = canRep ? 'inline-block' : 'none';
+    document.getElementById('pw_btn_rep_pos').style.display = canRep ? 'block' : 'none';
+    document.getElementById('pw_btn_rep_neg').style.display = canRep ? 'block' : 'none';
     
-    // Position card
-    let posX = 200, posY = 100;
-    if (event && event.clientX) { posX = Math.min(event.clientX + 10, window.innerWidth - 360); posY = Math.min(event.clientY + 10, window.innerHeight - 500); }
-    if (window.innerWidth <= 900) { posX = 10; posY = 60; }
-    card.style.left = posX + 'px'; card.style.top = posY + 'px'; card.style.display = 'block';
+    // Comment form - only for logged in users
+    document.getElementById('pw_comment_form').style.display = (CURRENT_USER && !IS_GUEST) ? 'block' : 'none';
+    
+    // Show window
+    win.style.display = 'block';
+    document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+    win.style.zIndex = "500";
+    
+    // Make draggable
+    makeDraggable('profile_window');
 }
 
-function closeProfileCard() { document.getElementById('profile_card').style.display = 'none'; document.getElementById('pc_music_player').innerHTML = ''; }
+function closeProfileWindow() { 
+    document.getElementById('profile_window').style.display = 'none'; 
+    document.getElementById('pw_music_player').innerHTML = ''; 
+}
 
 document.addEventListener('click', (e) => {
-    const card = document.getElementById('profile_card');
-    if (card.style.display === 'block' && !e.target.closest('.profile-card') && !e.target.closest('.chat-username') && !e.target.closest('.member-item')) closeProfileCard();
+    const win = document.getElementById('profile_window');
+    if (win.style.display === 'block' && !e.target.closest('#profile_window') && !e.target.closest('.chat-username') && !e.target.closest('.member-item')) {
+        // Don't auto-close profile window on click outside - users should use X button
+    }
 });
 
 function giveRep(amount) {
     if (!CURRENT_USER || IS_GUEST || currentProfileUser === CURRENT_USER) return;
     db.ref('reputation/' + currentProfileUser).once('value', (s) => {
         const current = s.val() || { score: 0, givers: {} };
-        if (current.givers && current.givers[CURRENT_USER]) { alert('Already gave rep!'); return; }
+        if (current.givers && current.givers[CURRENT_USER]) { alert('You already gave rep to this user!'); return; }
         current.score = (current.score || 0) + amount;
         current.givers = current.givers || {};
         current.givers[CURRENT_USER] = amount;
         db.ref('reputation/' + currentProfileUser).set(current);
-        document.getElementById('pc_rep').textContent = current.score;
-        alert(amount > 0 ? '+Rep given!' : '-Rep given!');
+        document.getElementById('pw_rep').textContent = current.score;
+        alert(amount > 0 ? '+1 Rep given!' : '-1 Rep given!');
     });
 }
 
 function leaveProfileComment() {
     if (!CURRENT_USER || IS_GUEST) { alert('Must be logged in!'); return; }
-    const text = document.getElementById('profile_comment_input').value.trim();
-    if (!text) return;
-    db.ref('profile_comments/' + currentProfileUser).push({ from: CURRENT_USER, text: text, date: new Date().toLocaleDateString(), timestamp: firebase.database.ServerValue.TIMESTAMP });
-    document.getElementById('profile_comment_input').value = '';
-    showProfileCard(currentProfileUser, null);
+    const text = document.getElementById('pw_comment_input').value.trim();
+    if (!text) { alert('Please enter a comment.'); return; }
+    if (text.length > 200) { alert('Comment too long (max 200 characters).'); return; }
+    
+    db.ref('profile_comments/' + currentProfileUser).push({ 
+        from: CURRENT_USER, 
+        text: text, 
+        date: new Date().toLocaleDateString(), 
+        timestamp: firebase.database.ServerValue.TIMESTAMP 
+    }).then(() => {
+        document.getElementById('pw_comment_input').value = '';
+        // Refresh profile to show new comment
+        openProfileWindow(currentProfileUser);
+    });
 }
 
 function openDM(username) {
     if (!username || username === CURRENT_USER || IS_GUEST) return;
-    closeProfileCard();
+    closeProfileWindow();
     alert('DM feature coming soon! For now, mention @' + username + ' in chat.');
 }
 
@@ -980,33 +1100,81 @@ function setupChatListener() {
         logs.innerHTML = msgs.map(m => {
             if (m.isAction) return '<div class="chat-action" style="padding:4px 0; font-size:11px;">* ' + escapeHtml(m.text) + '</div>';
             const botClass = m.isBot ? ' chat-bot' : '';
-            const imgHtml = m.imageData ? '<img class="chat-image" src="' + m.imageData + '">' : '';
-            return `<div class="chat-entry${botClass}"><div class="chat-header"><span class="rank-tag ${m.style}">${m.tag}</span><span class="chat-username ${m.style}" onclick="showProfileCard('${escapeHtml(m.user)}', event)">${escapeHtml(m.user)}</span><span style="color:#444; font-size:8px; margin-left:auto;">${m.time || ''}</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">${escapeHtml(m.text)}${imgHtml}</div></div>`;
+            
+            // Handle different media types
+            let mediaHtml = '';
+            if (m.imageData) {
+                mediaHtml = '<img class="chat-image" src="' + m.imageData + '">';
+            } else if (m.mediaUrl) {
+                if (m.mediaType === 'image') {
+                    mediaHtml = '<img class="chat-image" src="' + m.mediaUrl + '" style="max-width:250px; max-height:200px; border:1px solid #400; margin-top:4px; border-radius:4px; cursor:pointer;" onclick="window.open(\'' + m.mediaUrl + '\')">';
+                } else if (m.mediaType === 'video') {
+                    mediaHtml = '<video src="' + m.mediaUrl + '" controls style="max-width:280px; max-height:200px; border:1px solid #400; margin-top:4px; border-radius:4px;"></video>';
+                } else if (m.mediaType === 'audio') {
+                    mediaHtml = '<audio src="' + m.mediaUrl + '" controls style="width:250px; margin-top:4px;"></audio>';
+                }
+            }
+            
+            return `<div class="chat-entry${botClass}"><div class="chat-header"><span class="rank-tag ${m.style}">${m.tag}</span><span class="chat-username ${m.style}" onclick="showProfileCard('${escapeHtml(m.user)}', event)">${escapeHtml(m.user)}</span><span style="color:#444; font-size:8px; margin-left:auto;">${m.time || ''}</span></div><div style="color:#ccc; font-size:11px; padding-left:30px;">${escapeHtml(m.text)}${mediaHtml}</div></div>`;
         }).join('');
         logs.scrollTop = logs.scrollHeight;
     });
 }
 function loadMessages() { setupChatListener(); }
-function uploadChatImage() {
+function uploadChatFile() {
     if (IS_GUEST || !CURRENT_USER) { alert('Must be logged in!'); return; }
-    const fileInput = document.getElementById('chat_image');
+    const fileInput = document.getElementById('chat_file');
     const file = fileInput.files[0]; 
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) { 
-        db.ref('pending_images').push({ 
-            data: e.target.result, 
-            user: CURRENT_USER, 
-            id: Date.now(), 
-            timestamp: firebase.database.ServerValue.TIMESTAMP 
-        }).then(() => {
-            alert('Image submitted for approval!');
-        }).catch(err => {
-            alert('Failed to submit image.');
-            console.error(err);
-        });
-    };
-    reader.readAsDataURL(file);
+    
+    const fileType = file.type;
+    const isImage = fileType.startsWith('image/');
+    const isVideo = fileType.startsWith('video/');
+    const isAudio = fileType.startsWith('audio/');
+    
+    // Upload to Cloudinary for direct embedding
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET);
+    
+    // Show uploading status
+    alert('Uploading file...');
+    
+    const resourceType = isVideo ? 'video' : isAudio ? 'video' : 'image';
+    
+    fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, { 
+        method: 'POST', 
+        body: formData 
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.secure_url) {
+            const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style' };
+            const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            let mediaType = 'image';
+            if (isVideo) mediaType = 'video';
+            if (isAudio) mediaType = 'audio';
+            
+            db.ref('chat').push({ 
+                user: CURRENT_USER, 
+                text: '[' + mediaType.charAt(0).toUpperCase() + mediaType.slice(1) + ']',
+                mediaUrl: data.secure_url,
+                mediaType: mediaType,
+                tag: u.rank || 'M', 
+                style: u.style || 'member-style', 
+                time: timeNow, 
+                timestamp: firebase.database.ServerValue.TIMESTAMP 
+            });
+        } else {
+            alert('Upload failed. Try again.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Upload failed.');
+    });
+    
     fileInput.value = '';
 }
 
@@ -1218,16 +1386,38 @@ function uploadVIPImage() {
 function prevPage() { if (currentPage > 1) { currentPage--; renderMemories(); } }
 function nextPage() { db.ref('archive').once('value', (s) => { let count = 0; s.forEach(() => count++); const totalPages = Math.ceil(count / itemsPerPage) || 1; if (currentPage < totalPages) { currentPage++; renderMemories(); } }); }
 function renderMemories() {
-    const grid = document.getElementById('memories_grid'); grid.innerHTML = "";
+    const grid = document.getElementById('memories_grid'); 
+    if (!grid) return;
+    grid.innerHTML = "";
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    grid.style.gap = '20px';
+    grid.style.justifyItems = 'center';
+    
     db.ref('archive').orderByChild('timestamp').once('value', (s) => {
         const archive = []; s.forEach((c) => archive.push(c.val()));
         const totalPages = Math.ceil(archive.length / itemsPerPage) || 1;
         document.getElementById('page_indicator').textContent = 'Page ' + currentPage + ' of ' + totalPages;
-        if (archive.length === 0) { grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories yet...</p>'; return; }
+        
+        if (archive.length === 0) { 
+            grid.innerHTML = '<p style="color: #555; text-align: center; grid-column: 1/-1; padding: 40px;">No memories yet...</p>'; 
+            return; 
+        }
+        
         const start = (currentPage - 1) * itemsPerPage;
-        archive.slice(start, start + itemsPerPage).forEach(mem => {
-            const div = document.createElement('div'); div.className = "icon";
-            div.innerHTML = `<div onclick="spawnVideoWindow('${escapeHtml(mem.name)}', '${mem.url}')"><img style="width:40px; display:block; margin:0 auto 6px;" src="https://win98icons.alexmeub.com/icons/png/video_file-0.png"><div style="font-size:10px;">${escapeHtml(mem.name)}</div><div style="font-size:8px; color:#666;">${escapeHtml(mem.uploader)}</div></div>`;
+        const pageItems = archive.slice(start, start + itemsPerPage);
+        
+        pageItems.forEach(mem => {
+            const div = document.createElement('div');
+            div.style.cssText = 'width:120px; text-align:center; cursor:pointer; padding:10px; border-radius:5px; transition:all 0.2s;';
+            div.onmouseover = function() { this.style.background = 'rgba(139,0,0,0.2)'; };
+            div.onmouseout = function() { this.style.background = 'transparent'; };
+            div.onclick = function() { spawnVideoWindow(mem.name, mem.url); };
+            div.innerHTML = `
+                <div style="width:60px; height:60px; margin:0 auto 8px; background:#1a0000; border:2px solid #500; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px;">🎬</div>
+                <div style="font-size:11px; color:#d40000; font-weight:bold; word-break:break-word;">${escapeHtml(mem.name)}</div>
+                <div style="font-size:9px; color:#666; margin-top:2px;">${escapeHtml(mem.uploader || 'Unknown')}</div>
+            `;
             grid.appendChild(div);
         });
     });
@@ -1236,24 +1426,60 @@ function spawnVideoWindow(name, url) {
     const id = 'v_' + Date.now();
     const win = document.createElement('div');
     win.className = 'window'; win.id = id; win.style.display = 'block';
-    win.style.left = (150 + Math.random() * 100) + 'px'; win.style.top = (100 + Math.random() * 50) + 'px'; win.style.width = '520px'; win.style.height = '420px';
-    win.innerHTML = `<div class="title-bar"><div class="title-bar-text">▶ ${name}</div><div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${id}').remove()"></button></div></div><div class="window-body"><video src="${url}" controls autoplay style="width:100%; height:100%; background:#000;"></video></div>`;
+    win.style.left = (150 + Math.random() * 100) + 'px'; win.style.top = (100 + Math.random() * 50) + 'px'; win.style.width = '520px'; win.style.height = '420px'; win.style.zIndex = '500';
+    
+    // Determine if video or audio based on URL
+    const isAudio = url.match(/\.(mp3|wav|ogg|m4a)(\?|$)/i);
+    
+    let mediaHtml;
+    if (isAudio) {
+        mediaHtml = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:#0a0000;"><div style="font-size:60px; margin-bottom:20px;">🎵</div><audio src="${url}" controls autoplay style="width:90%;"></audio></div>`;
+    } else {
+        mediaHtml = `<video src="${url}" controls autoplay style="width:100%; height:100%; background:#000;"></video>`;
+    }
+    
+    win.innerHTML = `<div class="title-bar"><div class="title-bar-text">▶ ${escapeHtml(name)}</div><div class="title-bar-controls"><button aria-label="Close" onclick="document.getElementById('${id}').remove()"></button></div></div><div class="window-body" style="height:calc(100% - 32px); overflow:hidden;">${mediaHtml}</div>`;
     document.body.appendChild(win);
     makeDraggable(id);
 }
 async function processIEUpload() {
     const fileInput = document.getElementById('ie_file_picker');
-    const name = document.getElementById('ie_filename').value || "Video";
-    if(!fileInput.files[0]) return;
-    document.getElementById('upload_status').innerText = "Syncing...";
+    const name = document.getElementById('ie_filename').value.trim() || "Video_" + Date.now();
+    if(!fileInput.files[0]) { alert('Please select a file.'); return; }
+    if(!CURRENT_USER) { alert('Please log in first.'); return; }
+    
+    document.getElementById('upload_status').innerText = "Uploading...";
+    document.getElementById('upload_status').disabled = true;
+    
     const formData = new FormData();
     formData.append('file', fileInput.files[0]);
     formData.append('upload_preset', UPLOAD_PRESET);
+    
     try {
         const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/auto/upload', { method: 'POST', body: formData });
         const data = await res.json();
-        if (res.ok) { db.ref('archive').push({ name, url: data.secure_url, uploader: CURRENT_USER, timestamp: firebase.database.ServerValue.TIMESTAMP }); renderMemories(); document.getElementById('upload_status').innerText = "Push to Cloud"; document.getElementById('ie_filename').value = ""; fileInput.value = ""; }
-    } catch (e) { alert("Error."); }
+        if (res.ok && data.secure_url) { 
+            await db.ref('archive').push({ 
+                name: name, 
+                url: data.secure_url, 
+                uploader: CURRENT_USER, 
+                timestamp: firebase.database.ServerValue.TIMESTAMP 
+            }); 
+            renderMemories(); 
+            document.getElementById('upload_status').innerText = "Push to Cloud"; 
+            document.getElementById('ie_filename').value = ""; 
+            fileInput.value = "";
+            alert('Memory uploaded successfully!');
+        } else {
+            alert('Upload failed: ' + (data.error?.message || 'Unknown error'));
+            document.getElementById('upload_status').innerText = "Push to Cloud";
+        }
+    } catch (e) { 
+        console.error(e);
+        alert("Upload error. Please try again."); 
+        document.getElementById('upload_status').innerText = "Push to Cloud";
+    }
+    document.getElementById('upload_status').disabled = false;
 }
 
 // WINDOW MANAGEMENT - Draggable ANYWHERE on screen
@@ -1305,7 +1531,7 @@ function makeDraggable(winId) {
 }
 
 // Make all windows draggable
-['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window'].forEach(id => makeDraggable(id));
+['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'profile_window'].forEach(id => makeDraggable(id));
 
 // *** CRITICAL FIX: beginSession must be globally accessible ***
 window.beginSession = function() {
