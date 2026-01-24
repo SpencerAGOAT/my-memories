@@ -45,7 +45,9 @@
         .st-style { color: #ff00ff; border-color: #ff00ff; background: rgba(255, 0, 255, 0.15); }
         .a-style { color: #ffffff; border-color: #ffffff; background: rgba(255, 255, 255, 0.1); }
         .mod-style { color: #00ff00; border-color: #00ff00; background: rgba(0, 255, 0, 0.1); }
-        .contrib-style { color: #1781ff; border-color: #1781ff; background: #001128; font-family: 'Bahram', sans-serif; }
+        .contrib-style { color: #1781ff; border-color: #1781ff; background: #001128; font-family: 'Bahram', sans-serif; box-shadow: 0 0 0 1px #000; }
+        .oleg-style { color: #ff6b35; border-color: #ff6b35; background: rgba(255, 107, 53, 0.15); }
+        .noseeyedear-style { color: #00ffcc; border-color: #00ffcc; background: rgba(0, 255, 204, 0.15); }
         .guest-style { color: #888; border-color: #555; background: rgba(85, 85, 85, 0.1); }
         .vip-style { color: #ffd700; border-color: #ffd700; background: rgba(255, 215, 0, 0.15); }
         .member-style { color: #ff4444; border-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
@@ -379,11 +381,33 @@ const UPLOAD_PRESET = "fangtasia";
 // USER DATABASE
 const coreAdmins = {
     "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
-    "noseeyedear": { pass: "wtfomfgfangtasiafordabros21", rank: "A", fullRank: "Admin", style: "a-style", isAdmin: true },
-    "oleg": { pass: "methybethy89!", rank: "A", fullRank: "Admin", style: "a-style", isAdmin: true },
+    "noseeyedear": { pass: "wtfomfgfangtasiafordabros21", rank: "A", fullRank: "Admin", style: "noseeyedear-style", isAdmin: true, customTag: "N" },
+    "oleg": { pass: "methybethy89!", rank: "A", fullRank: "Admin", style: "oleg-style", isAdmin: true, customTag: "O" },
     "north": { pass: "lmaolegacy12!$$", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
+
+// Start online listener IMMEDIATELY so it's ready when members load
+let onlineListenerStarted = false;
+let onlineUsers = [];
+
+function startOnlineListener() {
+    if (onlineListenerStarted) return;
+    onlineListenerStarted = true;
+    
+    db.ref('online').on('value', (snapshot) => {
+        onlineUsers = [];
+        snapshot.forEach(child => {
+            const u = child.val();
+            if (u && u.username) onlineUsers.push(u);
+        });
+        updateMemberList();
+    });
+}
+
+// Start listening immediately
+startOnlineListener();
+
 db.ref('members').on('value', (s) => { 
     userDatabase = { ...coreAdmins, ...(s.val() || {}) }; 
     updateMemberList();
@@ -409,10 +433,16 @@ function generateUserId(username) {
     return 'FNG-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
 }
 
-// Get rank tag HTML - K badge for contributors
-function getRankTag(rank, style) {
+// Get rank tag HTML - Custom tags for specific users
+function getRankTag(rank, style, username) {
+    // K badge for contributors
     if (rank === 'CONTRIB') {
         return '<span class="rank-tag contrib-style" style="font-family:\'Bahram\',sans-serif;">K</span>';
+    }
+    // Custom tags for specific users
+    if (username && userDatabase[username]?.customTag) {
+        const user = userDatabase[username];
+        return `<span class="rank-tag ${user.style || style || 'member-style'}">${user.customTag}</span>`;
     }
     return `<span class="rank-tag ${style || 'member-style'}">${rank || 'M'}</span>`;
 }
@@ -578,24 +608,6 @@ function setUserOnline() {
     db.ref('online/' + CURRENT_USER).onDisconnect().remove();
 }
 
-// ONLINE MEMBER LIST - Shows Online Users + All Members (NO EMOJIS)
-let onlineListenerStarted = false;
-let onlineUsers = [];
-
-function startOnlineListener() {
-    if (onlineListenerStarted) return;
-    onlineListenerStarted = true;
-    
-    db.ref('online').on('value', (snapshot) => {
-        onlineUsers = [];
-        snapshot.forEach(child => {
-            const u = child.val();
-            if (u && u.username) onlineUsers.push(u);
-        });
-        updateMemberList();
-    });
-}
-
 function updateMemberList() {
     const container = document.getElementById('online_member_list');
     if (!container) return;
@@ -607,7 +619,7 @@ function updateMemberList() {
     
     if (onlineUsers.length > 0) {
         onlineUsers.forEach(u => {
-            const rankTag = getRankTag(u.rank, u.style);
+            const rankTag = getRankTag(u.rank, u.style, u.username);
             html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                 ${rankTag}
                 <span style="color:#0f0; font-size:8px;">●</span>
@@ -640,7 +652,7 @@ function updateMemberList() {
             html += `<div class="member-category">${rankNames[rank]}</div>`;
             allMembers[rank].forEach(u => {
                 const isOnline = onlineUsers.some(ou => ou.username === u.username);
-                const rankTag = getRankTag(u.rank, u.style);
+                const rankTag = getRankTag(u.rank, u.style, u.username);
                 html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                     ${rankTag}
                     ${isOnline ? '<span style="color:#0f0; font-size:8px;">●</span>' : '<span style="color:#555; font-size:8px;">○</span>'}
@@ -892,7 +904,7 @@ function setupChatListener() {
                 else if (m.mediaType === 'video') mediaHtml = '<video src="' + m.mediaUrl + '" controls style="max-width:280px; max-height:200px; border:1px solid #400; margin-top:6px; border-radius:4px;"></video>';
                 else if (m.mediaType === 'audio') mediaHtml = '<audio src="' + m.mediaUrl + '" controls style="width:250px; margin-top:6px;"></audio>';
             }
-            const rankTag = getRankTag(msgTag, msgStyle);
+            const rankTag = getRankTag(msgTag, msgStyle, msgUser);
             return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div><div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${escapeHtml(msgText)}${mediaHtml}</div></div>`;
         }).join('');
         logs.scrollTop = logs.scrollHeight;
