@@ -98,6 +98,27 @@
         .chat-username:hover { text-decoration: underline; text-shadow: 0 0 8px currentColor; }
         .app-status { padding: 8px; margin-top: 8px; border: 1px solid; font-size: 10px; }
         .app-pending { border-color: #ffd700; color: #ffd700; background: rgba(255, 215, 0, 0.1); }
+        /* Clubs & Messages Styles */
+        .club-card { background: #0a0000; border: 1px solid #400; padding: 12px; margin-bottom: 10px; border-radius: 4px; }
+        .club-card:hover { border-color: #700; }
+        .club-name { color: #d40000; font-weight: bold; font-size: 14px; }
+        .club-members { color: #888; font-size: 10px; margin-top: 5px; }
+        .club-badge { display: inline-block; padding: 2px 6px; background: #200; border: 1px solid #500; color: #f88; font-size: 9px; border-radius: 3px; margin: 2px; }
+        .dm-list { max-height: 400px; overflow-y: auto; }
+        .dm-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #0a0000; border: 1px solid #300; margin-bottom: 5px; cursor: pointer; transition: all 0.2s; }
+        .dm-item:hover { background: #150000; border-color: #500; }
+        .dm-item.unread { border-left: 3px solid #d40000; }
+        .dm-avatar { width: 40px; height: 40px; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
+        .dm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .dm-preview { flex: 1; overflow: hidden; }
+        .dm-name { color: #d40000; font-weight: bold; font-size: 12px; }
+        .dm-last { color: #666; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dm-time { color: #555; font-size: 9px; }
+        .msg-bubble { max-width: 70%; padding: 8px 12px; margin: 5px; border-radius: 12px; font-size: 12px; }
+        .msg-bubble.sent { background: #300; color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
+        .msg-bubble.received { background: #111; color: #ddd; border-bottom-left-radius: 4px; }
+        .friend-item { display: flex; align-items: center; gap: 10px; padding: 8px; background: #0a0000; border: 1px solid #300; margin-bottom: 5px; }
+        .friend-actions { margin-left: auto; display: flex; gap: 5px; }
         .stakes-grid { display: grid; grid-template-columns: repeat(9, 26px); gap: 1px; justify-content: center; }
         .stakes-cell { width: 26px; height: 26px; background: #222; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .stakes-cell.revealed { background: #111; }
@@ -173,12 +194,16 @@
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">📜 ABOUT</div>
             <div id="pw_bio" style="color:#aaa; font-size:12px; line-height:1.6;">No bio set.</div>
         </div>
+        <div id="pw_clubs_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
+            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">🏰 CLUBS</div>
+            <div id="pw_clubs_list" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+        </div>
         <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">🎵 PROFILE MUSIC</div>
             <div id="pw_music_player"></div>
         </div>
         <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #400;">
-            <button class="ie-btn" style="flex:1; min-width:100px; margin:0;" onclick="openDM(currentProfileUser)">💬 Message</button>
+            <button class="ie-btn" style="flex:1; min-width:100px; margin:0;" onclick="startDMFromProfile()">💬 Message</button>
             <button class="ie-btn" id="pw_btn_rep_pos" style="flex:1; min-width:80px; margin:0; background:#030; border-color:#0a0; display:none;" onclick="giveRep(1)">👍 +Rep</button>
             <button class="ie-btn" id="pw_btn_rep_neg" style="flex:1; min-width:80px; margin:0; background:#500; border-color:#a00; display:none;" onclick="giveRep(-1)">👎 -Rep</button>
         </div>
@@ -210,6 +235,8 @@
     <div class="icon" onclick="toggleWin('games_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/joystick-2.png"><div>Games</div></div>
     <div class="icon" onclick="toggleWin('apply_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/keys-0.png"><div>Apply</div></div>
     <div class="icon" onclick="toggleWin('about_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/help_book_cool-4.png"><div>About</div></div>
+    <div class="icon" id="clubs_icon" style="display:none;" onclick="toggleWin('clubs_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/users-4.png"><div>Clubs</div></div>
+    <div class="icon" id="messages_icon" style="display:none;" onclick="toggleWin('messages_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/message_file-0.png"><div>Messages</div></div>
     <div class="icon" id="admin_icon" style="display:none;" onclick="toggleWin('admin_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/lock-0.png"><div>Admin Panel</div></div>
 </div>
 <div class="window" id="about_window" style="left:200px; top:120px; width:350px; height:320px;">
@@ -279,6 +306,128 @@
                 </div>
             </div>
             <button class="ie-btn" style="margin-top:20px; padding:12px; background:#700;" onclick="saveProfile()">💾 Save All Changes</button>
+        </div>
+    </div>
+</div>
+<!-- CLUBS WINDOW -->
+<div class="window" id="clubs_window" style="left:150px; top:80px; width:650px; height:500px; display:none;">
+    <div class="title-bar"><div class="title-bar-text">🏰 Clubs</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('clubs_window')"></button></div></div>
+    <div class="window-body" style="display:flex; height:100%;">
+        <div class="mgmt-sidebar">
+            <div class="mgmt-sidebar-item active" onclick="switchClubTab('browse', this)">🔍 Browse</div>
+            <div class="mgmt-sidebar-item" onclick="switchClubTab('my', this)">📋 My Clubs</div>
+            <div class="mgmt-sidebar-item" onclick="switchClubTab('create', this)">✨ Create</div>
+            <div class="mgmt-sidebar-item" onclick="switchClubTab('invites', this)">📩 Invites</div>
+            <div class="mgmt-sidebar-item" onclick="switchClubTab('manage', this)" id="club_manage_tab" style="display:none;">⚙️ Manage</div>
+        </div>
+        <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
+            <div id="club_tab_browse">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Browse Clubs</h3>
+                <input type="text" id="club_search" class="ie-input" placeholder="Search clubs..." oninput="searchClubs()">
+                <div id="clubs_list" style="max-height:350px; overflow-y:auto;"></div>
+            </div>
+            <div id="club_tab_my" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">My Clubs <span style="color:#666; font-size:11px;">(Max 5)</span></h3>
+                <div id="my_clubs_list"></div>
+            </div>
+            <div id="club_tab_create" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Create a Club</h3>
+                <div id="create_club_form">
+                    <input type="text" id="new_club_name" class="ie-input" placeholder="Club Name" maxlength="30">
+                    <textarea id="new_club_desc" class="ie-input" placeholder="Club Description" maxlength="200" style="height:80px; resize:none;"></textarea>
+                    <input type="text" id="new_club_color" class="ie-input" placeholder="Club Color (hex)" value="#d40000">
+                    <button class="ie-btn" onclick="createClub()">🏰 Create Club</button>
+                    <div id="create_club_result" style="margin-top:10px; font-size:11px;"></div>
+                </div>
+                <div id="already_owns_club" style="display:none; color:#888; text-align:center; padding:20px;">
+                    <p>You already own a club!</p>
+                    <p style="font-size:10px;">Each user can only create one club.</p>
+                </div>
+            </div>
+            <div id="club_tab_invites" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Club Invites</h3>
+                <div id="club_invites_list"></div>
+            </div>
+            <div id="club_tab_manage" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Manage Your Club</h3>
+                <div id="manage_club_content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MESSAGES WINDOW -->
+<div class="window" id="messages_window" style="left:180px; top:60px; width:700px; height:520px; display:none;">
+    <div class="title-bar"><div class="title-bar-text">💬 Messages</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('messages_window')"></button></div></div>
+    <div class="window-body" style="display:flex; height:100%;">
+        <div class="mgmt-sidebar">
+            <div class="mgmt-sidebar-item active" onclick="switchMsgTab('dms', this)">📨 DMs</div>
+            <div class="mgmt-sidebar-item" onclick="switchMsgTab('groups', this)">👥 Groups</div>
+            <div class="mgmt-sidebar-item" onclick="switchMsgTab('friends', this)">🤝 Friends</div>
+            <div class="mgmt-sidebar-item" onclick="switchMsgTab('requests', this)">📩 Requests <span id="friend_req_count" style="color:#f00;"></span></div>
+        </div>
+        <div class="mgmt-content" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;">
+            <div id="msg_tab_dms" style="flex:1; display:flex; flex-direction:column;">
+                <div id="dm_list_view" style="flex:1; overflow-y:auto; padding:15px;">
+                    <h3 style="color:#d40000; margin:0 0 15px 0;">Direct Messages</h3>
+                    <div id="dm_conversations" class="dm-list"></div>
+                </div>
+                <div id="dm_chat_view" style="display:none; flex:1; flex-direction:column;">
+                    <div style="padding:10px; background:#0a0000; border-bottom:1px solid #400; display:flex; align-items:center; gap:10px;">
+                        <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="closeDMChat()">← Back</button>
+                        <span id="dm_chat_name" style="color:#d40000; font-weight:bold;"></span>
+                    </div>
+                    <div id="dm_messages" style="flex:1; overflow-y:auto; padding:10px;"></div>
+                    <div style="padding:10px; background:#111; border-top:1px solid #400;">
+                        <div style="display:flex; gap:5px;">
+                            <input type="text" id="dm_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendDM()">
+                            <button class="ie-btn" style="width:auto; padding:8px 15px;" onclick="sendDM()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="msg_tab_groups" style="display:none; flex:1; flex-direction:column;">
+                <div id="group_list_view" style="flex:1; overflow-y:auto; padding:15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="color:#d40000; margin:0;">Group Chats</h3>
+                        <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="showCreateGroup()">+ New Group</button>
+                    </div>
+                    <div id="group_conversations" class="dm-list"></div>
+                </div>
+                <div id="group_chat_view" style="display:none; flex:1; flex-direction:column;">
+                    <div style="padding:10px; background:#0a0000; border-bottom:1px solid #400; display:flex; align-items:center; gap:10px;">
+                        <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="closeGroupChat()">← Back</button>
+                        <span id="group_chat_name" style="color:#d40000; font-weight:bold;"></span>
+                        <button class="ie-btn" style="width:auto; padding:5px 10px; margin-left:auto;" onclick="showGroupMembers()">👥</button>
+                    </div>
+                    <div id="group_messages" style="flex:1; overflow-y:auto; padding:10px;"></div>
+                    <div style="padding:10px; background:#111; border-top:1px solid #400;">
+                        <div style="display:flex; gap:5px;">
+                            <input type="text" id="group_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendGroupMsg()">
+                            <button class="ie-btn" style="width:auto; padding:8px 15px;" onclick="sendGroupMsg()">Send</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="create_group_view" style="display:none; padding:15px;">
+                    <h3 style="color:#d40000; margin:0 0 15px 0;">Create Group Chat</h3>
+                    <input type="text" id="new_group_name" class="ie-input" placeholder="Group Name" maxlength="30">
+                    <p style="color:#888; font-size:10px; margin:10px 0 5px 0;">Select friends to add:</p>
+                    <div id="group_friend_select" style="max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
+                    <button class="ie-btn" onclick="createGroupChat()">Create Group</button>
+                    <button class="ie-btn" style="background:#333;" onclick="cancelCreateGroup()">Cancel</button>
+                </div>
+            </div>
+            <div id="msg_tab_friends" style="display:none; padding:15px; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:#d40000; margin:0;">Friends</h3>
+                </div>
+                <input type="text" id="add_friend_input" class="ie-input" placeholder="Username to add...">
+                <button class="ie-btn" style="margin-bottom:15px;" onclick="sendFriendRequest()">Send Friend Request</button>
+                <div id="friends_list"></div>
+            </div>
+            <div id="msg_tab_requests" style="display:none; padding:15px; overflow-y:auto;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">Friend Requests</h3>
+                <div id="friend_requests_list"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -672,6 +821,9 @@ function validateIE() {
             
             if (userDatabase[u].isAdmin) { document.getElementById('admin_icon').style.display = 'block'; }
             if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
+            // Show clubs and messages for all logged in users
+            document.getElementById('clubs_icon').style.display = 'block';
+            document.getElementById('messages_icon').style.display = 'block';
             const rank = userDatabase[u].rank;
             if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
                 document.getElementById('vip_image_section').style.display = 'block'; 
@@ -689,6 +841,8 @@ function logout() {
     document.getElementById('ie_user').value = '';
     document.getElementById('ie_pass').value = '';
     document.getElementById('admin_icon').style.display = 'none';
+    document.getElementById('clubs_icon').style.display = 'none';
+    document.getElementById('messages_icon').style.display = 'none';
     document.getElementById('st_tab').style.display = 'none';
     document.getElementById('vip_image_section').style.display = 'none';
     toggleWin('chat_win');
@@ -1052,6 +1206,22 @@ function openProfileWindow(username) {
     if (pwBtnRepPos) pwBtnRepPos.style.display = canRep ? 'block' : 'none';
     if (pwBtnRepNeg) pwBtnRepNeg.style.display = canRep ? 'block' : 'none';
     if (pwCommentForm) pwCommentForm.style.display = (CURRENT_USER && !IS_GUEST) ? 'block' : 'none';
+    
+    // Load clubs for this user
+    const pwClubsSection = document.getElementById('pw_clubs_section');
+    const pwClubsList = document.getElementById('pw_clubs_list');
+    if (pwClubsSection && pwClubsList) {
+        getUserClubs(username).then(clubs => {
+            if (clubs.length > 0) {
+                pwClubsSection.style.display = 'block';
+                pwClubsList.innerHTML = clubs.map(c => 
+                    `<span class="club-badge" style="border-color:${c.color || '#500'}; color:${c.color || '#f88'};">${escapeHtml(c.name)}${c.owner === username ? ' 👑' : ''}</span>`
+                ).join('');
+            } else {
+                pwClubsSection.style.display = 'none';
+            }
+        });
+    }
     
     win.style.display = 'block';
     document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
@@ -1606,6 +1776,650 @@ function uploadVIPImage() {
         });
 }
 
+// ==================== CLUBS SYSTEM ====================
+let userClubs = [];
+let ownedClub = null;
+
+function switchClubTab(tab, el) {
+    document.querySelectorAll('#clubs_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    ['browse', 'my', 'create', 'invites', 'manage'].forEach(t => {
+        const panel = document.getElementById('club_tab_' + t);
+        if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    });
+    if (tab === 'browse') loadAllClubs();
+    if (tab === 'my') loadMyClubs();
+    if (tab === 'invites') loadClubInvites();
+    if (tab === 'create') checkCanCreateClub();
+    if (tab === 'manage') loadManageClub();
+}
+
+function loadAllClubs() {
+    const container = document.getElementById('clubs_list');
+    if (!container) return;
+    db.ref('clubs').once('value', (s) => {
+        const clubs = [];
+        s.forEach(c => clubs.push({ id: c.key, ...c.val() }));
+        if (clubs.length === 0) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No clubs yet. Be the first to create one!</div>';
+            return;
+        }
+        container.innerHTML = clubs.map(club => {
+            const isMember = club.members && club.members.includes(CURRENT_USER);
+            const isOwner = club.owner === CURRENT_USER;
+            return `<div class="club-card" style="border-color:${club.color || '#400'};">
+                <div class="club-name" style="color:${club.color || '#d40000'};">${escapeHtml(club.name)}</div>
+                <div style="color:#888; font-size:11px; margin:5px 0;">${escapeHtml(club.description || '')}</div>
+                <div class="club-members">👥 ${(club.members || []).length + 1} members • Owner: ${escapeHtml(club.owner)}</div>
+                ${isOwner ? '<span style="color:#ffd700; font-size:10px;">👑 You own this</span>' : 
+                  isMember ? '<span style="color:#0f0; font-size:10px;">✓ Member</span>' : 
+                  `<button class="ie-btn" style="width:auto; padding:5px 15px; margin-top:8px; font-size:10px;" onclick="requestJoinClub('${club.id}')">Request to Join</button>`}
+            </div>`;
+        }).join('');
+    });
+}
+
+function searchClubs() {
+    const query = document.getElementById('club_search').value.toLowerCase();
+    const cards = document.querySelectorAll('#clubs_list .club-card');
+    cards.forEach(card => {
+        const name = card.querySelector('.club-name').textContent.toLowerCase();
+        card.style.display = name.includes(query) ? 'block' : 'none';
+    });
+}
+
+function loadMyClubs() {
+    const container = document.getElementById('my_clubs_list');
+    if (!container) return;
+    db.ref('clubs').once('value', (s) => {
+        const myClubs = [];
+        s.forEach(c => {
+            const club = { id: c.key, ...c.val() };
+            if (club.owner === CURRENT_USER || (club.members && club.members.includes(CURRENT_USER))) {
+                myClubs.push(club);
+            }
+        });
+        userClubs = myClubs;
+        if (myClubs.length === 0) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">You haven\'t joined any clubs yet.</div>';
+            return;
+        }
+        container.innerHTML = myClubs.map(club => {
+            const isOwner = club.owner === CURRENT_USER;
+            return `<div class="club-card" style="border-color:${club.color || '#400'};">
+                <div class="club-name" style="color:${club.color || '#d40000'};">${escapeHtml(club.name)} ${isOwner ? '👑' : ''}</div>
+                <div class="club-members">👥 ${(club.members || []).length + 1} members</div>
+                ${!isOwner ? `<button class="ie-btn" style="width:auto; padding:5px 10px; margin-top:8px; font-size:10px; background:#333;" onclick="leaveClub('${club.id}')">Leave Club</button>` : ''}
+            </div>`;
+        }).join('');
+    });
+}
+
+function checkCanCreateClub() {
+    db.ref('clubs').orderByChild('owner').equalTo(CURRENT_USER).once('value', (s) => {
+        if (s.exists()) {
+            document.getElementById('create_club_form').style.display = 'none';
+            document.getElementById('already_owns_club').style.display = 'block';
+            document.getElementById('club_manage_tab').style.display = 'block';
+            s.forEach(c => { ownedClub = { id: c.key, ...c.val() }; });
+        } else {
+            document.getElementById('create_club_form').style.display = 'block';
+            document.getElementById('already_owns_club').style.display = 'none';
+            document.getElementById('club_manage_tab').style.display = 'none';
+            ownedClub = null;
+        }
+    });
+}
+
+function createClub() {
+    if (!CURRENT_USER || IS_GUEST) { alert('Please log in!'); return; }
+    const name = document.getElementById('new_club_name').value.trim();
+    const desc = document.getElementById('new_club_desc').value.trim();
+    const color = document.getElementById('new_club_color').value.trim() || '#d40000';
+    const resultEl = document.getElementById('create_club_result');
+    if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter a club name.</span>'; return; }
+    if (name.length < 3) { resultEl.innerHTML = '<span style="color:#f00;">Name must be at least 3 characters.</span>'; return; }
+    
+    db.ref('clubs').orderByChild('owner').equalTo(CURRENT_USER).once('value', (s) => {
+        if (s.exists()) { resultEl.innerHTML = '<span style="color:#f00;">You already own a club!</span>'; return; }
+        const clubId = 'club_' + Date.now();
+        db.ref('clubs/' + clubId).set({
+            name: name,
+            description: desc,
+            color: color,
+            owner: CURRENT_USER,
+            members: [],
+            created: Date.now()
+        }, (err) => {
+            if (err) { resultEl.innerHTML = '<span style="color:#f00;">Failed to create club.</span>'; }
+            else {
+                resultEl.innerHTML = '<span style="color:#0f0;">✓ Club created!</span>';
+                document.getElementById('new_club_name').value = '';
+                document.getElementById('new_club_desc').value = '';
+                checkCanCreateClub();
+            }
+        });
+    });
+}
+
+function loadClubInvites() {
+    const container = document.getElementById('club_invites_list');
+    if (!container) return;
+    db.ref('club_invites/' + CURRENT_USER).once('value', (s) => {
+        const invites = [];
+        s.forEach(c => invites.push({ id: c.key, ...c.val() }));
+        if (invites.length === 0) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No pending invites.</div>';
+            return;
+        }
+        container.innerHTML = invites.map(inv => `
+            <div class="club-card">
+                <div class="club-name">${escapeHtml(inv.clubName)}</div>
+                <div style="color:#888; font-size:10px;">Invited by ${escapeHtml(inv.invitedBy)}</div>
+                <div style="display:flex; gap:5px; margin-top:10px;">
+                    <button class="ie-btn" style="flex:1; padding:5px; font-size:10px;" onclick="acceptClubInvite('${inv.id}', '${inv.clubId}')">Accept</button>
+                    <button class="ie-btn" style="flex:1; padding:5px; font-size:10px; background:#333;" onclick="declineClubInvite('${inv.id}')">Decline</button>
+                </div>
+            </div>
+        `).join('');
+    });
+}
+
+function acceptClubInvite(inviteId, clubId) {
+    db.ref('clubs/' + clubId).once('value', (s) => {
+        if (!s.exists()) { alert('Club no longer exists.'); return; }
+        const club = s.val();
+        const members = club.members || [];
+        if (userClubs.length >= 5) { alert('You can only join up to 5 clubs!'); return; }
+        if (!members.includes(CURRENT_USER)) {
+            members.push(CURRENT_USER);
+            db.ref('clubs/' + clubId + '/members').set(members);
+        }
+        db.ref('club_invites/' + CURRENT_USER + '/' + inviteId).remove();
+        loadClubInvites();
+        alert('You joined the club!');
+    });
+}
+
+function declineClubInvite(inviteId) {
+    db.ref('club_invites/' + CURRENT_USER + '/' + inviteId).remove();
+    loadClubInvites();
+}
+
+function requestJoinClub(clubId) {
+    if (userClubs.length >= 5) { alert('You can only join up to 5 clubs!'); return; }
+    db.ref('clubs/' + clubId).once('value', (s) => {
+        if (!s.exists()) return;
+        const club = s.val();
+        db.ref('club_requests/' + clubId + '/' + CURRENT_USER).set({
+            username: CURRENT_USER,
+            timestamp: Date.now()
+        });
+        alert('Request sent to club owner!');
+    });
+}
+
+function leaveClub(clubId) {
+    if (!confirm('Leave this club?')) return;
+    db.ref('clubs/' + clubId).once('value', (s) => {
+        if (!s.exists()) return;
+        const club = s.val();
+        const members = (club.members || []).filter(m => m !== CURRENT_USER);
+        db.ref('clubs/' + clubId + '/members').set(members);
+        loadMyClubs();
+    });
+}
+
+function loadManageClub() {
+    const container = document.getElementById('manage_club_content');
+    if (!container || !ownedClub) return;
+    
+    db.ref('club_requests/' + ownedClub.id).once('value', (reqSnap) => {
+        const requests = [];
+        reqSnap.forEach(r => requests.push({ id: r.key, ...r.val() }));
+        
+        let html = `<div class="admin-section">
+            <h4 style="color:#d40000;">Club: ${escapeHtml(ownedClub.name)}</h4>
+            <p style="color:#888; font-size:10px;">Members: ${(ownedClub.members || []).length + 1}</p>
+        </div>`;
+        
+        html += `<div class="admin-section">
+            <h4>Invite Member</h4>
+            <input type="text" id="invite_member_name" class="ie-input" placeholder="Username to invite">
+            <button class="ie-btn" onclick="inviteToClub()">Send Invite</button>
+            <div id="invite_result" style="margin-top:5px; font-size:10px;"></div>
+        </div>`;
+        
+        if (requests.length > 0) {
+            html += `<div class="admin-section">
+                <h4>Join Requests (${requests.length})</h4>
+                ${requests.map(r => `
+                    <div class="friend-item">
+                        <span style="color:#d40000;">${escapeHtml(r.username)}</span>
+                        <div class="friend-actions">
+                            <button class="ie-btn" style="width:auto; padding:3px 8px; font-size:9px;" onclick="approveJoinRequest('${r.id}')">✓</button>
+                            <button class="ie-btn" style="width:auto; padding:3px 8px; font-size:9px; background:#333;" onclick="denyJoinRequest('${r.id}')">✗</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+        
+        html += `<div class="admin-section">
+            <h4>Members</h4>
+            <div style="color:#ffd700; font-size:11px; margin-bottom:5px;">👑 ${escapeHtml(ownedClub.owner)} (Owner)</div>
+            ${(ownedClub.members || []).map(m => `
+                <div class="friend-item">
+                    <span style="color:#888;">${escapeHtml(m)}</span>
+                    <button class="ie-btn" style="width:auto; padding:3px 8px; font-size:9px; background:#500;" onclick="kickFromClub('${m}')">Kick</button>
+                </div>
+            `).join('') || '<div style="color:#666; font-size:10px;">No members yet.</div>'}
+        </div>`;
+        
+        html += `<button class="ie-btn" style="background:#500; margin-top:10px;" onclick="deleteClub()">🗑️ Delete Club</button>`;
+        
+        container.innerHTML = html;
+    });
+}
+
+function inviteToClub() {
+    const username = document.getElementById('invite_member_name').value.trim();
+    const resultEl = document.getElementById('invite_result');
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    if (username === CURRENT_USER) { resultEl.innerHTML = '<span style="color:#f00;">You can\'t invite yourself.</span>'; return; }
+    
+    db.ref('club_invites/' + username).push({
+        clubId: ownedClub.id,
+        clubName: ownedClub.name,
+        invitedBy: CURRENT_USER,
+        timestamp: Date.now()
+    });
+    resultEl.innerHTML = '<span style="color:#0f0;">✓ Invite sent!</span>';
+    document.getElementById('invite_member_name').value = '';
+}
+
+function approveJoinRequest(username) {
+    if (!ownedClub) return;
+    db.ref('clubs/' + ownedClub.id).once('value', (s) => {
+        const club = s.val();
+        const members = club.members || [];
+        if (!members.includes(username)) {
+            members.push(username);
+            db.ref('clubs/' + ownedClub.id + '/members').set(members);
+        }
+        db.ref('club_requests/' + ownedClub.id + '/' + username).remove();
+        ownedClub.members = members;
+        loadManageClub();
+    });
+}
+
+function denyJoinRequest(username) {
+    if (!ownedClub) return;
+    db.ref('club_requests/' + ownedClub.id + '/' + username).remove();
+    loadManageClub();
+}
+
+function kickFromClub(username) {
+    if (!ownedClub || !confirm('Kick ' + username + ' from the club?')) return;
+    const members = (ownedClub.members || []).filter(m => m !== username);
+    db.ref('clubs/' + ownedClub.id + '/members').set(members);
+    ownedClub.members = members;
+    loadManageClub();
+}
+
+function deleteClub() {
+    if (!ownedClub || !confirm('DELETE your club? This cannot be undone!')) return;
+    db.ref('clubs/' + ownedClub.id).remove();
+    db.ref('club_requests/' + ownedClub.id).remove();
+    ownedClub = null;
+    document.getElementById('club_manage_tab').style.display = 'none';
+    switchClubTab('browse', document.querySelector('#clubs_window .mgmt-sidebar-item'));
+    alert('Club deleted.');
+}
+
+function getUserClubs(username) {
+    return new Promise((resolve) => {
+        db.ref('clubs').once('value', (s) => {
+            const clubs = [];
+            s.forEach(c => {
+                const club = { id: c.key, ...c.val() };
+                if (club.owner === username || (club.members && club.members.includes(username))) {
+                    clubs.push(club);
+                }
+            });
+            resolve(clubs);
+        });
+    });
+}
+
+// ==================== FRIENDS & MESSAGING SYSTEM ====================
+let currentDMUser = null;
+let currentGroupId = null;
+let dmListener = null;
+let groupListener = null;
+
+function switchMsgTab(tab, el) {
+    document.querySelectorAll('#messages_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    ['dms', 'groups', 'friends', 'requests'].forEach(t => {
+        const panel = document.getElementById('msg_tab_' + t);
+        if (panel) panel.style.display = t === tab ? 'flex' : 'none';
+    });
+    if (tab === 'dms') loadDMList();
+    if (tab === 'groups') loadGroupList();
+    if (tab === 'friends') loadFriendsList();
+    if (tab === 'requests') loadFriendRequests();
+}
+
+function loadFriendsList() {
+    const container = document.getElementById('friends_list');
+    if (!container) return;
+    db.ref('friends/' + CURRENT_USER).once('value', (s) => {
+        const friends = s.val() || {};
+        const friendList = Object.keys(friends);
+        if (friendList.length === 0) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No friends yet. Add someone!</div>';
+            return;
+        }
+        container.innerHTML = friendList.map(f => `
+            <div class="friend-item">
+                <div class="dm-avatar">🦇</div>
+                <span style="color:#d40000; font-weight:bold;">${escapeHtml(f)}</span>
+                <div class="friend-actions">
+                    <button class="ie-btn" style="width:auto; padding:3px 8px; font-size:9px;" onclick="startDM('${f}')">💬</button>
+                    <button class="ie-btn" style="width:auto; padding:3px 8px; font-size:9px; background:#500;" onclick="removeFriend('${f}')">✗</button>
+                </div>
+            </div>
+        `).join('');
+    });
+}
+
+function sendFriendRequest() {
+    const username = document.getElementById('add_friend_input').value.trim();
+    if (!username) { alert('Enter a username.'); return; }
+    if (!userDatabase[username]) { alert('User not found.'); return; }
+    if (username === CURRENT_USER) { alert('You can\'t add yourself.'); return; }
+    
+    db.ref('friends/' + CURRENT_USER + '/' + username).once('value', (s) => {
+        if (s.exists()) { alert('Already friends!'); return; }
+        db.ref('friend_requests/' + username + '/' + CURRENT_USER).set({
+            from: CURRENT_USER,
+            timestamp: Date.now()
+        });
+        alert('Friend request sent!');
+        document.getElementById('add_friend_input').value = '';
+    });
+}
+
+function loadFriendRequests() {
+    const container = document.getElementById('friend_requests_list');
+    if (!container) return;
+    db.ref('friend_requests/' + CURRENT_USER).once('value', (s) => {
+        const requests = [];
+        s.forEach(r => requests.push({ id: r.key, ...r.val() }));
+        
+        const countEl = document.getElementById('friend_req_count');
+        if (countEl) countEl.textContent = requests.length > 0 ? `(${requests.length})` : '';
+        
+        if (requests.length === 0) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No pending requests.</div>';
+            return;
+        }
+        container.innerHTML = requests.map(r => `
+            <div class="friend-item">
+                <div class="dm-avatar">🦇</div>
+                <span style="color:#d40000;">${escapeHtml(r.from)}</span>
+                <div class="friend-actions">
+                    <button class="ie-btn" style="width:auto; padding:5px 10px; font-size:10px;" onclick="acceptFriend('${r.from}')">Accept</button>
+                    <button class="ie-btn" style="width:auto; padding:5px 10px; font-size:10px; background:#333;" onclick="declineFriend('${r.from}')">Decline</button>
+                </div>
+            </div>
+        `).join('');
+    });
+}
+
+function acceptFriend(username) {
+    db.ref('friends/' + CURRENT_USER + '/' + username).set(true);
+    db.ref('friends/' + username + '/' + CURRENT_USER).set(true);
+    db.ref('friend_requests/' + CURRENT_USER + '/' + username).remove();
+    loadFriendRequests();
+    loadFriendsList();
+}
+
+function declineFriend(username) {
+    db.ref('friend_requests/' + CURRENT_USER + '/' + username).remove();
+    loadFriendRequests();
+}
+
+function removeFriend(username) {
+    if (!confirm('Remove ' + username + ' from friends?')) return;
+    db.ref('friends/' + CURRENT_USER + '/' + username).remove();
+    db.ref('friends/' + username + '/' + CURRENT_USER).remove();
+    loadFriendsList();
+}
+
+function loadDMList() {
+    const container = document.getElementById('dm_conversations');
+    if (!container) return;
+    db.ref('dms').orderByChild('participants/' + CURRENT_USER).equalTo(true).once('value', (s) => {
+        const convos = [];
+        s.forEach(c => convos.push({ id: c.key, ...c.val() }));
+        if (convos.length === 0) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No conversations yet. Message a friend!</div>';
+            return;
+        }
+        container.innerHTML = convos.map(c => {
+            const otherUser = Object.keys(c.participants).find(p => p !== CURRENT_USER);
+            return `<div class="dm-item" onclick="openDM('${c.id}', '${otherUser}')">
+                <div class="dm-avatar">🦇</div>
+                <div class="dm-preview">
+                    <div class="dm-name">${escapeHtml(otherUser)}</div>
+                    <div class="dm-last">${escapeHtml(c.lastMessage || 'No messages')}</div>
+                </div>
+            </div>`;
+        }).join('');
+    });
+}
+
+function startDM(username) {
+    db.ref('friends/' + CURRENT_USER + '/' + username).once('value', (s) => {
+        if (!s.exists()) { alert('You must be friends to DM!'); return; }
+        const convoId = [CURRENT_USER, username].sort().join('_');
+        db.ref('dms/' + convoId).once('value', (cs) => {
+            if (!cs.exists()) {
+                const participants = {};
+                participants[CURRENT_USER] = true;
+                participants[username] = true;
+                db.ref('dms/' + convoId).set({ participants: participants, created: Date.now() });
+            }
+            openDM(convoId, username);
+        });
+    });
+}
+
+function openDM(convoId, username) {
+    currentDMUser = username;
+    document.getElementById('dm_list_view').style.display = 'none';
+    document.getElementById('dm_chat_view').style.display = 'flex';
+    document.getElementById('dm_chat_name').textContent = username;
+    
+    if (dmListener) db.ref('dms/' + dmListener).off();
+    dmListener = convoId;
+    
+    db.ref('dms/' + convoId + '/messages').orderByChild('timestamp').on('value', (s) => {
+        const msgs = [];
+        s.forEach(m => msgs.push(m.val()));
+        const container = document.getElementById('dm_messages');
+        container.innerHTML = msgs.map(m => `
+            <div class="msg-bubble ${m.sender === CURRENT_USER ? 'sent' : 'received'}">
+                ${m.sender !== CURRENT_USER ? `<div style="font-size:9px; color:#888; margin-bottom:3px;">${escapeHtml(m.sender)}</div>` : ''}
+                ${escapeHtml(m.text)}
+            </div>
+        `).join('');
+        container.scrollTop = container.scrollHeight;
+    });
+}
+
+function closeDMChat() {
+    if (dmListener) { db.ref('dms/' + dmListener + '/messages').off(); dmListener = null; }
+    currentDMUser = null;
+    document.getElementById('dm_chat_view').style.display = 'none';
+    document.getElementById('dm_list_view').style.display = 'block';
+    loadDMList();
+}
+
+function sendDM() {
+    const input = document.getElementById('dm_input');
+    const text = input.value.trim();
+    if (!text || !dmListener) return;
+    
+    db.ref('dms/' + dmListener + '/messages').push({
+        sender: CURRENT_USER,
+        text: text,
+        timestamp: Date.now()
+    });
+    db.ref('dms/' + dmListener + '/lastMessage').set(text);
+    input.value = '';
+}
+
+function loadGroupList() {
+    const container = document.getElementById('group_conversations');
+    if (!container) return;
+    document.getElementById('group_list_view').style.display = 'block';
+    document.getElementById('group_chat_view').style.display = 'none';
+    document.getElementById('create_group_view').style.display = 'none';
+    
+    db.ref('groupchats').orderByChild('members/' + CURRENT_USER).equalTo(true).once('value', (s) => {
+        const groups = [];
+        s.forEach(g => groups.push({ id: g.key, ...g.val() }));
+        if (groups.length === 0) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No group chats yet.</div>';
+            return;
+        }
+        container.innerHTML = groups.map(g => `
+            <div class="dm-item" onclick="openGroupChat('${g.id}')">
+                <div class="dm-avatar">👥</div>
+                <div class="dm-preview">
+                    <div class="dm-name">${escapeHtml(g.name)}</div>
+                    <div class="dm-last">${Object.keys(g.members || {}).length} members</div>
+                </div>
+            </div>
+        `).join('');
+    });
+}
+
+function showCreateGroup() {
+    document.getElementById('group_list_view').style.display = 'none';
+    document.getElementById('create_group_view').style.display = 'block';
+    
+    db.ref('friends/' + CURRENT_USER).once('value', (s) => {
+        const friends = Object.keys(s.val() || {});
+        const container = document.getElementById('group_friend_select');
+        if (friends.length === 0) {
+            container.innerHTML = '<div style="color:#666;">You need friends to create a group chat!</div>';
+            return;
+        }
+        container.innerHTML = friends.map(f => `
+            <label style="display:flex; align-items:center; gap:8px; padding:5px; cursor:pointer;">
+                <input type="checkbox" value="${f}" class="group-friend-check">
+                <span style="color:#d40000;">${escapeHtml(f)}</span>
+            </label>
+        `).join('');
+    });
+}
+
+function cancelCreateGroup() {
+    document.getElementById('create_group_view').style.display = 'none';
+    document.getElementById('group_list_view').style.display = 'block';
+}
+
+function createGroupChat() {
+    const name = document.getElementById('new_group_name').value.trim();
+    if (!name) { alert('Enter a group name.'); return; }
+    
+    const selected = Array.from(document.querySelectorAll('.group-friend-check:checked')).map(c => c.value);
+    if (selected.length === 0) { alert('Select at least one friend.'); return; }
+    
+    const members = {};
+    members[CURRENT_USER] = true;
+    selected.forEach(u => { members[u] = true; });
+    
+    const groupId = 'group_' + Date.now();
+    db.ref('groupchats/' + groupId).set({
+        name: name,
+        members: members,
+        owner: CURRENT_USER,
+        created: Date.now()
+    });
+    
+    document.getElementById('new_group_name').value = '';
+    cancelCreateGroup();
+    loadGroupList();
+}
+
+function openGroupChat(groupId) {
+    currentGroupId = groupId;
+    document.getElementById('group_list_view').style.display = 'none';
+    document.getElementById('group_chat_view').style.display = 'flex';
+    
+    db.ref('groupchats/' + groupId + '/name').once('value', (s) => {
+        document.getElementById('group_chat_name').textContent = s.val() || 'Group';
+    });
+    
+    if (groupListener) db.ref('groupchats/' + groupListener + '/messages').off();
+    groupListener = groupId;
+    
+    db.ref('groupchats/' + groupId + '/messages').orderByChild('timestamp').on('value', (s) => {
+        const msgs = [];
+        s.forEach(m => msgs.push(m.val()));
+        const container = document.getElementById('group_messages');
+        container.innerHTML = msgs.map(m => `
+            <div class="msg-bubble ${m.sender === CURRENT_USER ? 'sent' : 'received'}">
+                ${m.sender !== CURRENT_USER ? `<div style="font-size:9px; color:#888; margin-bottom:3px;">${escapeHtml(m.sender)}</div>` : ''}
+                ${escapeHtml(m.text)}
+            </div>
+        `).join('');
+        container.scrollTop = container.scrollHeight;
+    });
+}
+
+function closeGroupChat() {
+    if (groupListener) { db.ref('groupchats/' + groupListener + '/messages').off(); groupListener = null; }
+    currentGroupId = null;
+    document.getElementById('group_chat_view').style.display = 'none';
+    loadGroupList();
+}
+
+function sendGroupMsg() {
+    const input = document.getElementById('group_input');
+    const text = input.value.trim();
+    if (!text || !currentGroupId) return;
+    
+    db.ref('groupchats/' + currentGroupId + '/messages').push({
+        sender: CURRENT_USER,
+        text: text,
+        timestamp: Date.now()
+    });
+    input.value = '';
+}
+
+function showGroupMembers() {
+    if (!currentGroupId) return;
+    db.ref('groupchats/' + currentGroupId).once('value', (s) => {
+        const group = s.val();
+        const members = Object.keys(group.members || {});
+        alert('Group Members:\n' + members.join('\n'));
+    });
+}
+
+function startDMFromProfile() {
+    if (!currentProfileUser || !CURRENT_USER || IS_GUEST) { alert('Please log in!'); return; }
+    if (currentProfileUser === CURRENT_USER) { alert('You can\'t message yourself!'); return; }
+    startDM(currentProfileUser);
+    toggleWin('messages_window');
+}
+
 // MEMORIES
 function prevPage() { if (currentPage > 1) { currentPage--; renderMemories(); } }
 function nextPage() { db.ref('archive').once('value', (s) => { let count = 0; s.forEach(() => count++); const totalPages = Math.ceil(count / itemsPerPage) || 1; if (currentPage < totalPages) { currentPage++; renderMemories(); } }); }
@@ -1680,7 +2494,7 @@ function makeDraggable(winId) {
         document.ontouchend = () => { document.ontouchmove = null; document.ontouchend = null; };
     };
 }
-['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'profile_window'].forEach(id => makeDraggable(id));
+['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'profile_window', 'clubs_window', 'messages_window'].forEach(id => makeDraggable(id));
 
 window.beginSession = function() {
     document.getElementById('boot-screen').style.display = 'none';
