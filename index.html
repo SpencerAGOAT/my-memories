@@ -199,7 +199,10 @@
             <div id="pw_clubs_list" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
         </div>
         <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
-            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">🎵 PROFILE MUSIC</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div style="color:#d40000; font-size:11px; font-weight:bold;">🎵 PROFILE MUSIC</div>
+                <button class="ie-btn" id="pw_mute_btn" style="width:auto; padding:4px 10px; font-size:10px; margin:0;" onclick="toggleProfileMusic()">🔇 Mute</button>
+            </div>
             <div id="pw_music_player"></div>
         </div>
         <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #400;">
@@ -478,17 +481,28 @@
                     <div id="st_tag_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
                 <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">⬆️ Elevate User Rank</h4>
+                    <h4 style="color:#ff00ff;">⬆️ Change User Rank</h4>
                     <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
                     <select id="elevate_rank" class="ie-input">
-                        <option value="member">Member</option>
+                        <option value="member">Member (M)</option>
                         <option value="vip">VIP</option>
-                        <option value="contrib">Contributor</option>
-                        <option value="mod">Moderator</option>
-                        <option value="admin">Admin</option>
+                        <option value="contrib">Contributor (K)</option>
+                        <option value="mod">Moderator (MOD)</option>
+                        <option value="admin">Admin (A)</option>
                     </select>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Elevate User</button>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Set Rank</button>
                     <div id="st_elevate_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">🔐 Set User Permissions</h4>
+                    <input type="text" id="perm_user" class="ie-input" placeholder="Username">
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                        <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="perm_mod"> Moderator</label>
+                        <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="perm_admin"> Admin</label>
+                        <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="perm_vip_perks"> VIP Perks</label>
+                    </div>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="setUserPermissions()">Set Permissions</button>
+                    <div id="st_perm_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
                 <div class="admin-section" style="border-color:#ff00ff;">
                     <h4 style="color:#ff00ff;">🔑 Reset Password</h4>
@@ -604,15 +618,16 @@ const _e = { // encoded credentials [username, password]
     l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")],
     m: [_d("Ym9sb2s="), _d("amlsbGFpc2FmYWc=")],
     n: [_d("cmtlbGx5ZmFuMTc="), _d("ZW5ueWVubnllbm55")],
-    o: [_d("cGluaw=="), _d("U3VubnlGZWV0VXdVNTYk")],
+    o: [_d("bGVhbg=="), _d("U3VubnlGZWV0VXdVNTYk")],
     p: [_d("aGVudGFp"), _d("cm9ibG94bWFueDVANjdAMTEyMUA2NzY3")],
     q: [_d("cmVk"), _d("ZGlja2dyYXlzb25idWRkeTIz")],
-    r: [_d("c2x1dA=="), _d("b3NoYmFnb3NoMTc4Ng==")]
+    r: [_d("c2x1dA=="), _d("b3NoYmFnb3NoMTc4Ng==")],
+    s: [_d("cG9uY2hvc2hvb3Rlcg=="), _d("djhlZVA4b0xPeHBJaE8=")]
 };
 const coreAdmins = {
     [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
     [_e.b[0]]: { pass: _e.b[1], rank: "A", fullRank: "Admin", style: "noseeyedear-style", isAdmin: true, customTag: "N" },
-    [_e.c[0]]: { pass: _e.c[1], rank: "A", fullRank: "Admin", style: "oleg-style", isAdmin: true, customTag: "O" },
+    [_e.c[0]]: { pass: _e.c[1], rank: "MOD", fullRank: "Moderator", style: "oleg-style", isAdmin: false, isMod: true, customTag: "O" },
     [_e.d[0]]: { pass: _e.d[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.e[0]]: { pass: _e.e[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.f[0]]: { pass: _e.f[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
@@ -627,7 +642,8 @@ const coreAdmins = {
     [_e.o[0]]: { pass: _e.o[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
     [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
     [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" }
+    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
+    [_e.s[0]]: { pass: _e.s[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
 
@@ -1235,7 +1251,31 @@ function closeProfileWindow() {
     const musicPlayer = document.getElementById('pw_music_player');
     if (win) win.style.display = 'none'; 
     if (musicPlayer) musicPlayer.innerHTML = ''; 
+    profileMusicMuted = false;
 }
+
+let profileMusicMuted = false;
+function toggleProfileMusic() {
+    const player = document.getElementById('pw_music_player');
+    const btn = document.getElementById('pw_mute_btn');
+    if (!player) return;
+    
+    profileMusicMuted = !profileMusicMuted;
+    
+    if (profileMusicMuted) {
+        // Store current content and clear
+        player.dataset.content = player.innerHTML;
+        player.innerHTML = '<div style="color:#666; font-size:11px; text-align:center; padding:10px;">🔇 Music muted</div>';
+        if (btn) btn.textContent = '🔊 Unmute';
+    } else {
+        // Restore content
+        if (player.dataset.content) {
+            player.innerHTML = player.dataset.content;
+        }
+        if (btn) btn.textContent = '🔇 Mute';
+    }
+}
+
 function giveRep(amount) {
     if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
     if (!currentProfileUser || currentProfileUser === CURRENT_USER) return;
@@ -1532,10 +1572,42 @@ function elevateUser() {
     const username = document.getElementById('elevate_user').value.trim(), newRank = document.getElementById('elevate_rank').value;
     if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
     if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
-    const rankConfig = { 'member': { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false }, 'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', isAdmin: false }, 'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', isAdmin: false }, 'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', isAdmin: true }, 'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', isAdmin: true } };
-    db.ref('members/' + username).update(rankConfig[newRank]); 
-    userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] }; 
-    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + username + ' elevated to ' + rankConfig[newRank].fullRank + '</span>';
+    
+    const rankConfig = { 
+        'member': { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false, isMod: false }, 
+        'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', isAdmin: false, isMod: false }, 
+        'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', isAdmin: false, isMod: false }, 
+        'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', isAdmin: false, isMod: true }, 
+        'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', isAdmin: true, isMod: true } 
+    };
+    
+    const config = rankConfig[newRank];
+    db.ref('members/' + username).update(config); 
+    userDatabase[username] = { ...userDatabase[username], ...config }; 
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + username + ' set to ' + config.fullRank + '</span>';
+}
+
+function setUserPermissions() {
+    const resultEl = document.getElementById('st_perm_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('perm_user').value.trim();
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    const isMod = document.getElementById('perm_mod').checked;
+    const isAdmin = document.getElementById('perm_admin').checked;
+    const hasVipPerks = document.getElementById('perm_vip_perks').checked;
+    
+    const updates = { isMod: isMod, isAdmin: isAdmin, hasVipPerks: hasVipPerks };
+    db.ref('members/' + username).update(updates);
+    userDatabase[username] = { ...userDatabase[username], ...updates };
+    
+    const perms = [];
+    if (isMod) perms.push('Moderator');
+    if (isAdmin) perms.push('Admin');
+    if (hasVipPerks) perms.push('VIP Perks');
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + username + ' permissions: ' + (perms.length > 0 ? perms.join(', ') : 'None') + '</span>';
 }
 
 // ST TOOLS - CHANGE USERNAME
@@ -2323,12 +2395,29 @@ function showCreateGroup() {
             return;
         }
         container.innerHTML = friends.map(f => `
-            <label style="display:flex; align-items:center; gap:10px; padding:8px 10px; cursor:pointer; background:#0a0000; border:1px solid #300; margin-bottom:5px; border-radius:3px;" onmouseover="this.style.background='#150000'" onmouseout="this.style.background='#0a0000'">
-                <input type="checkbox" value="${f}" class="group-friend-check" style="width:16px; height:16px; cursor:pointer;">
-                <span style="color:#d40000; flex:1;">${escapeHtml(f)}</span>
-            </label>
+            <div class="group-friend-row" onclick="toggleGroupFriend(this, '${f}')" style="display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer; background:#0a0000; border:1px solid #300; margin-bottom:5px; border-radius:3px; transition:all 0.2s;">
+                <input type="checkbox" value="${f}" class="group-friend-check" style="width:18px; height:18px; cursor:pointer; pointer-events:none;">
+                <span style="color:#d40000; flex:1; font-size:13px;">${escapeHtml(f)}</span>
+                <span class="check-indicator" style="color:#0f0; display:none;">✓</span>
+            </div>
         `).join('');
     });
+}
+
+function toggleGroupFriend(row, username) {
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    const indicator = row.querySelector('.check-indicator');
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        row.style.background = '#1a0a1a';
+        row.style.borderColor = '#6a03b4';
+        if (indicator) indicator.style.display = 'block';
+    } else {
+        row.style.background = '#0a0000';
+        row.style.borderColor = '#300';
+        if (indicator) indicator.style.display = 'none';
+    }
 }
 
 function cancelCreateGroup() {
