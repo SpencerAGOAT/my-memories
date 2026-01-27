@@ -288,7 +288,6 @@
         <div class="mgmt-sidebar">
             <div class="mgmt-sidebar-item active" onclick="switchAdminTab('apps', this)">📝 Applications</div>
             <div class="mgmt-sidebar-item" onclick="switchAdminTab('members', this)">👥 Members</div>
-            <div class="mgmt-sidebar-item" onclick="switchAdminTab('images', this)">🖼️ Pending Images</div>
             <div class="mgmt-sidebar-item" onclick="switchAdminTab('moderation', this)">⚠️ Moderation</div>
             <div class="mgmt-sidebar-item" onclick="switchAdminTab('announcements', this)">📌 Announcements</div>
             <div class="mgmt-sidebar-item" onclick="switchAdminTab('bot', this)">🧛 Eric Bot</div>
@@ -299,13 +298,70 @@
         <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
             <div id="admin_tab_apps"><h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option></select><input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()"></div><div id="all_applications" style="max-height:380px; overflow-y:auto;"></div></div>
             <div id="admin_tab_members" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3><div id="all_members" style="max-height:420px; overflow-y:auto;"></div></div>
-            <div id="admin_tab_images" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Pending Image Approvals</h3><div id="pending_images" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-height:420px; overflow-y:auto;"></div></div>
             <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
             <div id="admin_tab_announcements" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Lounge Announcements</h3><div class="admin-section"><h4>Pin Message</h4><input type="text" id="pin_message" class="ie-input" placeholder="Message to pin in the lounge..."><div style="display:flex; gap:10px;"><button class="ie-btn" style="flex:1;" onclick="pinMessage()">📌 Pin Message</button><button class="ie-btn" style="flex:1; background:#333;" onclick="clearPin()">Clear Pin</button></div></div><div class="admin-section"><h4>Chat Management</h4><button class="ie-btn" style="background: #500;" onclick="clearChat()">🗑️ Clear All Messages</button><button class="ie-btn" style="background: #333; margin-top:5px;" onclick="exportChat()">📥 Export Chat Log</button></div></div>
             <div id="admin_tab_bot" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Eric Northman Bot</h3><div class="admin-section"><h4>Send as Eric</h4><textarea id="bot_message" class="ie-input" placeholder="Eric says..." style="height:80px; resize:none;"></textarea><button class="ie-btn" onclick="sendBotMessage()">🧛 Send Message</button></div></div>
             <div id="admin_tab_videos" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Video Archive Management</h3><div id="all_videos" style="max-height:420px; overflow-y:auto;"></div></div>
             <div id="admin_tab_vip" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3><button class="ie-btn" style="width:auto; padding:10px 20px; margin-bottom:15px;" onclick="generateVIPCode()">🌟 Generate New Code</button><div id="vip_code_display" style="margin-bottom:15px; color:#ffd700; font-family:monospace; font-size:16px;"></div><div id="all_vip_codes" style="max-height:350px; overflow-y:auto;"></div></div>
-            <div id="admin_tab_st" style="display:none;"><h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3><div class="admin-section" style="border-color:#ff00ff;"><h4 style="color:#ff00ff;">Elevate User Permissions</h4><input type="text" id="elevate_user" class="ie-input" placeholder="Username"><select id="elevate_rank" class="ie-input"><option value="member">Member</option><option value="vip">VIP</option><option value="contrib">Contributor</option><option value="mod">Moderator</option><option value="admin">Admin</option></select><button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Elevate User</button></div></div>
+            <div id="admin_tab_st" style="display:none;">
+                <h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">👤 Change Username</h4>
+                    <input type="text" id="st_old_username" class="ie-input" placeholder="Current username">
+                    <input type="text" id="st_new_username" class="ie-input" placeholder="New username">
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stChangeUsername()">Change Username</button>
+                    <div id="st_username_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">🏷️ Custom Tags</h4>
+                    <input type="text" id="st_tag_username" class="ie-input" placeholder="Username">
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="st_tag_letter" class="ie-input" placeholder="Tag (1 char)" maxlength="1" style="width:80px;">
+                        <input type="text" id="st_tag_color" class="ie-input" placeholder="Color (hex)" style="flex:1;" value="#ff00ff">
+                    </div>
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stSetCustomTag()">Set Tag</button>
+                        <button class="ie-btn" style="flex:1; background:#333; border-color:#ff00ff;" onclick="stRemoveCustomTag()">Remove Tag</button>
+                    </div>
+                    <div id="st_tag_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">⬆️ Elevate User Rank</h4>
+                    <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
+                    <select id="elevate_rank" class="ie-input">
+                        <option value="member">Member</option>
+                        <option value="vip">VIP</option>
+                        <option value="contrib">Contributor</option>
+                        <option value="mod">Moderator</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Elevate User</button>
+                    <div id="st_elevate_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">🔑 Reset Password</h4>
+                    <input type="text" id="st_reset_username" class="ie-input" placeholder="Username">
+                    <input type="text" id="st_new_password" class="ie-input" placeholder="New password">
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stResetPassword()">Reset Password</button>
+                    <div id="st_password_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">🗑️ User Data Management</h4>
+                    <input type="text" id="st_data_username" class="ie-input" placeholder="Username">
+                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stWipeProfile()">Wipe Profile</button>
+                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stWipeMessages()">Wipe Messages</button>
+                        <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stDeleteUser()">Delete User</button>
+                    </div>
+                    <div id="st_data_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">👁️ User Lookup</h4>
+                    <input type="text" id="st_lookup_username" class="ie-input" placeholder="Username">
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLookupUser()">Lookup</button>
+                    <div id="st_lookup_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -470,6 +526,10 @@ function getRankTag(rank, style, username) {
     // Custom tags for specific users
     if (username && userDatabase[username]?.customTag) {
         const user = userDatabase[username];
+        // If custom color is set, use inline styles
+        if (user.customTagColor) {
+            return `<span class="rank-tag" style="color:${user.customTagColor}; border-color:${user.customTagColor}; background:${user.customTagColor}22;">${user.customTag}</span>`;
+        }
         return `<span class="rank-tag ${user.style || style || 'member-style'}">${user.customTag}</span>`;
     }
     return `<span class="rank-tag ${style || 'member-style'}">${rank || 'M'}</span>`;
@@ -1192,13 +1252,12 @@ function uploadChatFile() {
 function switchAdminTab(tab, el) {
     document.querySelectorAll('.mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
-    ['apps', 'members', 'images', 'moderation', 'announcements', 'bot', 'videos', 'vip', 'st'].forEach(t => {
+    ['apps', 'members', 'moderation', 'announcements', 'bot', 'videos', 'vip', 'st'].forEach(t => {
         const panel = document.getElementById('admin_tab_' + t);
         if (panel) panel.style.display = t === tab ? 'block' : 'none';
     });
     if (tab === 'apps') loadAllApplications();
     if (tab === 'members') loadAllMembers();
-    if (tab === 'images') loadPendingImages();
     if (tab === 'moderation') loadBannedUsers();
     if (tab === 'videos') loadAllVideos();
     if (tab === 'vip') loadAllVIPCodes();
@@ -1240,23 +1299,6 @@ function loadAllMembers() {
     Object.keys(coreAdmins).forEach(name => members.push({ username: name, ...coreAdmins[name], isCore: true }));
     container.innerHTML = members.map(m => `<div style="background:#050000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><span class="${m.style}" style="font-weight:bold;">${escapeHtml(m.username)}</span><span style="color:#666; font-size:10px;"> [${m.fullRank}]</span></div><span style="color:#555; font-size:9px;">ID: ${generateUserId(m.username)}</span></div>`).join('');
 }
-function loadPendingImages() {
-    const container = document.getElementById('pending_images'); if (!container) return;
-    db.ref('pending_images').once('value', (s) => {
-        const pending = []; s.forEach((c) => pending.push({ ...c.val(), key: c.key }));
-        if (pending.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center; grid-column:1/-1;">No pending images</div>'; return; }
-        container.innerHTML = pending.map(p => `<div style="background:#050000; border:1px solid #400; padding:8px; text-align:center;"><img src="${p.data}" style="max-width:100%; max-height:80px; margin-bottom:5px;"><div style="color:#d40000; font-size:10px;">${escapeHtml(p.user)}</div><div style="display:flex; gap:5px; margin-top:5px;"><button class="ie-btn" style="padding:4px; font-size:9px; flex:1;" onclick="approveImage('${p.key}')">✓</button><button class="ie-btn" style="padding:4px; font-size:9px; flex:1; background:#333;" onclick="denyImage('${p.key}')">✗</button></div></div>`).join('');
-    });
-}
-function approveImage(key) {
-    db.ref('pending_images/' + key).once('value', (s) => {
-        const img = s.val(); if (!img) return;
-        const u = userDatabase[img.user] || { rank: 'M', style: 'member-style' };
-        db.ref('chat').push({ user: img.user, text: '[Image]', imageData: img.data, tag: u.rank, style: u.style, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP });
-        db.ref('pending_images/' + key).remove(); loadPendingImages();
-    });
-}
-function denyImage(key) { db.ref('pending_images/' + key).remove(); loadPendingImages(); }
 function loadBannedUsers() {
     const container = document.getElementById('banned_users'); if (!container) return;
     db.ref('bans').once('value', (s) => {
@@ -1297,12 +1339,245 @@ function loadAllVIPCodes() {
     });
 }
 function elevateUser() {
-    if (!userDatabase[CURRENT_USER]?.isST) { alert('Access denied.'); return; }
+    const resultEl = document.getElementById('st_elevate_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
     const username = document.getElementById('elevate_user').value.trim(), newRank = document.getElementById('elevate_rank').value;
-    if (!username || !userDatabase[username]) { alert('User not found.'); return; }
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
     const rankConfig = { 'member': { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false }, 'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', isAdmin: false }, 'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', isAdmin: false }, 'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', isAdmin: true }, 'admin': { rank: 'A', fullRank: 'Admin', style: 'a-style', isAdmin: true } };
-    db.ref('members/' + username).update(rankConfig[newRank]); userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] }; alert(username + ' elevated to ' + rankConfig[newRank].fullRank);
+    db.ref('members/' + username).update(rankConfig[newRank]); 
+    userDatabase[username] = { ...userDatabase[username], ...rankConfig[newRank] }; 
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + username + ' elevated to ' + rankConfig[newRank].fullRank + '</span>';
 }
+
+// ST TOOLS - CHANGE USERNAME
+function stChangeUsername() {
+    const resultEl = document.getElementById('st_username_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const oldName = document.getElementById('st_old_username').value.trim();
+    const newName = document.getElementById('st_new_username').value.trim();
+    if (!oldName || !newName) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter both usernames.</span>'; return; }
+    if (!userDatabase[oldName]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User "' + oldName + '" not found.</span>'; return; }
+    if (userDatabase[newName]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username "' + newName + '" already taken.</span>'; return; }
+    
+    // Copy user data to new username
+    const userData = { ...userDatabase[oldName] };
+    userDatabase[newName] = userData;
+    delete userDatabase[oldName];
+    
+    // Update Firebase members
+    db.ref('members/' + newName).set(userData);
+    db.ref('members/' + oldName).remove();
+    
+    // Update profiles
+    db.ref('profiles/' + oldName).once('value', (s) => {
+        const profile = s.val();
+        if (profile) {
+            db.ref('profiles/' + newName).set(profile);
+            db.ref('profiles/' + oldName).remove();
+        }
+    });
+    
+    // Update online status
+    db.ref('online/' + oldName).once('value', (s) => {
+        if (s.val()) {
+            db.ref('online/' + newName).set(s.val());
+            db.ref('online/' + oldName).remove();
+        }
+    });
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Renamed "' + oldName + '" to "' + newName + '"</span>';
+}
+
+// ST TOOLS - CUSTOM TAGS
+function stSetCustomTag() {
+    const resultEl = document.getElementById('st_tag_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('st_tag_username').value.trim();
+    const tagLetter = document.getElementById('st_tag_letter').value.trim().toUpperCase();
+    const tagColor = document.getElementById('st_tag_color').value.trim();
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    if (!tagLetter) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a tag letter.</span>'; return; }
+    
+    // Create unique style name for this user
+    const styleName = username.toLowerCase().replace(/[^a-z0-9]/g, '') + '-custom-style';
+    
+    // Update user database
+    userDatabase[username].customTag = tagLetter;
+    userDatabase[username].customTagColor = tagColor;
+    userDatabase[username].style = styleName;
+    
+    // Save to Firebase
+    db.ref('members/' + username).update({ 
+        customTag: tagLetter, 
+        customTagColor: tagColor,
+        style: styleName 
+    });
+    
+    // Inject CSS for the custom style
+    const existingStyle = document.getElementById('custom-style-' + username);
+    if (existingStyle) existingStyle.remove();
+    const styleEl = document.createElement('style');
+    styleEl.id = 'custom-style-' + username;
+    styleEl.textContent = '.' + styleName + ' { color: ' + tagColor + '; border-color: ' + tagColor + '; background: ' + tagColor + '22; }';
+    document.head.appendChild(styleEl);
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Set tag "' + tagLetter + '" for ' + username + ' with color ' + tagColor + '</span>';
+    loadAllMembers();
+}
+
+function stRemoveCustomTag() {
+    const resultEl = document.getElementById('st_tag_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('st_tag_username').value.trim();
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    // Get default style based on rank
+    const rank = userDatabase[username].rank || 'M';
+    const defaultStyles = { 'ST': 'st-style', 'A': 'a-style', 'MOD': 'mod-style', 'CONTRIB': 'contrib-style', 'VIP': 'vip-style', 'M': 'member-style' };
+    const defaultStyle = defaultStyles[rank] || 'member-style';
+    
+    // Update user database
+    delete userDatabase[username].customTag;
+    delete userDatabase[username].customTagColor;
+    userDatabase[username].style = defaultStyle;
+    
+    // Save to Firebase
+    db.ref('members/' + username).update({ 
+        customTag: null, 
+        customTagColor: null,
+        style: defaultStyle 
+    });
+    
+    // Remove custom CSS
+    const existingStyle = document.getElementById('custom-style-' + username);
+    if (existingStyle) existingStyle.remove();
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Removed custom tag from ' + username + '</span>';
+    loadAllMembers();
+}
+
+// ST TOOLS - RESET PASSWORD
+function stResetPassword() {
+    const resultEl = document.getElementById('st_password_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('st_reset_username').value.trim();
+    const newPass = document.getElementById('st_new_password').value;
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    if (!newPass) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a new password.</span>'; return; }
+    
+    // Update local
+    userDatabase[username].pass = newPass;
+    
+    // Save to Firebase
+    db.ref('members/' + username).update({ pass: newPass });
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Password reset for ' + username + '</span>';
+}
+
+// ST TOOLS - DATA MANAGEMENT
+function stWipeProfile() {
+    const resultEl = document.getElementById('st_data_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('st_data_username').value.trim();
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!confirm('Wipe profile for ' + username + '? This removes avatar, bio, status, mood, and music.')) return;
+    
+    db.ref('profiles/' + username).remove();
+    db.ref('reputation/' + username).remove();
+    db.ref('profile_comments/' + username).remove();
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Profile wiped for ' + username + '</span>';
+}
+
+function stWipeMessages() {
+    const resultEl = document.getElementById('st_data_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('st_data_username').value.trim();
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!confirm('Delete ALL messages from ' + username + '? This cannot be undone.')) return;
+    
+    db.ref('chat').orderByChild('user').equalTo(username).once('value', (s) => {
+        const updates = {};
+        s.forEach((child) => { updates[child.key] = null; });
+        db.ref('chat').update(updates);
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Deleted all messages from ' + username + '</span>';
+    });
+}
+
+function stDeleteUser() {
+    const resultEl = document.getElementById('st_data_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('st_data_username').value.trim();
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (['losersyndicate', 'noseeyedear', 'oleg'].includes(username.toLowerCase())) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Cannot delete core admins.</span>'; return; 
+    }
+    if (!confirm('PERMANENTLY DELETE user ' + username + '? This removes their account, profile, messages, and all data. THIS CANNOT BE UNDONE.')) return;
+    
+    // Remove from local
+    delete userDatabase[username];
+    
+    // Remove from Firebase
+    db.ref('members/' + username).remove();
+    db.ref('profiles/' + username).remove();
+    db.ref('online/' + username).remove();
+    db.ref('reputation/' + username).remove();
+    db.ref('profile_comments/' + username).remove();
+    db.ref('bans/' + username).remove();
+    
+    // Remove their messages
+    db.ref('chat').orderByChild('user').equalTo(username).once('value', (s) => {
+        const updates = {};
+        s.forEach((child) => { updates[child.key] = null; });
+        db.ref('chat').update(updates);
+    });
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User ' + username + ' permanently deleted</span>';
+    loadAllMembers();
+}
+
+// ST TOOLS - USER LOOKUP
+function stLookupUser() {
+    const resultEl = document.getElementById('st_lookup_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    const username = document.getElementById('st_lookup_username').value.trim();
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    
+    const user = userDatabase[username];
+    if (!user) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    let html = '<div style="background:#0a0000; padding:8px; border:1px solid #ff00ff;">';
+    html += '<div style="color:#ff00ff; font-weight:bold; margin-bottom:5px;">' + escapeHtml(username) + '</div>';
+    html += '<div>Rank: <span style="color:#fff;">' + (user.fullRank || user.rank || 'Unknown') + '</span></div>';
+    html += '<div>Style: <span style="color:#fff;">' + (user.style || 'None') + '</span></div>';
+    html += '<div>Custom Tag: <span style="color:#fff;">' + (user.customTag || 'None') + '</span></div>';
+    html += '<div>Is Admin: <span style="color:#fff;">' + (user.isAdmin ? 'Yes' : 'No') + '</span></div>';
+    html += '<div>Is ST: <span style="color:#fff;">' + (user.isST ? 'Yes' : 'No') + '</span></div>';
+    html += '<div>Is Core: <span style="color:#fff;">' + (coreAdmins[username] ? 'Yes' : 'No') + '</span></div>';
+    
+    // Check online status
+    db.ref('online/' + username).once('value', (onlineSnap) => {
+        html += '<div>Online: <span style="color:#fff;">' + (onlineSnap.val() ? 'Yes' : 'No') + '</span></div>';
+        
+        // Check profile
+        db.ref('profiles/' + username).once('value', (profileSnap) => {
+            const profile = profileSnap.val() || {};
+            html += '<div style="margin-top:5px; border-top:1px solid #400; padding-top:5px;">';
+            html += '<div>Status: <span style="color:#fff;">' + escapeHtml(profile.status || 'None') + '</span></div>';
+            html += '<div>Mood: <span style="color:#fff;">' + escapeHtml(profile.mood || 'None') + '</span></div>';
+            html += '<div>Bio: <span style="color:#fff;">' + escapeHtml((profile.bio || 'None').substring(0, 50)) + '</span></div>';
+            html += '<div>Avatar: <span style="color:#fff;">' + (profile.avatar ? 'Set' : 'None') + '</span></div>';
+            html += '<div>Music: <span style="color:#fff;">' + (profile.music ? 'Set' : 'None') + '</span></div>';
+            html += '</div></div>';
+            if (resultEl) resultEl.innerHTML = html;
+        });
+    });
+}
+
 function uploadVIPImage() {
     const user = userDatabase[CURRENT_USER]; if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
     const file = document.getElementById('vip_image_picker').files[0]; if (!file) { alert('Select image.'); return; }
