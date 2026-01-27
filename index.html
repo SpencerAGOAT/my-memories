@@ -50,6 +50,7 @@
         .noseeyedear-style { color: #00ffcc; border-color: #00ffcc; background: rgba(0, 255, 204, 0.15); }
         .guest-style { color: #888; border-color: #555; background: rgba(85, 85, 85, 0.1); }
         .vip-style { color: #ffd700; border-color: #ffd700; background: rgba(255, 215, 0, 0.15); }
+        .sb-style { color: #6a03b4; border-color: #6a03b4; background: rgba(106, 3, 180, 0.15); }
         .member-style { color: #ff4444; border-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
         .bot-style { color: #d40000; border-color: #d40000; background: rgba(212, 0, 0, 0.2); }
         #memories_grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; justify-items: center; }
@@ -455,7 +456,7 @@ const _e = { // encoded credentials [username, password]
     o: [_d("cGluaw=="), _d("U3VubnlGZWV0VXdVNTYk")],
     p: [_d("aGVudGFp"), _d("cm9ibG94bWFueDVANjdAMTEyMUA2NzY3")],
     q: [_d("cmVk"), _d("ZGlja2dyYXlzb25idWRkeTIz")],
-    r: [_d("c2x1dA=="), _d("a2Fpcm9uZmFuMjAyNg==")]
+    r: [_d("c2x1dA=="), _d("b3NoYmFnb3NoMTc4Ng==")]
 };
 const coreAdmins = {
     [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
@@ -472,10 +473,10 @@ const coreAdmins = {
     [_e.l[0]]: { pass: _e.l[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.m[0]]: { pass: _e.m[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.n[0]]: { pass: _e.n[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.o[0]]: { pass: _e.o[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" }
+    [_e.o[0]]: { pass: _e.o[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
+    [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
+    [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
+    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" }
 };
 let userDatabase = { ...coreAdmins };
 
