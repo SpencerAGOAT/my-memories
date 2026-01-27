@@ -325,9 +325,12 @@
         </div>
         <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
             <div id="club_tab_browse">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Browse Clubs</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:#d40000; margin:0;">Browse Clubs</h3>
+                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="loadAllClubs()">🔄 Refresh</button>
+                </div>
                 <input type="text" id="club_search" class="ie-input" placeholder="Search clubs..." oninput="searchClubs()">
-                <div id="clubs_list" style="max-height:350px; overflow-y:auto;"></div>
+                <div id="clubs_list" style="max-height:320px; overflow-y:auto;"></div>
             </div>
             <div id="club_tab_my" style="display:none;">
                 <h3 style="color:#d40000; margin:0 0 15px 0;">My Clubs <span style="color:#666; font-size:11px;">(Max 5)</span></h3>
@@ -419,15 +422,15 @@
                     <button class="ie-btn" style="background:#333;" onclick="cancelCreateGroup()">Cancel</button>
                 </div>
             </div>
-            <div id="msg_tab_friends" style="display:none; padding:20px; overflow-y:auto; flex:1;">
-                <h3 style="color:#d40000; margin:0 0 20px 0; text-align:center; font-size:16px;">Friends</h3>
-                <div style="background:#0a0000; padding:20px; border:1px solid #400; margin-bottom:20px; border-radius:4px;">
-                    <label style="color:#d40000; font-size:12px; display:block; margin-bottom:8px; font-weight:bold;">Add a Friend</label>
-                    <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:12px;">
+            <div id="msg_tab_friends" style="display:none; padding:25px; overflow-y:auto; flex:1;">
+                <h3 style="color:#d40000; margin:0 0 25px 0; text-align:center; font-size:18px;">Friends</h3>
+                <div style="background:#0a0000; padding:20px; border:1px solid #400; margin:0 15px 25px 15px; border-radius:6px;">
+                    <label style="color:#d40000; font-size:13px; display:block; margin-bottom:10px; font-weight:bold;">Add a Friend</label>
+                    <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:15px;">
                     <button class="ie-btn" style="width:100%;" onclick="sendFriendRequest()">Send Friend Request</button>
                 </div>
-                <div style="color:#d40000; font-size:12px; margin-bottom:12px; font-weight:bold; border-bottom:1px solid #400; padding-bottom:8px;">Your Friends:</div>
-                <div id="friends_list" style="max-height:250px; overflow-y:auto;"></div>
+                <div style="color:#d40000; font-size:13px; margin:0 15px 15px 15px; font-weight:bold; border-bottom:1px solid #400; padding-bottom:10px;">Your Friends:</div>
+                <div id="friends_list" style="max-height:220px; overflow-y:auto; padding:0 5px;"></div>
             </div>
             <div id="msg_tab_requests" style="display:none; padding:15px; overflow-y:auto;">
                 <h3 style="color:#d40000; margin:0 0 15px 0;">Friend Requests</h3>
@@ -1528,10 +1531,81 @@ function loadAllApplications() {
         if (filtered.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No applications found.</div>'; return; }
         container.innerHTML = filtered.map(a => {
             const statusColor = { pending: '#ffd700', approved: '#00ff00', denied: '#ff4444' }[a.status] || '#888';
-            return `<div style="background:#050000; border:1px solid #400; padding:12px; margin-bottom:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color:#d40000;">${escapeHtml(a.username)}</strong><span style="color:${statusColor}; font-size:10px;">${a.status?.toUpperCase()}</span></div><div style="color:#888; font-size:10px;"><div>Date: ${a.date}</div><div>Referral: ${escapeHtml(a.referral || 'None')}</div><div>Reason: ${escapeHtml(a.reason)}</div></div>${a.status === 'pending' ? `<div style="display:flex; gap:8px; margin-top:8px;"><button class="ie-btn" style="padding:6px; font-size:10px; background:#030; flex:1;" onclick="approveApp('${a.key}')">✓ Approve</button><button class="ie-btn" style="padding:6px; font-size:10px; background:#300; flex:1;" onclick="denyApp('${a.key}')">✗ Deny</button></div>` : ''}</div>`;
+            const pendingActions = a.status === 'pending' ? `
+                <div style="margin-top:10px; padding-top:10px; border-top:1px solid #300;">
+                    <input type="text" id="pass_${a.key}" class="ie-input" placeholder="Set password for user..." style="margin-bottom:8px; font-size:11px;">
+                    <div style="display:flex; gap:8px;">
+                        <button class="ie-btn" style="padding:6px; font-size:10px; background:#030; flex:1;" onclick="approveAndCreateAccount('${a.key}', '${escapeHtml(a.username)}')">✓ Approve & Create Account</button>
+                        <button class="ie-btn" style="padding:6px; font-size:10px; background:#300; flex:1;" onclick="denyApp('${a.key}')">✗ Deny</button>
+                    </div>
+                </div>` : '';
+            const createdInfo = a.status === 'approved' && a.accountCreated ? '<div style="color:#0f0; font-size:9px; margin-top:5px;">✓ Account created</div>' : '';
+            return `<div style="background:#050000; border:1px solid #400; padding:12px; margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <strong style="color:#d40000;">${escapeHtml(a.username)}</strong>
+                    <span style="color:${statusColor}; font-size:10px;">${a.status?.toUpperCase()}</span>
+                </div>
+                <div style="color:#888; font-size:10px;">
+                    <div>Date: ${a.date}</div>
+                    <div>Referral: ${escapeHtml(a.referral || 'None')}</div>
+                    <div>Reason: ${escapeHtml(a.reason)}</div>
+                </div>
+                ${createdInfo}
+                ${pendingActions}
+            </div>`;
         }).join('');
     });
 }
+
+function approveAndCreateAccount(appKey, username) {
+    const passInput = document.getElementById('pass_' + appKey);
+    const password = passInput ? passInput.value.trim() : '';
+    
+    if (!password) {
+        alert('Please set a password for the user!');
+        return;
+    }
+    
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters!');
+        return;
+    }
+    
+    // Check if username already exists
+    if (userDatabase[username]) {
+        alert('Username already exists!');
+        return;
+    }
+    
+    // Create the user account in Firebase
+    const newUser = {
+        pass: password,
+        rank: 'M',
+        fullRank: 'Member',
+        style: 'member-style',
+        isAdmin: false
+    };
+    
+    db.ref('members/' + username).set(newUser).then(() => {
+        // Add to local database
+        userDatabase[username] = newUser;
+        
+        // Update application status
+        db.ref('applications/' + appKey).update({ 
+            status: 'approved',
+            accountCreated: true,
+            approvedBy: CURRENT_USER,
+            approvedAt: Date.now()
+        });
+        
+        alert('Account created for ' + username + '!\n\nPassword: ' + password + '\n\nMake sure to give this to the user!');
+        loadAllApplications();
+        loadAllMembers();
+    }).catch(err => {
+        alert('Error creating account: ' + err.message);
+    });
+}
+
 function approveApp(key) { db.ref('applications/' + key).update({ status: 'approved' }); loadAllApplications(); }
 function denyApp(key) { db.ref('applications/' + key).update({ status: 'denied' }); loadAllApplications(); }
 function loadAllMembers() {
@@ -1567,10 +1641,12 @@ function loadAllVideos() {
     db.ref('archive').once('value', (s) => {
         const videos = []; s.forEach(c => videos.push({ ...c.val(), key: c.key }));
         if (videos.length === 0) { container.innerHTML = '<div style="color:#666; text-align:center;">No videos.</div>'; return; }
-        container.innerHTML = videos.reverse().map(v => `<div style="background:#050000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><strong style="color:#d40000;">${escapeHtml(v.name)}</strong><span style="color:#666; font-size:10px;"> by ${escapeHtml(v.uploader)}</span></div><div><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; margin-right:5px;" onclick="window.open('${v.url}')">View</button><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#300;" onclick="deleteVideo('${v.key}')">Delete</button></div></div>`).join('');
+        container.innerHTML = videos.reverse().map(v => `<div style="background:#050000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><strong style="color:#d40000;">${escapeHtml(v.name)}</strong><span style="color:#666; font-size:10px;"> by ${escapeHtml(v.uploader || 'Unknown')}</span></div><div><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; margin-right:5px;" onclick="window.open('${v.url}')">View</button><button class="ie-btn" style="padding:4px 10px; font-size:10px; width:auto; background:#300;" onclick="deleteVideo('${v.key}')">Delete</button></div></div>`).join('');
     });
+    // Also refresh memories view
+    renderMemories();
 }
-function deleteVideo(key) { if (confirm('Delete?')) { db.ref('archive/' + key).remove(); loadAllVideos(); } }
+function deleteVideo(key) { if (confirm('Delete?')) { db.ref('archive/' + key).remove(); loadAllVideos(); renderMemories(); } }
 function generateVIPCode() { const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase(); db.ref('vip_codes').push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false }); document.getElementById('vip_code_display').textContent = '✨ ' + code; loadAllVIPCodes(); }
 function loadAllVIPCodes() {
     const container = document.getElementById('all_vip_codes'); if (!container) return;
@@ -1928,15 +2004,30 @@ function loadAllClubs() {
         container.innerHTML = clubs.map(club => {
             const isMember = club.members && club.members.includes(CURRENT_USER);
             const isOwner = club.owner === CURRENT_USER;
+            const memberCount = (club.members || []).length + 1;
             return `<div class="club-card" style="border-color:${club.color || '#400'};">
                 <div class="club-name" style="color:${club.color || '#d40000'};">${escapeHtml(club.name)}</div>
                 <div style="color:#888; font-size:11px; margin:5px 0;">${escapeHtml(club.description || '')}</div>
-                <div class="club-members">👥 ${(club.members || []).length + 1} members • Owner: ${escapeHtml(club.owner)}</div>
-                ${isOwner ? '<span style="color:#ffd700; font-size:10px;">👑 You own this</span>' : 
-                  isMember ? '<span style="color:#0f0; font-size:10px;">✓ Member</span>' : 
-                  `<button class="ie-btn" style="width:auto; padding:5px 15px; margin-top:8px; font-size:10px;" onclick="requestJoinClub('${club.id}')">Request to Join</button>`}
+                <div class="club-members">👥 ${memberCount} members • Owner: ${escapeHtml(club.owner)}</div>
+                <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0; background:#222;" onclick="viewClubMembers('${club.id}', '${escapeHtml(club.name)}', '${escapeHtml(club.owner)}')">👥 View Members</button>
+                    ${isOwner ? '<span style="color:#ffd700; font-size:10px;">👑 You own this</span>' : 
+                      isMember ? '<span style="color:#0f0; font-size:10px;">✓ Member</span>' : 
+                      `<button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="requestJoinClub('${club.id}')">Request to Join</button>`}
+                </div>
             </div>`;
         }).join('');
+    });
+}
+
+function viewClubMembers(clubId, clubName, owner) {
+    db.ref('clubs/' + clubId).once('value', (s) => {
+        if (!s.exists()) { alert('Club not found.'); return; }
+        const club = s.val();
+        const members = club.members || [];
+        let memberList = '👑 ' + owner + ' (Owner)\n';
+        members.forEach(m => { memberList += '• ' + m + '\n'; });
+        alert('Members of ' + clubName + ':\n\n' + memberList);
     });
 }
 
@@ -2244,12 +2335,12 @@ function loadFriendsList() {
             return;
         }
         container.innerHTML = friendList.map(f => `
-            <div style="display:flex; align-items:center; gap:12px; padding:12px; background:#0a0000; border:1px solid #300; margin-bottom:8px; border-radius:4px;">
-                <div style="width:40px; height:40px; border-radius:50%; background:#111; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🦇</div>
-                <span style="color:#d40000; font-weight:bold; font-size:13px; flex:1;">${escapeHtml(f)}</span>
-                <div style="display:flex; gap:8px;">
-                    <button class="ie-btn" style="width:auto; padding:6px 12px; font-size:10px; margin:0;" onclick="startDM('${f}')">💬 DM</button>
-                    <button class="ie-btn" style="width:auto; padding:6px 12px; font-size:10px; margin:0; background:#500;" onclick="removeFriend('${f}')">✗</button>
+            <div style="display:flex; align-items:center; gap:15px; padding:15px; background:#0a0000; border:1px solid #300; margin-bottom:10px; border-radius:6px; margin-left:10px; margin-right:10px;">
+                <div style="width:45px; height:45px; border-radius:50%; background:#111; border:2px solid #500; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🦇</div>
+                <span style="color:#d40000; font-weight:bold; font-size:14px; flex:1;">${escapeHtml(f)}</span>
+                <div style="display:flex; gap:10px;">
+                    <button class="ie-btn" style="width:auto; padding:8px 15px; font-size:11px; margin:0;" onclick="startDM('${f}')">💬 DM</button>
+                    <button class="ie-btn" style="width:auto; padding:8px 15px; font-size:11px; margin:0; background:#500;" onclick="removeFriend('${f}')">✗ Remove</button>
                 </div>
             </div>
         `).join('');
