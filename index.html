@@ -564,10 +564,14 @@ function validateIE() {
         if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { alert('Account banned/suspended.'); return; }
         if(userDatabase[u] && userDatabase[u].pass === p) {
             CURRENT_USER = u; IS_GUEST = false;
+            console.log('User logged in:', CURRENT_USER);
             document.getElementById('ie_login').style.display = 'none';
             document.getElementById('ie_upload').style.display = 'block';
             document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
+            
+            // Load profile data from Firebase
             loadProfile();
+            
             if (userDatabase[u].isAdmin) { document.getElementById('admin_icon').style.display = 'block'; }
             if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
             const rank = userDatabase[u].rank;
@@ -580,6 +584,8 @@ function validateIE() {
 function logout() {
     if (CURRENT_USER) db.ref('online/' + CURRENT_USER).remove();
     CURRENT_USER = ""; IS_GUEST = false;
+    // Reset user profile
+    userProfile = { status: "", bio: "", mood: "", avatar: "", music: "" };
     document.getElementById('ie_login').style.display = 'block';
     document.getElementById('ie_upload').style.display = 'none';
     document.getElementById('ie_user').value = '';
@@ -672,42 +678,76 @@ function updateMemberList() {
     container.innerHTML = html;
 }
 
-// PROFILE SYSTEM
+// PROFILE SYSTEM - Robust save/load for all users
 function loadProfile() {
     if (!CURRENT_USER) return;
-    db.ref('profiles/' + CURRENT_USER).once('value', (s) => {
-        const p = s.val() || {};
-        userProfile = { status: p.status || "", bio: p.bio || "", mood: p.mood || "", avatar: p.avatar || "", music: p.music || "" };
+    console.log('Loading profile for:', CURRENT_USER);
+    
+    db.ref('profiles/' + CURRENT_USER).once('value', (snapshot) => {
+        const p = snapshot.val() || {};
+        console.log('Loaded profile data:', p);
+        
+        // Update local profile object
+        userProfile = { 
+            status: p.status || "", 
+            bio: p.bio || "", 
+            mood: p.mood || "", 
+            avatar: p.avatar || "", 
+            music: p.music || "" 
+        };
+        
+        // Update form fields if they exist
         const statusEl = document.getElementById('user_status');
         const bioEl = document.getElementById('user_bio');
         const moodEl = document.getElementById('user_mood');
         const avatarUrlEl = document.getElementById('avatar_url');
         const musicEl = document.getElementById('profile_music');
         const avatarDisplay = document.getElementById('my_avatar_display');
+        
         if (statusEl) statusEl.value = userProfile.status;
         if (bioEl) bioEl.value = userProfile.bio;
         if (moodEl) moodEl.value = userProfile.mood;
         if (avatarUrlEl) avatarUrlEl.value = userProfile.avatar;
         if (musicEl) musicEl.value = userProfile.music;
-        if (userProfile.avatar && avatarDisplay) {
-            avatarDisplay.innerHTML = '<img src="' + userProfile.avatar + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+        
+        if (avatarDisplay) {
+            if (userProfile.avatar) {
+                avatarDisplay.innerHTML = '<img src="' + userProfile.avatar + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+            } else {
+                avatarDisplay.innerHTML = '🦇';
+            }
         }
+        
+        // Also update the profile cache
+        profileCache[CURRENT_USER] = userProfile;
+        
     }).catch(err => { console.error('Failed to load profile:', err); });
 }
+
 function saveProfile() {
     if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
+    
+    // Get all values from form fields
     const statusEl = document.getElementById('user_status');
     const bioEl = document.getElementById('user_bio');
     const moodEl = document.getElementById('user_mood');
     const musicEl = document.getElementById('profile_music');
-    const newStatus = statusEl ? statusEl.value.trim() : '';
-    const newBio = bioEl ? bioEl.value.trim() : '';
-    const newMood = moodEl ? moodEl.value : '';
-    const newMusic = musicEl ? musicEl.value.trim() : '';
+    const avatarUrlEl = document.getElementById('avatar_url');
+    
+    const newStatus = statusEl ? statusEl.value.trim() : userProfile.status;
+    const newBio = bioEl ? bioEl.value.trim() : userProfile.bio;
+    const newMood = moodEl ? moodEl.value : userProfile.mood;
+    const newMusic = musicEl ? musicEl.value.trim() : userProfile.music;
+    const newAvatar = avatarUrlEl ? avatarUrlEl.value.trim() : userProfile.avatar;
+    
+    // Update local profile object
     userProfile.status = newStatus;
     userProfile.bio = newBio;
     userProfile.mood = newMood;
     userProfile.music = newMusic;
+    if (newAvatar) userProfile.avatar = newAvatar;
+    
+    // Create complete profile data object
     const profileData = { 
         status: newStatus, 
         bio: newBio, 
@@ -716,59 +756,114 @@ function saveProfile() {
         avatar: userProfile.avatar || '',
         lastUpdated: firebase.database.ServerValue.TIMESTAMP 
     };
-    db.ref('profiles/' + CURRENT_USER).update(profileData)
-        .then(() => { alert('Profile saved!'); })
-        .catch((err) => { console.error('Save failed:', err); alert('Failed to save profile.'); });
+    
+    console.log('Saving profile for', CURRENT_USER, ':', profileData);
+    
+    // Use set() to ensure all fields are saved (not just updated)
+    db.ref('profiles/' + CURRENT_USER).set(profileData)
+        .then(() => { 
+            console.log('Profile saved successfully');
+            // Update cache
+            profileCache[CURRENT_USER] = { ...userProfile };
+            alert('Profile saved!'); 
+        })
+        .catch((err) => { 
+            console.error('Save failed:', err); 
+            alert('Failed to save profile. Please try again.'); 
+        });
 }
+
 function updateAvatar() {
     if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
+    
     const urlEl = document.getElementById('avatar_url');
     const fileInput = document.getElementById('avatar_upload');
     const avatarDisplay = document.getElementById('my_avatar_display');
     const url = urlEl ? urlEl.value.trim() : '';
     
     if (url) {
+        // URL provided - save directly
         userProfile.avatar = url;
-        db.ref('profiles/' + CURRENT_USER).update({ avatar: url })
-            .then(() => {
-                if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-                alert('Avatar updated!');
-            })
-            .catch((err) => { console.error('Avatar update failed:', err); alert('Failed to update avatar.'); });
+        
+        // Save avatar to profile
+        db.ref('profiles/' + CURRENT_USER).update({ 
+            avatar: url,
+            lastUpdated: firebase.database.ServerValue.TIMESTAMP 
+        })
+        .then(() => {
+            console.log('Avatar URL saved:', url);
+            profileCache[CURRENT_USER] = { ...profileCache[CURRENT_USER], avatar: url };
+            if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+            alert('Avatar updated and saved!');
+        })
+        .catch((err) => { 
+            console.error('Avatar update failed:', err); 
+            alert('Failed to update avatar.'); 
+        });
+        
     } else if (fileInput && fileInput.files[0]) {
+        // File upload
         alert('Uploading avatar...');
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
         formData.append('upload_preset', UPLOAD_PRESET);
+        
         fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
                 if (data.secure_url) {
                     userProfile.avatar = data.secure_url;
-                    db.ref('profiles/' + CURRENT_USER).update({ avatar: data.secure_url })
-                        .then(() => {
-                            if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + data.secure_url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-                            if (urlEl) urlEl.value = data.secure_url;
-                            alert('Avatar uploaded!');
-                        })
-                        .catch((err) => { console.error('Avatar save failed:', err); alert('Failed to save avatar.'); });
+                    
+                    // Save to Firebase
+                    db.ref('profiles/' + CURRENT_USER).update({ 
+                        avatar: data.secure_url,
+                        lastUpdated: firebase.database.ServerValue.TIMESTAMP 
+                    })
+                    .then(() => {
+                        console.log('Avatar uploaded and saved:', data.secure_url);
+                        profileCache[CURRENT_USER] = { ...profileCache[CURRENT_USER], avatar: data.secure_url };
+                        if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + data.secure_url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+                        if (urlEl) urlEl.value = data.secure_url;
+                        alert('Avatar uploaded and saved!');
+                    })
+                    .catch((err) => { 
+                        console.error('Avatar save failed:', err); 
+                        alert('Upload succeeded but failed to save. Try again.'); 
+                    });
                 } else {
                     alert('Upload failed: ' + (data.error?.message || 'Unknown error'));
                 }
             })
-            .catch((err) => { console.error('Upload error:', err); alert('Upload failed.'); });
+            .catch((err) => { 
+                console.error('Upload error:', err); 
+                alert('Upload failed. Check your connection.'); 
+            });
     } else {
-        alert('Enter URL or select file.');
+        alert('Enter a URL or select a file to upload.');
     }
 }
+
 function updateProfileMusic() {
     if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
+    
     const musicEl = document.getElementById('profile_music');
     const url = musicEl ? musicEl.value.trim() : '';
+    
     userProfile.music = url;
-    db.ref('profiles/' + CURRENT_USER).update({ music: url })
-        .then(() => { alert('Profile music saved!'); })
-        .catch((err) => { console.error('Music save failed:', err); alert('Failed to save music.'); });
+    
+    db.ref('profiles/' + CURRENT_USER).update({ 
+        music: url,
+        lastUpdated: firebase.database.ServerValue.TIMESTAMP 
+    })
+    .then(() => { 
+        console.log('Profile music saved:', url);
+        profileCache[CURRENT_USER] = { ...profileCache[CURRENT_USER], music: url };
+        alert('Profile music saved!'); 
+    })
+    .catch((err) => { 
+        console.error('Music save failed:', err); 
+        alert('Failed to save music.'); 
+    });
 }
 
 // PROFILE WINDOW
@@ -807,16 +902,29 @@ function openProfileWindow(username) {
     if (pwRank) pwRank.textContent = userData.fullRank || 'Member';
     if (pwUserId) pwUserId.textContent = 'User ID: ' + generateUserId(username);
     
-    // Get profile from cache or fetch fresh
-    const profile = getProfile(username);
-    
-    if (pwStatus) pwStatus.textContent = profile.status || '';
-    if (pwMood) pwMood.textContent = profile.mood || '';
-    if (pwBio) pwBio.textContent = profile.bio || 'No bio set.';
-    if (pwAvatar) {
-        if (profile.avatar) pwAvatar.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-        else pwAvatar.innerHTML = '🦇';
-    }
+    // Load FRESH profile data from Firebase
+    db.ref('profiles/' + username).once('value', (snapshot) => {
+        const profile = snapshot.val() || {};
+        console.log('openProfileWindow - Loaded profile for', username, ':', profile);
+        
+        if (pwStatus) pwStatus.textContent = profile.status || '';
+        if (pwMood) pwMood.textContent = profile.mood || '';
+        if (pwBio) pwBio.textContent = profile.bio || 'No bio set.';
+        if (pwAvatar) {
+            if (profile.avatar) pwAvatar.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+            else pwAvatar.innerHTML = '🦇';
+        }
+        
+        // Music player
+        if (pwMusicSection && pwMusicPlayer) {
+            if (profile.music) {
+                pwMusicSection.style.display = 'block';
+                if (profile.music.includes('soundcloud.com')) pwMusicPlayer.innerHTML = '<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=false&hide_related=true"></iframe>';
+                else if (profile.music.includes('spotify.com')) { const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); if (m) pwMusicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0"></iframe>'; else pwMusicPlayer.innerHTML = ''; }
+                else pwMusicPlayer.innerHTML = '';
+            } else { pwMusicSection.style.display = 'none'; pwMusicPlayer.innerHTML = ''; }
+        }
+    }).catch(err => console.error('Profile load error:', err));
     
     // Load reputation
     db.ref('reputation/' + username).once('value', (s) => { 
@@ -832,16 +940,6 @@ function openProfileWindow(username) {
             else pwCommentsList.innerHTML = comments.reverse().map(c => `<div style="background:#0a0000; padding:10px; margin-bottom:8px; border-left:3px solid #500; border-radius:0 4px 4px 0;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(c.from || 'Unknown')}</span><span style="color:#444; font-size:9px;">${c.date || ''}</span></div><div style="color:#aaa; font-size:11px; line-height:1.4;">${escapeHtml(c.text || '')}</div></div>`).join('');
         }
     }).catch(err => console.error('Comments load error:', err));
-    
-    // Music player
-    if (pwMusicSection && pwMusicPlayer) {
-        if (profile.music) {
-            pwMusicSection.style.display = 'block';
-            if (profile.music.includes('soundcloud.com')) pwMusicPlayer.innerHTML = '<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=false&hide_related=true"></iframe>';
-            else if (profile.music.includes('spotify.com')) { const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); if (m) pwMusicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0"></iframe>'; else pwMusicPlayer.innerHTML = ''; }
-            else pwMusicPlayer.innerHTML = '';
-        } else { pwMusicSection.style.display = 'none'; pwMusicPlayer.innerHTML = ''; }
-    }
     
     // Rep buttons visibility
     const canRep = CURRENT_USER && !IS_GUEST && username !== CURRENT_USER;
@@ -925,18 +1023,32 @@ function loadAvatarTab() {
     if (usernameDisplay) usernameDisplay.textContent = CURRENT_USER;
     if (rankDisplay) rankDisplay.textContent = user.fullRank || 'Member';
     
-    // Get fresh profile data
-    const profile = getProfile(CURRENT_USER);
-    
-    if (avatarDisplay) {
-        if (profile.avatar) avatarDisplay.innerHTML = '<img src="' + profile.avatar + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-        else avatarDisplay.innerHTML = '🦇';
-    }
-    if (avatarUrlEl) avatarUrlEl.value = profile.avatar || '';
-    if (musicEl) musicEl.value = profile.music || '';
-    if (statusEl) statusEl.value = profile.status || '';
-    if (bioEl) bioEl.value = profile.bio || '';
-    if (moodEl && profile.mood) moodEl.value = profile.mood;
+    // Load FRESH profile data from Firebase (not cache)
+    db.ref('profiles/' + CURRENT_USER).once('value', (snapshot) => {
+        const profile = snapshot.val() || {};
+        console.log('loadAvatarTab - Loaded profile:', profile);
+        
+        // Update local userProfile
+        userProfile = {
+            status: profile.status || '',
+            bio: profile.bio || '',
+            mood: profile.mood || '',
+            avatar: profile.avatar || '',
+            music: profile.music || ''
+        };
+        
+        // Update form fields
+        if (avatarDisplay) {
+            if (profile.avatar) avatarDisplay.innerHTML = '<img src="' + profile.avatar + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+            else avatarDisplay.innerHTML = '🦇';
+        }
+        if (avatarUrlEl) avatarUrlEl.value = profile.avatar || '';
+        if (musicEl) musicEl.value = profile.music || '';
+        if (statusEl) statusEl.value = profile.status || '';
+        if (bioEl) bioEl.value = profile.bio || '';
+        if (moodEl) moodEl.value = profile.mood || '';
+        
+    }).catch(err => console.error('Failed to load profile in avatar tab:', err));
 }
 function handleTyping() { if (IS_GUEST || !CURRENT_USER) return; db.ref('typing').set({ user: CURRENT_USER, time: Date.now() }); }
 function checkTyping() {
