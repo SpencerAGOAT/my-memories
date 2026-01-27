@@ -678,55 +678,97 @@ function loadProfile() {
     db.ref('profiles/' + CURRENT_USER).once('value', (s) => {
         const p = s.val() || {};
         userProfile = { status: p.status || "", bio: p.bio || "", mood: p.mood || "", avatar: p.avatar || "", music: p.music || "" };
-        if (document.getElementById('user_status')) document.getElementById('user_status').value = userProfile.status;
-        if (document.getElementById('user_bio')) document.getElementById('user_bio').value = userProfile.bio;
-        if (document.getElementById('user_mood')) document.getElementById('user_mood').value = userProfile.mood;
-        if (document.getElementById('avatar_url')) document.getElementById('avatar_url').value = userProfile.avatar;
-        if (document.getElementById('profile_music')) document.getElementById('profile_music').value = userProfile.music;
-        if (userProfile.avatar) {
-            const avatarDisplay = document.getElementById('my_avatar_display');
-            if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + userProfile.avatar + '" style="width:100%; height:100%; object-fit:cover;">';
+        const statusEl = document.getElementById('user_status');
+        const bioEl = document.getElementById('user_bio');
+        const moodEl = document.getElementById('user_mood');
+        const avatarUrlEl = document.getElementById('avatar_url');
+        const musicEl = document.getElementById('profile_music');
+        const avatarDisplay = document.getElementById('my_avatar_display');
+        if (statusEl) statusEl.value = userProfile.status;
+        if (bioEl) bioEl.value = userProfile.bio;
+        if (moodEl) moodEl.value = userProfile.mood;
+        if (avatarUrlEl) avatarUrlEl.value = userProfile.avatar;
+        if (musicEl) musicEl.value = userProfile.music;
+        if (userProfile.avatar && avatarDisplay) {
+            avatarDisplay.innerHTML = '<img src="' + userProfile.avatar + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
         }
-    });
+    }).catch(err => { console.error('Failed to load profile:', err); });
 }
 function saveProfile() {
-    if (!CURRENT_USER) { alert('Please log in first.'); return; }
-    const newStatus = document.getElementById('user_status')?.value.trim() || '';
-    const newBio = document.getElementById('user_bio')?.value.trim() || '';
-    const newMood = document.getElementById('user_mood')?.value || '';
-    const newMusic = document.getElementById('profile_music')?.value.trim() || '';
-    userProfile.status = newStatus; userProfile.bio = newBio; userProfile.mood = newMood; userProfile.music = newMusic;
-    const profileData = { status: newStatus, bio: newBio, mood: newMood, music: newMusic, lastUpdated: firebase.database.ServerValue.TIMESTAMP };
-    if (userProfile.avatar) profileData.avatar = userProfile.avatar;
-    db.ref('profiles/' + CURRENT_USER).update(profileData).then(() => { alert('Profile saved!'); }).catch(() => { alert('Failed to save.'); });
+    if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
+    const statusEl = document.getElementById('user_status');
+    const bioEl = document.getElementById('user_bio');
+    const moodEl = document.getElementById('user_mood');
+    const musicEl = document.getElementById('profile_music');
+    const newStatus = statusEl ? statusEl.value.trim() : '';
+    const newBio = bioEl ? bioEl.value.trim() : '';
+    const newMood = moodEl ? moodEl.value : '';
+    const newMusic = musicEl ? musicEl.value.trim() : '';
+    userProfile.status = newStatus;
+    userProfile.bio = newBio;
+    userProfile.mood = newMood;
+    userProfile.music = newMusic;
+    const profileData = { 
+        status: newStatus, 
+        bio: newBio, 
+        mood: newMood, 
+        music: newMusic, 
+        avatar: userProfile.avatar || '',
+        lastUpdated: firebase.database.ServerValue.TIMESTAMP 
+    };
+    db.ref('profiles/' + CURRENT_USER).update(profileData)
+        .then(() => { alert('Profile saved!'); })
+        .catch((err) => { console.error('Save failed:', err); alert('Failed to save profile.'); });
 }
 function updateAvatar() {
-    const url = document.getElementById('avatar_url').value.trim();
+    if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
+    const urlEl = document.getElementById('avatar_url');
     const fileInput = document.getElementById('avatar_upload');
+    const avatarDisplay = document.getElementById('my_avatar_display');
+    const url = urlEl ? urlEl.value.trim() : '';
+    
     if (url) {
         userProfile.avatar = url;
-        db.ref('profiles/' + CURRENT_USER).update({ avatar: url });
-        document.getElementById('my_avatar_display').innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;">';
-        alert('Avatar updated!');
+        db.ref('profiles/' + CURRENT_USER).update({ avatar: url })
+            .then(() => {
+                if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+                alert('Avatar updated!');
+            })
+            .catch((err) => { console.error('Avatar update failed:', err); alert('Failed to update avatar.'); });
     } else if (fileInput && fileInput.files[0]) {
-        const formData = new FormData(); formData.append('file', fileInput.files[0]); formData.append('upload_preset', UPLOAD_PRESET);
+        alert('Uploading avatar...');
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('upload_preset', UPLOAD_PRESET);
         fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
-            .then(res => res.json()).then(data => {
+            .then(res => res.json())
+            .then(data => {
                 if (data.secure_url) {
                     userProfile.avatar = data.secure_url;
-                    db.ref('profiles/' + CURRENT_USER).update({ avatar: data.secure_url });
-                    document.getElementById('my_avatar_display').innerHTML = '<img src="' + data.secure_url + '" style="width:100%; height:100%; object-fit:cover;">';
-                    document.getElementById('avatar_url').value = data.secure_url;
-                    alert('Avatar uploaded!');
+                    db.ref('profiles/' + CURRENT_USER).update({ avatar: data.secure_url })
+                        .then(() => {
+                            if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + data.secure_url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+                            if (urlEl) urlEl.value = data.secure_url;
+                            alert('Avatar uploaded!');
+                        })
+                        .catch((err) => { console.error('Avatar save failed:', err); alert('Failed to save avatar.'); });
+                } else {
+                    alert('Upload failed: ' + (data.error?.message || 'Unknown error'));
                 }
-            });
-    } else { alert('Enter URL or select file.'); }
+            })
+            .catch((err) => { console.error('Upload error:', err); alert('Upload failed.'); });
+    } else {
+        alert('Enter URL or select file.');
+    }
 }
 function updateProfileMusic() {
-    const url = document.getElementById('profile_music').value.trim();
+    if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
+    const musicEl = document.getElementById('profile_music');
+    const url = musicEl ? musicEl.value.trim() : '';
     userProfile.music = url;
-    db.ref('profiles/' + CURRENT_USER).update({ music: url });
-    alert('Profile music set!');
+    db.ref('profiles/' + CURRENT_USER).update({ music: url })
+        .then(() => { alert('Profile music saved!'); })
+        .catch((err) => { console.error('Music save failed:', err); alert('Failed to save music.'); });
 }
 
 // PROFILE WINDOW
@@ -739,65 +781,118 @@ function openProfileWindow(username) {
     if (!username) return;
     currentProfileUser = username;
     const win = document.getElementById('profile_window');
+    if (!win) { console.error('Profile window not found'); return; }
+    
     const userData = userDatabase[username] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-    document.getElementById('pw_title').textContent = '👤 ' + username + "'s Profile";
-    document.getElementById('pw_name').textContent = username;
-    document.getElementById('pw_name').className = userData.style || 'member-style';
-    document.getElementById('pw_rank').textContent = userData.fullRank || 'Member';
-    document.getElementById('pw_user_id').textContent = 'User ID: ' + generateUserId(username);
+    
+    const pwTitle = document.getElementById('pw_title');
+    const pwName = document.getElementById('pw_name');
+    const pwRank = document.getElementById('pw_rank');
+    const pwUserId = document.getElementById('pw_user_id');
+    const pwStatus = document.getElementById('pw_status');
+    const pwMood = document.getElementById('pw_mood');
+    const pwBio = document.getElementById('pw_bio');
+    const pwAvatar = document.getElementById('pw_avatar');
+    const pwRep = document.getElementById('pw_rep');
+    const pwCommentsCount = document.getElementById('pw_comments_count');
+    const pwCommentsList = document.getElementById('pw_comments_list');
+    const pwMusicSection = document.getElementById('pw_music_section');
+    const pwMusicPlayer = document.getElementById('pw_music_player');
+    const pwBtnRepPos = document.getElementById('pw_btn_rep_pos');
+    const pwBtnRepNeg = document.getElementById('pw_btn_rep_neg');
+    const pwCommentForm = document.getElementById('pw_comment_form');
+    
+    if (pwTitle) pwTitle.textContent = '👤 ' + username + "'s Profile";
+    if (pwName) { pwName.textContent = username; pwName.className = userData.style || 'member-style'; }
+    if (pwRank) pwRank.textContent = userData.fullRank || 'Member';
+    if (pwUserId) pwUserId.textContent = 'User ID: ' + generateUserId(username);
+    
+    // Get profile from cache or fetch fresh
     const profile = getProfile(username);
-    document.getElementById('pw_status').textContent = profile.status || '';
-    document.getElementById('pw_mood').textContent = profile.mood || '';
-    document.getElementById('pw_bio').textContent = profile.bio || 'No bio set.';
-    const avatarEl = document.getElementById('pw_avatar');
-    if (profile.avatar) avatarEl.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-    else avatarEl.innerHTML = '🦇';
-    db.ref('reputation/' + username).once('value', (s) => { document.getElementById('pw_rep').textContent = (s.val()?.score || 0); });
+    
+    if (pwStatus) pwStatus.textContent = profile.status || '';
+    if (pwMood) pwMood.textContent = profile.mood || '';
+    if (pwBio) pwBio.textContent = profile.bio || 'No bio set.';
+    if (pwAvatar) {
+        if (profile.avatar) pwAvatar.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+        else pwAvatar.innerHTML = '🦇';
+    }
+    
+    // Load reputation
+    db.ref('reputation/' + username).once('value', (s) => { 
+        if (pwRep) pwRep.textContent = (s.val()?.score || 0); 
+    }).catch(err => console.error('Rep load error:', err));
+    
+    // Load comments
     db.ref('profile_comments/' + username).orderByChild('timestamp').limitToLast(20).once('value', (s) => {
-        const comments = []; s.forEach(c => comments.push(c.val()));
-        document.getElementById('pw_comments_count').textContent = comments.length;
-        const cl = document.getElementById('pw_comments_list');
-        if (comments.length === 0) cl.innerHTML = '<div style="color:#555; font-size:11px; text-align:center; padding:10px;">No comments yet.</div>';
-        else cl.innerHTML = comments.reverse().map(c => `<div style="background:#0a0000; padding:10px; margin-bottom:8px; border-left:3px solid #500; border-radius:0 4px 4px 0;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(c.from)}</span><span style="color:#444; font-size:9px;">${c.date || ''}</span></div><div style="color:#aaa; font-size:11px; line-height:1.4;">${escapeHtml(c.text)}</div></div>`).join('');
-    });
-    const musicSection = document.getElementById('pw_music_section'), musicPlayer = document.getElementById('pw_music_player');
-    if (profile.music) {
-        musicSection.style.display = 'block';
-        if (profile.music.includes('soundcloud.com')) musicPlayer.innerHTML = '<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=false&hide_related=true"></iframe>';
-        else if (profile.music.includes('spotify.com')) { const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); if (m) musicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0"></iframe>'; }
-        else musicPlayer.innerHTML = '';
-    } else { musicSection.style.display = 'none'; musicPlayer.innerHTML = ''; }
+        const comments = []; s.forEach(c => { if (c.val()) comments.push(c.val()); });
+        if (pwCommentsCount) pwCommentsCount.textContent = comments.length;
+        if (pwCommentsList) {
+            if (comments.length === 0) pwCommentsList.innerHTML = '<div style="color:#555; font-size:11px; text-align:center; padding:10px;">No comments yet.</div>';
+            else pwCommentsList.innerHTML = comments.reverse().map(c => `<div style="background:#0a0000; padding:10px; margin-bottom:8px; border-left:3px solid #500; border-radius:0 4px 4px 0;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="color:#d40000; font-weight:bold; font-size:11px;">${escapeHtml(c.from || 'Unknown')}</span><span style="color:#444; font-size:9px;">${c.date || ''}</span></div><div style="color:#aaa; font-size:11px; line-height:1.4;">${escapeHtml(c.text || '')}</div></div>`).join('');
+        }
+    }).catch(err => console.error('Comments load error:', err));
+    
+    // Music player
+    if (pwMusicSection && pwMusicPlayer) {
+        if (profile.music) {
+            pwMusicSection.style.display = 'block';
+            if (profile.music.includes('soundcloud.com')) pwMusicPlayer.innerHTML = '<iframe width="100%" height="100" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=' + encodeURIComponent(profile.music) + '&color=%23ff0000&auto_play=false&hide_related=true"></iframe>';
+            else if (profile.music.includes('spotify.com')) { const m = profile.music.match(/track\/([a-zA-Z0-9]+)/); if (m) pwMusicPlayer.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + m[1] + '" width="100%" height="80" frameborder="0"></iframe>'; else pwMusicPlayer.innerHTML = ''; }
+            else pwMusicPlayer.innerHTML = '';
+        } else { pwMusicSection.style.display = 'none'; pwMusicPlayer.innerHTML = ''; }
+    }
+    
+    // Rep buttons visibility
     const canRep = CURRENT_USER && !IS_GUEST && username !== CURRENT_USER;
-    document.getElementById('pw_btn_rep_pos').style.display = canRep ? 'block' : 'none';
-    document.getElementById('pw_btn_rep_neg').style.display = canRep ? 'block' : 'none';
-    document.getElementById('pw_comment_form').style.display = (CURRENT_USER && !IS_GUEST) ? 'block' : 'none';
+    if (pwBtnRepPos) pwBtnRepPos.style.display = canRep ? 'block' : 'none';
+    if (pwBtnRepNeg) pwBtnRepNeg.style.display = canRep ? 'block' : 'none';
+    if (pwCommentForm) pwCommentForm.style.display = (CURRENT_USER && !IS_GUEST) ? 'block' : 'none';
+    
     win.style.display = 'block';
     document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
     win.style.zIndex = "500";
     makeDraggable('profile_window');
 }
-function closeProfileWindow() { document.getElementById('profile_window').style.display = 'none'; document.getElementById('pw_music_player').innerHTML = ''; }
+function closeProfileWindow() { 
+    const win = document.getElementById('profile_window');
+    const musicPlayer = document.getElementById('pw_music_player');
+    if (win) win.style.display = 'none'; 
+    if (musicPlayer) musicPlayer.innerHTML = ''; 
+}
 function giveRep(amount) {
-    if (!CURRENT_USER || IS_GUEST || currentProfileUser === CURRENT_USER) return;
+    if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
+    if (!currentProfileUser || currentProfileUser === CURRENT_USER) return;
     db.ref('reputation/' + currentProfileUser).once('value', (s) => {
         const current = s.val() || { score: 0, givers: {} };
-        if (current.givers && current.givers[CURRENT_USER]) { alert('Already gave rep!'); return; }
+        if (current.givers && current.givers[CURRENT_USER]) { alert('Already gave rep to this user!'); return; }
         current.score = (current.score || 0) + amount;
         current.givers = current.givers || {};
         current.givers[CURRENT_USER] = amount;
-        db.ref('reputation/' + currentProfileUser).set(current);
-        document.getElementById('pw_rep').textContent = current.score;
-        alert(amount > 0 ? '+1 Rep given!' : '-1 Rep given!');
-    });
+        db.ref('reputation/' + currentProfileUser).set(current)
+            .then(() => {
+                const pwRep = document.getElementById('pw_rep');
+                if (pwRep) pwRep.textContent = current.score;
+                alert(amount > 0 ? '+1 Rep given!' : '-1 Rep given!');
+            })
+            .catch(err => { console.error('Rep error:', err); alert('Failed to give rep.'); });
+    }).catch(err => { console.error('Rep load error:', err); alert('Failed to load rep.'); });
 }
 function leaveProfileComment() {
     if (!CURRENT_USER || IS_GUEST) { alert('Must be logged in!'); return; }
-    const text = document.getElementById('pw_comment_input').value.trim();
-    if (!text) return;
-    db.ref('profile_comments/' + currentProfileUser).push({ from: CURRENT_USER, text: text, date: new Date().toLocaleDateString(), timestamp: firebase.database.ServerValue.TIMESTAMP }).then(() => {
-        document.getElementById('pw_comment_input').value = '';
+    if (!currentProfileUser) return;
+    const inputEl = document.getElementById('pw_comment_input');
+    const text = inputEl ? inputEl.value.trim() : '';
+    if (!text) { alert('Please enter a comment.'); return; }
+    db.ref('profile_comments/' + currentProfileUser).push({ 
+        from: CURRENT_USER, 
+        text: text, 
+        date: new Date().toLocaleDateString(), 
+        timestamp: firebase.database.ServerValue.TIMESTAMP 
+    }).then(() => {
+        if (inputEl) inputEl.value = '';
         openProfileWindow(currentProfileUser);
-    });
+    }).catch(err => { console.error('Comment error:', err); alert('Failed to post comment.'); });
 }
 function openDM(username) {
     if (!username || username === CURRENT_USER || IS_GUEST) return;
@@ -808,25 +903,40 @@ function openDM(username) {
 // CHAT SYSTEM
 function switchChatTab(tab, el) {
     document.querySelectorAll('#chat_win .tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('chat_main').style.display = tab === 'main' ? 'block' : 'none';
-    document.getElementById('chat_avatar').style.display = tab === 'avatar' ? 'block' : 'none';
+    if (el) el.classList.add('active');
+    const chatMain = document.getElementById('chat_main');
+    const chatAvatar = document.getElementById('chat_avatar');
+    if (chatMain) chatMain.style.display = tab === 'main' ? 'block' : 'none';
+    if (chatAvatar) chatAvatar.style.display = tab === 'avatar' ? 'block' : 'none';
     if (tab === 'avatar') loadAvatarTab();
 }
 function loadAvatarTab() {
     if (!CURRENT_USER) return;
-    const user = userDatabase[CURRENT_USER];
-    document.getElementById('my_username_display').textContent = CURRENT_USER;
-    document.getElementById('my_rank_display').textContent = user ? user.fullRank : 'Member';
-    const profile = getProfile(CURRENT_USER);
+    const user = userDatabase[CURRENT_USER] || { fullRank: 'Member' };
+    const usernameDisplay = document.getElementById('my_username_display');
+    const rankDisplay = document.getElementById('my_rank_display');
     const avatarDisplay = document.getElementById('my_avatar_display');
-    if (profile.avatar) avatarDisplay.innerHTML = '<img src="' + profile.avatar + '" style="width:100%; height:100%; object-fit:cover;">';
-    else avatarDisplay.innerHTML = '🦇';
-    if (document.getElementById('avatar_url')) document.getElementById('avatar_url').value = profile.avatar || '';
-    if (document.getElementById('profile_music')) document.getElementById('profile_music').value = profile.music || '';
-    if (document.getElementById('user_status')) document.getElementById('user_status').value = profile.status || '';
-    if (document.getElementById('user_bio')) document.getElementById('user_bio').value = profile.bio || '';
-    if (profile.mood && document.getElementById('user_mood')) document.getElementById('user_mood').value = profile.mood;
+    const avatarUrlEl = document.getElementById('avatar_url');
+    const musicEl = document.getElementById('profile_music');
+    const statusEl = document.getElementById('user_status');
+    const bioEl = document.getElementById('user_bio');
+    const moodEl = document.getElementById('user_mood');
+    
+    if (usernameDisplay) usernameDisplay.textContent = CURRENT_USER;
+    if (rankDisplay) rankDisplay.textContent = user.fullRank || 'Member';
+    
+    // Get fresh profile data
+    const profile = getProfile(CURRENT_USER);
+    
+    if (avatarDisplay) {
+        if (profile.avatar) avatarDisplay.innerHTML = '<img src="' + profile.avatar + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+        else avatarDisplay.innerHTML = '🦇';
+    }
+    if (avatarUrlEl) avatarUrlEl.value = profile.avatar || '';
+    if (musicEl) musicEl.value = profile.music || '';
+    if (statusEl) statusEl.value = profile.status || '';
+    if (bioEl) bioEl.value = profile.bio || '';
+    if (moodEl && profile.mood) moodEl.value = profile.mood;
 }
 function handleTyping() { if (IS_GUEST || !CURRENT_USER) return; db.ref('typing').set({ user: CURRENT_USER, time: Date.now() }); }
 function checkTyping() {
