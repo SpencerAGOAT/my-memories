@@ -527,11 +527,7 @@ function generateUserId(username) {
 
 // Get rank tag HTML - Custom tags for specific users
 function getRankTag(rank, style, username) {
-    // K badge for contributors
-    if (rank === 'CONTRIB') {
-        return '<span class="rank-tag contrib-style" style="font-family:\'Bahram\',sans-serif;">K</span>';
-    }
-    // Custom tags for specific users
+    // Custom tags ALWAYS override - check first
     if (username && userDatabase[username]?.customTag) {
         const user = userDatabase[username];
         // If custom color is set, use inline styles
@@ -540,6 +536,11 @@ function getRankTag(rank, style, username) {
         }
         return `<span class="rank-tag ${user.style || style || 'member-style'}">${user.customTag}</span>`;
     }
+    // K badge for contributors (only if no custom tag)
+    if (rank === 'CONTRIB') {
+        return '<span class="rank-tag contrib-style" style="font-family:\'Bahram\',sans-serif;">K</span>';
+    }
+    // Default rank tag
     return `<span class="rank-tag ${style || 'member-style'}">${rank || 'M'}</span>`;
 }
 
