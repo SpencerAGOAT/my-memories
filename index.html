@@ -422,18 +422,18 @@
                     <button class="ie-btn" style="background:#333;" onclick="cancelCreateGroup()">Cancel</button>
                 </div>
             </div>
-            <div id="msg_tab_friends" style="display:none; padding:25px; overflow-y:auto; flex:1;">
-                <h3 style="color:#d40000; margin:0 0 25px 0; text-align:center; font-size:18px;">Friends</h3>
-                <div style="background:#0a0000; padding:20px; border:1px solid #400; margin:0 15px 25px 15px; border-radius:6px;">
-                    <label style="color:#d40000; font-size:13px; display:block; margin-bottom:10px; font-weight:bold;">Add a Friend</label>
-                    <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:15px;">
+            <div id="msg_tab_friends" style="display:none; padding:20px; overflow-y:auto; flex:1;">
+                <h3 style="color:#d40000; margin:0 0 20px 0; text-align:center; font-size:16px;">👥 Friends</h3>
+                <div style="background:#0a0000; padding:20px; border:1px solid #400; margin-bottom:20px; border-radius:6px;">
+                    <label style="color:#d40000; font-size:12px; display:block; margin-bottom:10px; font-weight:bold;">➕ Add a Friend</label>
+                    <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:12px;">
                     <button class="ie-btn" style="width:100%;" onclick="sendFriendRequest()">Send Friend Request</button>
                 </div>
-                <div style="color:#d40000; font-size:13px; margin:0 15px 15px 15px; font-weight:bold; border-bottom:1px solid #400; padding-bottom:10px;">Your Friends:</div>
-                <div id="friends_list" style="max-height:220px; overflow-y:auto; padding:0 5px;"></div>
+                <div style="color:#d40000; font-size:12px; margin-bottom:15px; font-weight:bold; border-bottom:1px solid #400; padding-bottom:8px;">Your Friends:</div>
+                <div id="friends_list" style="max-height:200px; overflow-y:auto;"></div>
             </div>
-            <div id="msg_tab_requests" style="display:none; padding:15px; overflow-y:auto;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Friend Requests</h3>
+            <div id="msg_tab_requests" style="display:none; padding:20px; overflow-y:auto; flex:1;">
+                <h3 style="color:#d40000; margin:0 0 20px 0; text-align:center; font-size:16px;">📩 Friend Requests</h3>
                 <div id="friend_requests_list"></div>
             </div>
         </div>
@@ -685,6 +685,17 @@ function startOnlineListener() {
 // Start listening immediately
 startOnlineListener();
 
+// List of deleted/renamed accounts to filter out
+const deletedAccounts = ['pink'];
+
+// Clean up deleted accounts from Firebase
+deletedAccounts.forEach(acc => {
+    db.ref('members/' + acc).remove();
+    db.ref('online/' + acc).remove();
+    db.ref('profiles/' + acc).remove();
+    db.ref('reputation/' + acc).remove();
+});
+
 db.ref('members').on('value', (s) => { 
     const firebaseMembers = s.val() || {};
     // Merge: start with Firebase data, then overlay coreAdmins to preserve customTags etc.
@@ -693,6 +704,8 @@ db.ref('members').on('value', (s) => {
     Object.keys(coreAdmins).forEach(user => {
         userDatabase[user] = { ...userDatabase[user], ...coreAdmins[user] };
     });
+    // Remove deleted/renamed accounts from local database
+    deletedAccounts.forEach(acc => { delete userDatabase[acc]; });
     updateMemberList();
 });
 
@@ -704,6 +717,17 @@ let currentProfileUser = "", idleTime = 0, screensaverActive = false;
 let profileCache = {};
 db.ref('profiles').on('value', (s) => { profileCache = s.val() || {}; });
 function getProfile(username) { return profileCache[username] || {}; }
+
+// REAL-TIME CLUBS CACHE
+let clubsCache = {};
+db.ref('clubs').on('value', (s) => { 
+    clubsCache = s.val() || {}; 
+    // Auto-refresh clubs list if window is open
+    const clubsList = document.getElementById('clubs_list');
+    if (clubsList && document.getElementById('clubs_window').style.display === 'block') {
+        loadAllClubs();
+    }
+});
 
 // Generate unique user ID from username
 function generateUserId(username) {
@@ -917,7 +941,7 @@ function updateMemberList() {
     html += `<div style="color:#0f0; font-size:11px; text-align:center; padding:8px; background:#001100; border:1px solid #030; margin-bottom:10px;">● ${onlineUsers.length} ONLINE</div>`;
     
     if (onlineUsers.length > 0) {
-        onlineUsers.forEach(u => {
+        onlineUsers.filter(u => !deletedAccounts.includes(u.username)).forEach(u => {
             const rankTag = getRankTag(u.rank, u.style, u.username, false); // false = show rank, not custom tag
             html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                 ${rankTag}
@@ -936,7 +960,7 @@ function updateMemberList() {
     const allMembers = { 'ST': [], 'A': [], 'MOD': [], 'CONTRIB': [], 'VIP': [], 'M': [] };
     const rankNames = { 'ST': 'Site Technician', 'A': 'Admins', 'MOD': 'Moderators', 'CONTRIB': 'Contributors', 'VIP': 'VIP', 'M': 'Members' };
     
-    Object.keys(userDatabase).forEach(username => {
+    Object.keys(userDatabase).filter(username => !deletedAccounts.includes(username)).forEach(username => {
         const user = userDatabase[username];
         const rank = user.rank || 'M';
         if (allMembers[rank]) {
@@ -1748,6 +1772,11 @@ function stChangeUsername() {
     userDatabase[newName] = userData;
     delete userDatabase[oldName];
     
+    // Add old name to deleted accounts filter
+    if (!deletedAccounts.includes(oldName)) {
+        deletedAccounts.push(oldName);
+    }
+    
     // Update Firebase members
     db.ref('members/' + newName).set(userData);
     db.ref('members/' + oldName).remove();
@@ -1768,6 +1797,25 @@ function stChangeUsername() {
             db.ref('online/' + oldName).remove();
         }
     });
+    
+    // Update reputation
+    db.ref('reputation/' + oldName).once('value', (s) => {
+        if (s.val()) {
+            db.ref('reputation/' + newName).set(s.val());
+            db.ref('reputation/' + oldName).remove();
+        }
+    });
+    
+    // Update profile comments
+    db.ref('profile_comments/' + oldName).once('value', (s) => {
+        if (s.val()) {
+            db.ref('profile_comments/' + newName).set(s.val());
+            db.ref('profile_comments/' + oldName).remove();
+        }
+    });
+    
+    // Update member list
+    updateMemberList();
     
     if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Renamed "' + oldName + '" to "' + newName + '"</span>';
 }
@@ -1994,13 +2042,23 @@ function switchClubTab(tab, el) {
 function loadAllClubs() {
     const container = document.getElementById('clubs_list');
     if (!container) return;
+    
+    // Always fetch fresh data from Firebase to ensure we have all clubs
     db.ref('clubs').once('value', (s) => {
         const clubs = [];
         s.forEach(c => clubs.push({ id: c.key, ...c.val() }));
+        
+        // Also update cache
+        clubsCache = s.val() || {};
+        
         if (clubs.length === 0) {
             container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No clubs yet. Be the first to create one!</div>';
             return;
         }
+        
+        // Sort by created date (newest first)
+        clubs.sort((a, b) => (b.created || 0) - (a.created || 0));
+        
         container.innerHTML = clubs.map(club => {
             const isMember = club.members && club.members.includes(CURRENT_USER);
             const isOwner = club.owner === CURRENT_USER;
@@ -2109,6 +2167,8 @@ function createClub() {
                 document.getElementById('new_club_name').value = '';
                 document.getElementById('new_club_desc').value = '';
                 checkCanCreateClub();
+                loadAllClubs(); // Refresh browse clubs
+                loadMyClubs(); // Refresh my clubs
             }
         });
     });
@@ -2331,16 +2391,16 @@ function loadFriendsList() {
         const friends = s.val() || {};
         const friendList = Object.keys(friends);
         if (friendList.length === 0) {
-            container.innerHTML = '<div style="color:#666; text-align:center; padding:30px; background:#050000; border:1px dashed #300; border-radius:4px;">No friends yet. Add someone above!</div>';
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:25px; background:#050000; border:1px dashed #300; border-radius:6px;">No friends yet. Add someone above!</div>';
             return;
         }
         container.innerHTML = friendList.map(f => `
-            <div style="display:flex; align-items:center; gap:15px; padding:15px; background:#0a0000; border:1px solid #300; margin-bottom:10px; border-radius:6px; margin-left:10px; margin-right:10px;">
-                <div style="width:45px; height:45px; border-radius:50%; background:#111; border:2px solid #500; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">🦇</div>
-                <span style="color:#d40000; font-weight:bold; font-size:14px; flex:1;">${escapeHtml(f)}</span>
-                <div style="display:flex; gap:10px;">
-                    <button class="ie-btn" style="width:auto; padding:8px 15px; font-size:11px; margin:0;" onclick="startDM('${f}')">💬 DM</button>
-                    <button class="ie-btn" style="width:auto; padding:8px 15px; font-size:11px; margin:0; background:#500;" onclick="removeFriend('${f}')">✗ Remove</button>
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 15px; background:#0a0000; border:1px solid #400; margin-bottom:8px; border-radius:6px;">
+                <div style="width:40px; height:40px; border-radius:50%; background:#111; border:2px solid #500; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🦇</div>
+                <span style="color:#d40000; font-weight:bold; font-size:13px; flex:1;">${escapeHtml(f)}</span>
+                <div style="display:flex; gap:8px;">
+                    <button class="ie-btn" style="width:auto; padding:6px 12px; font-size:10px; margin:0;" onclick="startDM('${f}')">💬 DM</button>
+                    <button class="ie-btn" style="width:auto; padding:6px 12px; font-size:10px; margin:0; background:#500;" onclick="removeFriend('${f}')">✗</button>
                 </div>
             </div>
         `).join('');
@@ -2375,16 +2435,19 @@ function loadFriendRequests() {
         if (countEl) countEl.textContent = requests.length > 0 ? `(${requests.length})` : '';
         
         if (requests.length === 0) {
-            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No pending requests.</div>';
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:25px; background:#050000; border:1px dashed #300; border-radius:6px;">No pending friend requests.</div>';
             return;
         }
         container.innerHTML = requests.map(r => `
-            <div class="friend-item">
-                <div class="dm-avatar">🦇</div>
-                <span style="color:#d40000;">${escapeHtml(r.from)}</span>
-                <div class="friend-actions">
-                    <button class="ie-btn" style="width:auto; padding:5px 10px; font-size:10px;" onclick="acceptFriend('${r.from}')">Accept</button>
-                    <button class="ie-btn" style="width:auto; padding:5px 10px; font-size:10px; background:#333;" onclick="declineFriend('${r.from}')">Decline</button>
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 15px; background:#0a0000; border:1px solid #400; margin-bottom:8px; border-radius:6px;">
+                <div style="width:40px; height:40px; border-radius:50%; background:#111; border:2px solid #ffd700; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🦇</div>
+                <div style="flex:1;">
+                    <span style="color:#d40000; font-weight:bold; font-size:13px;">${escapeHtml(r.from)}</span>
+                    <div style="color:#666; font-size:10px;">wants to be friends</div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="ie-btn" style="width:auto; padding:6px 15px; font-size:10px; margin:0; background:#040;" onclick="acceptFriend('${r.from}')">✓ Accept</button>
+                    <button class="ie-btn" style="width:auto; padding:6px 15px; font-size:10px; margin:0; background:#400;" onclick="declineFriend('${r.from}')">✗ Decline</button>
                 </div>
             </div>
         `).join('');
@@ -2445,6 +2508,20 @@ function startDM(username) {
                 participants[username] = true;
                 db.ref('dms/' + convoId).set({ participants: participants, created: Date.now() });
             }
+            // Open messages window if not already open
+            const msgWin = document.getElementById('messages_window');
+            if (msgWin.style.display !== 'block') {
+                msgWin.style.display = 'block';
+                document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10");
+                msgWin.style.zIndex = "200";
+            }
+            // Switch to DMs tab
+            document.querySelectorAll('#messages_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
+            document.querySelector('#messages_window .mgmt-sidebar-item').classList.add('active');
+            ['dms', 'groups', 'friends', 'requests'].forEach(t => {
+                const panel = document.getElementById('msg_tab_' + t);
+                if (panel) panel.style.display = t === 'dms' ? 'flex' : 'none';
+            });
             openDM(convoId, username);
         });
     });
