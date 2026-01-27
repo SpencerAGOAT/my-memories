@@ -378,18 +378,36 @@ const db = firebase.database();
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
 
-// USER DATABASE
+// USER DATABASE - ENCODED (use atob() to decode)
+// To decrypt: Open browser console and type: atob("encodedString")
+const _d = atob; // decoder
+const _e = { // encoded credentials [username, password]
+    a: [_d("bG9zZXJzeW5kaWNhdGU="), _d("ZG91YmxlZHV0Y2hpZTAx")],
+    b: [_d("bm9zZWV5ZWRlYXI="), _d("d3Rmb21mZ2Zhbmd0YXNpYWZvcmRhYnJvczIx")],
+    c: [_d("b2xlZw=="), _d("bWV0aHliZXRoeTg5IQ==")],
+    d: [_d("bm9ydGg="), _d("bG1hb2xlZ2FjeTEyISQk")],
+    e: [_d("anlyYW0="), _d("aWxvdmVDb29raWVzMTIzNC4=")],
+    f: [_d("WXVza3k="), _d("U2tpbGxldDEyIQ==")],
+    g: [_d("bm9hYm9ydGlvbnM="), _d("RGlvbjA3MTM=")],
+    h: [_d("ZXBoZW1lcmFs"), _d("U2V4eVNvbGl0YWlyZTEyMw==")],
+    i: [_d("Z3VhcmRlZHBhbg=="), _d("ZnJlZWhvb2tlcnMxMjM=")],
+    j: [_d("bmlnZ2Vy"), _d("OMKjYTlVMDNybzNxeQ==")],
+    k: [_d("ZWxl"), _d("Q09NR09ETE9SREJPU1NFWFRPUVRFUTI4MjcxISEhMQ==")],
+    l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")]
+};
 const coreAdmins = {
-    "losersyndicate": { pass: "doubledutchie01", rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
-    "noseeyedear": { pass: "wtfomfgfangtasiafordabros21", rank: "A", fullRank: "Admin", style: "noseeyedear-style", isAdmin: true, customTag: "N" },
-    "oleg": { pass: "methybethy89!", rank: "A", fullRank: "Admin", style: "oleg-style", isAdmin: true, customTag: "O" },
-    "north": { pass: "lmaolegacy12!$$", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    "jyrum": { pass: "iloveCookies1234.", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    "Yusky": { pass: "Skillet12!", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    "noabortions": { pass: "Dion0713", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    "ephemeral": { pass: "SexySolitaire123", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    "guardedpan": { pass: "freehookers123", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    "nigger": { pass: "8£a9U03ro3qy", rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
+    [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
+    [_e.b[0]]: { pass: _e.b[1], rank: "A", fullRank: "Admin", style: "noseeyedear-style", isAdmin: true, customTag: "N" },
+    [_e.c[0]]: { pass: _e.c[1], rank: "A", fullRank: "Admin", style: "oleg-style", isAdmin: true, customTag: "O" },
+    [_e.d[0]]: { pass: _e.d[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.e[0]]: { pass: _e.e[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.f[0]]: { pass: _e.f[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.g[0]]: { pass: _e.g[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.h[0]]: { pass: _e.h[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.i[0]]: { pass: _e.i[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.j[0]]: { pass: _e.j[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.k[0]]: { pass: _e.k[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.l[0]]: { pass: _e.l[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
 
