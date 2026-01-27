@@ -734,43 +734,42 @@ function saveProfile() {
     const musicEl = document.getElementById('profile_music');
     const avatarUrlEl = document.getElementById('avatar_url');
     
-    const newStatus = statusEl ? statusEl.value.trim() : userProfile.status;
-    const newBio = bioEl ? bioEl.value.trim() : userProfile.bio;
-    const newMood = moodEl ? moodEl.value : userProfile.mood;
-    const newMusic = musicEl ? musicEl.value.trim() : userProfile.music;
-    const newAvatar = avatarUrlEl ? avatarUrlEl.value.trim() : userProfile.avatar;
+    const newStatus = statusEl ? statusEl.value.trim() : userProfile.status || '';
+    const newBio = bioEl ? bioEl.value.trim() : userProfile.bio || '';
+    const newMood = moodEl ? moodEl.value : userProfile.mood || '';
+    const newMusic = musicEl ? musicEl.value.trim() : userProfile.music || '';
+    const newAvatar = avatarUrlEl ? avatarUrlEl.value.trim() : userProfile.avatar || '';
     
     // Update local profile object
     userProfile.status = newStatus;
     userProfile.bio = newBio;
     userProfile.mood = newMood;
     userProfile.music = newMusic;
-    if (newAvatar) userProfile.avatar = newAvatar;
+    userProfile.avatar = newAvatar;
     
-    // Create complete profile data object
+    // Create complete profile data object (no ServerValue.TIMESTAMP - can cause issues)
     const profileData = { 
         status: newStatus, 
         bio: newBio, 
         mood: newMood, 
         music: newMusic, 
-        avatar: userProfile.avatar || '',
-        lastUpdated: firebase.database.ServerValue.TIMESTAMP 
+        avatar: newAvatar,
+        lastUpdated: Date.now()
     };
     
     console.log('Saving profile for', CURRENT_USER, ':', profileData);
     
-    // Use set() to ensure all fields are saved (not just updated)
-    db.ref('profiles/' + CURRENT_USER).set(profileData)
-        .then(() => { 
+    // Use set() to create/overwrite entire profile
+    db.ref('profiles/' + CURRENT_USER).set(profileData, (error) => {
+        if (error) {
+            console.error('Save failed:', error);
+            alert('Failed to save profile: ' + error.message);
+        } else {
             console.log('Profile saved successfully');
-            // Update cache
             profileCache[CURRENT_USER] = { ...userProfile };
-            alert('Profile saved!'); 
-        })
-        .catch((err) => { 
-            console.error('Save failed:', err); 
-            alert('Failed to save profile. Please try again.'); 
-        });
+            alert('Profile saved!');
+        }
+    });
 }
 
 function updateAvatar() {
@@ -783,26 +782,9 @@ function updateAvatar() {
     
     if (url) {
         // URL provided - save directly
-        userProfile.avatar = url;
-        
-        // Save avatar to profile
-        db.ref('profiles/' + CURRENT_USER).update({ 
-            avatar: url,
-            lastUpdated: firebase.database.ServerValue.TIMESTAMP 
-        })
-        .then(() => {
-            console.log('Avatar URL saved:', url);
-            profileCache[CURRENT_USER] = { ...profileCache[CURRENT_USER], avatar: url };
-            if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-            alert('Avatar updated and saved!');
-        })
-        .catch((err) => { 
-            console.error('Avatar update failed:', err); 
-            alert('Failed to update avatar.'); 
-        });
-        
+        saveAvatarToFirebase(url, avatarDisplay, urlEl);
     } else if (fileInput && fileInput.files[0]) {
-        // File upload
+        // File upload to Cloudinary first
         alert('Uploading avatar...');
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
@@ -812,24 +794,7 @@ function updateAvatar() {
             .then(res => res.json())
             .then(data => {
                 if (data.secure_url) {
-                    userProfile.avatar = data.secure_url;
-                    
-                    // Save to Firebase
-                    db.ref('profiles/' + CURRENT_USER).update({ 
-                        avatar: data.secure_url,
-                        lastUpdated: firebase.database.ServerValue.TIMESTAMP 
-                    })
-                    .then(() => {
-                        console.log('Avatar uploaded and saved:', data.secure_url);
-                        profileCache[CURRENT_USER] = { ...profileCache[CURRENT_USER], avatar: data.secure_url };
-                        if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + data.secure_url + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-                        if (urlEl) urlEl.value = data.secure_url;
-                        alert('Avatar uploaded and saved!');
-                    })
-                    .catch((err) => { 
-                        console.error('Avatar save failed:', err); 
-                        alert('Upload succeeded but failed to save. Try again.'); 
-                    });
+                    saveAvatarToFirebase(data.secure_url, avatarDisplay, urlEl);
                 } else {
                     alert('Upload failed: ' + (data.error?.message || 'Unknown error'));
                 }
@@ -843,6 +808,38 @@ function updateAvatar() {
     }
 }
 
+function saveAvatarToFirebase(avatarUrl, avatarDisplay, urlEl) {
+    userProfile.avatar = avatarUrl;
+    
+    // Get current profile first, then merge with new avatar
+    db.ref('profiles/' + CURRENT_USER).once('value', (snapshot) => {
+        const currentProfile = snapshot.val() || {};
+        const updatedProfile = {
+            status: currentProfile.status || userProfile.status || '',
+            bio: currentProfile.bio || userProfile.bio || '',
+            mood: currentProfile.mood || userProfile.mood || '',
+            music: currentProfile.music || userProfile.music || '',
+            avatar: avatarUrl,
+            lastUpdated: Date.now()
+        };
+        
+        // Save complete profile
+        db.ref('profiles/' + CURRENT_USER).set(updatedProfile, (error) => {
+            if (error) {
+                console.error('Avatar save failed:', error);
+                alert('Failed to save avatar: ' + error.message);
+            } else {
+                console.log('Avatar saved:', avatarUrl);
+                profileCache[CURRENT_USER] = { ...updatedProfile };
+                userProfile = { ...updatedProfile };
+                if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + avatarUrl + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+                if (urlEl) urlEl.value = avatarUrl;
+                alert('Avatar saved!');
+            }
+        });
+    });
+}
+
 function updateProfileMusic() {
     if (!CURRENT_USER || IS_GUEST) { alert('Please log in first.'); return; }
     
@@ -851,18 +848,29 @@ function updateProfileMusic() {
     
     userProfile.music = url;
     
-    db.ref('profiles/' + CURRENT_USER).update({ 
-        music: url,
-        lastUpdated: firebase.database.ServerValue.TIMESTAMP 
-    })
-    .then(() => { 
-        console.log('Profile music saved:', url);
-        profileCache[CURRENT_USER] = { ...profileCache[CURRENT_USER], music: url };
-        alert('Profile music saved!'); 
-    })
-    .catch((err) => { 
-        console.error('Music save failed:', err); 
-        alert('Failed to save music.'); 
+    // Get current profile first, then merge with new music
+    db.ref('profiles/' + CURRENT_USER).once('value', (snapshot) => {
+        const currentProfile = snapshot.val() || {};
+        const updatedProfile = {
+            status: currentProfile.status || userProfile.status || '',
+            bio: currentProfile.bio || userProfile.bio || '',
+            mood: currentProfile.mood || userProfile.mood || '',
+            music: url,
+            avatar: currentProfile.avatar || userProfile.avatar || '',
+            lastUpdated: Date.now()
+        };
+        
+        db.ref('profiles/' + CURRENT_USER).set(updatedProfile, (error) => {
+            if (error) {
+                console.error('Music save failed:', error);
+                alert('Failed to save music: ' + error.message);
+            } else {
+                console.log('Profile music saved:', url);
+                profileCache[CURRENT_USER] = { ...updatedProfile };
+                userProfile = { ...updatedProfile };
+                alert('Profile music saved!');
+            }
+        });
     });
 }
 
