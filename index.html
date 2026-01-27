@@ -316,7 +316,7 @@
                     <h4 style="color:#ff00ff;">🏷️ Custom Tags</h4>
                     <input type="text" id="st_tag_username" class="ie-input" placeholder="Username">
                     <div style="display:flex; gap:5px;">
-                        <input type="text" id="st_tag_letter" class="ie-input" placeholder="Tag (1 char)" maxlength="1" style="width:80px;">
+                        <input type="text" id="st_tag_letter" class="ie-input" placeholder="Tag text" style="width:100px;">
                         <input type="text" id="st_tag_color" class="ie-input" placeholder="Color (hex)" style="flex:1;" value="#ff00ff">
                     </div>
                     <div style="display:flex; gap:5px; margin-top:5px;">
@@ -501,7 +501,13 @@ function startOnlineListener() {
 startOnlineListener();
 
 db.ref('members').on('value', (s) => { 
-    userDatabase = { ...coreAdmins, ...(s.val() || {}) }; 
+    const firebaseMembers = s.val() || {};
+    // Merge: start with Firebase data, then overlay coreAdmins to preserve customTags etc.
+    userDatabase = { ...firebaseMembers };
+    // Ensure coreAdmins properties always take precedence
+    Object.keys(coreAdmins).forEach(user => {
+        userDatabase[user] = { ...userDatabase[user], ...coreAdmins[user] };
+    });
     updateMemberList();
 });
 
@@ -526,9 +532,9 @@ function generateUserId(username) {
 }
 
 // Get rank tag HTML - Custom tags for specific users
-function getRankTag(rank, style, username) {
-    // Custom tags ALWAYS override - check first
-    if (username && userDatabase[username]?.customTag) {
+function getRankTag(rank, style, username, useCustomTag = true) {
+    // Custom tags ALWAYS override in chat - check first (if useCustomTag is true)
+    if (useCustomTag && username && userDatabase[username]?.customTag) {
         const user = userDatabase[username];
         // If custom color is set, use inline styles
         if (user.customTagColor) {
@@ -536,7 +542,7 @@ function getRankTag(rank, style, username) {
         }
         return `<span class="rank-tag ${user.style || style || 'member-style'}">${user.customTag}</span>`;
     }
-    // K badge for contributors (only if no custom tag)
+    // K badge for contributors (only if no custom tag or useCustomTag is false)
     if (rank === 'CONTRIB') {
         return '<span class="rank-tag contrib-style" style="font-family:\'Bahram\',sans-serif;">K</span>';
     }
@@ -722,7 +728,7 @@ function updateMemberList() {
     
     if (onlineUsers.length > 0) {
         onlineUsers.forEach(u => {
-            const rankTag = getRankTag(u.rank, u.style, u.username);
+            const rankTag = getRankTag(u.rank, u.style, u.username, false); // false = show rank, not custom tag
             html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                 ${rankTag}
                 <span style="color:#0f0; font-size:8px;">●</span>
@@ -755,7 +761,7 @@ function updateMemberList() {
             html += `<div class="member-category">${rankNames[rank]}</div>`;
             allMembers[rank].forEach(u => {
                 const isOnline = onlineUsers.some(ou => ou.username === u.username);
-                const rankTag = getRankTag(u.rank, u.style, u.username);
+                const rankTag = getRankTag(u.rank, u.style, u.username, false); // false = show rank, not custom tag
                 html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                     ${rankTag}
                     ${isOnline ? '<span style="color:#0f0; font-size:8px;">●</span>' : '<span style="color:#555; font-size:8px;">○</span>'}
@@ -1403,23 +1409,23 @@ function stSetCustomTag() {
     const resultEl = document.getElementById('st_tag_result');
     if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
     const username = document.getElementById('st_tag_username').value.trim();
-    const tagLetter = document.getElementById('st_tag_letter').value.trim().toUpperCase();
+    const tagText = document.getElementById('st_tag_letter').value.trim();
     const tagColor = document.getElementById('st_tag_color').value.trim();
     if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
     if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
-    if (!tagLetter) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a tag letter.</span>'; return; }
+    if (!tagText) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter tag text.</span>'; return; }
     
     // Create unique style name for this user
     const styleName = username.toLowerCase().replace(/[^a-z0-9]/g, '') + '-custom-style';
     
     // Update user database
-    userDatabase[username].customTag = tagLetter;
+    userDatabase[username].customTag = tagText;
     userDatabase[username].customTagColor = tagColor;
     userDatabase[username].style = styleName;
     
     // Save to Firebase
     db.ref('members/' + username).update({ 
-        customTag: tagLetter, 
+        customTag: tagText, 
         customTagColor: tagColor,
         style: styleName 
     });
@@ -1432,7 +1438,7 @@ function stSetCustomTag() {
     styleEl.textContent = '.' + styleName + ' { color: ' + tagColor + '; border-color: ' + tagColor + '; background: ' + tagColor + '22; }';
     document.head.appendChild(styleEl);
     
-    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Set tag "' + tagLetter + '" for ' + username + ' with color ' + tagColor + '</span>';
+    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Set tag "' + tagText + '" for ' + username + ' with color ' + tagColor + '</span>';
     loadAllMembers();
 }
 
