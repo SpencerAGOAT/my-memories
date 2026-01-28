@@ -423,18 +423,17 @@
                 </div>
             </div>
             <div id="msg_tab_friends" style="display:none; padding:20px; overflow-y:auto; flex:1;">
-                <h3 style="color:#d40000; margin:0 0 20px 0; text-align:center; font-size:16px;">👥 Friends</h3>
-                <div style="background:#0a0000; padding:20px; border:1px solid #400; margin-bottom:20px; border-radius:6px;">
-                    <label style="color:#d40000; font-size:12px; display:block; margin-bottom:10px; font-weight:bold;">➕ Add a Friend</label>
-                    <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:12px;">
+                <h3 style="color:#d40000; margin:0 0 15px 0; font-size:16px;">👥 Your Friends</h3>
+                <div id="friends_list" style="min-height:100px; max-height:280px; overflow-y:auto; margin-bottom:20px; border:1px solid #300; border-radius:4px; background:#050000;"></div>
+                <div style="background:#0a0000; padding:15px; border:1px solid #400; border-radius:6px;">
+                    <label style="color:#d40000; font-size:12px; display:block; margin-bottom:8px; font-weight:bold;">➕ Add a Friend</label>
+                    <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:10px;">
                     <button class="ie-btn" style="width:100%;" onclick="sendFriendRequest()">Send Friend Request</button>
                 </div>
-                <div style="color:#d40000; font-size:12px; margin-bottom:15px; font-weight:bold; border-bottom:1px solid #400; padding-bottom:8px;">Your Friends:</div>
-                <div id="friends_list" style="max-height:200px; overflow-y:auto;"></div>
             </div>
             <div id="msg_tab_requests" style="display:none; padding:20px; overflow-y:auto; flex:1;">
-                <h3 style="color:#d40000; margin:0 0 20px 0; text-align:center; font-size:16px;">📩 Friend Requests</h3>
-                <div id="friend_requests_list"></div>
+                <h3 style="color:#d40000; margin:0 0 15px 0; font-size:16px;">📩 Friend Requests</h3>
+                <div id="friend_requests_list" style="min-height:100px;"></div>
             </div>
         </div>
     </div>
@@ -544,6 +543,38 @@
                     <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLookupUser()">Lookup</button>
                     <div id="st_lookup_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
                 </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">➕ Create New User</h4>
+                    <input type="text" id="st_create_username" class="ie-input" placeholder="Username">
+                    <input type="text" id="st_create_password" class="ie-input" placeholder="Password">
+                    <select id="st_create_rank" class="ie-input">
+                        <option value="member">Member</option>
+                        <option value="vip">VIP</option>
+                        <option value="contrib">Contributor</option>
+                        <option value="mod">Moderator</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stCreateUser()">Create User</button>
+                    <div id="st_create_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">⭐ Reputation Management</h4>
+                    <input type="text" id="st_rep_username" class="ie-input" placeholder="Username">
+                    <div style="display:flex; gap:5px; margin-bottom:5px;">
+                        <input type="number" id="st_rep_amount" class="ie-input" placeholder="Amount (+/-)" style="flex:1;">
+                        <button class="ie-btn" style="width:auto; padding:8px 15px; background:#030; border-color:#0f0;" onclick="stModifyRep(1)">+ Add</button>
+                        <button class="ie-btn" style="width:auto; padding:8px 15px; background:#300; border-color:#f00;" onclick="stModifyRep(-1)">- Remove</button>
+                    </div>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stSetRep()">Set Exact Rep</button>
+                    <div id="st_rep_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">💬 Admin Comment</h4>
+                    <input type="text" id="st_comment_username" class="ie-input" placeholder="Target username">
+                    <textarea id="st_comment_text" class="ie-input" placeholder="Comment text..." style="height:60px; resize:none;"></textarea>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLeaveComment()">Post Comment as Admin</button>
+                    <div id="st_comment_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -630,7 +661,6 @@ const _e = { // encoded credentials [username, password]
     g: [_d("bm9hYm9ydGlvbnM="), _d("RGlvbjA3MTM=")],
     h: [_d("ZXBoZW1lcmFs"), _d("U2V4eVNvbGl0YWlyZTEyMw==")],
     i: [_d("Z3VhcmRlZHBhbg=="), _d("ZnJlZWhvb2tlcnMxMjM=")],
-    j: [_d("bmlnZ2Vy"), _d("OMKjYTlVMDNybzNxeQ==")],
     k: [_d("ZWxl"), _d("Q09NR09ETE9SREJPU1NFWFRPUVRFUTI4MjcxISEhMQ==")],
     l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")],
     m: [_d("Ym9sb2s="), _d("amlsbGFpc2FmYWc=")],
@@ -639,7 +669,19 @@ const _e = { // encoded credentials [username, password]
     p: [_d("aGVudGFp"), _d("cm9ibG94bWFueDVANjdAMTEyMUA2NzY3")],
     q: [_d("cmVk"), _d("ZGlja2dyYXlzb25idWRkeTIz")],
     r: [_d("c2x1dA=="), _d("b3NoYmFnb3NoMTc4Ng==")],
-    s: [_d("cG9uY2hvc2hvb3Rlcg=="), _d("djhlZVA4b0xPeHBJaE8=")]
+    s: [_d("cG9uY2hvc2hvb3Rlcg=="), _d("djhlZVA4b0xPeHBJaE8=")],
+    // New users
+    t: [_d("MA=="), _d("Z2ppMjMxOWpoaGo5ZXM=")],
+    u: [_d("cGFyYXNpdGU="), _d("czZwZXJzYWl5YW50YWNvMw==")],
+    v: [_d("aGVhcnRhY2hl"), _d("QWJieUFiYnkxMg==")],
+    w: [_d("Z29k"), _d("VHVuM3h4WipmbCk=")],
+    x: [_d("RlJFRVpFUkJVUk4="), _d("ZnJlZXphbWFuZTU2NA==")],
+    y: [_d("bWFwbGUuc3lydXBw"), _d("d2lnZ2FwYXNzd29yZDEyMw==")],
+    z: [_d("ZGlvbg=="), _d("JDEwMDM1NTg3")],
+    aa: [_d("TGVtb25hZGU="), _d("QnV0dEJvb3R5TmFrZWQxMjM=")],
+    ab: [_d("c3VwZXJuaWdnYXBlbmlzNjc="), _d("bmlnZ2FuaWdnYW5pZ2dh")],
+    ac: [_d("aWNl"), _d("cHJveGlzY29vbDAwMDA2NjY2")],
+    ad: [_d("Yml0ZQ=="), _d("aG9ybnlidWxsczExcw==")]
 };
 const coreAdmins = {
     [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
@@ -651,7 +693,6 @@ const coreAdmins = {
     [_e.g[0]]: { pass: _e.g[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.h[0]]: { pass: _e.h[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.i[0]]: { pass: _e.i[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.j[0]]: { pass: _e.j[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.k[0]]: { pass: _e.k[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.l[0]]: { pass: _e.l[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.m[0]]: { pass: _e.m[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
@@ -660,7 +701,19 @@ const coreAdmins = {
     [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
     [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
     [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.s[0]]: { pass: _e.s[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
+    [_e.s[0]]: { pass: _e.s[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    // New users
+    [_e.t[0]]: { pass: _e.t[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.u[0]]: { pass: _e.u[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.v[0]]: { pass: _e.v[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.w[0]]: { pass: _e.w[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.x[0]]: { pass: _e.x[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.y[0]]: { pass: _e.y[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.z[0]]: { pass: _e.z[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.aa[0]]: { pass: _e.aa[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ab[0]]: { pass: _e.ab[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ac[0]]: { pass: _e.ac[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ad[0]]: { pass: _e.ad[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
 
@@ -686,7 +739,7 @@ function startOnlineListener() {
 startOnlineListener();
 
 // List of deleted/renamed accounts to filter out
-const deletedAccounts = ['pink'];
+const deletedAccounts = ['pink', 'nigger'];
 
 // Clean up deleted accounts from Firebase
 deletedAccounts.forEach(acc => {
@@ -1217,7 +1270,14 @@ function openProfileWindow(username) {
     const pwCommentForm = document.getElementById('pw_comment_form');
     
     if (pwTitle) pwTitle.textContent = '👤 ' + username + "'s Profile";
-    if (pwName) { pwName.textContent = username; pwName.className = userData.style || 'member-style'; }
+    if (pwName) { 
+        pwName.textContent = username; 
+        pwName.className = userData.style || 'member-style'; 
+        pwName.style.background = 'transparent'; 
+        pwName.style.backgroundColor = 'transparent';
+        pwName.style.border = 'none';
+        pwName.style.padding = '0';
+    }
     if (pwRank) pwRank.textContent = userData.fullRank || 'Member';
     if (pwUserId) pwUserId.textContent = 'User ID: ' + generateUserId(username);
     
@@ -2009,6 +2069,105 @@ function stLookupUser() {
     });
 }
 
+// ST CREATE USER - Creates new account in Firebase
+function stCreateUser() {
+    const resultEl = document.getElementById('st_create_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    
+    const username = document.getElementById('st_create_username').value.trim();
+    const password = document.getElementById('st_create_password').value;
+    const rankSelect = document.getElementById('st_create_rank').value;
+    
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!password || password.length < 4) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 4 characters.</span>'; return; }
+    if (userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username already exists!</span>'; return; }
+    
+    const rankConfig = {
+        'member': { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false },
+        'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', isAdmin: false },
+        'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', isAdmin: false },
+        'mod': { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', isAdmin: false, isMod: true },
+        'admin': { rank: 'A', fullRank: 'Admin', style: 'admin-style', isAdmin: true }
+    };
+    
+    const newUser = { pass: password, ...rankConfig[rankSelect] };
+    
+    db.ref('members/' + username).set(newUser).then(() => {
+        userDatabase[username] = newUser;
+        updateMemberList();
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User "' + escapeHtml(username) + '" created!</span><br><span style="color:#888; font-size:9px;">Login: ' + escapeHtml(username) + ' / ' + escapeHtml(password) + '</span>';
+        document.getElementById('st_create_username').value = '';
+        document.getElementById('st_create_password').value = '';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+// ST MODIFY REPUTATION
+function stModifyRep(direction) {
+    const resultEl = document.getElementById('st_rep_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    
+    const username = document.getElementById('st_rep_username').value.trim();
+    const amount = parseInt(document.getElementById('st_rep_amount').value) || 1;
+    
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    db.ref('reputation/' + username).once('value', (s) => {
+        const current = s.val() || { score: 0, givers: {} };
+        const change = direction > 0 ? amount : -amount;
+        current.score = (current.score || 0) + change;
+        
+        db.ref('reputation/' + username).set(current).then(() => {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + escapeHtml(username) + ' rep: ' + current.score + ' (' + (change > 0 ? '+' : '') + change + ')</span>';
+        });
+    });
+}
+
+function stSetRep() {
+    const resultEl = document.getElementById('st_rep_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    
+    const username = document.getElementById('st_rep_username').value.trim();
+    const amount = parseInt(document.getElementById('st_rep_amount').value);
+    
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (isNaN(amount)) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a valid number.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    db.ref('reputation/' + username).set({ score: amount, givers: {} }).then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + escapeHtml(username) + ' rep set to: ' + amount + '</span>';
+    });
+}
+
+// ST LEAVE COMMENT
+function stLeaveComment() {
+    const resultEl = document.getElementById('st_comment_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
+    
+    const targetUser = document.getElementById('st_comment_username').value.trim();
+    const commentText = document.getElementById('st_comment_text').value.trim();
+    
+    if (!targetUser) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a target username.</span>'; return; }
+    if (!commentText) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter comment text.</span>'; return; }
+    if (!userDatabase[targetUser]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    const comment = {
+        from: CURRENT_USER,
+        text: commentText,
+        timestamp: Date.now(),
+        isAdmin: true
+    };
+    
+    db.ref('profile_comments/' + targetUser).push(comment).then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Comment posted on ' + escapeHtml(targetUser) + '\'s profile</span>';
+        document.getElementById('st_comment_text').value = '';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
 function uploadVIPImage() {
     const user = userDatabase[CURRENT_USER]; if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
     const file = document.getElementById('vip_image_picker').files[0]; if (!file) { alert('Select image.'); return; }
@@ -2391,12 +2550,12 @@ function loadFriendsList() {
         const friends = s.val() || {};
         const friendList = Object.keys(friends);
         if (friendList.length === 0) {
-            container.innerHTML = '<div style="color:#666; text-align:center; padding:25px; background:#050000; border:1px dashed #300; border-radius:6px;">No friends yet. Add someone above!</div>';
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No friends yet. Add someone below!</div>';
             return;
         }
         container.innerHTML = friendList.map(f => `
-            <div style="display:flex; align-items:center; gap:12px; padding:12px 15px; background:#0a0000; border:1px solid #400; margin-bottom:8px; border-radius:6px;">
-                <div style="width:40px; height:40px; border-radius:50%; background:#111; border:2px solid #500; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🦇</div>
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 15px; background:#0a0000; border-bottom:1px solid #300;">
+                <div style="width:36px; height:36px; border-radius:50%; background:#111; border:2px solid #500; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;">🦇</div>
                 <span style="color:#d40000; font-weight:bold; font-size:13px; flex:1;">${escapeHtml(f)}</span>
                 <div style="display:flex; gap:8px;">
                     <button class="ie-btn" style="width:auto; padding:6px 12px; font-size:10px; margin:0;" onclick="startDM('${f}')">💬 DM</button>
