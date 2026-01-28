@@ -129,6 +129,21 @@
         .mgmt-sidebar-item:hover { background: #150000; color: #d40000; }
         .mgmt-sidebar-item.active { background: #200000; color: #d40000; border-left: 3px solid #d40000; }
         .user-id-display { font-family: monospace; color: #555; font-size: 9px; background: #050000; padding: 8px; border-top: 1px solid #300; margin-top: 10px; }
+        /* ANNOUNCEMENT STYLES */
+        @keyframes announceIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        .announce-type-info { border-color: #4488ff !important; }
+        .announce-type-info #announce_icon { color: #4488ff; }
+        .announce-type-info #announce_title { color: #4488ff; }
+        .announce-type-update { border-color: #00cc66 !important; }
+        .announce-type-update #announce_icon { color: #00cc66; }
+        .announce-type-update #announce_title { color: #00cc66; }
+        .announce-type-warning { border-color: #ffaa00 !important; }
+        .announce-type-warning #announce_icon { color: #ffaa00; }
+        .announce-type-warning #announce_title { color: #ffaa00; }
+        .announce-type-event { border-color: #ff66ff !important; }
+        .announce-type-event #announce_icon { color: #ff66ff; }
+        .announce-type-event #announce_title { color: #ff66ff; }
         /* MOBILE */
         @media screen and (max-width: 900px) {
             * { cursor: auto !important; }
@@ -223,6 +238,16 @@
         <div style="padding:12px 15px; background:#050000; border-top:1px solid #400;">
             <div style="color:#444; font-size:9px; font-family:monospace;" id="pw_user_id">User ID: ...</div>
         </div>
+    </div>
+</div>
+<!-- SITE ANNOUNCEMENT OVERLAY -->
+<div id="announcement_overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; display:none; justify-content:center; align-items:center;">
+    <div id="announcement_box" style="background:linear-gradient(180deg, #1a0808, #0a0000); border:2px solid #d40000; border-radius:8px; padding:30px 40px; max-width:600px; width:90%; text-align:center; box-shadow:0 0 50px rgba(139,0,0,0.5); animation:announceIn 0.5s ease;">
+        <div id="announce_icon" style="font-size:40px; margin-bottom:15px;">📢</div>
+        <div id="announce_title" style="color:#d40000; font-size:18px; font-weight:bold; margin-bottom:15px;"></div>
+        <div id="announce_text" style="color:#ddd; font-size:14px; line-height:1.6; min-height:50px;"></div>
+        <div id="announce_cursor" style="display:inline-block; width:2px; height:16px; background:#d40000; margin-left:2px; animation:blink 0.7s infinite;"></div>
+        <div style="margin-top:20px; color:#666; font-size:10px;">Click anywhere to dismiss</div>
     </div>
 </div>
 <div id="boot-screen" onclick="beginSession()">
@@ -478,7 +503,7 @@
         <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
             <div id="admin_tab_apps"><h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option></select><input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()"></div><div id="all_applications" style="max-height:380px; overflow-y:auto;"></div></div>
             <div id="admin_tab_members" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3><div id="all_members" style="max-height:420px; overflow-y:auto;"></div></div>
-            <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
+            <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>🗑️ Delete Message</h4><input type="text" id="delete_msg_id" class="ie-input" placeholder="Message ID (from chat 3-dot menu)"><button class="ie-btn" style="background:#700;" onclick="deleteMessageById()">Delete Message</button><div id="delete_msg_result" style="margin-top:5px; font-size:10px;"></div></div><div class="admin-section"><h4>Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
             <div id="admin_tab_announcements" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Lounge Announcements</h3><div class="admin-section"><h4>Pin Message</h4><input type="text" id="pin_message" class="ie-input" placeholder="Message to pin in the lounge..."><div style="display:flex; gap:10px;"><button class="ie-btn" style="flex:1;" onclick="pinMessage()">📌 Pin Message</button><button class="ie-btn" style="flex:1; background:#333;" onclick="clearPin()">Clear Pin</button></div></div><div class="admin-section"><h4>Chat Management</h4><button class="ie-btn" style="background: #500;" onclick="clearChat()">🗑️ Clear All Messages</button><button class="ie-btn" style="background: #333; margin-top:5px;" onclick="exportChat()">📥 Export Chat Log</button></div></div>
             <div id="admin_tab_bot" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Eric Northman Bot</h3><div class="admin-section"><h4>Send as Eric</h4><textarea id="bot_message" class="ie-input" placeholder="Eric says..." style="height:80px; resize:none;"></textarea><button class="ie-btn" onclick="sendBotMessage()">🧛 Send Message</button></div></div>
             <div id="admin_tab_videos" style="display:none;">
@@ -597,6 +622,25 @@
                     <textarea id="st_comment_text" class="ie-input" placeholder="Comment text..." style="height:60px; resize:none;"></textarea>
                     <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLeaveComment()">Post Comment as Admin</button>
                     <div id="st_comment_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">📢 Site-Wide Announcement</h4>
+                    <input type="text" id="st_announce_title" class="ie-input" placeholder="Announcement title (optional)">
+                    <textarea id="st_announce_text" class="ie-input" placeholder="Announcement message..." style="height:80px; resize:none;"></textarea>
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <select id="st_announce_type" class="ie-input" style="flex:1;">
+                            <option value="info">ℹ️ Info</option>
+                            <option value="update">🆕 Update</option>
+                            <option value="warning">⚠️ Warning</option>
+                            <option value="event">🎉 Event</option>
+                        </select>
+                        <input type="number" id="st_announce_duration" class="ie-input" style="width:80px;" placeholder="Sec" value="10" min="5" max="60">
+                    </div>
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="sendSiteAnnouncement()">📢 Send Announcement</button>
+                        <button class="ie-btn" style="width:auto; background:#333; border-color:#ff00ff;" onclick="previewAnnouncement()">👁️ Preview</button>
+                    </div>
+                    <div id="st_announce_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
             </div>
         </div>
@@ -1729,13 +1773,16 @@ function sendChat() {
         
         db.ref('chat').push(msgData);
         
-        // Bot responses
+        // Bot responses - DISABLED (bot no longer auto-responds)
+        // Admins can still manually send as Eric Northman via admin panel
+        /*
         for (const br of botResponses) {
             if (br.trigger.test(text)) {
                 setTimeout(() => { db.ref('chat').push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }, 1000 + Math.random() * 1000);
                 break;
             }
         }
+        */
     }
     input.value = "";
     cancelReply();
@@ -1783,17 +1830,55 @@ function setupChatListener() {
             const isMentioned = m.mentions && m.mentions.includes(CURRENT_USER);
             const mentionClass = isMentioned ? ' background:#1a1a0a; border-left:3px solid #ffd700;' : '';
             
-            // Action buttons (reply & mention)
-            const actionBtns = m.isBot ? '' : `<div class="chat-actions" style="display:none; position:absolute; right:8px; top:8px; gap:4px;">
-                <button onclick="setReply('${escapeHtml(msgUser)}', '${escapeHtml(msgText.replace(/'/g, "\\'"))}', '${m.msgId}')" style="background:#222; border:1px solid #400; color:#888; padding:2px 6px; font-size:9px; cursor:pointer; border-radius:3px;">↩️ Reply</button>
+            // Action buttons (reply & mention) + 3-dot menu
+            const msgIdSafe = m.msgId || '';
+            const actionBtns = m.isBot ? '' : `<div class="chat-actions" style="display:none; position:absolute; right:8px; top:8px; gap:4px; align-items:center;">
+                <button onclick="setReply('${escapeHtml(msgUser)}', '${escapeHtml(msgText.replace(/'/g, "\\'").replace(/\n/g, ' '))}', '${msgIdSafe}')" style="background:#222; border:1px solid #400; color:#888; padding:2px 6px; font-size:9px; cursor:pointer; border-radius:3px;">↩️ Reply</button>
                 <button onclick="mentionUser('${escapeHtml(msgUser)}')" style="background:#222; border:1px solid #400; color:#888; padding:2px 6px; font-size:9px; cursor:pointer; border-radius:3px;">@ Mention</button>
+                <div class="msg-dropdown" style="position:relative;">
+                    <button onclick="toggleMsgMenu(this)" style="background:#222; border:1px solid #400; color:#666; padding:2px 8px; font-size:11px; cursor:pointer; border-radius:3px;">⋮</button>
+                    <div class="msg-menu" style="display:none; position:absolute; right:0; top:100%; background:#1a0a0a; border:1px solid #400; border-radius:4px; min-width:120px; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.5);">
+                        <div onclick="copyMsgId('${msgIdSafe}')" style="padding:8px 12px; color:#888; font-size:10px; cursor:pointer; border-bottom:1px solid #300;" onmouseenter="this.style.background='#2a1a1a'" onmouseleave="this.style.background='transparent'">📋 Copy Message ID</div>
+                        <div onclick="copyMsgText('${escapeHtml(msgText.replace(/'/g, "\\'").replace(/\n/g, ' '))}')" style="padding:8px 12px; color:#888; font-size:10px; cursor:pointer;" onmouseenter="this.style.background='#2a1a1a'" onmouseleave="this.style.background='transparent'">📝 Copy Text</div>
+                    </div>
+                </div>
             </div>`;
             
-            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions').style.display='flex'" onmouseleave="this.querySelector('.chat-actions').style.display='none'">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
+            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='flex')" onmouseleave="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='none'); closeMsgMenus()">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
         }).join('');
         logs.scrollTop = logs.scrollHeight;
     });
 }
+
+function toggleMsgMenu(btn) {
+    const menu = btn.nextElementSibling;
+    const wasOpen = menu.style.display === 'block';
+    closeMsgMenus();
+    if (!wasOpen) menu.style.display = 'block';
+}
+
+function closeMsgMenus() {
+    document.querySelectorAll('.msg-menu').forEach(m => m.style.display = 'none');
+}
+
+function copyMsgId(msgId) {
+    navigator.clipboard.writeText(msgId).then(() => {
+        alert('Message ID copied: ' + msgId);
+    }).catch(() => {
+        prompt('Copy this Message ID:', msgId);
+    });
+    closeMsgMenus();
+}
+
+function copyMsgText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Message copied!');
+    }).catch(() => {
+        prompt('Copy this message:', text);
+    });
+    closeMsgMenus();
+}
+
 function loadMessages() { setupChatListener(); }
 function uploadChatFile() {
     if (IS_GUEST || !CURRENT_USER) { alert('Must be logged in!'); return; }
@@ -1832,6 +1917,35 @@ function sendBotMessage() { const text = document.getElementById('bot_message').
 function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; alert('Pinned!'); }
 function clearPin() { db.ref('pinned').remove(); alert('Cleared!'); }
 function clearChat() { if (confirm('Clear ALL chat?')) db.ref('chat').remove(); }
+
+function deleteMessageById() {
+    const msgId = document.getElementById('delete_msg_id').value.trim();
+    const resultDiv = document.getElementById('delete_msg_result');
+    
+    if (!msgId) {
+        resultDiv.innerHTML = '<span style="color:#f00;">Please enter a message ID.</span>';
+        return;
+    }
+    
+    // Check if message exists
+    db.ref('chat/' + msgId).once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            resultDiv.innerHTML = '<span style="color:#f00;">Message not found.</span>';
+            return;
+        }
+        
+        const msg = snapshot.val();
+        if (confirm(`Delete message from ${msg.user}?\n\n"${msg.text?.substring(0, 50)}..."`)) {
+            db.ref('chat/' + msgId).remove().then(() => {
+                resultDiv.innerHTML = '<span style="color:#0f0;">✓ Message deleted successfully.</span>';
+                document.getElementById('delete_msg_id').value = '';
+            }).catch(err => {
+                resultDiv.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+            });
+        }
+    });
+}
+
 function exportChat() {
     db.ref('chat').orderByChild('timestamp').once('value', (s) => {
         const msgs = []; s.forEach(c => msgs.push(c.val()));
@@ -2404,6 +2518,162 @@ function stLeaveComment() {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
 }
+
+// SITE-WIDE ANNOUNCEMENT SYSTEM
+let announcementTypingTimeout = null;
+const announceIcons = {
+    'info': 'ℹ️',
+    'update': '🆕',
+    'warning': '⚠️',
+    'event': '🎉'
+};
+
+function sendSiteAnnouncement() {
+    const resultEl = document.getElementById('st_announce_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const title = document.getElementById('st_announce_title').value.trim();
+    const text = document.getElementById('st_announce_text').value.trim();
+    const type = document.getElementById('st_announce_type').value;
+    const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
+    
+    if (!text) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter announcement text.</span>'; 
+        return; 
+    }
+    
+    // Save to Firebase so all users see it
+    const announcement = {
+        title: title,
+        text: text,
+        type: type,
+        duration: duration,
+        timestamp: Date.now(),
+        sentBy: CURRENT_USER
+    };
+    
+    db.ref('site_announcement').set(announcement).then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Announcement sent to all users!</span>';
+        document.getElementById('st_announce_title').value = '';
+        document.getElementById('st_announce_text').value = '';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function previewAnnouncement() {
+    const title = document.getElementById('st_announce_title').value.trim();
+    const text = document.getElementById('st_announce_text').value.trim() || 'Preview announcement text...';
+    const type = document.getElementById('st_announce_type').value;
+    const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
+    
+    showAnnouncement({ title, text, type, duration });
+}
+
+function showAnnouncement(data) {
+    const overlay = document.getElementById('announcement_overlay');
+    const box = document.getElementById('announcement_box');
+    const titleEl = document.getElementById('announce_title');
+    const textEl = document.getElementById('announce_text');
+    const iconEl = document.getElementById('announce_icon');
+    const cursorEl = document.getElementById('announce_cursor');
+    
+    // Reset
+    titleEl.textContent = '';
+    textEl.textContent = '';
+    cursorEl.style.display = 'inline-block';
+    
+    // Set type styling
+    box.className = '';
+    box.classList.add('announce-type-' + (data.type || 'info'));
+    
+    // Set icon
+    iconEl.textContent = announceIcons[data.type] || '📢';
+    
+    // Show overlay
+    overlay.style.display = 'flex';
+    
+    // Typewriter effect for title
+    let titleIndex = 0;
+    let textIndex = 0;
+    const titleStr = data.title || '';
+    const textStr = data.text || '';
+    const typeSpeed = 30; // ms per character
+    
+    function typeTitle() {
+        if (titleIndex < titleStr.length) {
+            titleEl.textContent += titleStr.charAt(titleIndex);
+            titleIndex++;
+            announcementTypingTimeout = setTimeout(typeTitle, typeSpeed);
+        } else {
+            // Start typing text after title
+            setTimeout(typeText, 200);
+        }
+    }
+    
+    function typeText() {
+        if (textIndex < textStr.length) {
+            textEl.textContent += textStr.charAt(textIndex);
+            textIndex++;
+            announcementTypingTimeout = setTimeout(typeText, typeSpeed);
+        } else {
+            // Typing complete - hide cursor
+            cursorEl.style.display = 'none';
+            
+            // Auto-dismiss after duration
+            setTimeout(() => {
+                dismissAnnouncement();
+            }, (data.duration || 10) * 1000);
+        }
+    }
+    
+    // Start typing
+    if (titleStr) {
+        typeTitle();
+    } else {
+        typeText();
+    }
+    
+    // Click to dismiss
+    overlay.onclick = dismissAnnouncement;
+}
+
+function dismissAnnouncement() {
+    const overlay = document.getElementById('announcement_overlay');
+    overlay.style.display = 'none';
+    if (announcementTypingTimeout) {
+        clearTimeout(announcementTypingTimeout);
+        announcementTypingTimeout = null;
+    }
+    // Clear the announcement from Firebase so it doesn't show again
+    // (optional - comment out if you want it to persist)
+    // db.ref('site_announcement').remove();
+}
+
+// Listen for site announcements
+function startAnnouncementListener() {
+    db.ref('site_announcement').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.timestamp) {
+            // Only show if announcement is recent (within last 60 seconds)
+            const age = Date.now() - data.timestamp;
+            if (age < 60000) {
+                // Check if we already showed this announcement
+                const lastShown = sessionStorage.getItem('lastAnnouncement');
+                if (lastShown !== data.timestamp.toString()) {
+                    sessionStorage.setItem('lastAnnouncement', data.timestamp.toString());
+                    showAnnouncement(data);
+                }
+            }
+        }
+    });
+}
+
+// Start listener when page loads
+setTimeout(startAnnouncementListener, 2000);
 
 function uploadVIPImage() {
     const user = userDatabase[CURRENT_USER]; if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
