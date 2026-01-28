@@ -511,7 +511,7 @@
                 <button class="ie-btn" style="margin-bottom:15px; width:auto; padding:8px 15px;" onclick="loadAllVideos()">🔄 Refresh Videos</button>
                 <div id="all_videos" style="max-height:380px; overflow-y:auto;"></div>
             </div>
-            <div id="admin_tab_vip" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3><button class="ie-btn" style="width:auto; padding:10px 20px; margin-bottom:15px;" onclick="generateVIPCode()">🌟 Generate New Code</button><div id="vip_code_display" style="margin-bottom:15px; color:#ffd700; font-family:monospace; font-size:16px;"></div><div id="all_vip_codes" style="max-height:350px; overflow-y:auto;"></div></div>
+            <div id="admin_tab_vip" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3><div class="admin-section"><h4>Generate New Code</h4><div style="display:flex; gap:5px; margin-bottom:10px;"><input type="number" id="vip_code_uses" class="ie-input" placeholder="Max uses" value="5" min="1" max="100" style="width:100px;"><button class="ie-btn" style="flex:1;" onclick="generateVIPCode()">🌟 Generate New Code</button></div><div id="vip_code_display" style="color:#ffd700; font-family:monospace; font-size:16px;"></div></div><div class="admin-section"><h4>Active VIP Codes</h4><button class="ie-btn" style="width:auto; padding:5px 15px; margin-bottom:10px;" onclick="loadVIPCodeHistory()">🔄 Refresh</button><div id="vip_code_history" style="max-height:300px; overflow-y:auto; font-size:11px;"><div style="color:#666;">Click refresh to load codes...</div></div></div></div>
             <div id="admin_tab_st" style="display:none;">
                 <h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3>
                 <div class="admin-section" style="border-color:#ff00ff;">
@@ -670,14 +670,6 @@
                 <button class="guest-btn" onclick="toggleWin('about_window')">❓ About This Place</button>
                 <button class="guest-btn" onclick="enterGuestChat()">👁️ Lurk the Lounge (Read-Only)</button>
             </div>
-            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #400;">
-                <p style="color:#ffd700; font-size:11px; text-align:center; margin-bottom:10px;">🌟 Have a VIP Code?</p>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="vip_code_input" class="ie-input" placeholder="Enter VIP code..." style="flex:1; margin:0;">
-                    <button class="ie-btn" style="width:auto; padding:10px 15px; margin:0; background:#5a4a00;" onclick="redeemVIPCode()">Redeem</button>
-                </div>
-                <div id="vip_code_result" style="margin-top:8px; font-size:10px; text-align:center;"></div>
-            </div>
         </div>
         <div class="ie-content" id="ie_upload" style="display:none;">
             <button class="lounge-entry-btn" onclick="openChat()">🩸 Enter The Lounge</button>
@@ -691,6 +683,15 @@
                 <input type="file" id="vip_image_picker" class="ie-input" style="border:none;" accept="image/*">
                 <button class="ie-btn" style="background:#5a4a00;" onclick="uploadVIPImage()">Upload Image</button>
                 <div id="vip_image_result" style="margin-top:8px;"></div>
+            </div>
+            <div id="vip_upgrade_section" style="margin-top:15px; border-top:1px solid #400; padding-top:15px;">
+                <h3 style="color:#ffd700; margin: 0 0 10px 0; font-size: 13px;">🌟 Upgrade to VIP</h3>
+                <p style="color:#888; font-size:10px; margin-bottom:10px;">Have a VIP code? Redeem it to upgrade your account!</p>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="vip_code_input" class="ie-input" placeholder="Enter VIP code..." style="flex:1; margin:0;">
+                    <button class="ie-btn" style="width:auto; padding:10px 15px; margin:0; background:#5a4a00;" onclick="redeemVIPCode()">Redeem</button>
+                </div>
+                <div id="vip_code_result" style="margin-top:8px; font-size:10px; text-align:center;"></div>
             </div>
             <button class="ie-btn" style="background: #333; margin-top: 15px;" onclick="logout()">Logout</button>
         </div>
@@ -1050,7 +1051,12 @@ function validateIE() {
             document.getElementById('messages_icon').style.display = 'block';
             const rank = userDatabase[u].rank;
             if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
-                document.getElementById('vip_image_section').style.display = 'block'; 
+                document.getElementById('vip_image_section').style.display = 'block';
+                // Hide upgrade section since they're already VIP+
+                document.getElementById('vip_upgrade_section').style.display = 'none';
+            } else {
+                // Show upgrade section for regular members
+                document.getElementById('vip_upgrade_section').style.display = 'block';
             }
         } else { alert("DENIED."); }
     });
@@ -1072,32 +1078,42 @@ function logout() {
     toggleWin('chat_win');
 }
 
-// VIP Code Redemption System
-const vipCodes = {
-    'FANG2024': { uses: 5, usedBy: [] },
-    'BLOODMOON': { uses: 10, usedBy: [] },
-    'VAMPIRE': { uses: 3, usedBy: [] },
-    'ETERNAL': { uses: 999, usedBy: [] }
-};
-
+// VIP Code Redemption System - for upgrading existing member accounts
 function redeemVIPCode() {
     const codeInput = document.getElementById('vip_code_input');
     const resultDiv = document.getElementById('vip_code_result');
     const code = codeInput.value.trim().toUpperCase();
+    
+    if (!CURRENT_USER || IS_GUEST) {
+        resultDiv.innerHTML = '<span style="color:#f00;">You must be logged in to redeem a code.</span>';
+        return;
+    }
     
     if (!code) {
         resultDiv.innerHTML = '<span style="color:#f00;">Please enter a code.</span>';
         return;
     }
     
-    // Check if code exists in Firebase or local codes
-    db.ref('vip_codes/' + code).once('value', (snapshot) => {
-        let codeData = snapshot.val();
-        
-        // If not in Firebase, check local codes
-        if (!codeData && vipCodes[code]) {
-            codeData = vipCodes[code];
+    // Check if user is already VIP
+    const currentUser = userDatabase[CURRENT_USER];
+    if (currentUser && (currentUser.rank === 'VIP' || currentUser.isAdmin || currentUser.isST)) {
+        resultDiv.innerHTML = '<span style="color:#ffd700;">You already have VIP or higher rank!</span>';
+        return;
+    }
+    
+    // Check if code exists in Firebase
+    db.ref('vip_codes').orderByChild('code').equalTo(code).once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            resultDiv.innerHTML = '<span style="color:#f00;">Invalid code.</span>';
+            return;
         }
+        
+        let codeKey = null;
+        let codeData = null;
+        snapshot.forEach((child) => {
+            codeKey = child.key;
+            codeData = child.val();
+        });
         
         if (!codeData) {
             resultDiv.innerHTML = '<span style="color:#f00;">Invalid code.</span>';
@@ -1105,73 +1121,71 @@ function redeemVIPCode() {
         }
         
         // Check if code has uses left
-        const usedBy = codeData.usedBy || [];
-        if (codeData.uses <= usedBy.length) {
+        const usedCount = codeData.usedBy ? Object.keys(codeData.usedBy).length : 0;
+        const maxUses = codeData.maxUses || 1;
+        
+        if (usedCount >= maxUses) {
             resultDiv.innerHTML = '<span style="color:#f00;">This code has been fully redeemed.</span>';
             return;
         }
         
-        // Show redemption form
-        resultDiv.innerHTML = `
-            <div style="background:#1a1a00; border:1px solid #5a4a00; padding:10px; border-radius:4px; margin-top:10px;">
-                <p style="color:#ffd700; margin:0 0 10px 0;">✨ Valid VIP Code! Create your account:</p>
-                <input type="text" id="vip_new_user" class="ie-input" placeholder="Choose username" style="margin-bottom:5px;">
-                <input type="password" id="vip_new_pass" class="ie-input" placeholder="Choose password (min 4 chars)" style="margin-bottom:5px;">
-                <button class="ie-btn" style="background:#5a4a00;" onclick="createVIPAccount('${code}')">Create VIP Account</button>
-            </div>
-        `;
+        // Check if user already used this code
+        if (codeData.usedBy) {
+            const usedByList = Object.values(codeData.usedBy);
+            if (usedByList.includes(CURRENT_USER)) {
+                resultDiv.innerHTML = '<span style="color:#f00;">You have already used this code.</span>';
+                return;
+            }
+        }
+        
+        // Upgrade user to VIP
+        upgradeToVIP(code, codeKey, resultDiv);
     });
 }
 
-function createVIPAccount(code) {
-    const username = document.getElementById('vip_new_user').value.trim();
-    const password = document.getElementById('vip_new_pass').value;
-    const resultDiv = document.getElementById('vip_code_result');
-    
-    if (!username || username.length < 2) {
-        alert('Username must be at least 2 characters.');
-        return;
-    }
-    if (!password || password.length < 4) {
-        alert('Password must be at least 4 characters.');
-        return;
-    }
-    if (userDatabase[username]) {
-        alert('Username already taken.');
-        return;
-    }
-    
-    // Create VIP user in Firebase
-    const userData = {
+function upgradeToVIP(code, codeKey, resultDiv) {
+    // Update user in Firebase
+    const vipData = {
         rank: 'VIP',
         fullRank: 'VIP',
         style: 'sb-style',
-        isAdmin: false,
         customTag: '##SB',
         customTagColor: '#6a03b4',
-        createdAt: Date.now(),
-        createdBy: 'VIP_CODE:' + code
+        upgradedAt: Date.now(),
+        upgradedBy: 'VIP_CODE:' + code
     };
     
-    // Save to Firebase
-    db.ref('members/' + username).set(userData);
-    
-    // Mark code as used
-    db.ref('vip_codes/' + code + '/usedBy').push(username);
-    
-    // Add to local database for immediate login
-    userDatabase[username] = { ...userData, pass: password };
-    
-    resultDiv.innerHTML = `
-        <div style="color:#0f0; padding:10px; background:#0a1a0a; border:1px solid #0a0; border-radius:4px;">
-            ✅ VIP Account Created!<br>
-            <span style="color:#ffd700;">Username: ${username}</span><br>
-            <span style="color:#888; font-size:9px;">You can now log in above!</span>
-        </div>
-    `;
-    
-    // Clear input
-    document.getElementById('vip_code_input').value = '';
+    db.ref('members/' + CURRENT_USER).update(vipData).then(() => {
+        // Mark code as used by this user
+        db.ref('vip_codes/' + codeKey + '/usedBy').push(CURRENT_USER);
+        
+        // Update local database
+        if (userDatabase[CURRENT_USER]) {
+            userDatabase[CURRENT_USER].rank = 'VIP';
+            userDatabase[CURRENT_USER].fullRank = 'VIP';
+            userDatabase[CURRENT_USER].style = 'sb-style';
+            userDatabase[CURRENT_USER].customTag = '##SB';
+            userDatabase[CURRENT_USER].customTagColor = '#6a03b4';
+        }
+        
+        // Show VIP image section
+        document.getElementById('vip_image_section').style.display = 'block';
+        
+        // Hide upgrade section since they're now VIP
+        document.getElementById('vip_upgrade_section').style.display = 'none';
+        
+        resultDiv.innerHTML = `
+            <div style="color:#0f0; padding:10px; background:#0a1a0a; border:1px solid #0a0; border-radius:4px;">
+                ✅ Account Upgraded to VIP!<br>
+                <span style="color:#ffd700;">You now have the ##SB tag!</span><br>
+                <span style="color:#888; font-size:9px;">Refresh the page to see all VIP features.</span>
+            </div>
+        `;
+        
+        document.getElementById('vip_code_input').value = '';
+    }).catch(err => {
+        resultDiv.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
 }
 
 function openChat() { 
@@ -2083,7 +2097,67 @@ function loadAllVideos() {
     renderMemories();
 }
 function deleteVideo(key) { if (confirm('Delete?')) { db.ref('archive/' + key).remove(); loadAllVideos(); renderMemories(); } }
-function generateVIPCode() { const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase(); db.ref('vip_codes').push({ code: code, created: Date.now(), createdBy: CURRENT_USER, used: false }); document.getElementById('vip_code_display').textContent = '✨ ' + code; loadAllVIPCodes(); }
+function generateVIPCode() { 
+    const maxUses = parseInt(document.getElementById('vip_code_uses')?.value) || 5;
+    const code = 'VIP-' + Math.random().toString(36).substring(2, 8).toUpperCase(); 
+    db.ref('vip_codes').push({ 
+        code: code, 
+        maxUses: maxUses,
+        created: Date.now(), 
+        createdBy: CURRENT_USER, 
+        usedBy: {}
+    }).then(() => {
+        document.getElementById('vip_code_display').innerHTML = `<div style="background:#1a1a00; border:1px solid #5a4a00; padding:10px; border-radius:4px;">✨ Code: <strong>${code}</strong><br><span style="color:#888; font-size:10px;">Max uses: ${maxUses}</span></div>`; 
+        loadVIPCodeHistory();
+    });
+}
+
+function loadVIPCodeHistory() {
+    const container = document.getElementById('vip_code_history');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888;">Loading...</div>';
+    
+    db.ref('vip_codes').orderByChild('created').once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            container.innerHTML = '<div style="color:#666;">No VIP codes generated yet.</div>';
+            return;
+        }
+        
+        const codes = [];
+        snapshot.forEach((child) => {
+            codes.push({ key: child.key, ...child.val() });
+        });
+        
+        // Reverse to show newest first
+        codes.reverse();
+        
+        container.innerHTML = codes.map(c => {
+            const usedCount = c.usedBy ? Object.keys(c.usedBy).length : 0;
+            const maxUses = c.maxUses || 1;
+            const usedBy = c.usedBy ? Object.values(c.usedBy).join(', ') : 'None';
+            const isExpired = usedCount >= maxUses;
+            const date = new Date(c.created).toLocaleDateString();
+            
+            return `<div style="background:#0a0000; border:1px solid ${isExpired ? '#333' : '#5a4a00'}; padding:10px; margin-bottom:8px; border-radius:4px; ${isExpired ? 'opacity:0.6;' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#ffd700; font-family:monospace; font-weight:bold;">${c.code || 'Unknown'}</span>
+                    <span style="color:${isExpired ? '#666' : '#0f0'}; font-size:10px;">${usedCount}/${maxUses} used</span>
+                </div>
+                <div style="color:#666; font-size:9px; margin-top:5px;">Created: ${date} by ${c.createdBy || 'Unknown'}</div>
+                ${usedCount > 0 ? `<div style="color:#888; font-size:9px; margin-top:3px;">Used by: ${usedBy}</div>` : ''}
+                <button onclick="deleteVIPCode('${c.key}')" style="background:#500; border:1px solid #700; color:#f88; padding:3px 8px; font-size:9px; cursor:pointer; margin-top:5px; border-radius:3px;">🗑️ Delete</button>
+            </div>`;
+        }).join('');
+    });
+}
+
+function deleteVIPCode(codeKey) {
+    if (!confirm('Delete this VIP code?')) return;
+    db.ref('vip_codes/' + codeKey).remove().then(() => {
+        loadVIPCodeHistory();
+    });
+}
 function loadAllVIPCodes() {
     const container = document.getElementById('all_vip_codes'); if (!container) return;
     db.ref('vip_codes').once('value', (s) => {
