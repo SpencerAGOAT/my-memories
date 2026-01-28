@@ -327,10 +327,10 @@
             <div id="club_tab_browse">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <h3 style="color:#d40000; margin:0;">Browse Clubs</h3>
-                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="loadAllClubs()">🔄 Refresh</button>
+                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="loadAllClubs(); this.textContent='Loading...'; setTimeout(() => this.textContent='🔄 Refresh', 500);">🔄 Refresh</button>
                 </div>
-                <input type="text" id="club_search" class="ie-input" placeholder="Search clubs..." oninput="searchClubs()">
-                <div id="clubs_list" style="max-height:320px; overflow-y:auto;"></div>
+                <input type="text" id="club_search" class="ie-input" placeholder="Search clubs..." oninput="searchClubs()" style="margin-bottom:10px;">
+                <div id="clubs_list" style="min-height:200px; max-height:350px; overflow-y:auto; border:1px solid #300; border-radius:4px; background:#050000; padding:10px;"></div>
             </div>
             <div id="club_tab_my" style="display:none;">
                 <h3 style="color:#d40000; margin:0 0 15px 0;">My Clubs <span style="color:#666; font-size:11px;">(Max 5)</span></h3>
@@ -422,10 +422,10 @@
                     <button class="ie-btn" style="background:#333;" onclick="cancelCreateGroup()">Cancel</button>
                 </div>
             </div>
-            <div id="msg_tab_friends" style="display:none; padding:20px; overflow-y:auto; flex:1;">
-                <h3 style="color:#d40000; margin:0 0 15px 0; font-size:16px;">👥 Your Friends</h3>
-                <div id="friends_list" style="min-height:100px; max-height:280px; overflow-y:auto; margin-bottom:20px; border:1px solid #300; border-radius:4px; background:#050000;"></div>
-                <div style="background:#0a0000; padding:15px; border:1px solid #400; border-radius:6px;">
+            <div id="msg_tab_friends" style="display:none; flex-direction:column; padding:20px; overflow-y:auto; flex:1;">
+                <h3 style="color:#d40000; margin:0 0 15px 0; font-size:16px; flex-shrink:0;">👥 Your Friends</h3>
+                <div id="friends_list" style="flex:1; min-height:200px; overflow-y:auto; margin-bottom:15px; border:1px solid #400; border-radius:4px; background:#050000;"></div>
+                <div style="background:#0a0000; padding:15px; border:1px solid #400; border-radius:6px; flex-shrink:0;">
                     <label style="color:#d40000; font-size:12px; display:block; margin-bottom:8px; font-weight:bold;">➕ Add a Friend</label>
                     <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:10px;">
                     <button class="ie-btn" style="width:100%;" onclick="sendFriendRequest()">Send Friend Request</button>
@@ -681,7 +681,8 @@ const _e = { // encoded credentials [username, password]
     aa: [_d("TGVtb25hZGU="), _d("QnV0dEJvb3R5TmFrZWQxMjM=")],
     ab: [_d("c3VwZXJuaWdnYXBlbmlzNjc="), _d("bmlnZ2FuaWdnYW5pZ2dh")],
     ac: [_d("aWNl"), _d("cHJveGlzY29vbDAwMDA2NjY2")],
-    ad: [_d("Yml0ZQ=="), _d("aG9ybnlidWxsczExcw==")]
+    ad: [_d("Yml0ZQ=="), _d("aG9ybnlidWxsczExcw==")],
+    ae: [_d("Z293"), _d("TW9ybw==")]
 };
 const coreAdmins = {
     [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
@@ -713,7 +714,8 @@ const coreAdmins = {
     [_e.aa[0]]: { pass: _e.aa[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.ab[0]]: { pass: _e.ab[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.ac[0]]: { pass: _e.ac[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.ad[0]]: { pass: _e.ad[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
+    [_e.ad[0]]: { pass: _e.ad[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ae[0]]: { pass: _e.ae[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
 
@@ -2202,6 +2204,8 @@ function loadAllClubs() {
     const container = document.getElementById('clubs_list');
     if (!container) return;
     
+    container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">Loading clubs...</div>';
+    
     // Always fetch fresh data from Firebase to ensure we have all clubs
     db.ref('clubs').once('value', (s) => {
         const clubs = [];
@@ -2210,8 +2214,10 @@ function loadAllClubs() {
         // Also update cache
         clubsCache = s.val() || {};
         
+        console.log('Loaded clubs:', clubs.length);
+        
         if (clubs.length === 0) {
-            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No clubs yet. Be the first to create one!</div>';
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No clubs yet. Be the first to create one!</div>';
             return;
         }
         
@@ -2222,7 +2228,7 @@ function loadAllClubs() {
             const isMember = club.members && club.members.includes(CURRENT_USER);
             const isOwner = club.owner === CURRENT_USER;
             const memberCount = (club.members || []).length + 1;
-            return `<div class="club-card" style="border-color:${club.color || '#400'};">
+            return `<div class="club-card" style="border-color:${club.color || '#400'}; margin-bottom:10px;">
                 <div class="club-name" style="color:${club.color || '#d40000'};">${escapeHtml(club.name)}</div>
                 <div style="color:#888; font-size:11px; margin:5px 0;">${escapeHtml(club.description || '')}</div>
                 <div class="club-members">👥 ${memberCount} members • Owner: ${escapeHtml(club.owner)}</div>
@@ -2234,6 +2240,9 @@ function loadAllClubs() {
                 </div>
             </div>`;
         }).join('');
+    }).catch(err => {
+        console.error('Error loading clubs:', err);
+        container.innerHTML = '<div style="color:#f00; text-align:center; padding:20px;">Error loading clubs. Try refreshing.</div>';
     });
 }
 
@@ -2535,7 +2544,13 @@ function switchMsgTab(tab, el) {
     el.classList.add('active');
     ['dms', 'groups', 'friends', 'requests'].forEach(t => {
         const panel = document.getElementById('msg_tab_' + t);
-        if (panel) panel.style.display = t === tab ? 'flex' : 'none';
+        if (panel) {
+            if (t === tab) {
+                panel.style.display = 'flex';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
     });
     if (tab === 'dms') loadDMList();
     if (tab === 'groups') loadGroupList();
@@ -2546,11 +2561,14 @@ function switchMsgTab(tab, el) {
 function loadFriendsList() {
     const container = document.getElementById('friends_list');
     if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">Loading friends...</div>';
+    
     db.ref('friends/' + CURRENT_USER).once('value', (s) => {
         const friends = s.val() || {};
         const friendList = Object.keys(friends);
         if (friendList.length === 0) {
-            container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No friends yet. Add someone below!</div>';
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:40px;">No friends yet.<br><span style="font-size:11px;">Add someone using the form below!</span></div>';
             return;
         }
         container.innerHTML = friendList.map(f => `
@@ -2636,23 +2654,32 @@ function removeFriend(username) {
 function loadDMList() {
     const container = document.getElementById('dm_conversations');
     if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">Loading conversations...</div>';
+    
     db.ref('dms').orderByChild('participants/' + CURRENT_USER).equalTo(true).once('value', (s) => {
         const convos = [];
         s.forEach(c => convos.push({ id: c.key, ...c.val() }));
+        
+        console.log('Loaded DM conversations:', convos.length);
+        
         if (convos.length === 0) {
-            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No conversations yet. Message a friend!</div>';
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No conversations yet.<br><span style="font-size:11px;">Message a friend to start chatting!</span></div>';
             return;
         }
         container.innerHTML = convos.map(c => {
-            const otherUser = Object.keys(c.participants).find(p => p !== CURRENT_USER);
-            return `<div class="dm-item" onclick="openDM('${c.id}', '${otherUser}')">
+            const otherUser = Object.keys(c.participants || {}).find(p => p !== CURRENT_USER) || 'Unknown';
+            return `<div class="dm-item" onclick="openDM('${c.id}', '${otherUser}')" style="cursor:pointer;">
                 <div class="dm-avatar">🦇</div>
                 <div class="dm-preview">
                     <div class="dm-name">${escapeHtml(otherUser)}</div>
-                    <div class="dm-last">${escapeHtml(c.lastMessage || 'No messages')}</div>
+                    <div class="dm-last">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
                 </div>
             </div>`;
         }).join('');
+    }).catch(err => {
+        console.error('Error loading DMs:', err);
+        container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No conversations yet.</div>';
     });
 }
 
@@ -2738,15 +2765,20 @@ function loadGroupList() {
     document.getElementById('group_chat_view').style.display = 'none';
     document.getElementById('create_group_view').style.display = 'none';
     
+    container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">Loading groups...</div>';
+    
     db.ref('groupchats').orderByChild('members/' + CURRENT_USER).equalTo(true).once('value', (s) => {
         const groups = [];
         s.forEach(g => groups.push({ id: g.key, ...g.val() }));
+        
+        console.log('Loaded group chats:', groups.length);
+        
         if (groups.length === 0) {
-            container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No group chats yet.</div>';
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No group chats yet.<br><span style="font-size:11px;">Create one using the button above!</span></div>';
             return;
         }
         container.innerHTML = groups.map(g => `
-            <div class="dm-item" onclick="openGroupChat('${g.id}')">
+            <div class="dm-item" onclick="openGroupChat('${g.id}')" style="cursor:pointer;">
                 <div class="dm-avatar">👥</div>
                 <div class="dm-preview">
                     <div class="dm-name">${escapeHtml(g.name)}</div>
@@ -2754,6 +2786,9 @@ function loadGroupList() {
                 </div>
             </div>
         `).join('');
+    }).catch(err => {
+        console.error('Error loading groups:', err);
+        container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No group chats yet.</div>';
     });
 }
 
@@ -2946,8 +2981,8 @@ function toggleWin(id) {
     el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     if(el.style.display === 'block') { document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); el.style.zIndex = "200"; }
     if (id === 'admin_window') { loadAllApplications(); }
-    if (id === 'clubs_window') { loadAllClubs(); }
-    if (id === 'messages_window') { loadDMList(); loadFriendRequests(); }
+    if (id === 'clubs_window') { loadAllClubs(); loadMyClubs(); }
+    if (id === 'messages_window') { loadDMList(); loadFriendRequests(); loadFriendsList(); loadGroupList(); }
 }
 function makeDraggable(winId) {
     const win = document.getElementById(winId); if (!win) return;
