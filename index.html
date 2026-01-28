@@ -170,7 +170,7 @@
 </div>
 <div id="screensaver"></div>
 <!-- Profile Window -->
-<div class="window" id="profile_window" style="left:250px; top:80px; width:450px; height:580px; display:none; z-index:9000;">
+<div class="window" id="profile_window" style="left:250px; top:40px; width:480px; height:700px; display:none; z-index:9000;">
     <div class="title-bar"><div class="title-bar-text" id="pw_title">👤 Profile</div><div class="title-bar-controls"><button aria-label="Close" onclick="closeProfileWindow()"></button></div></div>
     <div class="window-body" style="overflow-y:auto; padding:0;">
         <div style="background:linear-gradient(180deg, #200000, #100000); padding:20px; text-align:center; border-bottom:2px solid #500;">
@@ -195,8 +195,8 @@
             <div id="pw_bio" style="color:#aaa; font-size:12px; line-height:1.6;">No bio set.</div>
         </div>
         <div id="pw_clubs_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
-            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">🏰 CLUBS</div>
-            <div id="pw_clubs_list" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">🏰 CLUBS</div>
+            <div id="pw_clubs_list" style="display:flex; flex-wrap:wrap; gap:8px; max-height:120px; overflow-y:auto;"></div>
         </div>
         <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -212,8 +212,8 @@
         </div>
         <div style="padding:15px;">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">💬 PROFILE COMMENTS</div>
-            <div id="pw_comments_list" style="max-height:150px; overflow-y:auto; margin-bottom:15px;">
-                <div style="color:#555; font-size:10px;">No comments yet.</div>
+            <div id="pw_comments_list" style="max-height:200px; overflow-y:auto; margin-bottom:15px; padding:5px; background:#050000; border:1px solid #300; border-radius:4px;">
+                <div style="color:#555; font-size:10px; padding:10px; text-align:center;">No comments yet.</div>
             </div>
             <div id="pw_comment_form" style="display:none;">
                 <input type="text" id="pw_comment_input" class="ie-input" placeholder="Leave a comment..." style="margin-bottom:8px;">
@@ -380,13 +380,22 @@
                 <div id="dm_chat_view" style="display:none; flex:1; flex-direction:column;">
                     <div style="padding:10px; background:#0a0000; border-bottom:1px solid #400; display:flex; align-items:center; gap:10px;">
                         <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="closeDMChat()">← Back</button>
+                        <div id="dm_chat_avatar" style="width:30px; height:30px; border-radius:50%; background:#111; border:2px solid #500; display:flex; align-items:center; justify-content:center; font-size:14px; overflow:hidden;">🦇</div>
                         <span id="dm_chat_name" style="color:#d40000; font-weight:bold;"></span>
                     </div>
                     <div id="dm_messages" style="flex:1; overflow-y:auto; padding:10px;"></div>
                     <div style="padding:10px; background:#111; border-top:1px solid #400;">
-                        <div style="display:flex; gap:5px;">
-                            <input type="text" id="dm_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendDM()">
+                        <div style="display:flex; gap:5px; align-items:center;">
+                            <input type="text" id="dm_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message or paste image/gif URL..." onkeypress="if(event.key==='Enter')sendDM()">
+                            <button class="ie-btn" style="width:auto; padding:8px 12px; font-size:11px;" onclick="showDMMediaInput()" title="Send Image/GIF/Video">📎</button>
                             <button class="ie-btn" style="width:auto; padding:8px 15px;" onclick="sendDM()">Send</button>
+                        </div>
+                        <div id="dm_media_preview" style="display:none; margin-top:8px; padding:8px; background:#0a0000; border:1px solid #400; border-radius:4px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                                <span style="color:#888; font-size:10px;">Media URL:</span>
+                                <button onclick="document.getElementById('dm_media_preview').style.display='none'; document.getElementById('dm_media_url').value='';" style="background:none; border:none; color:#f00; cursor:pointer; font-size:12px;">✕</button>
+                            </div>
+                            <input type="text" id="dm_media_url" class="ie-input" style="margin:0; font-size:10px;" placeholder="Paste image/gif/mp4 URL here...">
                         </div>
                     </div>
                 </div>
@@ -407,9 +416,17 @@
                     </div>
                     <div id="group_messages" style="flex:1; overflow-y:auto; padding:10px;"></div>
                     <div style="padding:10px; background:#111; border-top:1px solid #400;">
-                        <div style="display:flex; gap:5px;">
-                            <input type="text" id="group_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendGroupMsg()">
+                        <div style="display:flex; gap:5px; align-items:center;">
+                            <input type="text" id="group_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message or paste image/gif URL..." onkeypress="if(event.key==='Enter')sendGroupMsg()">
+                            <button class="ie-btn" style="width:auto; padding:8px 12px; font-size:11px;" onclick="showGroupMediaInput()" title="Send Image/GIF/Video">📎</button>
                             <button class="ie-btn" style="width:auto; padding:8px 15px;" onclick="sendGroupMsg()">Send</button>
+                        </div>
+                        <div id="group_media_preview" style="display:none; margin-top:8px; padding:8px; background:#0a0000; border:1px solid #400; border-radius:4px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                                <span style="color:#888; font-size:10px;">Media URL:</span>
+                                <button onclick="document.getElementById('group_media_preview').style.display='none'; document.getElementById('group_media_url').value='';" style="background:none; border:none; color:#f00; cursor:pointer; font-size:12px;">✕</button>
+                            </div>
+                            <input type="text" id="group_media_url" class="ie-input" style="margin:0; font-size:10px;" placeholder="Paste image/gif/mp4 URL here...">
                         </div>
                     </div>
                 </div>
@@ -682,7 +699,8 @@ const _e = { // encoded credentials [username, password]
     ab: [_d("c3VwZXJuaWdnYXBlbmlzNjc="), _d("bmlnZ2FuaWdnYW5pZ2dh")],
     ac: [_d("aWNl"), _d("cHJveGlzY29vbDAwMDA2NjY2")],
     ad: [_d("Yml0ZQ=="), _d("aG9ybnlidWxsczExcw==")],
-    ae: [_d("Z293"), _d("TW9ybw==")]
+    ae: [_d("Z293"), _d("TW9ybw==")],
+    af: [_d("bWFwbGU="), _d("bWFwbGVzeXJ1cHdpZ2dhMA==")]
 };
 const coreAdmins = {
     [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
@@ -715,7 +733,8 @@ const coreAdmins = {
     [_e.ab[0]]: { pass: _e.ab[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.ac[0]]: { pass: _e.ac[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.ad[0]]: { pass: _e.ad[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.ae[0]]: { pass: _e.ae[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
+    [_e.ae[0]]: { pass: _e.ae[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.af[0]]: { pass: _e.af[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
 
@@ -2202,19 +2221,32 @@ function switchClubTab(tab, el) {
 
 function loadAllClubs() {
     const container = document.getElementById('clubs_list');
-    if (!container) return;
+    if (!container) { console.error('clubs_list container not found'); return; }
     
     container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">Loading clubs...</div>';
     
-    // Always fetch fresh data from Firebase to ensure we have all clubs
-    db.ref('clubs').once('value', (s) => {
+    // Use get() method for more reliable fetching
+    db.ref('clubs').get().then((snapshot) => {
+        console.log('Clubs snapshot exists:', snapshot.exists());
+        
+        if (!snapshot.exists()) {
+            container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No clubs yet. Be the first to create one!</div>';
+            return;
+        }
+        
         const clubs = [];
-        s.forEach(c => clubs.push({ id: c.key, ...c.val() }));
+        snapshot.forEach((childSnapshot) => {
+            const clubData = childSnapshot.val();
+            clubs.push({ 
+                id: childSnapshot.key, 
+                ...clubData 
+            });
+        });
         
-        // Also update cache
-        clubsCache = s.val() || {};
+        // Update cache
+        clubsCache = snapshot.val() || {};
         
-        console.log('Loaded clubs:', clubs.length);
+        console.log('Loaded clubs count:', clubs.length, clubs);
         
         if (clubs.length === 0) {
             container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No clubs yet. Be the first to create one!</div>';
@@ -2224,25 +2256,33 @@ function loadAllClubs() {
         // Sort by created date (newest first)
         clubs.sort((a, b) => (b.created || 0) - (a.created || 0));
         
-        container.innerHTML = clubs.map(club => {
-            const isMember = club.members && club.members.includes(CURRENT_USER);
+        let html = '';
+        clubs.forEach(club => {
+            const isMember = club.members && Array.isArray(club.members) && club.members.includes(CURRENT_USER);
             const isOwner = club.owner === CURRENT_USER;
-            const memberCount = (club.members || []).length + 1;
-            return `<div class="club-card" style="border-color:${club.color || '#400'}; margin-bottom:10px;">
-                <div class="club-name" style="color:${club.color || '#d40000'};">${escapeHtml(club.name)}</div>
-                <div style="color:#888; font-size:11px; margin:5px 0;">${escapeHtml(club.description || '')}</div>
-                <div class="club-members">👥 ${memberCount} members • Owner: ${escapeHtml(club.owner)}</div>
+            const memberCount = (Array.isArray(club.members) ? club.members.length : 0) + 1;
+            const clubColor = club.color || '#d40000';
+            const clubName = club.name || 'Unnamed Club';
+            const clubDesc = club.description || '';
+            const clubOwner = club.owner || 'Unknown';
+            
+            html += `<div class="club-card" style="border-color:${clubColor}; margin-bottom:10px; padding:12px; background:#0a0000; border:1px solid ${clubColor}; border-radius:4px;">
+                <div class="club-name" style="color:${clubColor}; font-weight:bold; font-size:14px;">${escapeHtml(clubName)}</div>
+                <div style="color:#888; font-size:11px; margin:5px 0;">${escapeHtml(clubDesc)}</div>
+                <div class="club-members" style="color:#666; font-size:10px;">👥 ${memberCount} members • Owner: ${escapeHtml(clubOwner)}</div>
                 <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0; background:#222;" onclick="viewClubMembers('${club.id}', '${escapeHtml(club.name)}', '${escapeHtml(club.owner)}')">👥 View Members</button>
-                    ${isOwner ? '<span style="color:#ffd700; font-size:10px;">👑 You own this</span>' : 
+                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0; background:#222;" onclick="viewClubMembers('${club.id}', '${escapeHtml(clubName).replace(/'/g, "\\'")}', '${escapeHtml(clubOwner).replace(/'/g, "\\'")}')">👥 View</button>
+                    ${isOwner ? '<span style="color:#ffd700; font-size:10px;">👑 Owner</span>' : 
                       isMember ? '<span style="color:#0f0; font-size:10px;">✓ Member</span>' : 
-                      `<button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="requestJoinClub('${club.id}')">Request to Join</button>`}
+                      `<button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="requestJoinClub('${club.id}')">Join</button>`}
                 </div>
             </div>`;
-        }).join('');
+        });
+        
+        container.innerHTML = html;
     }).catch(err => {
         console.error('Error loading clubs:', err);
-        container.innerHTML = '<div style="color:#f00; text-align:center; padding:20px;">Error loading clubs. Try refreshing.</div>';
+        container.innerHTML = '<div style="color:#f00; text-align:center; padding:20px;">Error loading clubs: ' + err.message + '</div>';
     });
 }
 
@@ -2667,16 +2707,32 @@ function loadDMList() {
             container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">No conversations yet.<br><span style="font-size:11px;">Message a friend to start chatting!</span></div>';
             return;
         }
-        container.innerHTML = convos.map(c => {
+        
+        // Build HTML and then fetch avatars
+        let html = '';
+        const usernames = [];
+        convos.forEach(c => {
             const otherUser = Object.keys(c.participants || {}).find(p => p !== CURRENT_USER) || 'Unknown';
-            return `<div class="dm-item" onclick="openDM('${c.id}', '${otherUser}')" style="cursor:pointer;">
-                <div class="dm-avatar">🦇</div>
+            usernames.push(otherUser);
+            html += `<div class="dm-item" onclick="openDM('${c.id}', '${otherUser}')" style="cursor:pointer;">
+                <div class="dm-avatar" id="dm_avatar_${otherUser}">🦇</div>
                 <div class="dm-preview">
                     <div class="dm-name">${escapeHtml(otherUser)}</div>
                     <div class="dm-last">${escapeHtml(c.lastMessage || 'No messages yet')}</div>
                 </div>
             </div>`;
-        }).join('');
+        });
+        container.innerHTML = html;
+        
+        // Fetch avatars for each user
+        usernames.forEach(username => {
+            db.ref('profiles/' + username + '/avatar').once('value', (avatarSnap) => {
+                const avatarEl = document.getElementById('dm_avatar_' + username);
+                if (avatarEl && avatarSnap.val()) {
+                    avatarEl.innerHTML = `<img src="${escapeHtml(avatarSnap.val())}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.parentElement.innerHTML='🦇'">`;
+                }
+            });
+        });
     }).catch(err => {
         console.error('Error loading DMs:', err);
         container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">No conversations yet.</div>';
@@ -2719,6 +2775,17 @@ function openDM(convoId, username) {
     document.getElementById('dm_chat_view').style.display = 'flex';
     document.getElementById('dm_chat_name').textContent = username;
     
+    // Load profile picture for chat header
+    const avatarEl = document.getElementById('dm_chat_avatar');
+    if (avatarEl) {
+        avatarEl.innerHTML = '🦇';
+        db.ref('profiles/' + username + '/avatar').once('value', (s) => {
+            if (s.val()) {
+                avatarEl.innerHTML = `<img src="${escapeHtml(s.val())}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.innerHTML='🦇'">`;
+            }
+        });
+    }
+    
     if (dmListener) db.ref('dms/' + dmListener).off();
     dmListener = convoId;
     
@@ -2729,7 +2796,7 @@ function openDM(convoId, username) {
         container.innerHTML = msgs.map(m => `
             <div class="msg-bubble ${m.sender === CURRENT_USER ? 'sent' : 'received'}">
                 ${m.sender !== CURRENT_USER ? `<div style="font-size:9px; color:#888; margin-bottom:3px;">${escapeHtml(m.sender)}</div>` : ''}
-                ${escapeHtml(m.text)}
+                ${renderMessageContent(m.text, m.media)}
             </div>
         `).join('');
         container.scrollTop = container.scrollHeight;
@@ -2741,21 +2808,93 @@ function closeDMChat() {
     currentDMUser = null;
     document.getElementById('dm_chat_view').style.display = 'none';
     document.getElementById('dm_list_view').style.display = 'block';
+    document.getElementById('dm_media_preview').style.display = 'none';
     loadDMList();
+}
+
+// Helper to render message content with media support
+function renderMessageContent(text, mediaUrl) {
+    let content = '';
+    
+    // Check if text itself is a media URL
+    const combinedUrl = mediaUrl || text;
+    if (combinedUrl && isMediaUrl(combinedUrl)) {
+        content += renderMedia(combinedUrl);
+        if (mediaUrl && text && text !== mediaUrl) {
+            content += `<div style="margin-top:5px;">${escapeHtml(text)}</div>`;
+        }
+    } else if (text) {
+        // Check for URLs in text and render them
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const parts = text.split(urlRegex);
+        parts.forEach(part => {
+            if (urlRegex.test(part)) {
+                urlRegex.lastIndex = 0; // Reset regex
+                if (isMediaUrl(part)) {
+                    content += renderMedia(part);
+                } else {
+                    content += `<a href="${escapeHtml(part)}" target="_blank" style="color:#ff6666;">${escapeHtml(part)}</a>`;
+                }
+            } else {
+                content += escapeHtml(part);
+            }
+        });
+    }
+    
+    return content || escapeHtml(text || '');
+}
+
+function isMediaUrl(url) {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    return lower.match(/\.(jpg|jpeg|png|gif|webp|mp4|webm|mov)(\?|$)/i) ||
+           lower.includes('tenor.com') ||
+           lower.includes('giphy.com') ||
+           lower.includes('imgur.com');
+}
+
+function renderMedia(url) {
+    const lower = url.toLowerCase();
+    if (lower.match(/\.(mp4|webm|mov)(\?|$)/i)) {
+        return `<video src="${escapeHtml(url)}" controls style="max-width:200px; max-height:200px; border-radius:4px; margin:5px 0;" onerror="this.outerHTML='<span style=color:#888>[Video failed to load]</span>'"></video>`;
+    } else {
+        return `<img src="${escapeHtml(url)}" style="max-width:200px; max-height:200px; border-radius:4px; margin:5px 0; cursor:pointer;" onclick="window.open('${escapeHtml(url)}', '_blank')" onerror="this.outerHTML='<span style=color:#888>[Image failed to load]</span>'">`;
+    }
+}
+
+function showDMMediaInput() {
+    const preview = document.getElementById('dm_media_preview');
+    preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+}
+
+function showGroupMediaInput() {
+    const preview = document.getElementById('group_media_preview');
+    preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
 }
 
 function sendDM() {
     const input = document.getElementById('dm_input');
+    const mediaInput = document.getElementById('dm_media_url');
     const text = input.value.trim();
-    if (!text || !dmListener) return;
+    const mediaUrl = mediaInput ? mediaInput.value.trim() : '';
     
-    db.ref('dms/' + dmListener + '/messages').push({
+    if ((!text && !mediaUrl) || !dmListener) return;
+    
+    const message = {
         sender: CURRENT_USER,
-        text: text,
+        text: text || (mediaUrl ? '' : ''),
         timestamp: Date.now()
-    });
-    db.ref('dms/' + dmListener + '/lastMessage').set(text);
+    };
+    
+    if (mediaUrl) {
+        message.media = mediaUrl;
+    }
+    
+    db.ref('dms/' + dmListener + '/messages').push(message);
+    db.ref('dms/' + dmListener + '/lastMessage').set(mediaUrl ? (text || '📷 Media') : text);
     input.value = '';
+    if (mediaInput) mediaInput.value = '';
+    document.getElementById('dm_media_preview').style.display = 'none';
 }
 
 function loadGroupList() {
@@ -2877,7 +3016,7 @@ function openGroupChat(groupId) {
         container.innerHTML = msgs.map(m => `
             <div class="msg-bubble ${m.sender === CURRENT_USER ? 'sent' : 'received'}">
                 ${m.sender !== CURRENT_USER ? `<div style="font-size:9px; color:#888; margin-bottom:3px;">${escapeHtml(m.sender)}</div>` : ''}
-                ${escapeHtml(m.text)}
+                ${renderMessageContent(m.text, m.media)}
             </div>
         `).join('');
         container.scrollTop = container.scrollHeight;
@@ -2888,20 +3027,32 @@ function closeGroupChat() {
     if (groupListener) { db.ref('groupchats/' + groupListener + '/messages').off(); groupListener = null; }
     currentGroupId = null;
     document.getElementById('group_chat_view').style.display = 'none';
+    document.getElementById('group_media_preview').style.display = 'none';
     loadGroupList();
 }
 
 function sendGroupMsg() {
     const input = document.getElementById('group_input');
+    const mediaInput = document.getElementById('group_media_url');
     const text = input.value.trim();
-    if (!text || !currentGroupId) return;
+    const mediaUrl = mediaInput ? mediaInput.value.trim() : '';
     
-    db.ref('groupchats/' + currentGroupId + '/messages').push({
+    if ((!text && !mediaUrl) || !currentGroupId) return;
+    
+    const message = {
         sender: CURRENT_USER,
-        text: text,
+        text: text || (mediaUrl ? '' : ''),
         timestamp: Date.now()
-    });
+    };
+    
+    if (mediaUrl) {
+        message.media = mediaUrl;
+    }
+    
+    db.ref('groupchats/' + currentGroupId + '/messages').push(message);
     input.value = '';
+    if (mediaInput) mediaInput.value = '';
+    document.getElementById('group_media_preview').style.display = 'none';
 }
 
 function showGroupMembers() {
