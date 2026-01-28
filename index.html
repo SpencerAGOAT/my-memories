@@ -267,9 +267,15 @@
                 </div>
             </div>
             <div id="typing_area" style="padding: 5px 12px; background: #080000; display: none;"><div class="typing-indicator"><span id="typing_user"></span>&nbsp;is typing<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>
+            <div id="reply_indicator" style="display:none; padding:8px 12px; background:#1a0a0a; border-left:3px solid #d40000;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="color:#888; font-size:10px;">Replying to <span id="reply_to_user" style="color:#d40000;"></span>: <span id="reply_to_text" style="color:#666;"></span></div>
+                    <button onclick="cancelReply()" style="background:none; border:none; color:#f00; cursor:pointer; font-size:14px;">✕</button>
+                </div>
+            </div>
             <div style="padding:10px; background:#111;">
                 <div style="display: flex; gap: 5px; margin-bottom: 5px;">
-                    <input type="text" id="chat_input" class="ie-input" style="margin:0; flex:1;" placeholder="/help for commands..." onkeypress="handleChatKey(event)" onkeyup="handleTyping()">
+                    <input type="text" id="chat_input" class="ie-input" style="margin:0; flex:1;" placeholder="/help for commands... @username to mention" onkeypress="handleChatKey(event)" onkeyup="handleTyping()">
                     <label class="ie-btn" style="width: 35px; margin: 0; display: flex; align-items: center; justify-content: center; padding: 0;">📎<input type="file" id="chat_file" accept="image/*,video/*,audio/*,.gif" style="display:none;" onchange="uploadChatFile()"></label>
                 </div>
                 <button class="ie-btn" onclick="sendChat()">Send</button>
@@ -620,6 +626,14 @@
                 <button class="guest-btn" onclick="toggleWin('about_window')">❓ About This Place</button>
                 <button class="guest-btn" onclick="enterGuestChat()">👁️ Lurk the Lounge (Read-Only)</button>
             </div>
+            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #400;">
+                <p style="color:#ffd700; font-size:11px; text-align:center; margin-bottom:10px;">🌟 Have a VIP Code?</p>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="vip_code_input" class="ie-input" placeholder="Enter VIP code..." style="flex:1; margin:0;">
+                    <button class="ie-btn" style="width:auto; padding:10px 15px; margin:0; background:#5a4a00;" onclick="redeemVIPCode()">Redeem</button>
+                </div>
+                <div id="vip_code_result" style="margin-top:8px; font-size:10px; text-align:center;"></div>
+            </div>
         </div>
         <div class="ie-content" id="ie_upload" style="display:none;">
             <button class="lounge-entry-btn" onclick="openChat()">🩸 Enter The Lounge</button>
@@ -815,6 +829,11 @@ function generateUserId(username) {
 }
 
 // Get rank tag HTML - Custom tags for specific users
+// Club tags - clubs that give special chat tags to members
+const clubTags = {
+    'evil jits': { tag: 'jitz', color: '#8B0000' }
+};
+
 function getRankTag(rank, style, username, useCustomTag = true) {
     // Custom tags ALWAYS override in chat - check first (if useCustomTag is true)
     if (useCustomTag && username && userDatabase[username]?.customTag) {
@@ -825,12 +844,39 @@ function getRankTag(rank, style, username, useCustomTag = true) {
         }
         return `<span class="rank-tag ${user.style || style || 'member-style'}">${user.customTag}</span>`;
     }
+    
+    // Check for club tags - only if user doesn't have a custom tag
+    if (useCustomTag && username && !userDatabase[username]?.customTag) {
+        const clubTag = getUserClubTag(username);
+        if (clubTag) {
+            return `<span class="rank-tag" style="color:${clubTag.color}; border-color:${clubTag.color}; background:${clubTag.color}22;">${clubTag.tag}</span>`;
+        }
+    }
+    
     // K badge for contributors (only if no custom tag or useCustomTag is false)
     if (rank === 'CONTRIB') {
         return '<span class="rank-tag contrib-style" style="font-family:\'Bahram\',sans-serif;">K</span>';
     }
     // Default rank tag
     return `<span class="rank-tag ${style || 'member-style'}">${rank || 'M'}</span>`;
+}
+
+// Check if user is in a club that has a special tag
+function getUserClubTag(username) {
+    // Check clubsCache for user membership
+    for (const clubId in clubsCache) {
+        const club = clubsCache[clubId];
+        const clubName = (club.name || '').toLowerCase();
+        
+        // Check if this club has a special tag
+        if (clubTags[clubName]) {
+            // Check if user is owner or member
+            if (club.owner === username || (club.members && club.members.includes(username))) {
+                return clubTags[clubName];
+            }
+        }
+    }
+    return null;
 }
 
 // BAT CURSOR
@@ -980,6 +1026,109 @@ function logout() {
     document.getElementById('vip_image_section').style.display = 'none';
     toggleWin('chat_win');
 }
+
+// VIP Code Redemption System
+const vipCodes = {
+    'FANG2024': { uses: 5, usedBy: [] },
+    'BLOODMOON': { uses: 10, usedBy: [] },
+    'VAMPIRE': { uses: 3, usedBy: [] },
+    'ETERNAL': { uses: 999, usedBy: [] }
+};
+
+function redeemVIPCode() {
+    const codeInput = document.getElementById('vip_code_input');
+    const resultDiv = document.getElementById('vip_code_result');
+    const code = codeInput.value.trim().toUpperCase();
+    
+    if (!code) {
+        resultDiv.innerHTML = '<span style="color:#f00;">Please enter a code.</span>';
+        return;
+    }
+    
+    // Check if code exists in Firebase or local codes
+    db.ref('vip_codes/' + code).once('value', (snapshot) => {
+        let codeData = snapshot.val();
+        
+        // If not in Firebase, check local codes
+        if (!codeData && vipCodes[code]) {
+            codeData = vipCodes[code];
+        }
+        
+        if (!codeData) {
+            resultDiv.innerHTML = '<span style="color:#f00;">Invalid code.</span>';
+            return;
+        }
+        
+        // Check if code has uses left
+        const usedBy = codeData.usedBy || [];
+        if (codeData.uses <= usedBy.length) {
+            resultDiv.innerHTML = '<span style="color:#f00;">This code has been fully redeemed.</span>';
+            return;
+        }
+        
+        // Show redemption form
+        resultDiv.innerHTML = `
+            <div style="background:#1a1a00; border:1px solid #5a4a00; padding:10px; border-radius:4px; margin-top:10px;">
+                <p style="color:#ffd700; margin:0 0 10px 0;">✨ Valid VIP Code! Create your account:</p>
+                <input type="text" id="vip_new_user" class="ie-input" placeholder="Choose username" style="margin-bottom:5px;">
+                <input type="password" id="vip_new_pass" class="ie-input" placeholder="Choose password (min 4 chars)" style="margin-bottom:5px;">
+                <button class="ie-btn" style="background:#5a4a00;" onclick="createVIPAccount('${code}')">Create VIP Account</button>
+            </div>
+        `;
+    });
+}
+
+function createVIPAccount(code) {
+    const username = document.getElementById('vip_new_user').value.trim();
+    const password = document.getElementById('vip_new_pass').value;
+    const resultDiv = document.getElementById('vip_code_result');
+    
+    if (!username || username.length < 2) {
+        alert('Username must be at least 2 characters.');
+        return;
+    }
+    if (!password || password.length < 4) {
+        alert('Password must be at least 4 characters.');
+        return;
+    }
+    if (userDatabase[username]) {
+        alert('Username already taken.');
+        return;
+    }
+    
+    // Create VIP user in Firebase
+    const userData = {
+        rank: 'VIP',
+        fullRank: 'VIP',
+        style: 'sb-style',
+        isAdmin: false,
+        customTag: '##SB',
+        customTagColor: '#6a03b4',
+        createdAt: Date.now(),
+        createdBy: 'VIP_CODE:' + code
+    };
+    
+    // Save to Firebase
+    db.ref('members/' + username).set(userData);
+    
+    // Mark code as used
+    db.ref('vip_codes/' + code + '/usedBy').push(username);
+    
+    // Add to local database for immediate login
+    userDatabase[username] = { ...userData, pass: password };
+    
+    resultDiv.innerHTML = `
+        <div style="color:#0f0; padding:10px; background:#0a1a0a; border:1px solid #0a0; border-radius:4px;">
+            ✅ VIP Account Created!<br>
+            <span style="color:#ffd700;">Username: ${username}</span><br>
+            <span style="color:#888; font-size:9px;">You can now log in above!</span>
+        </div>
+    `;
+    
+    // Clear input
+    document.getElementById('vip_code_input').value = '';
+}
+
 function openChat() { 
     if(CURRENT_USER && !IS_GUEST) { 
         toggleWin('chat_win'); 
@@ -987,7 +1136,7 @@ function openChat() {
         setUserOnline();
         startOnlineListener();
         document.getElementById('chat_input').disabled = false; 
-        document.getElementById('chat_input').placeholder = "/help for commands..."; 
+        document.getElementById('chat_input').placeholder = "/help for commands... @username to mention"; 
     } else {
         alert('Please log in first!');
     }
@@ -1512,12 +1661,33 @@ const chatCommands = {
     '/bite': (args) => ({ type: 'action', text: CURRENT_USER + ' 🧛 *bites ' + (args || 'the air') + '*' }),
 };
 const botResponses = [
-    { trigger: /hello|hi|hey/i, response: "Greetings, mortal. 🦇" },
     { trigger: /vampire|vamp/i, response: "Did someone say vampire? *fangs glisten*" },
     { trigger: /blood/i, response: "The crimson elixir... 🩸" },
     { trigger: /sun|daylight/i, response: "We don't speak of the burning orb. ☀️🚫" },
     { trigger: /garlic/i, response: "*hisses* Forbidden! 🧄❌" },
 ];
+
+// Reply tracking
+let currentReplyTo = null;
+
+function setReply(username, text, msgId) {
+    currentReplyTo = { username, text: text.substring(0, 50), msgId };
+    document.getElementById('reply_indicator').style.display = 'block';
+    document.getElementById('reply_to_user').textContent = username;
+    document.getElementById('reply_to_text').textContent = text.length > 50 ? text.substring(0, 50) + '...' : text;
+    document.getElementById('chat_input').focus();
+}
+
+function cancelReply() {
+    currentReplyTo = null;
+    document.getElementById('reply_indicator').style.display = 'none';
+}
+
+function mentionUser(username) {
+    const input = document.getElementById('chat_input');
+    input.value = '@' + username + ' ' + input.value;
+    input.focus();
+}
 
 function sendChat() {
     if (IS_GUEST) { alert('Guests cannot send messages.'); return; }
@@ -1535,7 +1705,31 @@ function sendChat() {
         if (result.type === 'system') { input.value = ''; const logs = document.getElementById('chat_logs'); logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; logs.scrollTop = logs.scrollHeight; return; }
         else { db.ref('chat').push({ user: CURRENT_USER, text: result.text, isAction: true, tag: userRank, style: userStyle, time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP }); }
     } else {
-        db.ref('chat').push({ user: CURRENT_USER, text: text, tag: userRank, style: userStyle, time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP });
+        // Build message object
+        const msgData = { 
+            user: CURRENT_USER, 
+            text: text, 
+            tag: userRank, 
+            style: userStyle, 
+            time: timeNow, 
+            timestamp: firebase.database.ServerValue.TIMESTAMP 
+        };
+        
+        // Add reply data if replying
+        if (currentReplyTo) {
+            msgData.replyTo = currentReplyTo.username;
+            msgData.replyText = currentReplyTo.text;
+        }
+        
+        // Check for mentions
+        const mentions = text.match(/@(\w+)/g);
+        if (mentions) {
+            msgData.mentions = mentions.map(m => m.substring(1));
+        }
+        
+        db.ref('chat').push(msgData);
+        
+        // Bot responses
         for (const br of botResponses) {
             if (br.trigger.test(text)) {
                 setTimeout(() => { db.ref('chat').push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }, 1000 + Math.random() * 1000);
@@ -1544,6 +1738,7 @@ function sendChat() {
         }
     }
     input.value = "";
+    cancelReply();
 }
 
 let chatListenerSet = false;
@@ -1553,7 +1748,7 @@ function setupChatListener() {
     db.ref('chat').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
         const logs = document.getElementById('chat_logs');
         if (!logs) return;
-        const msgs = []; snapshot.forEach(c => { if (c.val()) msgs.push(c.val()); });
+        const msgs = []; snapshot.forEach(c => { if (c.val()) msgs.push({...c.val(), msgId: c.key}); });
         db.ref('pinned').once('value', (ps) => {
             const pinned = ps.val();
             const pc = document.getElementById('pinned_container');
@@ -1573,7 +1768,28 @@ function setupChatListener() {
                 else if (m.mediaType === 'audio') mediaHtml = '<audio src="' + m.mediaUrl + '" controls style="width:250px; margin-top:6px;"></audio>';
             }
             const rankTag = getRankTag(msgTag, msgStyle, msgUser);
-            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div><div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${escapeHtml(msgText)}${mediaHtml}</div></div>`;
+            
+            // Reply indicator
+            let replyHtml = '';
+            if (m.replyTo) {
+                replyHtml = `<div style="background:#1a0808; border-left:2px solid #500; padding:4px 8px; margin-bottom:6px; font-size:10px; color:#888;">↩️ Replying to <span style="color:#d40000;">${escapeHtml(m.replyTo)}</span>: ${escapeHtml(m.replyText || '')}</div>`;
+            }
+            
+            // Format text with mentions highlighted
+            let formattedText = escapeHtml(msgText);
+            formattedText = formattedText.replace(/@(\w+)/g, '<span style="background:#2a1a2a; color:#ff6666; padding:1px 4px; border-radius:3px; cursor:pointer;" onclick="showProfileCard(\'$1\', event)">@$1</span>');
+            
+            // Check if current user is mentioned
+            const isMentioned = m.mentions && m.mentions.includes(CURRENT_USER);
+            const mentionClass = isMentioned ? ' background:#1a1a0a; border-left:3px solid #ffd700;' : '';
+            
+            // Action buttons (reply & mention)
+            const actionBtns = m.isBot ? '' : `<div class="chat-actions" style="display:none; position:absolute; right:8px; top:8px; gap:4px;">
+                <button onclick="setReply('${escapeHtml(msgUser)}', '${escapeHtml(msgText.replace(/'/g, "\\'"))}', '${m.msgId}')" style="background:#222; border:1px solid #400; color:#888; padding:2px 6px; font-size:9px; cursor:pointer; border-radius:3px;">↩️ Reply</button>
+                <button onclick="mentionUser('${escapeHtml(msgUser)}')" style="background:#222; border:1px solid #400; color:#888; padding:2px 6px; font-size:9px; cursor:pointer; border-radius:3px;">@ Mention</button>
+            </div>`;
+            
+            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions').style.display='flex'" onmouseleave="this.querySelector('.chat-actions').style.display='none'">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
         }).join('');
         logs.scrollTop = logs.scrollHeight;
     });
