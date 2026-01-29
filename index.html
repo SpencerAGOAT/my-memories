@@ -217,10 +217,14 @@
         </div>
         <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #400; display:none; background:rgba(5,0,0,0.85);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <div style="color:#d40000; font-size:11px; font-weight:bold;">🎵 PROFILE MUSIC</div>
+                <div style="color:#d40000; font-size:11px; font-weight:bold;">PROFILE MUSIC</div>
                 <button class="ie-btn" id="pw_mute_btn" style="width:auto; padding:4px 10px; font-size:10px; margin:0;" onclick="toggleProfileMusic()">🔇 Mute</button>
             </div>
             <div id="pw_music_player"></div>
+        </div>
+        <div id="pw_badges_section" style="padding:15px; border-bottom:1px solid #400; display:none; background:rgba(5,0,0,0.85);">
+            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">BADGES</div>
+            <div id="pw_badges_list" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
         </div>
         <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #400; background:rgba(5,0,0,0.85);">
             <button class="ie-btn" style="flex:1; min-width:100px; margin:0;" onclick="startDMFromProfile()">💬 Message</button>
@@ -228,7 +232,7 @@
             <button class="ie-btn" id="pw_btn_rep_neg" style="flex:1; min-width:80px; margin:0; background:#500; border-color:#a00; display:none;" onclick="giveRep(-1)">👎 -Rep</button>
         </div>
         <div style="padding:15px; background:rgba(5,0,0,0.85);">
-            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">💬 PROFILE COMMENTS</div>
+            <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">PROFILE COMMENTS</div>
             <div id="pw_comments_list" style="max-height:200px; overflow-y:auto; margin-bottom:15px; padding:5px; background:rgba(5,0,0,0.9); border:1px solid #300; border-radius:4px;">
                 <div style="color:#555; font-size:10px; padding:10px; text-align:center;">No comments yet.</div>
             </div>
@@ -526,6 +530,7 @@
                 <div style="padding:8px 10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:2px solid #500; display:flex; align-items:center; gap:10px; flex-shrink:0;">
                     <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="leaveWatchPartyRoom()">← Leave</button>
                     <span id="wp_room_title" style="color:#d40000; font-weight:bold; text-shadow:0 0 5px rgba(139,0,0,0.5);"></span>
+                    <span id="wp_host_badge" style="color:#ffd700; font-size:9px; background:#1a1a00; padding:2px 6px; border-radius:3px; display:none;">👑 HOST</span>
                     <span id="wp_viewer_count" style="color:#888; font-size:10px; margin-left:auto;">👥 0 watching</span>
                 </div>
                 <div style="display:flex; flex:1; min-height:0; overflow:hidden;">
@@ -534,14 +539,18 @@
                             <div id="wp_player" style="width:100%; height:100%;"></div>
                             <button id="wp_fullscreen_btn" onclick="wpToggleFullscreen()" style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); border:1px solid #500; color:#888; padding:5px 10px; font-size:10px; cursor:pointer; border-radius:3px; z-index:10;">⛶ Fullscreen</button>
                         </div>
-                        <div style="padding:8px; background:linear-gradient(180deg, #0a0000, #050000); border-top:1px solid #500; display:flex; gap:8px; align-items:center; flex-shrink:0;">
-                            <button class="ie-btn" style="width:auto; padding:4px 12px; font-size:11px;" onclick="wpTogglePlay()" id="wp_play_btn">▶️</button>
-                            <input type="range" id="wp_seek" min="0" max="100" value="0" style="flex:1; accent-color:#d40000;">
+                        <div id="wp_controls" style="padding:8px; background:linear-gradient(180deg, #0a0000, #050000); border-top:1px solid #500; display:flex; gap:8px; align-items:center; flex-shrink:0;">
+                            <button class="ie-btn wp-host-only" style="width:auto; padding:4px 12px; font-size:11px;" onclick="wpTogglePlay()" id="wp_play_btn">▶️</button>
+                            <input type="range" id="wp_seek" min="0" max="100" value="0" style="flex:1; accent-color:#d40000;" class="wp-host-only">
                             <span id="wp_time" style="color:#666; font-size:9px; min-width:70px;">0:00 / 0:00</span>
-                            <button class="ie-btn" style="width:auto; padding:4px 8px; font-size:10px;" onclick="wpSyncToHost()" title="Sync to host">🔄</button>
+                            <button class="ie-btn" style="width:auto; padding:4px 8px; font-size:10px;" onclick="wpSyncToHost()" title="Sync to host">🔄 Sync</button>
                         </div>
                     </div>
                     <div style="width:220px; display:flex; flex-direction:column; border-left:2px solid #500; background:#050000; min-height:0; flex-shrink:0;">
+                        <div style="padding:6px 8px; background:#0a0000; border-bottom:1px solid #400; flex-shrink:0;">
+                            <div style="color:#888; font-size:9px; margin-bottom:4px;">👥 WATCHING</div>
+                            <div id="wp_viewer_list" style="display:flex; flex-wrap:wrap; gap:4px; max-height:40px; overflow-y:auto; font-size:9px;"></div>
+                        </div>
                         <div style="padding:8px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:1px solid #500; color:#d40000; font-size:10px; font-weight:bold; flex-shrink:0;">💬 Party Chat</div>
                         <div id="wp_chat_messages" style="flex:1; overflow-y:auto; padding:8px; font-size:10px; background:#030000; min-height:0;"></div>
                         <div style="padding:8px; background:#0a0000; border-top:1px solid #500; flex-shrink:0;">
@@ -584,213 +593,295 @@
             <div id="admin_tab_vip" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3><div class="admin-section"><h4>Generate New Code</h4><div style="display:flex; gap:5px; margin-bottom:10px;"><input type="number" id="vip_code_uses" class="ie-input" placeholder="Max uses" value="5" min="1" max="100" style="width:100px;"><button class="ie-btn" style="flex:1;" onclick="generateVIPCode()">🌟 Generate New Code</button></div><div id="vip_code_display" style="color:#ffd700; font-family:monospace; font-size:16px;"></div></div><div class="admin-section"><h4>Active VIP Codes</h4><button class="ie-btn" style="width:auto; padding:5px 15px; margin-bottom:10px;" onclick="loadVIPCodeHistory()">🔄 Refresh</button><div id="vip_code_history" style="max-height:300px; overflow-y:auto; font-size:11px;"><div style="color:#666;">Click refresh to load codes...</div></div></div></div>
             <div id="admin_tab_st" style="display:none;">
                 <h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">👤 Change Username</h4>
-                    <input type="text" id="st_old_username" class="ie-input" placeholder="Current username">
-                    <input type="text" id="st_new_username" class="ie-input" placeholder="New username">
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stChangeUsername()">Change Username</button>
-                    <div id="st_username_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">🏷️ Custom Tags</h4>
-                    <input type="text" id="st_tag_username" class="ie-input" placeholder="Username">
-                    <div style="display:flex; gap:5px;">
-                        <input type="text" id="st_tag_letter" class="ie-input" placeholder="Tag text" style="width:100px;">
-                        <input type="text" id="st_tag_color" class="ie-input" placeholder="Color (hex)" style="flex:1;" value="#ff00ff">
+                
+                <!-- SECTION: USER MANAGEMENT -->
+                <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #300030, #200020); padding:10px 15px; color:#ff00ff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        👤 USER MANAGEMENT <span style="float:right; font-size:10px;">▼</span>
                     </div>
-                    <div style="display:flex; gap:5px; margin-top:5px;">
-                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stSetCustomTag()">Set Tag</button>
-                        <button class="ie-btn" style="flex:1; background:#333; border-color:#ff00ff;" onclick="stRemoveCustomTag()">Remove Tag</button>
-                    </div>
-                    <div id="st_tag_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">⬆️ Change User Rank</h4>
-                    <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
-                    <select id="elevate_rank" class="ie-input">
-                        <option value="member">Member (M)</option>
-                        <option value="vip">VIP</option>
-                        <option value="contrib">Contributor (K)</option>
-                        <option value="mod">Moderator (MOD)</option>
-                        <option value="admin">Admin (A)</option>
-                    </select>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Set Rank</button>
-                    <div id="st_elevate_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">🔐 Set User Permissions</h4>
-                    <input type="text" id="perm_user" class="ie-input" placeholder="Username">
-                    <label style="color:#888; font-size:10px; display:block; margin-bottom:5px;">Quick Presets:</label>
-                    <select id="perm_preset" class="ie-input" onchange="applyPermissionPreset()">
-                        <option value="">-- Select Preset --</option>
-                        <option value="none">No Special Permissions</option>
-                        <option value="vip_perks">VIP Perks Only</option>
-                        <option value="moderator">Moderator Powers</option>
-                        <option value="admin">Full Admin</option>
-                        <option value="custom">Custom (use checkboxes below)</option>
-                    </select>
-                    <label style="color:#888; font-size:10px; display:block; margin:10px 0 5px 0;">Or Set Individually:</label>
-                    <div style="background:#050000; padding:10px; border:1px solid #400; border-radius:4px; margin-bottom:10px;">
-                        <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:8px; padding:5px 0; cursor:pointer;"><input type="checkbox" id="perm_mod" style="width:16px; height:16px;"> <span>Moderator Powers</span> <span style="color:#555; font-size:9px;">(kick, ban, timeout)</span></label>
-                        <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:8px; padding:5px 0; cursor:pointer;"><input type="checkbox" id="perm_admin" style="width:16px; height:16px;"> <span>Admin Access</span> <span style="color:#555; font-size:9px;">(full admin panel)</span></label>
-                        <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:8px; padding:5px 0; cursor:pointer;"><input type="checkbox" id="perm_vip_perks" style="width:16px; height:16px;"> <span>VIP Perks</span> <span style="color:#555; font-size:9px;">(image hosting, memories upload)</span></label>
-                    </div>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="setUserPermissions()">Set Permissions</button>
-                    <div id="st_perm_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">🔑 Reset Password</h4>
-                    <input type="text" id="st_reset_username" class="ie-input" placeholder="Username">
-                    <input type="text" id="st_new_password" class="ie-input" placeholder="New password">
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stResetPassword()">Reset Password</button>
-                    <div id="st_password_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">🗑️ User Data Management</h4>
-                    <input type="text" id="st_data_username" class="ie-input" placeholder="Username">
-                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stWipeProfile()">Wipe Profile</button>
-                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stWipeMessages()">Wipe Messages</button>
-                        <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stDeleteUser()">Delete User</button>
-                    </div>
-                    <div id="st_data_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">👁️ User Lookup</h4>
-                    <input type="text" id="st_lookup_username" class="ie-input" placeholder="Username">
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLookupUser()">Lookup</button>
-                    <div id="st_lookup_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">➕ Create New User</h4>
-                    <input type="text" id="st_create_username" class="ie-input" placeholder="Username">
-                    <input type="text" id="st_create_password" class="ie-input" placeholder="Password">
-                    <select id="st_create_rank" class="ie-input">
-                        <option value="member">Member</option>
-                        <option value="vip">VIP</option>
-                        <option value="contrib">Contributor</option>
-                        <option value="mod">Moderator</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stCreateUser()">Create User</button>
-                    <div id="st_create_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">⭐ Reputation Management</h4>
-                    <input type="text" id="st_rep_username" class="ie-input" placeholder="Username">
-                    <div style="display:flex; gap:5px; margin-bottom:5px;">
-                        <input type="number" id="st_rep_amount" class="ie-input" placeholder="Amount (+/-)" style="flex:1;">
-                        <button class="ie-btn" style="width:auto; padding:8px 15px; background:#030; border-color:#0f0;" onclick="stModifyRep(1)">+ Add</button>
-                        <button class="ie-btn" style="width:auto; padding:8px 15px; background:#300; border-color:#f00;" onclick="stModifyRep(-1)">- Remove</button>
-                    </div>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stSetRep()">Set Exact Rep</button>
-                    <div id="st_rep_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">💬 Admin Comment</h4>
-                    <input type="text" id="st_comment_username" class="ie-input" placeholder="Target username">
-                    <textarea id="st_comment_text" class="ie-input" placeholder="Comment text..." style="height:60px; resize:none;"></textarea>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLeaveComment()">Post Comment as Admin</button>
-                    <div id="st_comment_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">📢 Site-Wide Announcement</h4>
-                    <input type="text" id="st_announce_title" class="ie-input" placeholder="Announcement title (optional)">
-                    <textarea id="st_announce_text" class="ie-input" placeholder="Announcement message..." style="height:80px; resize:none;"></textarea>
-                    <input type="text" id="st_announce_image" class="ie-input" placeholder="Image URL (optional)">
-                    <input type="text" id="st_announce_music" class="ie-input" placeholder="YouTube URL or SoundCloud URL (optional)">
-                    <p style="color:#666; font-size:9px; margin:3px 0;">Video/audio will appear in bottom-right corner with close button</p>
-                    <div style="display:flex; gap:5px; margin-top:5px;">
-                        <select id="st_announce_type" class="ie-input" style="flex:1;">
-                            <option value="info">ℹ️ Info</option>
-                            <option value="update">🆕 Update</option>
-                            <option value="warning">⚠️ Warning</option>
-                            <option value="event">🎉 Event</option>
-                        </select>
-                        <input type="number" id="st_announce_duration" class="ie-input" style="width:80px;" placeholder="Sec" value="10" min="5" max="120">
-                    </div>
-                    <div style="display:flex; gap:5px; margin-top:5px;">
-                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="sendSiteAnnouncement()">📢 Send Announcement</button>
-                        <button class="ie-btn" style="width:auto; background:#333; border-color:#ff00ff;" onclick="previewAnnouncement()">👁️ Preview</button>
-                    </div>
-                    <div id="st_announce_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">🏰 Club Management</h4>
-                    <div style="margin-bottom:10px;">
-                        <label style="color:#888; font-size:10px;">Create New Club</label>
-                        <input type="text" id="st_club_name" class="ie-input" placeholder="Club name">
-                        <input type="text" id="st_club_owner" class="ie-input" placeholder="Owner username">
-                        <input type="text" id="st_club_color" class="ie-input" placeholder="Color (hex, e.g. #ff0000)" value="#d40000">
-                        <textarea id="st_club_desc" class="ie-input" placeholder="Club description..." style="height:50px; resize:none;"></textarea>
-                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stCreateClub()">Create Club</button>
-                    </div>
-                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
-                        <label style="color:#888; font-size:10px;">Transfer Ownership</label>
-                        <input type="text" id="st_transfer_club" class="ie-input" placeholder="Club name">
-                        <input type="text" id="st_transfer_to" class="ie-input" placeholder="New owner username">
-                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stTransferClub()">Transfer</button>
-                    </div>
-                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
-                        <label style="color:#888; font-size:10px;">Rename Club</label>
-                        <input type="text" id="st_rename_club_old" class="ie-input" placeholder="Current club name">
-                        <input type="text" id="st_rename_club_new" class="ie-input" placeholder="New club name">
-                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stRenameClub()">Rename</button>
-                    </div>
-                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
-                        <label style="color:#888; font-size:10px;">Delete Club</label>
-                        <input type="text" id="st_delete_club" class="ie-input" placeholder="Club name to delete">
-                        <button class="ie-btn" style="background:#700; border-color:#ff00ff;" onclick="stDeleteClub()">🗑️ Delete Club</button>
-                    </div>
-                    <div id="st_club_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">🏷️ Club Chat Tags</h4>
-                    <p style="color:#666; font-size:9px; margin-bottom:10px;">Assign special chat tags to club members (like ##SB, jitz, KEVIN)</p>
-                    <div style="margin-bottom:10px;">
-                        <label style="color:#888; font-size:10px;">Add/Edit Club Tag</label>
-                        <input type="text" id="st_clubtag_club" class="ie-input" placeholder="Club name (exact match, case insensitive)">
-                        <div style="display:flex; gap:5px;">
-                            <input type="text" id="st_clubtag_tag" class="ie-input" placeholder="Tag text (e.g., ##SB)" style="flex:1;">
-                            <input type="text" id="st_clubtag_color" class="ie-input" placeholder="Color" value="#d40000" style="width:100px;">
+                    <div style="padding:15px; background:#0a000a;">
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Change Username</h4>
+                            <input type="text" id="st_old_username" class="ie-input" placeholder="Current username">
+                            <input type="text" id="st_new_username" class="ie-input" placeholder="New username">
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stChangeUsername()">Change Username</button>
+                            <div id="st_username_result" style="margin-top:5px; font-size:10px;"></div>
                         </div>
-                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stSetClubTag()">Set Club Tag</button>
-                    </div>
-                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
-                        <label style="color:#888; font-size:10px;">Remove Club Tag</label>
-                        <input type="text" id="st_clubtag_remove" class="ie-input" placeholder="Club name to remove tag from">
-                        <button class="ie-btn" style="background:#700; border-color:#ff00ff;" onclick="stRemoveClubTag()">Remove Tag</button>
-                    </div>
-                    <div style="padding-top:10px; border-top:1px solid #400;">
-                        <label style="color:#888; font-size:10px;">Current Club Tags</label>
-                        <button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:5px;" onclick="loadClubTagsList()">🔄 Refresh</button>
-                        <div id="st_clubtags_list" style="max-height:150px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
-                    </div>
-                    <div id="st_clubtag_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                <div class="admin-section" style="border-color:#ff00ff;">
-                    <h4 style="color:#ff00ff;">👥 Memberlist Tags</h4>
-                    <p style="color:#666; font-size:9px; margin-bottom:10px;">Customize tags shown in the memberlist for club members</p>
-                    <div style="margin-bottom:10px;">
-                        <label style="color:#888; font-size:10px;">Add/Edit Memberlist Tag</label>
-                        <input type="text" id="st_mltag_club" class="ie-input" placeholder="Club name (exact match, case insensitive)">
-                        <div style="display:flex; gap:5px;">
-                            <input type="text" id="st_mltag_tag" class="ie-input" placeholder="Tag text (e.g., ##SB)" style="flex:1;">
-                            <input type="text" id="st_mltag_color" class="ie-input" placeholder="Color" value="#6a03b4" style="width:100px;">
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Create New User</h4>
+                            <input type="text" id="st_create_username" class="ie-input" placeholder="Username">
+                            <input type="text" id="st_create_password" class="ie-input" placeholder="Password">
+                            <select id="st_create_rank" class="ie-input">
+                                <option value="member">Member</option>
+                                <option value="vip">VIP</option>
+                                <option value="contrib">Contributor</option>
+                                <option value="mod">Moderator</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stCreateUser()">Create User</button>
+                            <div id="st_create_result" style="margin-top:5px; font-size:10px;"></div>
                         </div>
-                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stSetMemberlistTag()">Set Memberlist Tag</button>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">User Lookup</h4>
+                            <input type="text" id="st_lookup_username" class="ie-input" placeholder="Username">
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLookupUser()">Lookup</button>
+                            <div id="st_lookup_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff;">
+                            <h4 style="color:#ff00ff;">User Data Management</h4>
+                            <input type="text" id="st_data_username" class="ie-input" placeholder="Username">
+                            <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                                <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stWipeProfile()">Wipe Profile</button>
+                                <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stWipeMessages()">Wipe Messages</button>
+                                <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stDeleteUser()">Delete User</button>
+                            </div>
+                            <div id="st_data_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
                     </div>
-                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
-                        <label style="color:#888; font-size:10px;">Remove Memberlist Tag</label>
-                        <input type="text" id="st_mltag_remove" class="ie-input" placeholder="Club name to remove tag from">
-                        <button class="ie-btn" style="background:#700; border-color:#ff00ff;" onclick="stRemoveMemberlistTag()">Remove Tag</button>
+                </div>
+                
+                <!-- SECTION: ROLES & PERMISSIONS -->
+                <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #300030, #200020); padding:10px 15px; color:#ff00ff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        🔐 ROLES & PERMISSIONS <span style="float:right; font-size:10px;">▼</span>
                     </div>
-                    <div style="padding-top:10px; border-top:1px solid #400;">
-                        <label style="color:#888; font-size:10px;">Current Memberlist Tags</label>
-                        <button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:5px;" onclick="loadMemberlistTagsList()">🔄 Refresh</button>
-                        <div id="st_mltags_list" style="max-height:150px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
+                    <div style="padding:15px; background:#0a000a;">
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Change User Rank</h4>
+                            <input type="text" id="elevate_user" class="ie-input" placeholder="Username">
+                            <select id="elevate_rank" class="ie-input">
+                                <option value="member">Member (M)</option>
+                                <option value="vip">VIP</option>
+                                <option value="contrib">Contributor (K)</option>
+                                <option value="mod">Moderator (MOD)</option>
+                                <option value="admin">Admin (A)</option>
+                            </select>
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="elevateUser()">Set Rank</button>
+                            <div id="st_elevate_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Set User Permissions</h4>
+                            <input type="text" id="perm_user" class="ie-input" placeholder="Username">
+                            <select id="perm_preset" class="ie-input" onchange="applyPermissionPreset()">
+                                <option value="">-- Select Preset --</option>
+                                <option value="none">No Special Permissions</option>
+                                <option value="vip_perks">VIP Perks Only</option>
+                                <option value="moderator">Moderator Powers</option>
+                                <option value="admin">Full Admin</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <div style="background:#050000; padding:10px; border:1px solid #400; border-radius:4px; margin:5px 0;">
+                                <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:8px; padding:5px 0;"><input type="checkbox" id="perm_mod"> Moderator Powers</label>
+                                <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:8px; padding:5px 0;"><input type="checkbox" id="perm_admin"> Admin Access</label>
+                                <label style="color:#888; font-size:11px; display:flex; align-items:center; gap:8px; padding:5px 0;"><input type="checkbox" id="perm_vip_perks"> VIP Perks</label>
+                            </div>
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="setUserPermissions()">Set Permissions</button>
+                            <div id="st_perm_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff;">
+                            <h4 style="color:#ff00ff;">Reset Password</h4>
+                            <input type="text" id="st_reset_username" class="ie-input" placeholder="Username">
+                            <input type="text" id="st_new_password" class="ie-input" placeholder="New password">
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stResetPassword()">Reset Password</button>
+                            <div id="st_password_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
                     </div>
-                    <div id="st_mltag_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                
+                <!-- SECTION: TAGS -->
+                <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #300030, #200020); padding:10px 15px; color:#ff00ff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        🏷️ TAGS <span style="float:right; font-size:10px;">▼</span>
+                    </div>
+                    <div style="padding:15px; background:#0a000a;">
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Custom User Tags (Chat)</h4>
+                            <input type="text" id="st_tag_username" class="ie-input" placeholder="Username">
+                            <div style="display:flex; gap:5px;">
+                                <input type="text" id="st_tag_letter" class="ie-input" placeholder="Tag text" style="width:100px;">
+                                <input type="text" id="st_tag_color" class="ie-input" placeholder="Color (hex)" style="flex:1;" value="#ff00ff">
+                            </div>
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stSetCustomTag()">Set Tag</button>
+                                <button class="ie-btn" style="flex:1; background:#333; border-color:#ff00ff;" onclick="stRemoveCustomTag()">Remove Tag</button>
+                            </div>
+                            <div id="st_tag_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Club Chat Tags</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Tags shown in chat for club members</p>
+                            <input type="text" id="st_clubtag_club" class="ie-input" placeholder="Club name">
+                            <div style="display:flex; gap:5px;">
+                                <input type="text" id="st_clubtag_tag" class="ie-input" placeholder="Tag text" style="flex:1;">
+                                <input type="text" id="st_clubtag_color" class="ie-input" placeholder="Color" value="#d40000" style="width:100px;">
+                            </div>
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stSetClubTag()">Set Tag</button>
+                                <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stRemoveClubTag()">Remove</button>
+                            </div>
+                            <input type="text" id="st_clubtag_remove" class="ie-input" placeholder="Club name to remove" style="margin-top:5px;">
+                            <button class="ie-btn" style="width:auto; padding:5px 10px; margin-top:5px;" onclick="loadClubTagsList()">🔄 Refresh List</button>
+                            <div id="st_clubtags_list" style="max-height:100px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px; margin-top:5px;"></div>
+                            <div id="st_clubtag_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff;">
+                            <h4 style="color:#ff00ff;">Memberlist Tags</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Tags shown in the chatroom memberlist (club-based)</p>
+                            <input type="text" id="st_mltag_club" class="ie-input" placeholder="Club name">
+                            <div style="display:flex; gap:5px;">
+                                <input type="text" id="st_mltag_tag" class="ie-input" placeholder="Tag text" style="flex:1;">
+                                <input type="text" id="st_mltag_color" class="ie-input" placeholder="Color" value="#6a03b4" style="width:100px;">
+                            </div>
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stSetMemberlistTag()">Set Tag</button>
+                                <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stRemoveMemberlistTag()">Remove</button>
+                            </div>
+                            <input type="text" id="st_mltag_remove" class="ie-input" placeholder="Club name to remove" style="margin-top:5px;">
+                            <button class="ie-btn" style="width:auto; padding:5px 10px; margin-top:5px;" onclick="loadMemberlistTagsList()">🔄 Refresh List</button>
+                            <div id="st_mltags_list" style="max-height:100px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px; margin-top:5px;"></div>
+                            <div id="st_mltag_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SECTION: BADGES -->
+                <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #300030, #200020); padding:10px 15px; color:#ff00ff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        🎖️ BADGES <span style="float:right; font-size:10px;">▼</span>
+                    </div>
+                    <div style="padding:15px; background:#0a000a;">
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Create New Badge</h4>
+                            <input type="text" id="st_new_badge_id" class="ie-input" placeholder="Badge ID (no spaces, e.g. cool_guy)">
+                            <input type="text" id="st_new_badge_name" class="ie-input" placeholder="Display Name (e.g. Cool Guy)">
+                            <input type="text" id="st_new_badge_desc" class="ie-input" placeholder="Description (shown on hover)">
+                            <div style="margin:8px 0;">
+                                <label style="color:#888; font-size:10px; display:block; margin-bottom:5px;">Badge Image</label>
+                                <div style="display:flex; gap:5px; align-items:center;">
+                                    <input type="file" id="st_badge_upload" accept="image/*" style="flex:1; color:#888; font-size:10px;">
+                                    <span style="color:#666; font-size:9px;">OR</span>
+                                    <input type="text" id="st_badge_url" class="ie-input" placeholder="Image URL" style="flex:2; margin:0;">
+                                </div>
+                            </div>
+                            <div id="st_badge_preview" style="display:none; text-align:center; padding:10px; background:#050000; border:1px solid #400; border-radius:4px; margin:8px 0;">
+                                <img id="st_badge_preview_img" style="width:50px; height:50px; border-radius:4px; border:2px solid #500;">
+                                <div style="color:#888; font-size:9px; margin-top:5px;">Preview</div>
+                            </div>
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stCreateBadge()">Create Badge</button>
+                            <div id="st_create_badge_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Assign Badge to User</h4>
+                            <input type="text" id="st_badge_username" class="ie-input" placeholder="Username">
+                            <select id="st_badge_select" class="ie-input">
+                                <option value="">-- Select Badge --</option>
+                            </select>
+                            <button class="ie-btn" style="width:auto; padding:5px 10px; margin:5px 0;" onclick="loadBadgeSelectOptions()">🔄 Refresh Badges</button>
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stAssignBadge()">Assign Badge</button>
+                                <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stRemoveBadge()">Remove Badge</button>
+                            </div>
+                            <div id="st_badge_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Delete Badge</h4>
+                            <select id="st_delete_badge_select" class="ie-input">
+                                <option value="">-- Select Badge to Delete --</option>
+                            </select>
+                            <button class="ie-btn" style="background:#700; border-color:#ff00ff; margin-top:5px;" onclick="stDeleteBadge()">Delete Badge</button>
+                            <div id="st_delete_badge_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff;">
+                            <h4 style="color:#ff00ff;">Badge Library</h4>
+                            <button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:10px;" onclick="loadBadgeLibrary()">🔄 Refresh Library</button>
+                            <div id="st_badge_library" style="display:flex; flex-wrap:wrap; gap:10px; background:#050000; padding:10px; border:1px solid #400; border-radius:4px; min-height:60px;">
+                                <div style="color:#666; font-size:10px; width:100%; text-align:center;">Click refresh to load badges...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SECTION: CLUBS -->
+                <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #300030, #200020); padding:10px 15px; color:#ff00ff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        🏰 CLUB MANAGEMENT <span style="float:right; font-size:10px;">▼</span>
+                    </div>
+                    <div style="padding:15px; background:#0a000a; display:none;">
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Create New Club</h4>
+                            <input type="text" id="st_club_name" class="ie-input" placeholder="Club name">
+                            <input type="text" id="st_club_owner" class="ie-input" placeholder="Owner username">
+                            <input type="text" id="st_club_color" class="ie-input" placeholder="Color (hex)" value="#d40000">
+                            <textarea id="st_club_desc" class="ie-input" placeholder="Description..." style="height:50px; resize:none;"></textarea>
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stCreateClub()">Create Club</button>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Transfer Ownership</h4>
+                            <input type="text" id="st_transfer_club" class="ie-input" placeholder="Club name">
+                            <input type="text" id="st_transfer_to" class="ie-input" placeholder="New owner username">
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stTransferClub()">Transfer</button>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Rename Club</h4>
+                            <input type="text" id="st_rename_club_old" class="ie-input" placeholder="Current club name">
+                            <input type="text" id="st_rename_club_new" class="ie-input" placeholder="New club name">
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stRenameClub()">Rename</button>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff;">
+                            <h4 style="color:#ff00ff;">Delete Club</h4>
+                            <input type="text" id="st_delete_club" class="ie-input" placeholder="Club name to delete">
+                            <button class="ie-btn" style="background:#700; border-color:#ff00ff;" onclick="stDeleteClub()">Delete Club</button>
+                        </div>
+                        <div id="st_club_result" style="margin-top:5px; font-size:10px;"></div>
+                    </div>
+                </div>
+                
+                <!-- SECTION: ANNOUNCEMENTS & REPUTATION -->
+                <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #300030, #200020); padding:10px 15px; color:#ff00ff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        📢 ANNOUNCEMENTS & REP <span style="float:right; font-size:10px;">▼</span>
+                    </div>
+                    <div style="padding:15px; background:#0a000a; display:none;">
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Site-Wide Announcement</h4>
+                            <input type="text" id="st_announce_title" class="ie-input" placeholder="Title (optional)">
+                            <textarea id="st_announce_text" class="ie-input" placeholder="Message..." style="height:60px; resize:none;"></textarea>
+                            <input type="text" id="st_announce_image" class="ie-input" placeholder="Image URL (optional)">
+                            <input type="text" id="st_announce_music" class="ie-input" placeholder="YouTube/SoundCloud URL (optional)">
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <select id="st_announce_type" class="ie-input" style="flex:1;">
+                                    <option value="info">ℹ️ Info</option>
+                                    <option value="update">🆕 Update</option>
+                                    <option value="warning">⚠️ Warning</option>
+                                    <option value="event">🎉 Event</option>
+                                </select>
+                                <input type="number" id="st_announce_duration" class="ie-input" style="width:60px;" value="10" min="5" max="120">
+                            </div>
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="sendSiteAnnouncement()">Send</button>
+                                <button class="ie-btn" style="width:auto; background:#333; border-color:#ff00ff;" onclick="previewAnnouncement()">Preview</button>
+                            </div>
+                            <div id="st_announce_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff; margin-bottom:10px;">
+                            <h4 style="color:#ff00ff;">Reputation Management</h4>
+                            <input type="text" id="st_rep_username" class="ie-input" placeholder="Username">
+                            <div style="display:flex; gap:5px;">
+                                <input type="number" id="st_rep_amount" class="ie-input" placeholder="Amount" style="flex:1;">
+                                <button class="ie-btn" style="width:auto; background:#030; border-color:#0f0;" onclick="stModifyRep(1)">+ Add</button>
+                                <button class="ie-btn" style="width:auto; background:#300; border-color:#f00;" onclick="stModifyRep(-1)">- Sub</button>
+                            </div>
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff; margin-top:5px;" onclick="stSetRep()">Set Exact Rep</button>
+                            <div id="st_rep_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff00ff;">
+                            <h4 style="color:#ff00ff;">Admin Comment</h4>
+                            <input type="text" id="st_comment_username" class="ie-input" placeholder="Target username">
+                            <textarea id="st_comment_text" class="ie-input" placeholder="Comment..." style="height:50px; resize:none;"></textarea>
+                            <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLeaveComment()">Post Comment</button>
+                            <div id="st_comment_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1701,24 +1792,52 @@ function openProfileWindow(username) {
             else pwAvatar.innerHTML = '🦇';
         }
         
-        // Animated background for VIP users
+        // Animated background for VIP users - lighter overlay for visibility
         const winBody = win.querySelector('.window-body');
         const bgOverlay = document.getElementById('pw_bg_overlay');
         if (winBody && profile.background) {
             let bgUrl = profile.background;
-            // Handle Tenor links - convert to direct GIF URL
-            if (bgUrl.includes('tenor.com') && !bgUrl.endsWith('.gif')) {
-                // Tenor URLs need special handling - just use as-is for now
-                bgUrl = bgUrl;
+            // Handle Tenor links - extract direct GIF URL
+            if (bgUrl.includes('tenor.com')) {
+                // For tenor, add .gif if not present, or use media URL
+                if (bgUrl.includes('/view/')) {
+                    bgUrl = bgUrl.replace('/view/', '/').replace(/\?.*$/, '') + '.gif';
+                }
             }
             winBody.style.backgroundImage = 'url(' + escapeHtml(bgUrl) + ')';
             winBody.style.backgroundSize = 'cover';
             winBody.style.backgroundPosition = 'center';
             winBody.style.backgroundRepeat = 'no-repeat';
-            if (bgOverlay) bgOverlay.style.display = 'block';
+            // Show lighter overlay so background is more visible
+            if (bgOverlay) {
+                bgOverlay.style.display = 'block';
+                bgOverlay.style.background = 'rgba(0,0,0,0.5)'; // Lighter than before
+            }
         } else if (winBody) {
             winBody.style.backgroundImage = 'none';
             if (bgOverlay) bgOverlay.style.display = 'none';
+        }
+        
+        // Load badges
+        const pwBadgesSection = document.getElementById('pw_badges_section');
+        const pwBadgesList = document.getElementById('pw_badges_list');
+        if (profile.badges && pwBadgesSection && pwBadgesList) {
+            const badgeKeys = Object.keys(profile.badges);
+            if (badgeKeys.length > 0) {
+                pwBadgesSection.style.display = 'block';
+                pwBadgesList.innerHTML = badgeKeys.map(badgeId => {
+                    const badge = badgeDefinitions[badgeId];
+                    if (!badge) return '';
+                    return `<div class="profile-badge" style="text-align:center; cursor:pointer; position:relative;" title="${escapeHtml(badge.name)} - ${escapeHtml(badge.description)}">
+                        <img src="${badge.image}" style="width:40px; height:40px; border-radius:4px; border:2px solid #500;" onerror="this.style.display='none'">
+                        <div style="color:#888; font-size:8px; margin-top:3px; max-width:50px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(badge.name)}</div>
+                    </div>`;
+                }).join('');
+            } else {
+                pwBadgesSection.style.display = 'none';
+            }
+        } else if (pwBadgesSection) {
+            pwBadgesSection.style.display = 'none';
         }
         
         // Music player - AUTOPLAY when profile opens
@@ -2043,9 +2162,15 @@ function setupChatListener() {
                 replyHtml = `<div style="background:#1a0808; border-left:2px solid #500; padding:4px 8px; margin-bottom:6px; font-size:10px; color:#888;">↩️ Replying to <span style="color:#d40000;">${escapeHtml(m.replyTo)}</span>: ${escapeHtml(m.replyText || '')}</div>`;
             }
             
-            // Format text with mentions highlighted
+            // Format text with mentions highlighted - ONLY for valid users
             let formattedText = escapeHtml(msgText);
-            formattedText = formattedText.replace(/@(\w+)/g, '<span style="background:#2a1a2a; color:#ff6666; padding:1px 4px; border-radius:3px; cursor:pointer;" onclick="showProfileCard(\'$1\', event)">@$1</span>');
+            formattedText = formattedText.replace(/@(\w+)/g, (match, username) => {
+                // Only make clickable if user exists in database
+                if (userDatabase[username]) {
+                    return '<span style="background:#2a1a2a; color:#ff6666; padding:1px 4px; border-radius:3px; cursor:pointer;" onclick="showProfileCard(\'' + username + '\', event)">@' + username + '</span>';
+                }
+                return match; // Return unchanged if user doesn't exist
+            });
             
             // Check if current user is mentioned
             const isMentioned = m.mentions && m.mentions.includes(CURRENT_USER);
@@ -3633,6 +3758,263 @@ function cacheAllUserClubs() {
 }
 setTimeout(cacheAllUserClubs, 2000);
 
+// BADGE SYSTEM - Dynamic from Firebase
+// Default badges (will be merged with Firebase badges)
+let badgeDefinitions = {
+    'happy_merchant': {
+        name: 'Happy Merchant',
+        image: 'https://cdn.discordapp.com/attachments/1453234114789638175/1466420403478990868/HappyMerchant.png',
+        description: 'Was found very irritatable and annoying by the Staff Team'
+    },
+    'mossad_agent': {
+        name: 'Mossad Agent',
+        image: 'https://cdn.discordapp.com/attachments/1453234114789638175/1466213238294315131/ISRAELSSAD.png',
+        description: 'Proven to be very helpful for the Sites Staff Team'
+    },
+    'israeli_citizen': {
+        name: 'Israeli Citizen',
+        image: 'https://cdn.discordapp.com/attachments/1453234114789638175/1466211242267115707/MOSSAAD.png',
+        description: 'Alpha Badge'
+    },
+    'nazi_party': {
+        name: 'Nazi Party',
+        image: 'https://cdn.discordapp.com/attachments/1453234114789638175/1466215113915760753/SWASTIKA.png',
+        description: 'Evil and Mean Members of the Site are Granted this Badge'
+    }
+};
+
+// Load badges from Firebase and merge with defaults
+function loadBadgesFromFirebase() {
+    db.ref('badge_definitions').once('value', (snapshot) => {
+        const fbBadges = snapshot.val() || {};
+        badgeDefinitions = { ...badgeDefinitions, ...fbBadges };
+    });
+}
+setTimeout(loadBadgesFromFirebase, 1500);
+
+// Badge upload preview
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadEl = document.getElementById('st_badge_upload');
+    const urlEl = document.getElementById('st_badge_url');
+    if (uploadEl) {
+        uploadEl.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const preview = document.getElementById('st_badge_preview');
+                    const previewImg = document.getElementById('st_badge_preview_img');
+                    if (preview && previewImg) {
+                        previewImg.src = ev.target.result;
+                        preview.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    if (urlEl) {
+        urlEl.addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            if (url) {
+                const preview = document.getElementById('st_badge_preview');
+                const previewImg = document.getElementById('st_badge_preview_img');
+                if (preview && previewImg) {
+                    previewImg.src = url;
+                    preview.style.display = 'block';
+                }
+            }
+        });
+    }
+});
+
+function stCreateBadge() {
+    const resultEl = document.getElementById('st_create_badge_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const badgeId = document.getElementById('st_new_badge_id').value.trim().toLowerCase().replace(/\s+/g, '_');
+    const badgeName = document.getElementById('st_new_badge_name').value.trim();
+    const badgeDesc = document.getElementById('st_new_badge_desc').value.trim();
+    const uploadEl = document.getElementById('st_badge_upload');
+    const urlEl = document.getElementById('st_badge_url');
+    
+    if (!badgeId) { resultEl.innerHTML = '<span style="color:#f00;">Enter badge ID.</span>'; return; }
+    if (!badgeName) { resultEl.innerHTML = '<span style="color:#f00;">Enter display name.</span>'; return; }
+    if (!badgeDesc) { resultEl.innerHTML = '<span style="color:#f00;">Enter description.</span>'; return; }
+    
+    // Get image - either from upload or URL
+    const urlValue = urlEl ? urlEl.value.trim() : '';
+    const fileValue = uploadEl && uploadEl.files[0];
+    
+    if (fileValue) {
+        // Upload file as base64
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            saveBadgeToFirebase(badgeId, badgeName, badgeDesc, e.target.result, resultEl);
+        };
+        reader.readAsDataURL(fileValue);
+    } else if (urlValue) {
+        // Use URL directly
+        saveBadgeToFirebase(badgeId, badgeName, badgeDesc, urlValue, resultEl);
+    } else {
+        resultEl.innerHTML = '<span style="color:#f00;">Upload an image or provide a URL.</span>';
+    }
+}
+
+function saveBadgeToFirebase(id, name, description, image, resultEl) {
+    const badgeData = {
+        name: name,
+        description: description,
+        image: image,
+        createdBy: CURRENT_USER,
+        createdAt: Date.now()
+    };
+    
+    db.ref('badge_definitions/' + id).set(badgeData).then(() => {
+        // Update local cache
+        badgeDefinitions[id] = badgeData;
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge "' + name + '" created!</span>';
+        // Clear form
+        document.getElementById('st_new_badge_id').value = '';
+        document.getElementById('st_new_badge_name').value = '';
+        document.getElementById('st_new_badge_desc').value = '';
+        document.getElementById('st_badge_url').value = '';
+        document.getElementById('st_badge_upload').value = '';
+        document.getElementById('st_badge_preview').style.display = 'none';
+        // Refresh library
+        loadBadgeLibrary();
+        loadBadgeSelectOptions();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadBadgeSelectOptions() {
+    db.ref('badge_definitions').once('value', (snapshot) => {
+        const fbBadges = snapshot.val() || {};
+        const allBadges = { ...badgeDefinitions, ...fbBadges };
+        
+        const selectEl = document.getElementById('st_badge_select');
+        const deleteSelectEl = document.getElementById('st_delete_badge_select');
+        
+        if (selectEl) {
+            selectEl.innerHTML = '<option value="">-- Select Badge --</option>' +
+                Object.keys(allBadges).map(id => 
+                    `<option value="${escapeHtml(id)}">${escapeHtml(allBadges[id].name)}</option>`
+                ).join('');
+        }
+        
+        if (deleteSelectEl) {
+            deleteSelectEl.innerHTML = '<option value="">-- Select Badge to Delete --</option>' +
+                Object.keys(allBadges).map(id => 
+                    `<option value="${escapeHtml(id)}">${escapeHtml(allBadges[id].name)}</option>`
+                ).join('');
+        }
+        
+        // Update local cache
+        badgeDefinitions = allBadges;
+    });
+}
+
+function loadBadgeLibrary() {
+    db.ref('badge_definitions').once('value', (snapshot) => {
+        const fbBadges = snapshot.val() || {};
+        const allBadges = { ...badgeDefinitions, ...fbBadges };
+        
+        const libraryEl = document.getElementById('st_badge_library');
+        if (!libraryEl) return;
+        
+        if (Object.keys(allBadges).length === 0) {
+            libraryEl.innerHTML = '<div style="color:#666; font-size:10px; width:100%; text-align:center;">No badges found.</div>';
+            return;
+        }
+        
+        libraryEl.innerHTML = Object.keys(allBadges).map(id => {
+            const badge = allBadges[id];
+            return `<div style="text-align:center; width:70px;" title="${escapeHtml(badge.name)} - ${escapeHtml(badge.description)}">
+                <img src="${escapeHtml(badge.image)}" style="width:40px; height:40px; border-radius:4px; border:1px solid #500;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23333%22 width=%2240%22 height=%2240%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2212%22>?</text></svg>'">
+                <div style="color:#888; font-size:8px; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(badge.name)}</div>
+                <div style="color:#555; font-size:7px;">${escapeHtml(id)}</div>
+            </div>`;
+        }).join('');
+        
+        // Update local cache
+        badgeDefinitions = allBadges;
+    });
+}
+
+function stDeleteBadge() {
+    const resultEl = document.getElementById('st_delete_badge_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const badgeId = document.getElementById('st_delete_badge_select').value;
+    if (!badgeId) { resultEl.innerHTML = '<span style="color:#f00;">Select a badge.</span>'; return; }
+    
+    if (!confirm('Are you sure you want to delete this badge? Users who have it will lose it.')) return;
+    
+    db.ref('badge_definitions/' + badgeId).remove().then(() => {
+        delete badgeDefinitions[badgeId];
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge deleted!</span>';
+        loadBadgeLibrary();
+        loadBadgeSelectOptions();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stAssignBadge() {
+    const resultEl = document.getElementById('st_badge_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('st_badge_username').value.trim();
+    const badgeId = document.getElementById('st_badge_select').value;
+    
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
+    if (!badgeId) { resultEl.innerHTML = '<span style="color:#f00;">Select a badge.</span>'; return; }
+    if (!userDatabase[username]) { resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    const badgeName = badgeDefinitions[badgeId]?.name || badgeId;
+    
+    db.ref('profiles/' + username + '/badges/' + badgeId).set({
+        id: badgeId,
+        assignedBy: CURRENT_USER,
+        assignedAt: Date.now()
+    }).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge "' + badgeName + '" assigned to ' + username + '!</span>';
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stRemoveBadge() {
+    const resultEl = document.getElementById('st_badge_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('st_badge_username').value.trim();
+    const badgeId = document.getElementById('st_badge_select').value;
+    
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
+    if (!badgeId) { resultEl.innerHTML = '<span style="color:#f00;">Select a badge.</span>'; return; }
+    
+    db.ref('profiles/' + username + '/badges/' + badgeId).remove().then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge removed from ' + username + '!</span>';
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
 // WATCH PARTY SYSTEM
 let currentWatchPartyRoom = null;
 let wpPlayerReady = false;
@@ -3729,11 +4111,20 @@ function createWatchPartyRoom() {
     });
 }
 
+let wpCurrentHost = null;
+let wpKeepAwakeInterval = null;
+
 function joinWatchPartyRoom(roomKey) {
     currentWatchPartyRoom = roomKey;
     
     // Add self to viewers
-    db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).set(true);
+    db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).set({
+        username: CURRENT_USER,
+        joinedAt: Date.now()
+    });
+    
+    // Remove on disconnect
+    db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).onDisconnect().remove();
     
     // Load room data
     db.ref('watch_parties/' + roomKey).once('value', (snapshot) => {
@@ -3743,7 +4134,17 @@ function joinWatchPartyRoom(roomKey) {
             return;
         }
         
+        wpCurrentHost = room.host;
         document.getElementById('wp_room_title').textContent = room.name;
+        
+        // Show host badge if user is host
+        const hostBadge = document.getElementById('wp_host_badge');
+        if (hostBadge) {
+            hostBadge.style.display = (CURRENT_USER === room.host) ? 'inline' : 'none';
+        }
+        
+        // Enable/disable host-only controls
+        updateWPHostControls(room.host);
         
         // Switch to room view
         switchWatchPartyTab('room', null);
@@ -3758,9 +4159,45 @@ function joinWatchPartyRoom(roomKey) {
         // Start sync listener
         startWPSyncListener(roomKey, room.host);
         
-        // Update viewer count
+        // Update viewer count and list
         updateWPViewerCount(roomKey);
+        
+        // Prevent screen from going idle
+        startWPKeepAwake();
     });
+}
+
+function updateWPHostControls(host) {
+    const isHost = CURRENT_USER === host;
+    
+    // Disable controls for non-hosts
+    document.querySelectorAll('.wp-host-only').forEach(el => {
+        el.disabled = !isHost;
+        el.style.opacity = isHost ? '1' : '0.5';
+        el.style.cursor = isHost ? 'pointer' : 'not-allowed';
+    });
+}
+
+function startWPKeepAwake() {
+    // Clear any existing interval
+    if (wpKeepAwakeInterval) clearInterval(wpKeepAwakeInterval);
+    
+    // Prevent screen idle by simulating activity every 30 seconds
+    wpKeepAwakeInterval = setInterval(() => {
+        if (currentWatchPartyRoom) {
+            // Request wake lock if available
+            if ('wakeLock' in navigator) {
+                navigator.wakeLock.request('screen').catch(() => {});
+            }
+        }
+    }, 30000);
+}
+
+function stopWPKeepAwake() {
+    if (wpKeepAwakeInterval) {
+        clearInterval(wpKeepAwakeInterval);
+        wpKeepAwakeInterval = null;
+    }
 }
 
 function initWPPlayer(videoId, startTime, autoplay) {
@@ -3784,13 +4221,20 @@ function initWPPlayer(videoId, startTime, autoplay) {
 function wpTogglePlay() {
     if (!currentWatchPartyRoom) return;
     
+    // Only host can control playback
+    if (CURRENT_USER !== wpCurrentHost) {
+        alert('Only the host can control playback. Click Sync to match the host.');
+        return;
+    }
+    
     db.ref('watch_parties/' + currentWatchPartyRoom).once('value', (snapshot) => {
         const room = snapshot.val();
         if (!room) return;
         
         const newState = !room.isPlaying;
         db.ref('watch_parties/' + currentWatchPartyRoom).update({
-            isPlaying: newState
+            isPlaying: newState,
+            lastUpdate: Date.now()
         });
         
         document.getElementById('wp_play_btn').textContent = newState ? '⏸️' : '▶️';
@@ -3833,9 +4277,20 @@ function startWPSyncListener(roomKey, host) {
 function updateWPViewerCount(roomKey) {
     db.ref('watch_parties/' + roomKey + '/viewers').on('value', (snapshot) => {
         const viewers = snapshot.val();
-        const count = viewers ? Object.keys(viewers).length : 0;
+        const viewerNames = viewers ? Object.keys(viewers) : [];
+        const count = viewerNames.length;
+        
         const countEl = document.getElementById('wp_viewer_count');
         if (countEl) countEl.textContent = `👥 ${count} watching`;
+        
+        // Update viewer list
+        const listEl = document.getElementById('wp_viewer_list');
+        if (listEl) {
+            listEl.innerHTML = viewerNames.map(name => {
+                const isHost = name === wpCurrentHost;
+                return `<span style="background:${isHost ? '#2a2a00' : '#1a0a0a'}; color:${isHost ? '#ffd700' : '#888'}; padding:2px 6px; border-radius:3px; border:1px solid ${isHost ? '#5a5a00' : '#300'};">${isHost ? '👑 ' : ''}${escapeHtml(name)}</span>`;
+            }).join('');
+        }
     });
 }
 
@@ -3882,6 +4337,9 @@ function leaveWatchPartyRoom() {
     if (currentWatchPartyRoom) {
         // Remove from viewers
         db.ref('watch_parties/' + currentWatchPartyRoom + '/viewers/' + CURRENT_USER).remove();
+        
+        // Stop keep-awake
+        stopWPKeepAwake();
         
         // Check if room is now empty and auto-delete if so
         db.ref('watch_parties/' + currentWatchPartyRoom + '/viewers').once('value', (snapshot) => {
