@@ -506,24 +506,13 @@
             <div id="wp_tab_create" style="display:none; padding:15px; overflow-y:auto;">
                 <h3 style="color:#d40000; margin:0 0 15px 0; text-shadow:0 0 10px rgba(139,0,0,0.5);">➕ Create Watch Party</h3>
                 <input type="text" id="wp_room_name" class="ie-input" placeholder="Room name (e.g., Movie Night)">
-                <select id="wp_source_type" class="ie-input">
-                    <option value="youtube">📺 YouTube Video</option>
-                    <option value="movie">🎬 Movie (MyFlixerz)</option>
-                </select>
                 <input type="text" id="wp_video_url" class="ie-input" placeholder="YouTube URL (e.g., https://youtube.com/watch?v=...)">
-                <input type="text" id="wp_movie_url" class="ie-input" style="display:none;" placeholder="MyFlixerz movie URL (e.g., https://myflixerz.to/movie/...)">
                 <select id="wp_room_type" class="ie-input">
                     <option value="public">🌐 Public</option>
                     <option value="private">🔒 Private</option>
                 </select>
                 <button class="ie-btn" onclick="createWatchPartyRoom()">Create Room</button>
                 <div id="wp_create_result" style="margin-top:10px; font-size:11px;"></div>
-                <script>
-                    document.getElementById('wp_source_type').addEventListener('change', function() {
-                        document.getElementById('wp_video_url').style.display = this.value === 'youtube' ? 'block' : 'none';
-                        document.getElementById('wp_movie_url').style.display = this.value === 'movie' ? 'block' : 'none';
-                    });
-                </script>
             </div>
             <div id="wp_tab_room" style="display:none; flex:1; flex-direction:column; min-height:0; overflow:hidden;">
                 <div style="padding:8px 10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:2px solid #500; display:flex; align-items:center; gap:10px; flex-shrink:0;">
@@ -702,9 +691,7 @@
                     <textarea id="st_announce_text" class="ie-input" placeholder="Announcement message..." style="height:80px; resize:none;"></textarea>
                     <input type="text" id="st_announce_image" class="ie-input" placeholder="Image URL (optional)">
                     <input type="text" id="st_announce_music" class="ie-input" placeholder="YouTube URL or SoundCloud URL (optional)">
-                    <label style="color:#888; font-size:9px; display:flex; align-items:center; gap:5px; margin:5px 0;">
-                        <input type="checkbox" id="st_announce_show_video"> Show video player (YouTube only)
-                    </label>
+                    <p style="color:#666; font-size:9px; margin:3px 0;">Video/audio will appear in bottom-right corner with close button</p>
                     <div style="display:flex; gap:5px; margin-top:5px;">
                         <select id="st_announce_type" class="ie-input" style="flex:1;">
                             <option value="info">ℹ️ Info</option>
@@ -2750,7 +2737,6 @@ function sendSiteAnnouncement() {
     const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
     const imageUrl = document.getElementById('st_announce_image').value.trim();
     const musicUrl = document.getElementById('st_announce_music').value.trim();
-    const showVideo = document.getElementById('st_announce_show_video').checked;
     
     if (!text) { 
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter announcement text.</span>'; 
@@ -2765,7 +2751,6 @@ function sendSiteAnnouncement() {
         duration: duration,
         imageUrl: imageUrl || null,
         musicUrl: musicUrl || null,
-        showVideo: showVideo,
         timestamp: Date.now(),
         sentBy: CURRENT_USER
     };
@@ -2776,7 +2761,6 @@ function sendSiteAnnouncement() {
         document.getElementById('st_announce_text').value = '';
         document.getElementById('st_announce_image').value = '';
         document.getElementById('st_announce_music').value = '';
-        document.getElementById('st_announce_show_video').checked = false;
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
@@ -2789,9 +2773,8 @@ function previewAnnouncement() {
     const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
     const imageUrl = document.getElementById('st_announce_image').value.trim();
     const musicUrl = document.getElementById('st_announce_music').value.trim();
-    const showVideo = document.getElementById('st_announce_show_video').checked;
     
-    showAnnouncement({ title, text, type, duration, imageUrl, musicUrl, showVideo });
+    showAnnouncement({ title, text, type, duration, imageUrl, musicUrl });
 }
 
 let announcementMusicPlayer = null;
@@ -2831,7 +2814,7 @@ function showAnnouncement(data) {
     // Play music if provided (YouTube URL, SoundCloud URL, or legacy video ID)
     if (data.musicUrl || data.musicId) {
         const musicSource = data.musicUrl || data.musicId;
-        playAnnouncementMusic(musicSource, data.showVideo);
+        playAnnouncementMusic(musicSource);
         musicIndicator.style.display = 'block';
     }
     
@@ -2883,19 +2866,32 @@ function showAnnouncement(data) {
     overlay.onclick = () => dismissAnnouncement(false);
 }
 
-function playAnnouncementMusic(source, showVideo) {
+function playAnnouncementMusic(source) {
     // Stop any existing announcement music
     stopAnnouncementMusic();
     
     // Check if it's a SoundCloud URL
     if (source.includes('soundcloud.com')) {
-        // SoundCloud embed
+        // SoundCloud embed - show in corner with close button
+        const container = document.createElement('div');
+        container.id = 'announcement_video_container';
+        container.style.cssText = 'position:fixed; bottom:20px; right:20px; width:320px; height:120px; z-index:99998; border:2px solid #ff5500; border-radius:8px; overflow:hidden; box-shadow:0 0 20px rgba(255,85,0,0.3); background:#000;';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '✕';
+        closeBtn.style.cssText = 'position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.8); border:1px solid #ff5500; color:#fff; width:24px; height:24px; border-radius:50%; cursor:pointer; z-index:10; font-size:12px;';
+        closeBtn.onclick = (e) => { e.stopPropagation(); stopAnnouncementMusic(); };
+        
         const iframe = document.createElement('iframe');
         iframe.id = 'announcement_music_player';
-        iframe.style.display = 'none';
-        iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(source)}&auto_play=true`;
+        iframe.style.cssText = 'width:100%; height:100%; border:none;';
+        iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(source)}&auto_play=true&color=%23ff5500&buying=false&sharing=false`;
         iframe.allow = 'autoplay';
-        document.body.appendChild(iframe);
+        
+        container.appendChild(closeBtn);
+        container.appendChild(iframe);
+        document.body.appendChild(container);
+        announcementVideoPlayer = container;
         announcementMusicPlayer = iframe;
         return;
     }
@@ -2905,38 +2901,27 @@ function playAnnouncementMusic(source, showVideo) {
     const ytMatch = source.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\s]+)/);
     if (ytMatch) videoId = ytMatch[1];
     
-    if (showVideo) {
-        // Create visible video player in bottom right corner
-        const container = document.createElement('div');
-        container.id = 'announcement_video_container';
-        container.style.cssText = 'position:fixed; bottom:20px; right:20px; width:320px; height:200px; z-index:99998; border:2px solid #d40000; border-radius:8px; overflow:hidden; box-shadow:0 0 20px rgba(139,0,0,0.5); background:#000;';
-        
-        const closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '✕';
-        closeBtn.style.cssText = 'position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.8); border:1px solid #500; color:#fff; width:24px; height:24px; border-radius:50%; cursor:pointer; z-index:10; font-size:12px;';
-        closeBtn.onclick = (e) => { e.stopPropagation(); stopAnnouncementMusic(); };
-        
-        const iframe = document.createElement('iframe');
-        iframe.id = 'announcement_music_player';
-        iframe.style.cssText = 'width:100%; height:100%; border:none;';
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1`;
-        iframe.allow = 'autoplay; encrypted-media';
-        
-        container.appendChild(closeBtn);
-        container.appendChild(iframe);
-        document.body.appendChild(container);
-        announcementVideoPlayer = container;
-        announcementMusicPlayer = iframe;
-    } else {
-        // Hidden audio only
-        const iframe = document.createElement('iframe');
-        iframe.id = 'announcement_music_player';
-        iframe.style.display = 'none';
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1`;
-        iframe.allow = 'autoplay';
-        document.body.appendChild(iframe);
-        announcementMusicPlayer = iframe;
-    }
+    // Always show YouTube video player in bottom right corner
+    const container = document.createElement('div');
+    container.id = 'announcement_video_container';
+    container.style.cssText = 'position:fixed; bottom:20px; right:20px; width:320px; height:200px; z-index:99998; border:2px solid #d40000; border-radius:8px; overflow:hidden; box-shadow:0 0 20px rgba(139,0,0,0.5); background:#000;';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = 'position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.8); border:1px solid #500; color:#fff; width:24px; height:24px; border-radius:50%; cursor:pointer; z-index:10; font-size:12px;';
+    closeBtn.onclick = (e) => { e.stopPropagation(); stopAnnouncementMusic(); };
+    
+    const iframe = document.createElement('iframe');
+    iframe.id = 'announcement_music_player';
+    iframe.style.cssText = 'width:100%; height:100%; border:none;';
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1`;
+    iframe.allow = 'autoplay; encrypted-media';
+    
+    container.appendChild(closeBtn);
+    container.appendChild(iframe);
+    document.body.appendChild(container);
+    announcementVideoPlayer = container;
+    announcementMusicPlayer = iframe;
 }
 
 function stopAnnouncementMusic() {
@@ -3321,9 +3306,7 @@ function loadWatchPartyRooms() {
 function createWatchPartyRoom() {
     const resultEl = document.getElementById('wp_create_result');
     const name = document.getElementById('wp_room_name').value.trim();
-    const sourceType = document.getElementById('wp_source_type').value;
     const videoUrl = document.getElementById('wp_video_url').value.trim();
-    const movieUrl = document.getElementById('wp_movie_url').value.trim();
     const type = document.getElementById('wp_room_type').value;
     
     if (!CURRENT_USER || IS_GUEST) {
@@ -3332,26 +3315,16 @@ function createWatchPartyRoom() {
     }
     
     if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter room name.</span>'; return; }
+    if (!videoUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter YouTube URL.</span>'; return; }
     
-    let mediaSource = '';
-    let mediaType = sourceType;
-    
-    if (sourceType === 'youtube') {
-        if (!videoUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter YouTube URL.</span>'; return; }
-        // Extract video ID from URL
-        let videoId = videoUrl;
-        const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\s]+)/);
-        if (ytMatch) videoId = ytMatch[1];
-        mediaSource = videoId;
-    } else if (sourceType === 'movie') {
-        if (!movieUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter movie URL.</span>'; return; }
-        mediaSource = movieUrl;
-    }
+    // Extract video ID from URL
+    let videoId = videoUrl;
+    const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\s]+)/);
+    if (ytMatch) videoId = ytMatch[1];
     
     const roomData = {
         name: name,
-        mediaSource: mediaSource,
-        mediaType: mediaType,
+        videoId: videoId,
         host: CURRENT_USER,
         type: type,
         createdAt: Date.now(),
@@ -3364,7 +3337,6 @@ function createWatchPartyRoom() {
         resultEl.innerHTML = '<span style="color:#0f0;">✓ Room created!</span>';
         document.getElementById('wp_room_name').value = '';
         document.getElementById('wp_video_url').value = '';
-        document.getElementById('wp_movie_url').value = '';
         joinWatchPartyRoom(ref.key);
     }).catch(err => {
         resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
@@ -3390,10 +3362,9 @@ function joinWatchPartyRoom(roomKey) {
         // Switch to room view
         switchWatchPartyTab('room', null);
         
-        // Initialize player based on media type
-        const mediaType = room.mediaType || 'youtube';
-        const mediaSource = room.mediaSource || room.videoId; // fallback for old rooms
-        initWPPlayer(mediaSource, room.currentTime, room.isPlaying, mediaType);
+        // Initialize YouTube player
+        const videoId = room.videoId || room.mediaSource;
+        initWPPlayer(videoId, room.currentTime, room.isPlaying);
         
         // Start chat listener
         startWPChatListener(roomKey);
@@ -3406,45 +3377,22 @@ function joinWatchPartyRoom(roomKey) {
     });
 }
 
-function initWPPlayer(mediaSource, startTime, autoplay, mediaType) {
+function initWPPlayer(videoId, startTime, autoplay) {
     const container = document.getElementById('wp_player');
     container.innerHTML = '';
     
-    if (mediaType === 'movie') {
-        // Movie streaming via iframe
-        const iframe = document.createElement('iframe');
-        iframe.id = 'wp_movie_player';
-        iframe.width = '100%';
-        iframe.height = '100%';
-        iframe.src = mediaSource;
-        iframe.frameBorder = '0';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
-        iframe.allowFullscreen = true;
-        iframe.style.border = 'none';
-        container.appendChild(iframe);
-        
-        // Hide play/sync controls for movie streaming (can't control external player)
-        document.getElementById('wp_play_btn').style.display = 'none';
-        document.getElementById('wp_seek').style.display = 'none';
-        document.getElementById('wp_time').style.display = 'none';
-    } else {
-        // YouTube player
-        const iframe = document.createElement('iframe');
-        iframe.id = 'wp_yt_player';
-        iframe.width = '100%';
-        iframe.height = '100%';
-        iframe.src = `https://www.youtube.com/embed/${mediaSource}?enablejsapi=1&start=${Math.floor(startTime || 0)}&autoplay=${autoplay ? 1 : 0}`;
-        iframe.frameBorder = '0';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        iframe.allowFullscreen = true;
-        container.appendChild(iframe);
-        
-        // Show controls for YouTube
-        document.getElementById('wp_play_btn').style.display = 'block';
-        document.getElementById('wp_seek').style.display = 'block';
-        document.getElementById('wp_time').style.display = 'block';
-        document.getElementById('wp_play_btn').textContent = autoplay ? '⏸️' : '▶️';
-    }
+    // YouTube player
+    const iframe = document.createElement('iframe');
+    iframe.id = 'wp_yt_player';
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=${Math.floor(startTime || 0)}&autoplay=${autoplay ? 1 : 0}`;
+    iframe.frameBorder = '0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    container.appendChild(iframe);
+    
+    document.getElementById('wp_play_btn').textContent = autoplay ? '⏸️' : '▶️';
 }
 
 function wpTogglePlay() {
@@ -3459,7 +3407,7 @@ function wpTogglePlay() {
             isPlaying: newState
         });
         
-        document.getElementById('wp_play_btn').textContent = newState ? '⏸️ Pause' : '▶️ Play';
+        document.getElementById('wp_play_btn').textContent = newState ? '⏸️' : '▶️';
     });
 }
 
@@ -3476,9 +3424,8 @@ function wpSyncToHost() {
         const room = snapshot.val();
         if (!room) return;
         
-        const mediaType = room.mediaType || 'youtube';
-        const mediaSource = room.mediaSource || room.videoId;
-        initWPPlayer(mediaSource, room.currentTime, room.isPlaying, mediaType);
+        const videoId = room.videoId || room.mediaSource;
+        initWPPlayer(videoId, room.currentTime, room.isPlaying);
     });
 }
 
