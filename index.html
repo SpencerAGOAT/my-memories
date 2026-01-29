@@ -187,15 +187,17 @@
 <!-- Profile Window -->
 <div class="window" id="profile_window" style="left:250px; top:40px; width:480px; height:700px; display:none; z-index:9000;">
     <div class="title-bar"><div class="title-bar-text" id="pw_title">👤 Profile</div><div class="title-bar-controls"><button aria-label="Close" onclick="closeProfileWindow()"></button></div></div>
-    <div class="window-body" style="overflow-y:auto; padding:0;">
-        <div style="background:linear-gradient(180deg, #200000, #100000); padding:20px; text-align:center; border-bottom:2px solid #500;">
+    <div class="window-body" style="overflow-y:auto; padding:0; position:relative;">
+        <div id="pw_bg_overlay" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); pointer-events:none; z-index:0; display:none;"></div>
+        <div style="position:relative; z-index:1;">
+        <div style="background:linear-gradient(180deg, rgba(32,0,0,0.9), rgba(16,0,0,0.9)); padding:20px; text-align:center; border-bottom:2px solid #500;">
             <div id="pw_avatar" style="width:100px; height:100px; border-radius:50%; background:#111; border:4px solid #700; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden;">🦇</div>
             <div id="pw_name" style="font-size:22px; font-weight:bold; color:#d40000;"></div>
             <div id="pw_rank" style="font-size:12px; color:#888; margin-top:5px;"></div>
             <div id="pw_status" style="font-size:11px; color:#aaa; margin-top:8px; font-style:italic;"></div>
             <div id="pw_mood" style="font-size:10px; color:#666; margin-top:4px;"></div>
         </div>
-        <div style="display:flex; background:#0a0000; border-bottom:1px solid #400;">
+        <div style="display:flex; background:rgba(10,0,0,0.9); border-bottom:1px solid #400;">
             <div style="flex:1; text-align:center; padding:15px; border-right:1px solid #400;">
                 <div id="pw_rep" style="color:#ff4444; font-size:24px; font-weight:bold;">0</div>
                 <div style="color:#666; font-size:9px; text-transform:uppercase;">Reputation</div>
@@ -205,29 +207,29 @@
                 <div style="color:#666; font-size:9px; text-transform:uppercase;">Comments</div>
             </div>
         </div>
-        <div style="padding:15px; border-bottom:1px solid #400;">
+        <div style="padding:15px; border-bottom:1px solid #400; background:rgba(5,0,0,0.85);">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:8px;">📜 ABOUT</div>
             <div id="pw_bio" style="color:#aaa; font-size:12px; line-height:1.6;">No bio set.</div>
         </div>
-        <div id="pw_clubs_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
+        <div id="pw_clubs_section" style="padding:15px; border-bottom:1px solid #400; display:none; background:rgba(5,0,0,0.85);">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">🏰 CLUBS</div>
             <div id="pw_clubs_list" style="display:flex; flex-wrap:wrap; gap:8px; max-height:120px; overflow-y:auto;"></div>
         </div>
-        <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #400; display:none;">
+        <div id="pw_music_section" style="padding:15px; border-bottom:1px solid #400; display:none; background:rgba(5,0,0,0.85);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <div style="color:#d40000; font-size:11px; font-weight:bold;">🎵 PROFILE MUSIC</div>
                 <button class="ie-btn" id="pw_mute_btn" style="width:auto; padding:4px 10px; font-size:10px; margin:0;" onclick="toggleProfileMusic()">🔇 Mute</button>
             </div>
             <div id="pw_music_player"></div>
         </div>
-        <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #400;">
+        <div style="padding:15px; display:flex; gap:10px; flex-wrap:wrap; border-bottom:1px solid #400; background:rgba(5,0,0,0.85);">
             <button class="ie-btn" style="flex:1; min-width:100px; margin:0;" onclick="startDMFromProfile()">💬 Message</button>
             <button class="ie-btn" id="pw_btn_rep_pos" style="flex:1; min-width:80px; margin:0; background:#030; border-color:#0a0; display:none;" onclick="giveRep(1)">👍 +Rep</button>
             <button class="ie-btn" id="pw_btn_rep_neg" style="flex:1; min-width:80px; margin:0; background:#500; border-color:#a00; display:none;" onclick="giveRep(-1)">👎 -Rep</button>
         </div>
-        <div style="padding:15px;">
+        <div style="padding:15px; background:rgba(5,0,0,0.85);">
             <div style="color:#d40000; font-size:11px; font-weight:bold; margin-bottom:10px;">💬 PROFILE COMMENTS</div>
-            <div id="pw_comments_list" style="max-height:200px; overflow-y:auto; margin-bottom:15px; padding:5px; background:#050000; border:1px solid #300; border-radius:4px;">
+            <div id="pw_comments_list" style="max-height:200px; overflow-y:auto; margin-bottom:15px; padding:5px; background:rgba(5,0,0,0.9); border:1px solid #300; border-radius:4px;">
                 <div style="color:#555; font-size:10px; padding:10px; text-align:center;">No comments yet.</div>
             </div>
             <div id="pw_comment_form" style="display:none;">
@@ -235,8 +237,9 @@
                 <button class="ie-btn" style="padding:8px;" onclick="leaveProfileComment()">Post Comment</button>
             </div>
         </div>
-        <div style="padding:12px 15px; background:#050000; border-top:1px solid #400;">
+        <div style="padding:12px 15px; background:rgba(5,0,0,0.95); border-top:1px solid #400;">
             <div style="color:#444; font-size:9px; font-family:monospace;" id="pw_user_id">User ID: ...</div>
+        </div>
         </div>
     </div>
 </div>
@@ -340,6 +343,11 @@
                     <input type="text" id="user_status" class="ie-input" placeholder="What's happening..." maxlength="30">
                     <label style="color:#888; font-size:10px;">Bio</label>
                     <textarea id="user_bio" class="ie-input" placeholder="Tell us about yourself..." maxlength="200" style="height:80px; resize:none;"></textarea>
+                    <div id="vip_bg_section" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#ffd700; font-size:10px;">✨ VIP: Animated Profile Background</label>
+                        <input type="text" id="profile_bg" class="ie-input" placeholder="GIF/Image URL or Tenor link">
+                        <p style="color:#666; font-size:9px; margin:5px 0;">Supports: Direct image/GIF URLs, Tenor GIF links</p>
+                    </div>
                 </div>
             </div>
             <button class="ie-btn" style="margin-top:20px; padding:12px; background:#700;" onclick="saveProfile()">💾 Save All Changes</button>
@@ -1021,7 +1029,9 @@ const clubTags = {
     'evil jits': { tag: 'jitz', color: '#8B0000' },
     'intelcord': { tag: 'KEVIN', color: '#f2eded' },
     '##sb': { tag: '##SB', color: '#6a03b4' },
-    'sb': { tag: '##SB', color: '#6a03b4' }
+    'sb': { tag: '##SB', color: '#6a03b4' },
+    '#sb': { tag: '##SB', color: '#6a03b4' },
+    '##SB': { tag: '##SB', color: '#6a03b4' }
 };
 
 function getRankTag(rank, style, username, useCustomTag = true) {
@@ -1199,6 +1209,7 @@ function validateIE() {
             const rank = userDatabase[u].rank;
             if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
                 document.getElementById('vip_image_section').style.display = 'block';
+                document.getElementById('vip_bg_section').style.display = 'block';
                 // Hide upgrade section since they're already VIP+
                 document.getElementById('vip_upgrade_section').style.display = 'none';
             } else {
@@ -1445,7 +1456,8 @@ function loadProfile() {
             bio: p.bio || "", 
             mood: p.mood || "", 
             avatar: p.avatar || "", 
-            music: p.music || "" 
+            music: p.music || "",
+            background: p.background || ""
         };
         
         // Update form fields if they exist
@@ -1454,12 +1466,15 @@ function loadProfile() {
         const moodEl = document.getElementById('user_mood');
         const avatarUrlEl = document.getElementById('avatar_url');
         const musicEl = document.getElementById('profile_music');
+        const bgEl = document.getElementById('profile_bg');
         const avatarDisplay = document.getElementById('my_avatar_display');
         
         if (statusEl) statusEl.value = userProfile.status;
         if (bioEl) bioEl.value = userProfile.bio;
         if (moodEl) moodEl.value = userProfile.mood;
         if (avatarUrlEl) avatarUrlEl.value = userProfile.avatar;
+        if (musicEl) musicEl.value = userProfile.music;
+        if (bgEl) bgEl.value = userProfile.background;
         if (musicEl) musicEl.value = userProfile.music;
         
         if (avatarDisplay) {
@@ -1485,12 +1500,14 @@ function saveProfile() {
     const moodEl = document.getElementById('user_mood');
     const musicEl = document.getElementById('profile_music');
     const avatarUrlEl = document.getElementById('avatar_url');
+    const bgEl = document.getElementById('profile_bg');
     
     const newStatus = statusEl ? statusEl.value.trim() : userProfile.status || '';
     const newBio = bioEl ? bioEl.value.trim() : userProfile.bio || '';
     const newMood = moodEl ? moodEl.value : userProfile.mood || '';
     const newMusic = musicEl ? musicEl.value.trim() : userProfile.music || '';
     const newAvatar = avatarUrlEl ? avatarUrlEl.value.trim() : userProfile.avatar || '';
+    const newBg = bgEl ? bgEl.value.trim() : userProfile.background || '';
     
     // Update local profile object
     userProfile.status = newStatus;
@@ -1498,6 +1515,7 @@ function saveProfile() {
     userProfile.mood = newMood;
     userProfile.music = newMusic;
     userProfile.avatar = newAvatar;
+    userProfile.background = newBg;
     
     // Create complete profile data object (no ServerValue.TIMESTAMP - can cause issues)
     const profileData = { 
@@ -1506,6 +1524,7 @@ function saveProfile() {
         mood: newMood, 
         music: newMusic, 
         avatar: newAvatar,
+        background: newBg,
         lastUpdated: Date.now()
     };
     
@@ -1680,6 +1699,26 @@ function openProfileWindow(username) {
         if (pwAvatar) {
             if (profile.avatar) pwAvatar.innerHTML = '<img src="' + escapeHtml(profile.avatar) + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
             else pwAvatar.innerHTML = '🦇';
+        }
+        
+        // Animated background for VIP users
+        const winBody = win.querySelector('.window-body');
+        const bgOverlay = document.getElementById('pw_bg_overlay');
+        if (winBody && profile.background) {
+            let bgUrl = profile.background;
+            // Handle Tenor links - convert to direct GIF URL
+            if (bgUrl.includes('tenor.com') && !bgUrl.endsWith('.gif')) {
+                // Tenor URLs need special handling - just use as-is for now
+                bgUrl = bgUrl;
+            }
+            winBody.style.backgroundImage = 'url(' + escapeHtml(bgUrl) + ')';
+            winBody.style.backgroundSize = 'cover';
+            winBody.style.backgroundPosition = 'center';
+            winBody.style.backgroundRepeat = 'no-repeat';
+            if (bgOverlay) bgOverlay.style.display = 'block';
+        } else if (winBody) {
+            winBody.style.backgroundImage = 'none';
+            if (bgOverlay) bgOverlay.style.display = 'none';
         }
         
         // Music player - AUTOPLAY when profile opens
@@ -3456,7 +3495,9 @@ setTimeout(loadClubTagsFromDB, 1500);
 // MEMBERLIST TAGS - Similar to clubTags but for memberlist display
 let memberlistTags = {
     '##sb': { tag: '##SB', color: '#6a03b4' },
-    'sb': { tag: '##SB', color: '#6a03b4' }
+    'sb': { tag: '##SB', color: '#6a03b4' },
+    '#sb': { tag: '##SB', color: '#6a03b4' },
+    '##SB': { tag: '##SB', color: '#6a03b4' }
 };
 
 function stSetMemberlistTag() {
@@ -3571,19 +3612,23 @@ function cacheAllUserClubs() {
         userClubsCache = {};
         snapshot.forEach((clubSnap) => {
             const club = { id: clubSnap.key, ...clubSnap.val() };
+            const clubNameLower = (club.name || '').toLowerCase();
+            
             // Add owner
             if (club.owner) {
                 if (!userClubsCache[club.owner]) userClubsCache[club.owner] = [];
-                userClubsCache[club.owner].push(club);
+                userClubsCache[club.owner].push({ ...club, name: club.name });
             }
             // Add members
             if (club.members) {
                 club.members.forEach(member => {
                     if (!userClubsCache[member]) userClubsCache[member] = [];
-                    userClubsCache[member].push(club);
+                    userClubsCache[member].push({ ...club, name: club.name });
                 });
             }
         });
+        // Refresh memberlist after clubs are cached
+        updateMemberList();
     });
 }
 setTimeout(cacheAllUserClubs, 2000);
