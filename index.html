@@ -712,6 +712,14 @@
                             <button class="ie-btn" style="background:#700000; border-color:#ff0000;" onclick="stResetAdminHWID()">Reset HWID</button>
                             <div id="st_hwid_reset_result" style="margin-top:5px; font-size:10px;"></div>
                         </div>
+                        <div class="admin-section" style="border-color:#00ff00; margin-bottom:10px;">
+                            <h4 style="color:#00ff00;">Register Admin HWID</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Manually add an admin's HWID (get it from hwid-grabber.html)</p>
+                            <input type="text" id="st_hwid_add_user" class="ie-input" placeholder="Admin username">
+                            <input type="text" id="st_hwid_add_value" class="ie-input" placeholder="HWID (e.g. HWID-1A2B3C4D)">
+                            <button class="ie-btn" style="background:#005000; border-color:#00ff00;" onclick="stAddAdminHWID()">Register HWID</button>
+                            <div id="st_hwid_add_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
                         <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
                             <h4 style="color:#ff0000;">Security Logs</h4>
                             <button class="ie-btn" style="background:#500000; border-color:#ff0000; margin-bottom:10px;" onclick="loadSecurityLogs()">🔄 Load Security Logs</button>
@@ -3390,6 +3398,54 @@ function stResetAdminHWID() {
         // Also clear their session
         db.ref('sessions/' + username).remove();
         resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID reset for ' + escapeHtml(username) + '. They can now login from a new device.</span>';
+        loadAdminHWIDs();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stAddAdminHWID() {
+    const resultEl = document.getElementById('st_hwid_add_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('st_hwid_add_user').value.trim();
+    const hwid = document.getElementById('st_hwid_add_value').value.trim().toUpperCase();
+    
+    if (!username) {
+        resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>';
+        return;
+    }
+    if (!hwid) {
+        resultEl.innerHTML = '<span style="color:#f00;">Enter HWID.</span>';
+        return;
+    }
+    if (!hwid.startsWith('HWID-')) {
+        resultEl.innerHTML = '<span style="color:#f00;">Invalid HWID format. Should start with HWID-</span>';
+        return;
+    }
+    
+    // Check if user exists and is admin/mod/ST
+    if (!userDatabase[username]) {
+        resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>';
+        return;
+    }
+    if (!userDatabase[username].isAdmin && !userDatabase[username].isMod && !userDatabase[username].isST) {
+        resultEl.innerHTML = '<span style="color:#f00;">User is not an admin/mod/ST.</span>';
+        return;
+    }
+    
+    db.ref('admin_hwids/' + username).set({
+        hwid: hwid,
+        registeredAt: Date.now(),
+        registeredBy: CURRENT_USER,
+        lastUsed: Date.now()
+    }).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID registered for ' + escapeHtml(username) + '!</span>';
+        document.getElementById('st_hwid_add_user').value = '';
+        document.getElementById('st_hwid_add_value').value = '';
         loadAdminHWIDs();
     }).catch(err => {
         resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
