@@ -490,56 +490,67 @@
     </div>
 </div>
 <!-- WATCH PARTY -->
-<div class="window" id="watchparty_window" style="left:150px; top:50px; width:850px; height:600px; display:none;">
+<div class="window" id="watchparty_window" style="left:150px; top:30px; width:900px; height:650px; display:none;">
     <div class="title-bar"><div class="title-bar-text">🩸 Watch Party</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('watchparty_window')"></button></div></div>
-    <div class="window-body" style="display:flex; height:100%; background:#0a0000;">
-        <div class="mgmt-sidebar" style="width:180px; background:#050000; border-right:1px solid #500;">
+    <div class="window-body" style="display:flex; height:calc(100% - 25px); background:#0a0000; overflow:hidden;">
+        <div class="mgmt-sidebar" style="width:180px; background:#050000; border-right:1px solid #500; flex-shrink:0;">
             <div class="mgmt-sidebar-item active" onclick="switchWatchPartyTab('rooms', this)">🎬 Party Rooms</div>
             <div class="mgmt-sidebar-item" onclick="switchWatchPartyTab('create', this)">➕ Create Room</div>
         </div>
-        <div class="mgmt-content" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column; background:#0a0000;">
+        <div class="mgmt-content" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column; background:#0a0000; min-height:0;">
             <div id="wp_tab_rooms" style="flex:1; overflow-y:auto; padding:15px;">
                 <h3 style="color:#d40000; margin:0 0 15px 0; text-shadow:0 0 10px rgba(139,0,0,0.5);">🎬 Active Watch Parties</h3>
                 <button class="ie-btn" style="width:auto; padding:5px 15px; margin-bottom:10px;" onclick="loadWatchPartyRooms()">🔄 Refresh</button>
                 <div id="wp_room_list" style="display:flex; flex-direction:column; gap:10px;"></div>
             </div>
-            <div id="wp_tab_create" style="display:none; padding:15px;">
+            <div id="wp_tab_create" style="display:none; padding:15px; overflow-y:auto;">
                 <h3 style="color:#d40000; margin:0 0 15px 0; text-shadow:0 0 10px rgba(139,0,0,0.5);">➕ Create Watch Party</h3>
                 <input type="text" id="wp_room_name" class="ie-input" placeholder="Room name (e.g., Movie Night)">
-                <input type="text" id="wp_video_url" class="ie-input" placeholder="YouTube URL or Video ID">
+                <select id="wp_source_type" class="ie-input">
+                    <option value="youtube">📺 YouTube Video</option>
+                    <option value="movie">🎬 Movie (MyFlixerz)</option>
+                </select>
+                <input type="text" id="wp_video_url" class="ie-input" placeholder="YouTube URL (e.g., https://youtube.com/watch?v=...)">
+                <input type="text" id="wp_movie_url" class="ie-input" style="display:none;" placeholder="MyFlixerz movie URL (e.g., https://myflixerz.to/movie/...)">
                 <select id="wp_room_type" class="ie-input">
                     <option value="public">🌐 Public</option>
                     <option value="private">🔒 Private</option>
                 </select>
                 <button class="ie-btn" onclick="createWatchPartyRoom()">Create Room</button>
                 <div id="wp_create_result" style="margin-top:10px; font-size:11px;"></div>
+                <script>
+                    document.getElementById('wp_source_type').addEventListener('change', function() {
+                        document.getElementById('wp_video_url').style.display = this.value === 'youtube' ? 'block' : 'none';
+                        document.getElementById('wp_movie_url').style.display = this.value === 'movie' ? 'block' : 'none';
+                    });
+                </script>
             </div>
-            <div id="wp_tab_room" style="display:none; flex:1; flex-direction:column;">
-                <div style="padding:10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:2px solid #500; display:flex; align-items:center; gap:10px;">
+            <div id="wp_tab_room" style="display:none; flex:1; flex-direction:column; min-height:0; overflow:hidden;">
+                <div style="padding:8px 10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:2px solid #500; display:flex; align-items:center; gap:10px; flex-shrink:0;">
                     <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="leaveWatchPartyRoom()">← Leave</button>
                     <span id="wp_room_title" style="color:#d40000; font-weight:bold; text-shadow:0 0 5px rgba(139,0,0,0.5);"></span>
                     <span id="wp_viewer_count" style="color:#888; font-size:10px; margin-left:auto;">👥 0 watching</span>
                 </div>
-                <div style="display:flex; flex:1; min-height:0;">
-                    <div style="flex:1; display:flex; flex-direction:column; background:#000;">
-                        <div id="wp_player_container" style="flex:1; display:flex; align-items:center; justify-content:center; min-height:300px; background:#000; border:1px solid #300; position:relative;">
+                <div style="display:flex; flex:1; min-height:0; overflow:hidden;">
+                    <div style="flex:1; display:flex; flex-direction:column; background:#000; min-height:0;">
+                        <div id="wp_player_container" style="flex:1; display:flex; align-items:center; justify-content:center; background:#000; border:1px solid #300; position:relative; min-height:200px;">
                             <div id="wp_player" style="width:100%; height:100%;"></div>
                             <button id="wp_fullscreen_btn" onclick="wpToggleFullscreen()" style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); border:1px solid #500; color:#888; padding:5px 10px; font-size:10px; cursor:pointer; border-radius:3px; z-index:10;">⛶ Fullscreen</button>
                         </div>
-                        <div style="padding:10px; background:linear-gradient(180deg, #0a0000, #050000); border-top:1px solid #500; display:flex; gap:10px; align-items:center;">
-                            <button class="ie-btn" style="width:auto; padding:5px 15px;" onclick="wpTogglePlay()" id="wp_play_btn">▶️ Play</button>
+                        <div style="padding:8px; background:linear-gradient(180deg, #0a0000, #050000); border-top:1px solid #500; display:flex; gap:8px; align-items:center; flex-shrink:0;">
+                            <button class="ie-btn" style="width:auto; padding:4px 12px; font-size:11px;" onclick="wpTogglePlay()" id="wp_play_btn">▶️</button>
                             <input type="range" id="wp_seek" min="0" max="100" value="0" style="flex:1; accent-color:#d40000;">
-                            <span id="wp_time" style="color:#666; font-size:10px; min-width:80px;">0:00 / 0:00</span>
-                            <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="wpSyncToHost()" title="Sync to host">🔄 Sync</button>
+                            <span id="wp_time" style="color:#666; font-size:9px; min-width:70px;">0:00 / 0:00</span>
+                            <button class="ie-btn" style="width:auto; padding:4px 8px; font-size:10px;" onclick="wpSyncToHost()" title="Sync to host">🔄</button>
                         </div>
                     </div>
-                    <div style="width:250px; display:flex; flex-direction:column; border-left:2px solid #500; background:#050000;">
-                        <div style="padding:10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:1px solid #500; color:#d40000; font-size:11px; font-weight:bold;">💬 Party Chat</div>
-                        <div id="wp_chat_messages" style="flex:1; overflow-y:auto; padding:10px; font-size:11px; background:#030000;"></div>
-                        <div style="padding:10px; background:#0a0000; border-top:1px solid #500;">
-                            <div style="display:flex; gap:5px;">
-                                <input type="text" id="wp_chat_input" class="ie-input" style="margin:0; flex:1; font-size:10px;" placeholder="Say something..." onkeypress="if(event.key==='Enter')sendWPChat()">
-                                <button class="ie-btn" style="width:auto; padding:5px 10px; font-size:10px;" onclick="sendWPChat()">Send</button>
+                    <div style="width:220px; display:flex; flex-direction:column; border-left:2px solid #500; background:#050000; min-height:0; flex-shrink:0;">
+                        <div style="padding:8px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:1px solid #500; color:#d40000; font-size:10px; font-weight:bold; flex-shrink:0;">💬 Party Chat</div>
+                        <div id="wp_chat_messages" style="flex:1; overflow-y:auto; padding:8px; font-size:10px; background:#030000; min-height:0;"></div>
+                        <div style="padding:8px; background:#0a0000; border-top:1px solid #500; flex-shrink:0;">
+                            <div style="display:flex; gap:4px;">
+                                <input type="text" id="wp_chat_input" class="ie-input" style="margin:0; flex:1; font-size:9px; padding:5px;" placeholder="Chat..." onkeypress="if(event.key==='Enter')sendWPChat()">
+                                <button class="ie-btn" style="width:auto; padding:4px 8px; font-size:9px;" onclick="sendWPChat()">Send</button>
                             </div>
                         </div>
                     </div>
@@ -690,7 +701,10 @@
                     <input type="text" id="st_announce_title" class="ie-input" placeholder="Announcement title (optional)">
                     <textarea id="st_announce_text" class="ie-input" placeholder="Announcement message..." style="height:80px; resize:none;"></textarea>
                     <input type="text" id="st_announce_image" class="ie-input" placeholder="Image URL (optional)">
-                    <input type="text" id="st_announce_music" class="ie-input" placeholder="YouTube video ID for music (optional)">
+                    <input type="text" id="st_announce_music" class="ie-input" placeholder="YouTube URL or SoundCloud URL (optional)">
+                    <label style="color:#888; font-size:9px; display:flex; align-items:center; gap:5px; margin:5px 0;">
+                        <input type="checkbox" id="st_announce_show_video"> Show video player (YouTube only)
+                    </label>
                     <div style="display:flex; gap:5px; margin-top:5px;">
                         <select id="st_announce_type" class="ie-input" style="flex:1;">
                             <option value="info">ℹ️ Info</option>
@@ -2735,7 +2749,8 @@ function sendSiteAnnouncement() {
     const type = document.getElementById('st_announce_type').value;
     const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
     const imageUrl = document.getElementById('st_announce_image').value.trim();
-    const musicId = document.getElementById('st_announce_music').value.trim();
+    const musicUrl = document.getElementById('st_announce_music').value.trim();
+    const showVideo = document.getElementById('st_announce_show_video').checked;
     
     if (!text) { 
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter announcement text.</span>'; 
@@ -2749,7 +2764,8 @@ function sendSiteAnnouncement() {
         type: type,
         duration: duration,
         imageUrl: imageUrl || null,
-        musicId: musicId || null,
+        musicUrl: musicUrl || null,
+        showVideo: showVideo,
         timestamp: Date.now(),
         sentBy: CURRENT_USER
     };
@@ -2760,6 +2776,7 @@ function sendSiteAnnouncement() {
         document.getElementById('st_announce_text').value = '';
         document.getElementById('st_announce_image').value = '';
         document.getElementById('st_announce_music').value = '';
+        document.getElementById('st_announce_show_video').checked = false;
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
@@ -2771,12 +2788,14 @@ function previewAnnouncement() {
     const type = document.getElementById('st_announce_type').value;
     const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
     const imageUrl = document.getElementById('st_announce_image').value.trim();
-    const musicId = document.getElementById('st_announce_music').value.trim();
+    const musicUrl = document.getElementById('st_announce_music').value.trim();
+    const showVideo = document.getElementById('st_announce_show_video').checked;
     
-    showAnnouncement({ title, text, type, duration, imageUrl, musicId });
+    showAnnouncement({ title, text, type, duration, imageUrl, musicUrl, showVideo });
 }
 
 let announcementMusicPlayer = null;
+let announcementVideoPlayer = null;
 
 function showAnnouncement(data) {
     const overlay = document.getElementById('announcement_overlay');
@@ -2809,9 +2828,10 @@ function showAnnouncement(data) {
         imageEl.style.display = 'block';
     }
     
-    // Play music if provided (YouTube video ID)
-    if (data.musicId) {
-        playAnnouncementMusic(data.musicId);
+    // Play music if provided (YouTube URL, SoundCloud URL, or legacy video ID)
+    if (data.musicUrl || data.musicId) {
+        const musicSource = data.musicUrl || data.musicId;
+        playAnnouncementMusic(musicSource, data.showVideo);
         musicIndicator.style.display = 'block';
     }
     
@@ -2845,9 +2865,9 @@ function showAnnouncement(data) {
             // Typing complete - hide cursor
             cursorEl.style.display = 'none';
             
-            // Auto-dismiss after duration
+            // Auto-dismiss after duration (but keep video playing)
             setTimeout(() => {
-                dismissAnnouncement();
+                dismissAnnouncement(false); // Don't stop video
             }, (data.duration || 10) * 1000);
         }
     }
@@ -2860,21 +2880,63 @@ function showAnnouncement(data) {
     }
     
     // Click to dismiss
-    overlay.onclick = dismissAnnouncement;
+    overlay.onclick = () => dismissAnnouncement(false);
 }
 
-function playAnnouncementMusic(videoId) {
+function playAnnouncementMusic(source, showVideo) {
     // Stop any existing announcement music
     stopAnnouncementMusic();
     
-    // Create hidden iframe for announcement music
-    const iframe = document.createElement('iframe');
-    iframe.id = 'announcement_music_player';
-    iframe.style.display = 'none';
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1`;
-    iframe.allow = 'autoplay';
-    document.body.appendChild(iframe);
-    announcementMusicPlayer = iframe;
+    // Check if it's a SoundCloud URL
+    if (source.includes('soundcloud.com')) {
+        // SoundCloud embed
+        const iframe = document.createElement('iframe');
+        iframe.id = 'announcement_music_player';
+        iframe.style.display = 'none';
+        iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(source)}&auto_play=true`;
+        iframe.allow = 'autoplay';
+        document.body.appendChild(iframe);
+        announcementMusicPlayer = iframe;
+        return;
+    }
+    
+    // Extract YouTube video ID from URL or use as-is
+    let videoId = source;
+    const ytMatch = source.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\s]+)/);
+    if (ytMatch) videoId = ytMatch[1];
+    
+    if (showVideo) {
+        // Create visible video player in bottom right corner
+        const container = document.createElement('div');
+        container.id = 'announcement_video_container';
+        container.style.cssText = 'position:fixed; bottom:20px; right:20px; width:320px; height:200px; z-index:99998; border:2px solid #d40000; border-radius:8px; overflow:hidden; box-shadow:0 0 20px rgba(139,0,0,0.5); background:#000;';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '✕';
+        closeBtn.style.cssText = 'position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.8); border:1px solid #500; color:#fff; width:24px; height:24px; border-radius:50%; cursor:pointer; z-index:10; font-size:12px;';
+        closeBtn.onclick = (e) => { e.stopPropagation(); stopAnnouncementMusic(); };
+        
+        const iframe = document.createElement('iframe');
+        iframe.id = 'announcement_music_player';
+        iframe.style.cssText = 'width:100%; height:100%; border:none;';
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1`;
+        iframe.allow = 'autoplay; encrypted-media';
+        
+        container.appendChild(closeBtn);
+        container.appendChild(iframe);
+        document.body.appendChild(container);
+        announcementVideoPlayer = container;
+        announcementMusicPlayer = iframe;
+    } else {
+        // Hidden audio only
+        const iframe = document.createElement('iframe');
+        iframe.id = 'announcement_music_player';
+        iframe.style.display = 'none';
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1`;
+        iframe.allow = 'autoplay';
+        document.body.appendChild(iframe);
+        announcementMusicPlayer = iframe;
+    }
 }
 
 function stopAnnouncementMusic() {
@@ -2882,19 +2944,27 @@ function stopAnnouncementMusic() {
         announcementMusicPlayer.remove();
         announcementMusicPlayer = null;
     }
+    if (announcementVideoPlayer) {
+        announcementVideoPlayer.remove();
+        announcementVideoPlayer = null;
+    }
     const existingPlayer = document.getElementById('announcement_music_player');
     if (existingPlayer) existingPlayer.remove();
+    const existingContainer = document.getElementById('announcement_video_container');
+    if (existingContainer) existingContainer.remove();
 }
 
-function dismissAnnouncement() {
+function dismissAnnouncement(stopMusic = true) {
     const overlay = document.getElementById('announcement_overlay');
     overlay.style.display = 'none';
     if (announcementTypingTimeout) {
         clearTimeout(announcementTypingTimeout);
         announcementTypingTimeout = null;
     }
-    // Stop announcement music when dismissed
-    stopAnnouncementMusic();
+    // Only stop music if explicitly requested (video can keep playing)
+    if (stopMusic) {
+        stopAnnouncementMusic();
+    }
 }
 
 // Listen for site announcements
@@ -3251,7 +3321,9 @@ function loadWatchPartyRooms() {
 function createWatchPartyRoom() {
     const resultEl = document.getElementById('wp_create_result');
     const name = document.getElementById('wp_room_name').value.trim();
+    const sourceType = document.getElementById('wp_source_type').value;
     const videoUrl = document.getElementById('wp_video_url').value.trim();
+    const movieUrl = document.getElementById('wp_movie_url').value.trim();
     const type = document.getElementById('wp_room_type').value;
     
     if (!CURRENT_USER || IS_GUEST) {
@@ -3260,16 +3332,26 @@ function createWatchPartyRoom() {
     }
     
     if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter room name.</span>'; return; }
-    if (!videoUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter YouTube URL or video ID.</span>'; return; }
     
-    // Extract video ID from URL
-    let videoId = videoUrl;
-    const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?]+)/);
-    if (ytMatch) videoId = ytMatch[1];
+    let mediaSource = '';
+    let mediaType = sourceType;
+    
+    if (sourceType === 'youtube') {
+        if (!videoUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter YouTube URL.</span>'; return; }
+        // Extract video ID from URL
+        let videoId = videoUrl;
+        const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\s]+)/);
+        if (ytMatch) videoId = ytMatch[1];
+        mediaSource = videoId;
+    } else if (sourceType === 'movie') {
+        if (!movieUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter movie URL.</span>'; return; }
+        mediaSource = movieUrl;
+    }
     
     const roomData = {
         name: name,
-        videoId: videoId,
+        mediaSource: mediaSource,
+        mediaType: mediaType,
         host: CURRENT_USER,
         type: type,
         createdAt: Date.now(),
@@ -3282,6 +3364,7 @@ function createWatchPartyRoom() {
         resultEl.innerHTML = '<span style="color:#0f0;">✓ Room created!</span>';
         document.getElementById('wp_room_name').value = '';
         document.getElementById('wp_video_url').value = '';
+        document.getElementById('wp_movie_url').value = '';
         joinWatchPartyRoom(ref.key);
     }).catch(err => {
         resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
@@ -3307,8 +3390,10 @@ function joinWatchPartyRoom(roomKey) {
         // Switch to room view
         switchWatchPartyTab('room', null);
         
-        // Initialize YouTube player
-        initWPPlayer(room.videoId, room.currentTime, room.isPlaying);
+        // Initialize player based on media type
+        const mediaType = room.mediaType || 'youtube';
+        const mediaSource = room.mediaSource || room.videoId; // fallback for old rooms
+        initWPPlayer(mediaSource, room.currentTime, room.isPlaying, mediaType);
         
         // Start chat listener
         startWPChatListener(roomKey);
@@ -3321,22 +3406,45 @@ function joinWatchPartyRoom(roomKey) {
     });
 }
 
-function initWPPlayer(videoId, startTime, autoplay) {
+function initWPPlayer(mediaSource, startTime, autoplay, mediaType) {
     const container = document.getElementById('wp_player');
     container.innerHTML = '';
     
-    // Create iframe player
-    const iframe = document.createElement('iframe');
-    iframe.id = 'wp_yt_player';
-    iframe.width = '100%';
-    iframe.height = '100%';
-    iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=${Math.floor(startTime || 0)}&autoplay=${autoplay ? 1 : 0}`;
-    iframe.frameBorder = '0';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    iframe.allowFullscreen = true;
-    container.appendChild(iframe);
-    
-    document.getElementById('wp_play_btn').textContent = autoplay ? '⏸️ Pause' : '▶️ Play';
+    if (mediaType === 'movie') {
+        // Movie streaming via iframe
+        const iframe = document.createElement('iframe');
+        iframe.id = 'wp_movie_player';
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.src = mediaSource;
+        iframe.frameBorder = '0';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+        iframe.allowFullscreen = true;
+        iframe.style.border = 'none';
+        container.appendChild(iframe);
+        
+        // Hide play/sync controls for movie streaming (can't control external player)
+        document.getElementById('wp_play_btn').style.display = 'none';
+        document.getElementById('wp_seek').style.display = 'none';
+        document.getElementById('wp_time').style.display = 'none';
+    } else {
+        // YouTube player
+        const iframe = document.createElement('iframe');
+        iframe.id = 'wp_yt_player';
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.src = `https://www.youtube.com/embed/${mediaSource}?enablejsapi=1&start=${Math.floor(startTime || 0)}&autoplay=${autoplay ? 1 : 0}`;
+        iframe.frameBorder = '0';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        container.appendChild(iframe);
+        
+        // Show controls for YouTube
+        document.getElementById('wp_play_btn').style.display = 'block';
+        document.getElementById('wp_seek').style.display = 'block';
+        document.getElementById('wp_time').style.display = 'block';
+        document.getElementById('wp_play_btn').textContent = autoplay ? '⏸️' : '▶️';
+    }
 }
 
 function wpTogglePlay() {
@@ -3368,7 +3476,9 @@ function wpSyncToHost() {
         const room = snapshot.val();
         if (!room) return;
         
-        initWPPlayer(room.videoId, room.currentTime, room.isPlaying);
+        const mediaType = room.mediaType || 'youtube';
+        const mediaSource = room.mediaSource || room.videoId;
+        initWPPlayer(mediaSource, room.currentTime, room.isPlaying, mediaType);
     });
 }
 
