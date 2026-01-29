@@ -553,19 +553,19 @@
     <div class="title-bar"><div class="title-bar-text">👑 Admin Control Panel</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('admin_window')"></button></div></div>
     <div class="window-body" style="display:flex; height:100%;">
         <div class="mgmt-sidebar">
-            <div class="mgmt-sidebar-item active" onclick="switchAdminTab('apps', this)">📝 Applications</div>
-            <div class="mgmt-sidebar-item" onclick="switchAdminTab('members', this)">👥 Members</div>
-            <div class="mgmt-sidebar-item" onclick="switchAdminTab('moderation', this)">⚠️ Moderation</div>
-            <div class="mgmt-sidebar-item" onclick="switchAdminTab('announcements', this)">📌 Announcements</div>
-            <div class="mgmt-sidebar-item" onclick="switchAdminTab('bot', this)">🧛 Eric Bot</div>
-            <div class="mgmt-sidebar-item" onclick="switchAdminTab('videos', this)">📹 Videos</div>
-            <div class="mgmt-sidebar-item" onclick="switchAdminTab('vip', this)">🌟 VIP Codes</div>
+            <div class="mgmt-sidebar-item active" id="admin_tab_apps_btn" onclick="switchAdminTab('apps', this)">📝 Applications</div>
+            <div class="mgmt-sidebar-item" id="admin_tab_members_btn" onclick="switchAdminTab('members', this)">👥 Members</div>
+            <div class="mgmt-sidebar-item" id="admin_tab_moderation_btn" onclick="switchAdminTab('moderation', this)">⚠️ Moderation</div>
+            <div class="mgmt-sidebar-item" id="admin_tab_announcements_btn" onclick="switchAdminTab('announcements', this)">📌 Announcements</div>
+            <div class="mgmt-sidebar-item" id="admin_tab_bot_btn" onclick="switchAdminTab('bot', this)">🧛 Eric Bot</div>
+            <div class="mgmt-sidebar-item" id="admin_tab_videos_btn" onclick="switchAdminTab('videos', this)">📹 Videos</div>
+            <div class="mgmt-sidebar-item" id="admin_tab_vip_btn" onclick="switchAdminTab('vip', this)">🌟 VIP Codes</div>
             <div class="mgmt-sidebar-item" id="st_tab" style="display:none;" onclick="switchAdminTab('st', this)">🔮 ST Tools</div>
         </div>
         <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
             <div id="admin_tab_apps"><h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option></select><input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()"></div><div id="all_applications" style="max-height:380px; overflow-y:auto;"></div></div>
             <div id="admin_tab_members" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3><div id="all_members" style="max-height:420px; overflow-y:auto;"></div></div>
-            <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="kick">Kick</option><option value="timeout">Timeout</option><option value="softban">Soft Ban</option><option value="hardban">Hard Ban</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>🗑️ Delete Message</h4><input type="text" id="delete_msg_id" class="ie-input" placeholder="Message ID (from chat 3-dot menu)"><button class="ie-btn" style="background:#700;" onclick="deleteMessageById()">Delete Message</button><div id="delete_msg_result" style="margin-top:5px; font-size:10px;"></div></div><div class="admin-section"><h4>Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
+            <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="warn">⚠️ Warn</option><option value="mute">🔇 Mute (can't chat)</option><option value="timeout">⏱️ Timeout (can't chat)</option><option value="kick">👢 Kick (offline)</option><option value="softban">🚫 Soft Ban</option><option value="hardban">⛔ Hard Ban</option><option value="unmute">🔊 Unmute</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="360">6 hours</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>🗑️ Delete Message</h4><input type="text" id="delete_msg_id" class="ie-input" placeholder="Message ID (from chat 3-dot menu)"><button class="ie-btn" style="background:#700;" onclick="deleteMessageById()">Delete Message</button><div id="delete_msg_result" style="margin-top:5px; font-size:10px;"></div></div><div class="admin-section"><h4>🔇 Muted Users</h4><button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:5px;" onclick="loadMutedUsers()">🔄 Refresh</button><div id="muted_users" style="max-height:100px; overflow-y:auto; font-size:10px;">Click refresh to load...</div></div><div class="admin-section"><h4>🚫 Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
             <div id="admin_tab_announcements" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Lounge Announcements</h3><div class="admin-section"><h4>Pin Message</h4><input type="text" id="pin_message" class="ie-input" placeholder="Message to pin in the lounge..."><div style="display:flex; gap:10px;"><button class="ie-btn" style="flex:1;" onclick="pinMessage()">📌 Pin Message</button><button class="ie-btn" style="flex:1; background:#333;" onclick="clearPin()">Clear Pin</button></div></div><div class="admin-section"><h4>Chat Management</h4><button class="ie-btn" style="background: #500;" onclick="clearChat()">🗑️ Clear All Messages</button><button class="ie-btn" style="background: #333; margin-top:5px;" onclick="exportChat()">📥 Export Chat Log</button></div></div>
             <div id="admin_tab_bot" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Eric Northman Bot</h3><div class="admin-section"><h4>Send as Eric</h4><textarea id="bot_message" class="ie-input" placeholder="Eric says..." style="height:80px; resize:none;"></textarea><button class="ie-btn" onclick="sendBotMessage()">🧛 Send Message</button></div></div>
             <div id="admin_tab_videos" style="display:none;">
@@ -760,6 +760,30 @@
                     </div>
                     <div id="st_clubtag_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">👥 Memberlist Tags</h4>
+                    <p style="color:#666; font-size:9px; margin-bottom:10px;">Customize tags shown in the memberlist for club members</p>
+                    <div style="margin-bottom:10px;">
+                        <label style="color:#888; font-size:10px;">Add/Edit Memberlist Tag</label>
+                        <input type="text" id="st_mltag_club" class="ie-input" placeholder="Club name (exact match, case insensitive)">
+                        <div style="display:flex; gap:5px;">
+                            <input type="text" id="st_mltag_tag" class="ie-input" placeholder="Tag text (e.g., ##SB)" style="flex:1;">
+                            <input type="text" id="st_mltag_color" class="ie-input" placeholder="Color" value="#6a03b4" style="width:100px;">
+                        </div>
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stSetMemberlistTag()">Set Memberlist Tag</button>
+                    </div>
+                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#888; font-size:10px;">Remove Memberlist Tag</label>
+                        <input type="text" id="st_mltag_remove" class="ie-input" placeholder="Club name to remove tag from">
+                        <button class="ie-btn" style="background:#700; border-color:#ff00ff;" onclick="stRemoveMemberlistTag()">Remove Tag</button>
+                    </div>
+                    <div style="padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#888; font-size:10px;">Current Memberlist Tags</label>
+                        <button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:5px;" onclick="loadMemberlistTagsList()">🔄 Refresh</button>
+                        <div id="st_mltags_list" style="max-height:150px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
+                    </div>
+                    <div id="st_mltag_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -893,10 +917,10 @@ const coreAdmins = {
     [_e.l[0]]: { pass: _e.l[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.m[0]]: { pass: _e.m[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.n[0]]: { pass: _e.n[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.o[0]]: { pass: _e.o[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
-    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "sb-style", isAdmin: false, customTag: "##SB", customTagColor: "#6a03b4" },
+    [_e.o[0]]: { pass: _e.o[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
+    [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
+    [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
+    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
     [_e.s[0]]: { pass: _e.s[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     // New users
     [_e.t[0]]: { pass: _e.t[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
@@ -1164,8 +1188,10 @@ function validateIE() {
             // Load profile data from Firebase
             loadProfile();
             
-            if (userDatabase[u].isAdmin) { document.getElementById('admin_icon').style.display = 'block'; }
+            if (userDatabase[u].isAdmin || userDatabase[u].isMod) { document.getElementById('admin_icon').style.display = 'block'; }
             if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
+            // Show/hide admin tabs based on role
+            setupAdminTabs(userDatabase[u]);
             // Show clubs, messages, and watch party for all logged in users
             document.getElementById('clubs_icon').style.display = 'block';
             document.getElementById('messages_icon').style.display = 'block';
@@ -1345,7 +1371,13 @@ function updateMemberList() {
     
     if (onlineUsers.length > 0) {
         onlineUsers.filter(u => !deletedAccounts.includes(u.username)).forEach(u => {
-            const rankTag = getRankTag(u.rank, u.style, u.username, false); // false = show rank, not custom tag
+            const mlTag = getUserMemberlistTag(u.username);
+            let rankTag;
+            if (mlTag) {
+                rankTag = `<span class="rank-tag" style="color:${mlTag.color}; border-color:${mlTag.color}; background:${mlTag.color}22;">${mlTag.tag}</span>`;
+            } else {
+                rankTag = getRankTag(u.rank, u.style, u.username, false);
+            }
             html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                 ${rankTag}
                 <span style="color:#0f0; font-size:8px;">●</span>
@@ -1378,7 +1410,13 @@ function updateMemberList() {
             html += `<div class="member-category">${rankNames[rank]}</div>`;
             allMembers[rank].forEach(u => {
                 const isOnline = onlineUsers.some(ou => ou.username === u.username);
-                const rankTag = getRankTag(u.rank, u.style, u.username, false); // false = show rank, not custom tag
+                const mlTag = getUserMemberlistTag(u.username);
+                let rankTag;
+                if (mlTag) {
+                    rankTag = `<span class="rank-tag" style="color:${mlTag.color}; border-color:${mlTag.color}; background:${mlTag.color}22;">${mlTag.tag}</span>`;
+                } else {
+                    rankTag = getRankTag(u.rank, u.style, u.username, false);
+                }
                 html += `<div class="member-item" onclick="showProfileCard('${escapeHtml(u.username)}', event)">
                     ${rankTag}
                     ${isOnline ? '<span style="color:#0f0; font-size:8px;">●</span>' : '<span style="color:#555; font-size:8px;">○</span>'}
@@ -1869,9 +1907,17 @@ function mentionUser(username) {
     input.focus();
 }
 
-function sendChat() {
+async function sendChat() {
     if (IS_GUEST) { alert('Guests cannot send messages.'); return; }
     if (!CURRENT_USER) { alert('Please log in!'); return; }
+    
+    // Check if user is muted
+    const isMuted = await isUserMuted(CURRENT_USER);
+    if (isMuted) {
+        alert('You are currently muted and cannot send messages.');
+        return;
+    }
+    
     const input = document.getElementById('chat_input');
     const text = input.value.trim();
     if (!text) return;
@@ -2200,12 +2246,172 @@ function loadBannedUsers() {
 }
 function unbanUser(username) { db.ref('bans/' + username).remove(); loadBannedUsers(); alert(username + ' unbanned.'); }
 function executeModAction() {
-    const username = document.getElementById('mod_username').value.trim(), action = document.getElementById('mod_action').value, duration = parseInt(document.getElementById('mod_duration').value), reason = document.getElementById('mod_reason').value;
-    if (!username || !action) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Select user and action.</span>'; return; }
-    if (['losersyndicate', 'noseeyedear', 'oleg'].includes(username.toLowerCase())) { document.getElementById('mod_result').innerHTML = '<span style="color:#f00;">Cannot moderate core admins.</span>'; return; }
+    const username = document.getElementById('mod_username').value.trim();
+    const action = document.getElementById('mod_action').value;
+    const duration = parseInt(document.getElementById('mod_duration').value);
+    const reason = document.getElementById('mod_reason').value;
+    const resultEl = document.getElementById('mod_result');
+    
+    if (!username || !action) { 
+        resultEl.innerHTML = '<span style="color:#f00;">Select user and action.</span>'; 
+        return; 
+    }
+    
+    // Check if trying to moderate core admins or ST
+    const targetUser = userDatabase[username];
+    if (targetUser && (targetUser.isST || ['losersyndicate', 'noseeyedear', 'oleg'].includes(username.toLowerCase()))) { 
+        resultEl.innerHTML = '<span style="color:#f00;">Cannot moderate this user.</span>'; 
+        return; 
+    }
+    
+    // Mods can only use warn, mute, timeout, kick, unmute
+    const currentUser = userDatabase[CURRENT_USER];
+    const modActions = ['warn', 'mute', 'timeout', 'kick', 'unmute'];
+    if (currentUser && currentUser.isMod && !currentUser.isAdmin && !modActions.includes(action)) {
+        resultEl.innerHTML = '<span style="color:#f00;">Mods can only use: warn, mute, timeout, kick, unmute.</span>'; 
+        return;
+    }
+    
     const expiry = duration === 0 ? 0 : Date.now() + (duration * 60 * 1000);
-    if (action === 'kick') { db.ref('online/' + username).remove(); document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' kicked.</span>'; }
-    else { db.ref('bans/' + username).set({ type: action, expiry: expiry, reason: reason, by: CURRENT_USER }); if (action === 'hardban') { db.ref('members/' + username).remove(); } document.getElementById('mod_result').innerHTML = '<span style="color:#0f0;">' + username + ' ' + action + '.</span>'; loadBannedUsers(); }
+    
+    if (action === 'warn') {
+        // Send warning to chat visible only to user (or as system message)
+        db.ref('chat').push({
+            username: '⚠️ WARNING',
+            text: `${username}: ${reason || 'You have been warned by a moderator. Please follow the rules.'}`,
+            timestamp: Date.now(),
+            style: 'system-style',
+            isSystem: true
+        });
+        resultEl.innerHTML = '<span style="color:#0f0;">⚠️ ' + username + ' has been warned.</span>';
+    }
+    else if (action === 'mute') {
+        db.ref('muted/' + username).set({ 
+            expiry: expiry, 
+            reason: reason, 
+            by: CURRENT_USER,
+            timestamp: Date.now()
+        });
+        resultEl.innerHTML = '<span style="color:#0f0;">🔇 ' + username + ' has been muted' + (duration === 0 ? ' permanently' : ' for ' + duration + ' minutes') + '.</span>';
+        loadMutedUsers();
+    }
+    else if (action === 'timeout') {
+        db.ref('muted/' + username).set({ 
+            expiry: expiry, 
+            reason: reason, 
+            by: CURRENT_USER,
+            timestamp: Date.now(),
+            isTimeout: true
+        });
+        db.ref('online/' + username).remove(); // Also kick them
+        resultEl.innerHTML = '<span style="color:#0f0;">⏱️ ' + username + ' has been timed out' + (duration === 0 ? ' permanently' : ' for ' + duration + ' minutes') + '.</span>';
+        loadMutedUsers();
+    }
+    else if (action === 'kick') { 
+        db.ref('online/' + username).remove(); 
+        resultEl.innerHTML = '<span style="color:#0f0;">👢 ' + username + ' has been kicked.</span>'; 
+    }
+    else if (action === 'unmute') {
+        db.ref('muted/' + username).remove();
+        resultEl.innerHTML = '<span style="color:#0f0;">🔊 ' + username + ' has been unmuted.</span>';
+        loadMutedUsers();
+    }
+    else if (action === 'softban' || action === 'hardban') {
+        db.ref('bans/' + username).set({ 
+            type: action, 
+            expiry: expiry, 
+            reason: reason, 
+            by: CURRENT_USER 
+        }); 
+        if (action === 'hardban') { 
+            db.ref('members/' + username).remove(); 
+        } 
+        db.ref('online/' + username).remove();
+        resultEl.innerHTML = '<span style="color:#0f0;">🚫 ' + username + ' has been ' + action + 'ned.</span>'; 
+        loadBannedUsers();
+    }
+    
+    document.getElementById('mod_username').value = '';
+    document.getElementById('mod_reason').value = '';
+}
+
+function loadMutedUsers() {
+    const container = document.getElementById('muted_users');
+    if (!container) return;
+    
+    db.ref('muted').once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            container.innerHTML = '<span style="color:#555;">No muted users.</span>';
+            return;
+        }
+        
+        let html = '';
+        const now = Date.now();
+        snapshot.forEach((child) => {
+            const data = child.val();
+            const username = child.key;
+            const isExpired = data.expiry !== 0 && data.expiry < now;
+            
+            if (isExpired) {
+                // Auto-remove expired mutes
+                db.ref('muted/' + username).remove();
+                return;
+            }
+            
+            const expiryText = data.expiry === 0 ? 'Permanent' : new Date(data.expiry).toLocaleString();
+            html += `<div style="background:#1a0000; padding:5px; margin-bottom:3px; border:1px solid #400; display:flex; justify-content:space-between; align-items:center;">
+                <span><span style="color:#d40000;">${escapeHtml(username)}</span> <span style="color:#666;">by ${data.by || 'Unknown'}</span></span>
+                <button onclick="db.ref('muted/${username}').remove(); loadMutedUsers();" style="background:#333; border:1px solid #500; color:#888; padding:2px 6px; cursor:pointer; font-size:9px;">Unmute</button>
+            </div>`;
+        });
+        
+        container.innerHTML = html || '<span style="color:#555;">No muted users.</span>';
+    });
+}
+
+// Check if user is muted before sending chat
+function isUserMuted(username) {
+    return new Promise((resolve) => {
+        db.ref('muted/' + username).once('value', (snapshot) => {
+            if (!snapshot.exists()) {
+                resolve(false);
+                return;
+            }
+            const data = snapshot.val();
+            const now = Date.now();
+            if (data.expiry !== 0 && data.expiry < now) {
+                // Expired, remove and allow
+                db.ref('muted/' + username).remove();
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+}
+
+// Setup admin tabs based on user role
+function setupAdminTabs(user) {
+    const allTabs = ['apps', 'members', 'moderation', 'announcements', 'bot', 'videos', 'vip'];
+    const modOnlyTabs = ['members', 'moderation', 'announcements']; // What mods can see
+    
+    if (user.isAdmin || user.isST) {
+        // Admins and ST see everything
+        allTabs.forEach(tab => {
+            const btn = document.getElementById('admin_tab_' + tab + '_btn');
+            if (btn) btn.style.display = 'block';
+        });
+    } else if (user.isMod) {
+        // Mods only see limited tabs
+        allTabs.forEach(tab => {
+            const btn = document.getElementById('admin_tab_' + tab + '_btn');
+            if (btn) {
+                btn.style.display = modOnlyTabs.includes(tab) ? 'block' : 'none';
+            }
+        });
+        // Set moderation as default tab for mods
+        switchAdminTab('moderation', document.getElementById('admin_tab_moderation_btn'));
+    }
 }
 function loadAllVideos() {
     const container = document.getElementById('all_videos'); if (!container) return;
@@ -3246,6 +3452,141 @@ function loadClubTagsFromDB() {
     });
 }
 setTimeout(loadClubTagsFromDB, 1500);
+
+// MEMBERLIST TAGS - Similar to clubTags but for memberlist display
+let memberlistTags = {
+    '##sb': { tag: '##SB', color: '#6a03b4' },
+    'sb': { tag: '##SB', color: '#6a03b4' }
+};
+
+function stSetMemberlistTag() {
+    const resultEl = document.getElementById('st_mltag_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const clubName = document.getElementById('st_mltag_club').value.trim().toLowerCase();
+    const tagText = document.getElementById('st_mltag_tag').value.trim();
+    const tagColor = document.getElementById('st_mltag_color').value.trim() || '#6a03b4';
+    
+    if (!clubName) { resultEl.innerHTML = '<span style="color:#f00;">Enter club name.</span>'; return; }
+    if (!tagText) { resultEl.innerHTML = '<span style="color:#f00;">Enter tag text.</span>'; return; }
+    
+    // Save to Firebase
+    const tagKey = clubName.replace(/[.#$/\[\]]/g, '_');
+    db.ref('memberlist_tags/' + tagKey).set({
+        clubName: clubName,
+        tag: tagText,
+        color: tagColor
+    }).then(() => {
+        memberlistTags[clubName] = { tag: tagText, color: tagColor };
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Memberlist tag set for "' + clubName + '"!</span>';
+        document.getElementById('st_mltag_club').value = '';
+        document.getElementById('st_mltag_tag').value = '';
+        loadMemberlistTagsList();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stRemoveMemberlistTag() {
+    const resultEl = document.getElementById('st_mltag_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const clubName = document.getElementById('st_mltag_remove').value.trim().toLowerCase();
+    if (!clubName) { resultEl.innerHTML = '<span style="color:#f00;">Enter club name.</span>'; return; }
+    
+    const tagKey = clubName.replace(/[.#$/\[\]]/g, '_');
+    db.ref('memberlist_tags/' + tagKey).remove().then(() => {
+        delete memberlistTags[clubName];
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Memberlist tag removed for "' + clubName + '"!</span>';
+        document.getElementById('st_mltag_remove').value = '';
+        loadMemberlistTagsList();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadMemberlistTagsList() {
+    const container = document.getElementById('st_mltags_list');
+    if (!container) return;
+    
+    let html = '<div style="color:#888; margin-bottom:5px;">Local tags:</div>';
+    Object.keys(memberlistTags).forEach(club => {
+        const t = memberlistTags[club];
+        html += `<div style="padding:3px 0;"><span style="color:${t.color}; border:1px solid ${t.color}; padding:1px 4px; border-radius:3px; font-size:9px;">${t.tag}</span> → ${club}</div>`;
+    });
+    
+    html += '<div style="color:#888; margin-top:10px; margin-bottom:5px; border-top:1px solid #400; padding-top:5px;">Database tags:</div>';
+    
+    db.ref('memberlist_tags').once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+                const t = child.val();
+                html += `<div style="padding:3px 0;"><span style="color:${t.color}; border:1px solid ${t.color}; padding:1px 4px; border-radius:3px; font-size:9px;">${t.tag}</span> → ${t.clubName}</div>`;
+            });
+        } else {
+            html += '<div style="color:#555;">No database tags.</div>';
+        }
+        container.innerHTML = html;
+    });
+}
+
+function loadMemberlistTagsFromDB() {
+    db.ref('memberlist_tags').once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+                const data = child.val();
+                memberlistTags[data.clubName] = { tag: data.tag, color: data.color };
+            });
+        }
+    });
+}
+setTimeout(loadMemberlistTagsFromDB, 1500);
+
+// Store user club cache for memberlist display
+let userClubsCache = {};
+
+function getUserMemberlistTag(username) {
+    // Check if user is in any club that has a memberlist tag
+    // Returns { tag, color } or null
+    if (userClubsCache[username]) {
+        for (const club of userClubsCache[username]) {
+            const clubNameLower = club.name.toLowerCase();
+            if (memberlistTags[clubNameLower]) {
+                return memberlistTags[clubNameLower];
+            }
+        }
+    }
+    return null;
+}
+
+// Cache user clubs for memberlist tags
+function cacheAllUserClubs() {
+    db.ref('clubs').once('value', (snapshot) => {
+        userClubsCache = {};
+        snapshot.forEach((clubSnap) => {
+            const club = { id: clubSnap.key, ...clubSnap.val() };
+            // Add owner
+            if (club.owner) {
+                if (!userClubsCache[club.owner]) userClubsCache[club.owner] = [];
+                userClubsCache[club.owner].push(club);
+            }
+            // Add members
+            if (club.members) {
+                club.members.forEach(member => {
+                    if (!userClubsCache[member]) userClubsCache[member] = [];
+                    userClubsCache[member].push(club);
+                });
+            }
+        });
+    });
+}
+setTimeout(cacheAllUserClubs, 2000);
 
 // WATCH PARTY SYSTEM
 let currentWatchPartyRoom = null;
