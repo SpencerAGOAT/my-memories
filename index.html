@@ -280,7 +280,7 @@
     <div class="icon" id="clubs_icon" style="display:none;" onclick="toggleWin('clubs_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/network_neighborhood-0.png"><div>Clubs</div></div>
     <div class="icon" id="messages_icon" style="display:none;" onclick="toggleWin('messages_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/mail_-5.png"><div>Messages</div></div>
     <div class="icon" id="watchparty_icon" style="display:none;" onclick="toggleWin('watchparty_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/mplayer-1.png"><div>Watch Party</div></div>
-    <div class="icon" id="admin_icon" style="display:none;" onclick="toggleWin('admin_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/lock-0.png"><div>Admin Panel</div></div>
+    <div class="icon" id="admin_icon" style="display:none;" onclick="openAdminPanelSecure()"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/lock-0.png"><div>Admin Panel</div></div>
 </div>
 <div class="window" id="about_window" style="left:200px; top:120px; width:350px; height:320px;">
     <div class="title-bar"><div class="title-bar-text">About fangtasia.wtf</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('about_window')"></button></div></div>
@@ -689,6 +689,38 @@
                             <input type="text" id="st_new_password" class="ie-input" placeholder="New password">
                             <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stResetPassword()">Reset Password</button>
                             <div id="st_password_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SECTION: SECURITY -->
+                <div style="margin-bottom:20px; border:2px solid #ff0000; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #400000, #200000); padding:10px 15px; color:#ff0000; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        🔒 SECURITY & HWID <span style="float:right; font-size:10px;">▼</span>
+                    </div>
+                    <div style="padding:15px; background:#0a0000; display:none;">
+                        <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
+                            <h4 style="color:#ff0000;">Admin HWID Management</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">View and reset admin HWIDs for device verification</p>
+                            <button class="ie-btn" style="background:#500000; border-color:#ff0000; margin-bottom:10px;" onclick="loadAdminHWIDs()">🔄 Load Admin HWIDs</button>
+                            <div id="st_admin_hwids" style="max-height:200px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
+                            <h4 style="color:#ff0000;">Reset Admin HWID</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Allow admin to login from new device</p>
+                            <input type="text" id="st_hwid_reset_user" class="ie-input" placeholder="Admin username">
+                            <button class="ie-btn" style="background:#700000; border-color:#ff0000;" onclick="stResetAdminHWID()">Reset HWID</button>
+                            <div id="st_hwid_reset_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
+                            <h4 style="color:#ff0000;">Security Logs</h4>
+                            <button class="ie-btn" style="background:#500000; border-color:#ff0000; margin-bottom:10px;" onclick="loadSecurityLogs()">🔄 Load Security Logs</button>
+                            <div id="st_security_logs" style="max-height:200px; overflow-y:auto; font-size:9px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff0000;">
+                            <h4 style="color:#ff0000;">Active Sessions</h4>
+                            <button class="ie-btn" style="background:#500000; border-color:#ff0000; margin-bottom:10px;" onclick="loadActiveSessions()">🔄 Load Sessions</button>
+                            <div id="st_active_sessions" style="max-height:200px; overflow-y:auto; font-size:9px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
                         </div>
                     </div>
                 </div>
@@ -1285,47 +1317,385 @@ function resetAppForm() { document.getElementById('app_form').style.display = 'b
 function enterGuestChat() { IS_GUEST = true; CURRENT_USER = "Guest_" + Math.floor(Math.random() * 9999); toggleWin('chat_win'); loadMessages(); startOnlineListener(); document.getElementById('chat_input').placeholder = "Lurking (read-only)..."; document.getElementById('chat_input').disabled = true; }
 
 // LOGIN SYSTEM
+// ==================== SECURITY SYSTEM ====================
+// Anti-tampering, HWID verification, and console protection
+
+// Detect and block developer tools
+(function() {
+    // Block right-click context menu
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    
+    // Block common keyboard shortcuts for dev tools
+    document.addEventListener('keydown', (e) => {
+        // F12
+        if (e.key === 'F12') { e.preventDefault(); return false; }
+        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+        if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) { e.preventDefault(); return false; }
+        // Ctrl+U (view source)
+        if (e.ctrlKey && e.key.toUpperCase() === 'U') { e.preventDefault(); return false; }
+    });
+    
+    // Detect devtools by checking window size difference
+    let devtoolsOpen = false;
+    const threshold = 160;
+    const checkDevTools = () => {
+        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+        if (widthThreshold || heightThreshold) {
+            if (!devtoolsOpen) {
+                devtoolsOpen = true;
+                handleDevToolsOpen();
+            }
+        } else {
+            devtoolsOpen = false;
+        }
+    };
+    
+    // Check periodically
+    setInterval(checkDevTools, 1000);
+    
+    // Handle devtools detection
+    function handleDevToolsOpen() {
+        console.clear();
+        console.log('%c⛔ SECURITY WARNING ⛔', 'color:red; font-size:30px; font-weight:bold;');
+        console.log('%cDeveloper tools detected. This activity is logged.', 'color:orange; font-size:16px;');
+        
+        // Log to Firebase if user is logged in
+        if (typeof CURRENT_USER !== 'undefined' && CURRENT_USER) {
+            if (typeof db !== 'undefined') {
+                db.ref('security_logs/devtools').push({
+                    user: CURRENT_USER,
+                    timestamp: Date.now(),
+                    userAgent: navigator.userAgent
+                });
+            }
+        }
+    }
+    
+    // Detect console.log override attempts
+    const originalConsole = { ...console };
+    Object.defineProperty(window, 'console', {
+        get: function() { return originalConsole; },
+        set: function() { /* prevent override */ }
+    });
+    
+    // Protect critical variables from modification
+    let _CURRENT_USER = '';
+    let _IS_GUEST = true;
+    let _sessionToken = null;
+    let _sessionHWID = null;
+    
+    Object.defineProperty(window, 'CURRENT_USER', {
+        get: function() { return _CURRENT_USER; },
+        set: function(val) { 
+            // Only allow setting through legitimate login
+            if (_sessionToken && _sessionHWID) {
+                _CURRENT_USER = val;
+            }
+        },
+        configurable: false
+    });
+    
+    Object.defineProperty(window, 'IS_GUEST', {
+        get: function() { return _IS_GUEST; },
+        set: function(val) { _IS_GUEST = val; },
+        configurable: false
+    });
+    
+    // Expose setters for internal use
+    window._setCurrentUser = function(val, token, hwid) {
+        if (token && hwid) {
+            _sessionToken = token;
+            _sessionHWID = hwid;
+            _CURRENT_USER = val;
+        }
+    };
+    window._getSessionToken = function() { return _sessionToken; };
+    window._getSessionHWID = function() { return _sessionHWID; };
+    window._clearSession = function() {
+        _sessionToken = null;
+        _sessionHWID = null;
+        _CURRENT_USER = '';
+        _IS_GUEST = true;
+    };
+})();
+
+// Generate HWID fingerprint from browser (enhanced)
+function generateHWID() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 50;
+    const ctx = canvas.getContext('2d');
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#f60';
+    ctx.fillRect(125, 1, 62, 20);
+    ctx.fillStyle = '#069';
+    ctx.fillText('HWID-GEN', 2, 15);
+    ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+    ctx.fillText('fangtasia', 4, 17);
+    const canvasData = canvas.toDataURL();
+    
+    // Collect more fingerprint data
+    const fingerprint = [
+        navigator.userAgent,
+        navigator.language,
+        navigator.languages ? navigator.languages.join(',') : '',
+        screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+        new Date().getTimezoneOffset(),
+        navigator.hardwareConcurrency || 0,
+        navigator.deviceMemory || 0,
+        navigator.platform || '',
+        canvasData.slice(-100),
+        // WebGL fingerprint
+        (function() {
+            try {
+                const gl = document.createElement('canvas').getContext('webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    }
+                }
+            } catch(e) {}
+            return 'no-webgl';
+        })()
+    ].join('|');
+    
+    // SHA-like hash
+    let hash = 0;
+    for (let i = 0; i < fingerprint.length; i++) {
+        const char = fingerprint.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return 'HWID-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+}
+
+function createSession(username) {
+    const hwid = generateHWID();
+    const token = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
+    
+    // Store session in Firebase
+    db.ref('sessions/' + username).set({
+        token: token,
+        hwid: hwid,
+        created: Date.now(),
+        lastActivity: Date.now(),
+        userAgent: navigator.userAgent
+    });
+    
+    return { token: token, hwid: hwid };
+}
+
+function verifySession(username) {
+    return new Promise((resolve, reject) => {
+        const sessionToken = window._getSessionToken();
+        const sessionHWID = window._getSessionHWID();
+        
+        if (!sessionToken || !sessionHWID) {
+            reject('No active session');
+            return;
+        }
+        
+        const currentHWID = generateHWID();
+        if (currentHWID !== sessionHWID) {
+            reject('HWID mismatch - session invalid');
+            return;
+        }
+        
+        db.ref('sessions/' + username).once('value', (snapshot) => {
+            const session = snapshot.val();
+            if (!session) {
+                reject('Session expired');
+                return;
+            }
+            if (session.token !== sessionToken) {
+                reject('Invalid session token');
+                return;
+            }
+            if (session.hwid !== sessionHWID) {
+                reject('HWID verification failed');
+                return;
+            }
+            // Update last activity
+            db.ref('sessions/' + username + '/lastActivity').set(Date.now());
+            resolve(true);
+        });
+    });
+}
+
+// Verify admin HWID against stored admin HWID
+function verifyAdminHWID(username) {
+    return new Promise((resolve, reject) => {
+        const currentHWID = generateHWID();
+        
+        db.ref('admin_hwids/' + username).once('value', (snapshot) => {
+            const storedHWID = snapshot.val();
+            
+            if (!storedHWID) {
+                // First time admin login - store their HWID
+                db.ref('admin_hwids/' + username).set({
+                    hwid: currentHWID,
+                    registeredAt: Date.now(),
+                    lastUsed: Date.now()
+                });
+                resolve({ firstTime: true, hwid: currentHWID });
+            } else if (storedHWID.hwid === currentHWID) {
+                // HWID matches
+                db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now());
+                resolve({ verified: true, hwid: currentHWID });
+            } else {
+                // HWID mismatch - log and reject
+                db.ref('security_logs/hwid_mismatch').push({
+                    user: username,
+                    expectedHWID: storedHWID.hwid,
+                    attemptedHWID: currentHWID,
+                    timestamp: Date.now(),
+                    userAgent: navigator.userAgent
+                });
+                reject('HWID does not match registered admin device. Contact ST for HWID reset.');
+            }
+        });
+    });
+}
+
 function validateIE() {
     const u = document.getElementById('ie_user').value.trim();
     const p = document.getElementById('ie_pass').value;
     if (!u || !p) { alert("Enter username and password."); return; }
+    
     db.ref('bans/' + u).once('value', (s) => {
         const ban = s.val();
         if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { alert('Account banned/suspended.'); return; }
+        
         if(userDatabase[u] && userDatabase[u].pass === p) {
-            CURRENT_USER = u; IS_GUEST = false;
-            console.log('User logged in:', CURRENT_USER);
-            document.getElementById('ie_login').style.display = 'none';
-            document.getElementById('ie_upload').style.display = 'block';
-            document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
+            // Create verified session with HWID
+            const session = createSession(u);
             
-            // Load profile data from Firebase
-            loadProfile();
+            // Use protected setter
+            window._setCurrentUser(u, session.token, session.hwid);
+            IS_GUEST = false;
             
-            if (userDatabase[u].isAdmin || userDatabase[u].isMod) { document.getElementById('admin_icon').style.display = 'block'; }
-            if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
-            // Show/hide admin tabs based on role
-            setupAdminTabs(userDatabase[u]);
-            // Show clubs, messages, and watch party for all logged in users
-            document.getElementById('clubs_icon').style.display = 'block';
-            document.getElementById('messages_icon').style.display = 'block';
-            document.getElementById('watchparty_icon').style.display = 'block';
-            const rank = userDatabase[u].rank;
-            if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
-                document.getElementById('vip_image_section').style.display = 'block';
-                document.getElementById('vip_bg_section').style.display = 'block';
-                // Hide upgrade section since they're already VIP+
-                document.getElementById('vip_upgrade_section').style.display = 'none';
+            // Store HWID in user's profile
+            db.ref('members/' + u + '/hwid').once('value', (hwidSnap) => {
+                const storedHWID = hwidSnap.val();
+                if (!storedHWID) {
+                    db.ref('members/' + u + '/hwid').set(session.hwid);
+                } else if (storedHWID !== session.hwid) {
+                    db.ref('members/' + u + '/hwidHistory').push({
+                        oldHWID: storedHWID,
+                        newHWID: session.hwid,
+                        timestamp: Date.now()
+                    });
+                    db.ref('members/' + u + '/hwid').set(session.hwid);
+                }
+            });
+            
+            // If admin/mod, verify or register admin HWID
+            if (userDatabase[u].isAdmin || userDatabase[u].isMod || userDatabase[u].isST) {
+                verifyAdminHWID(u).then((result) => {
+                    if (result.firstTime) {
+                        console.log('Admin HWID registered for first time');
+                    }
+                    completeLogin(u);
+                }).catch((err) => {
+                    alert('Admin HWID verification failed: ' + err);
+                    window._clearSession();
+                    db.ref('sessions/' + u).remove();
+                });
             } else {
-                // Show upgrade section for regular members
-                document.getElementById('vip_upgrade_section').style.display = 'block';
+                completeLogin(u);
             }
-        } else { alert("DENIED."); }
+        } else { 
+            alert("DENIED."); 
+        }
     });
 }
+
+function completeLogin(u) {
+    document.getElementById('ie_login').style.display = 'none';
+    document.getElementById('ie_upload').style.display = 'block';
+    document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
+    
+    loadProfile();
+    
+    if (userDatabase[u].isAdmin || userDatabase[u].isMod) { document.getElementById('admin_icon').style.display = 'block'; }
+    if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
+    setupAdminTabs(userDatabase[u]);
+    document.getElementById('clubs_icon').style.display = 'block';
+    document.getElementById('messages_icon').style.display = 'block';
+    document.getElementById('watchparty_icon').style.display = 'block';
+    
+    const rank = userDatabase[u].rank;
+    if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
+        document.getElementById('vip_image_section').style.display = 'block';
+        document.getElementById('vip_bg_section').style.display = 'block';
+        document.getElementById('vip_upgrade_section').style.display = 'none';
+    } else {
+        document.getElementById('vip_upgrade_section').style.display = 'block';
+    }
+}
+
+// Secure admin panel access with session AND HWID verification
+function openAdminPanelSecure() {
+    if (!CURRENT_USER || IS_GUEST) {
+        alert('You must be logged in to access the admin panel.');
+        return;
+    }
+    
+    // Re-verify from Firebase that user has admin rights (can't trust local data)
+    db.ref('members/' + CURRENT_USER).once('value', (snapshot) => {
+        const memberData = snapshot.val();
+        if (!memberData) {
+            alert('User not found in database.');
+            logout();
+            return;
+        }
+        
+        // Check admin/mod flag directly from Firebase
+        const isAdmin = memberData.isAdmin === true;
+        const isMod = memberData.isMod === true;
+        const isST = memberData.isST === true;
+        
+        if (!isAdmin && !isMod && !isST) {
+            alert('Access denied. You do not have admin privileges.');
+            // Log unauthorized attempt
+            db.ref('security_logs/unauthorized_admin').push({
+                user: CURRENT_USER,
+                timestamp: Date.now(),
+                hwid: generateHWID()
+            });
+            return;
+        }
+        
+        // Verify session
+        verifySession(CURRENT_USER).then(() => {
+            // Verify admin HWID
+            return verifyAdminHWID(CURRENT_USER);
+        }).then(() => {
+            // All checks passed, open admin panel
+            toggleWin('admin_window');
+        }).catch((err) => {
+            alert('Security verification failed: ' + err + '\nPlease log in again.');
+            logout();
+        });
+    });
+}
+
 function logout() {
-    if (CURRENT_USER) db.ref('online/' + CURRENT_USER).remove();
-    CURRENT_USER = ""; IS_GUEST = false;
+    const currentUser = CURRENT_USER;
+    
+    // Clear session from Firebase
+    if (currentUser) {
+        db.ref('online/' + currentUser).remove();
+        db.ref('sessions/' + currentUser).remove();
+    }
+    
+    // Clear protected session
+    window._clearSession();
+    IS_GUEST = true;
+    
     // Reset user profile
     userProfile = { status: "", bio: "", mood: "", avatar: "", music: "" };
     document.getElementById('ie_login').style.display = 'block';
@@ -1338,6 +1708,7 @@ function logout() {
     document.getElementById('watchparty_icon').style.display = 'none';
     document.getElementById('st_tab').style.display = 'none';
     document.getElementById('vip_image_section').style.display = 'none';
+    document.getElementById('admin_window').style.display = 'none';
     toggleWin('chat_win');
 }
 
@@ -2191,7 +2562,11 @@ function setupChatListener() {
                 else if (m.mediaType === 'video') mediaHtml = '<video src="' + m.mediaUrl + '" controls style="max-width:280px; max-height:200px; border:1px solid #400; margin-top:6px; border-radius:4px;"></video>';
                 else if (m.mediaType === 'audio') mediaHtml = '<audio src="' + m.mediaUrl + '" controls style="width:250px; margin-top:6px;"></audio>';
             }
+            
+            // Check for club tag to match username color
+            const clubTag = getUserClubTag(msgUser);
             const rankTag = getRankTag(msgTag, msgStyle, msgUser);
+            const usernameStyle = clubTag ? `style="font-weight:bold; cursor:pointer; color:${clubTag.color};"` : `class="${msgStyle}" style="font-weight:bold; cursor:pointer;"`;
             
             // Reply indicator
             let replyHtml = '';
@@ -2227,7 +2602,7 @@ function setupChatListener() {
                 </div>
             </div>`;
             
-            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='flex')" onmouseleave="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='none'); closeMsgMenus()">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span class="${msgStyle}" onclick="showProfileCard('${escapeHtml(msgUser)}', event)" style="font-weight:bold; cursor:pointer;">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
+            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='flex')" onmouseleave="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='none'); closeMsgMenus()">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span ${usernameStyle} onclick="showProfileCard('${escapeHtml(msgUser)}', event)">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
         }).join('');
         logs.scrollTop = logs.scrollHeight;
     });
@@ -3119,6 +3494,144 @@ function stLeaveComment() {
         document.getElementById('st_comment_text').value = '';
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+// SECURITY & HWID MANAGEMENT
+function loadAdminHWIDs() {
+    const container = document.getElementById('st_admin_hwids');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888;">Loading...</div>';
+    
+    db.ref('admin_hwids').once('value', (snapshot) => {
+        const hwids = snapshot.val();
+        if (!hwids) {
+            container.innerHTML = '<div style="color:#666;">No admin HWIDs registered.</div>';
+            return;
+        }
+        
+        container.innerHTML = Object.keys(hwids).map(username => {
+            const data = hwids[username];
+            const lastUsed = data.lastUsed ? new Date(data.lastUsed).toLocaleString() : 'Never';
+            const registered = data.registeredAt ? new Date(data.registeredAt).toLocaleString() : 'Unknown';
+            return `<div style="padding:8px; margin-bottom:5px; background:#0a0505; border:1px solid #400; border-radius:4px;">
+                <div style="color:#d40000; font-weight:bold;">${escapeHtml(username)}</div>
+                <div style="color:#888; font-size:9px; margin-top:3px;">HWID: <span style="color:#ff6600; font-family:monospace;">${escapeHtml(data.hwid || 'N/A')}</span></div>
+                <div style="color:#666; font-size:8px;">Registered: ${registered}</div>
+                <div style="color:#666; font-size:8px;">Last Used: ${lastUsed}</div>
+            </div>`;
+        }).join('');
+    });
+}
+
+function stResetAdminHWID() {
+    const resultEl = document.getElementById('st_hwid_reset_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('st_hwid_reset_user').value.trim();
+    if (!username) {
+        resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>';
+        return;
+    }
+    
+    if (!confirm('Reset HWID for ' + username + '? They will need to login again to register new device.')) return;
+    
+    db.ref('admin_hwids/' + username).remove().then(() => {
+        // Also clear their session
+        db.ref('sessions/' + username).remove();
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID reset for ' + escapeHtml(username) + '. They can now login from a new device.</span>';
+        loadAdminHWIDs();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadSecurityLogs() {
+    const container = document.getElementById('st_security_logs');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888;">Loading...</div>';
+    
+    // Load various security logs
+    Promise.all([
+        db.ref('security_logs/devtools').limitToLast(10).once('value'),
+        db.ref('security_logs/hwid_mismatch').limitToLast(10).once('value'),
+        db.ref('security_logs/unauthorized_admin').limitToLast(10).once('value')
+    ]).then(([devtools, hwid, unauth]) => {
+        const logs = [];
+        
+        devtools.forEach(child => {
+            const d = child.val();
+            logs.push({ type: '🔧 DevTools', user: d.user, time: d.timestamp, details: 'Developer tools detected' });
+        });
+        
+        hwid.forEach(child => {
+            const d = child.val();
+            logs.push({ type: '⚠️ HWID Mismatch', user: d.user, time: d.timestamp, details: `Expected: ${d.expectedHWID?.slice(0,12)}... Got: ${d.attemptedHWID?.slice(0,12)}...` });
+        });
+        
+        unauth.forEach(child => {
+            const d = child.val();
+            logs.push({ type: '🚫 Unauth Admin', user: d.user, time: d.timestamp, details: `HWID: ${d.hwid?.slice(0,12)}...` });
+        });
+        
+        // Sort by time
+        logs.sort((a, b) => (b.time || 0) - (a.time || 0));
+        
+        if (logs.length === 0) {
+            container.innerHTML = '<div style="color:#666;">No security logs found.</div>';
+            return;
+        }
+        
+        container.innerHTML = logs.slice(0, 20).map(log => {
+            const time = log.time ? new Date(log.time).toLocaleString() : 'Unknown';
+            return `<div style="padding:5px; margin-bottom:3px; background:#050000; border-left:2px solid #500;">
+                <span style="color:#ff6600;">${log.type}</span> - <span style="color:#888;">${escapeHtml(log.user || 'Unknown')}</span>
+                <div style="color:#666; font-size:8px;">${time}</div>
+                <div style="color:#555; font-size:8px;">${escapeHtml(log.details || '')}</div>
+            </div>`;
+        }).join('');
+    });
+}
+
+function loadActiveSessions() {
+    const container = document.getElementById('st_active_sessions');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888;">Loading...</div>';
+    
+    db.ref('sessions').once('value', (snapshot) => {
+        const sessions = snapshot.val();
+        if (!sessions) {
+            container.innerHTML = '<div style="color:#666;">No active sessions.</div>';
+            return;
+        }
+        
+        const now = Date.now();
+        container.innerHTML = Object.keys(sessions).map(username => {
+            const s = sessions[username];
+            const lastActive = s.lastActivity ? new Date(s.lastActivity).toLocaleString() : 'Unknown';
+            const age = s.lastActivity ? Math.floor((now - s.lastActivity) / 60000) + ' min ago' : '';
+            return `<div style="padding:5px; margin-bottom:3px; background:#050000; border-left:2px solid #030;">
+                <span style="color:#0f0; font-weight:bold;">${escapeHtml(username)}</span>
+                <div style="color:#666; font-size:8px;">HWID: ${escapeHtml(s.hwid?.slice(0,15) || 'N/A')}...</div>
+                <div style="color:#555; font-size:8px;">Last active: ${lastActive} (${age})</div>
+                <button onclick="forceLogoutUser('${escapeHtml(username)}')" style="margin-top:3px; padding:2px 6px; font-size:8px; background:#500; border:1px solid #a00; color:#fff; cursor:pointer; border-radius:2px;">Force Logout</button>
+            </div>`;
+        }).join('');
+    });
+}
+
+function forceLogoutUser(username) {
+    if (!confirm('Force logout ' + username + '?')) return;
+    
+    db.ref('sessions/' + username).remove().then(() => {
+        alert(username + ' has been logged out.');
+        loadActiveSessions();
     });
 }
 
