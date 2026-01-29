@@ -495,7 +495,7 @@
     <div class="window-body" style="display:flex; height:100%; background:#0a0000;">
         <div class="mgmt-sidebar" style="width:180px; background:#050000; border-right:1px solid #500;">
             <div class="mgmt-sidebar-item active" onclick="switchWatchPartyTab('rooms', this)">🎬 Party Rooms</div>
-            <div class="mgmt-sidebar-item" onclick="switchWatchPartyTab('create', this)">🦇 Create Room</div>
+            <div class="mgmt-sidebar-item" onclick="switchWatchPartyTab('create', this)">➕ Create Room</div>
         </div>
         <div class="mgmt-content" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column; background:#0a0000;">
             <div id="wp_tab_rooms" style="flex:1; overflow-y:auto; padding:15px;">
@@ -504,27 +504,27 @@
                 <div id="wp_room_list" style="display:flex; flex-direction:column; gap:10px;"></div>
             </div>
             <div id="wp_tab_create" style="display:none; padding:15px;">
-                <h3 style="color:#d40000; margin:0 0 15px 0; text-shadow:0 0 10px rgba(139,0,0,0.5);">🦇 Create Watch Party</h3>
-                <p style="color:#666; font-size:10px; margin-bottom:15px;">Gather the coven and watch together in the dark...</p>
-                <input type="text" id="wp_room_name" class="ie-input" placeholder="Room name (e.g., Horror Movie Night)">
+                <h3 style="color:#d40000; margin:0 0 15px 0; text-shadow:0 0 10px rgba(139,0,0,0.5);">➕ Create Watch Party</h3>
+                <input type="text" id="wp_room_name" class="ie-input" placeholder="Room name (e.g., Movie Night)">
                 <input type="text" id="wp_video_url" class="ie-input" placeholder="YouTube URL or Video ID">
                 <select id="wp_room_type" class="ie-input">
-                    <option value="public">🌐 Public - Any vampire may join</option>
-                    <option value="private">🔒 Private - Invite only</option>
+                    <option value="public">🌐 Public</option>
+                    <option value="private">🔒 Private</option>
                 </select>
-                <button class="ie-btn" onclick="createWatchPartyRoom()">🩸 Create Room</button>
+                <button class="ie-btn" onclick="createWatchPartyRoom()">Create Room</button>
                 <div id="wp_create_result" style="margin-top:10px; font-size:11px;"></div>
             </div>
             <div id="wp_tab_room" style="display:none; flex:1; flex-direction:column;">
                 <div style="padding:10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:2px solid #500; display:flex; align-items:center; gap:10px;">
                     <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="leaveWatchPartyRoom()">← Leave</button>
                     <span id="wp_room_title" style="color:#d40000; font-weight:bold; text-shadow:0 0 5px rgba(139,0,0,0.5);"></span>
-                    <span id="wp_viewer_count" style="color:#888; font-size:10px; margin-left:auto;">🦇 0 watching</span>
+                    <span id="wp_viewer_count" style="color:#888; font-size:10px; margin-left:auto;">👥 0 watching</span>
                 </div>
                 <div style="display:flex; flex:1; min-height:0;">
                     <div style="flex:1; display:flex; flex-direction:column; background:#000;">
-                        <div id="wp_player_container" style="flex:1; display:flex; align-items:center; justify-content:center; min-height:300px; background:#000; border:1px solid #300;">
+                        <div id="wp_player_container" style="flex:1; display:flex; align-items:center; justify-content:center; min-height:300px; background:#000; border:1px solid #300; position:relative;">
                             <div id="wp_player" style="width:100%; height:100%;"></div>
+                            <button id="wp_fullscreen_btn" onclick="wpToggleFullscreen()" style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); border:1px solid #500; color:#888; padding:5px 10px; font-size:10px; cursor:pointer; border-radius:3px; z-index:10;">⛶ Fullscreen</button>
                         </div>
                         <div style="padding:10px; background:linear-gradient(180deg, #0a0000, #050000); border-top:1px solid #500; display:flex; gap:10px; align-items:center;">
                             <button class="ie-btn" style="width:auto; padding:5px 15px;" onclick="wpTogglePlay()" id="wp_play_btn">▶️ Play</button>
@@ -3213,11 +3213,11 @@ function loadWatchPartyRooms() {
     const container = document.getElementById('wp_room_list');
     if (!container) return;
     
-    container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">🦇 Searching the shadows...</div>';
+    container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">Loading...</div>';
     
     db.ref('watch_parties').orderByChild('createdAt').once('value', (snapshot) => {
         if (!snapshot.exists()) {
-            container.innerHTML = '<div style="color:#555; text-align:center; padding:40px; background:#050000; border:1px dashed #300; border-radius:4px;"><div style="font-size:30px; margin-bottom:10px;">🦇</div>No active watch parties.<br><span style="color:#666; font-size:10px;">Create one and gather the coven!</span></div>';
+            container.innerHTML = '<div style="color:#555; text-align:center; padding:40px; background:#050000; border:1px dashed #300; border-radius:4px;"><div style="font-size:30px; margin-bottom:10px;">🎬</div>No active watch parties.<br><span style="color:#666; font-size:10px;">Create one to get started!</span></div>';
             return;
         }
         
@@ -3236,11 +3236,11 @@ function loadWatchPartyRooms() {
             return `<div style="background:linear-gradient(180deg, #0a0000, #050000); border:1px solid #500; padding:15px; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <span style="color:#d40000; font-weight:bold; text-shadow:0 0 5px rgba(139,0,0,0.3);">${isPrivate ? '🔒 ' : '🎬 '}${escapeHtml(room.name)}</span>
-                    <span style="color:#888; font-size:10px; background:#1a0808; padding:3px 8px; border-radius:10px;">🦇 ${viewerCount} watching</span>
+                    <span style="color:#888; font-size:10px; background:#1a0808; padding:3px 8px; border-radius:10px;">👥 ${viewerCount}</span>
                 </div>
-                <div style="color:#666; font-size:10px; margin-bottom:10px;">Hosted by <span style="color:#888;">${escapeHtml(room.host)}</span></div>
+                <div style="color:#666; font-size:10px; margin-bottom:10px;">Host: <span style="color:#888;">${escapeHtml(room.host)}</span></div>
                 <div style="display:flex; gap:8px;">
-                    <button class="ie-btn" style="flex:1; padding:8px 15px;" onclick="joinWatchPartyRoom('${room.key}')">🩸 Join Party</button>
+                    <button class="ie-btn" style="flex:1; padding:8px 15px;" onclick="joinWatchPartyRoom('${room.key}')">Join</button>
                     ${isHost ? `<button class="ie-btn" style="width:auto; padding:8px 12px; background:#500;" onclick="deleteWatchPartyRoom('${room.key}')">🗑️</button>` : ''}
                 </div>
             </div>`;
@@ -3440,6 +3440,16 @@ function leaveWatchPartyRoom() {
         // Remove from viewers
         db.ref('watch_parties/' + currentWatchPartyRoom + '/viewers/' + CURRENT_USER).remove();
         
+        // Check if room is now empty and auto-delete if so
+        db.ref('watch_parties/' + currentWatchPartyRoom + '/viewers').once('value', (snapshot) => {
+            const viewers = snapshot.val();
+            if (!viewers || Object.keys(viewers).length === 0) {
+                // Room is empty, delete it
+                db.ref('watch_parties/' + currentWatchPartyRoom).remove();
+                db.ref('watch_party_chat/' + currentWatchPartyRoom).remove();
+            }
+        });
+        
         // Stop listeners
         if (wpChatListener) {
             db.ref('watch_party_chat/' + wpChatListener).off();
@@ -3454,15 +3464,59 @@ function leaveWatchPartyRoom() {
 }
 
 function deleteWatchPartyRoom(roomKey) {
-    if (!confirm('Delete this watch party?')) return;
+    // Check if user is the host
+    db.ref('watch_parties/' + roomKey).once('value', (snapshot) => {
+        const room = snapshot.val();
+        if (!room) {
+            alert('Room not found.');
+            loadWatchPartyRooms();
+            return;
+        }
+        
+        if (room.host !== CURRENT_USER) {
+            alert('Only the room creator can delete this room.');
+            return;
+        }
+        
+        if (!confirm('Delete this watch party?')) return;
+        
+        db.ref('watch_parties/' + roomKey).remove();
+        db.ref('watch_party_chat/' + roomKey).remove();
+        
+        if (currentWatchPartyRoom === roomKey) {
+            leaveWatchPartyRoom();
+        } else {
+            loadWatchPartyRooms();
+        }
+    });
+}
+
+function wpToggleFullscreen() {
+    const container = document.getElementById('wp_player_container');
+    const iframe = container.querySelector('iframe');
     
-    db.ref('watch_parties/' + roomKey).remove();
-    db.ref('watch_party_chat/' + roomKey).remove();
-    
-    if (currentWatchPartyRoom === roomKey) {
-        leaveWatchPartyRoom();
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        if (iframe) {
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) {
+                iframe.msRequestFullscreen();
+            }
+        } else if (container.requestFullscreen) {
+            container.requestFullscreen();
+        }
     } else {
-        loadWatchPartyRooms();
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
     }
 }
 
