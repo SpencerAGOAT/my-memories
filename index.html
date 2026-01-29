@@ -244,9 +244,11 @@
 <div id="announcement_overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; display:none; justify-content:center; align-items:center;">
     <div id="announcement_box" style="background:linear-gradient(180deg, #1a0808, #0a0000); border:2px solid #d40000; border-radius:8px; padding:30px 40px; max-width:600px; width:90%; text-align:center; box-shadow:0 0 50px rgba(139,0,0,0.5); animation:announceIn 0.5s ease;">
         <div id="announce_icon" style="font-size:40px; margin-bottom:15px;">📢</div>
+        <div id="announce_image" style="display:none; margin-bottom:15px;"></div>
         <div id="announce_title" style="color:#d40000; font-size:18px; font-weight:bold; margin-bottom:15px;"></div>
         <div id="announce_text" style="color:#ddd; font-size:14px; line-height:1.6; min-height:50px;"></div>
         <div id="announce_cursor" style="display:inline-block; width:2px; height:16px; background:#d40000; margin-left:2px; animation:blink 0.7s infinite;"></div>
+        <div id="announce_music_indicator" style="display:none; margin-top:15px; color:#ffd700; font-size:11px;">🎵 Now Playing...</div>
         <div style="margin-top:20px; color:#666; font-size:10px;">Click anywhere to dismiss</div>
     </div>
 </div>
@@ -265,6 +267,7 @@
     <div class="icon" onclick="toggleWin('about_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/help_book_cool-4.png"><div>About</div></div>
     <div class="icon" id="clubs_icon" style="display:none;" onclick="toggleWin('clubs_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/network_neighborhood-0.png"><div>Clubs</div></div>
     <div class="icon" id="messages_icon" style="display:none;" onclick="toggleWin('messages_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/mail_-5.png"><div>Messages</div></div>
+    <div class="icon" id="watchparty_icon" style="display:none;" onclick="toggleWin('watchparty_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/mplayer-1.png"><div>Watch Party</div></div>
     <div class="icon" id="admin_icon" style="display:none;" onclick="toggleWin('admin_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/lock-0.png"><div>Admin Panel</div></div>
 </div>
 <div class="window" id="about_window" style="left:200px; top:120px; width:350px; height:320px;">
@@ -486,6 +489,65 @@
         </div>
     </div>
 </div>
+<!-- WATCH PARTY -->
+<div class="window" id="watchparty_window" style="left:150px; top:50px; width:850px; height:600px; display:none;">
+    <div class="title-bar"><div class="title-bar-text">🩸 Watch Party</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('watchparty_window')"></button></div></div>
+    <div class="window-body" style="display:flex; height:100%; background:#0a0000;">
+        <div class="mgmt-sidebar" style="width:180px; background:#050000; border-right:1px solid #500;">
+            <div class="mgmt-sidebar-item active" onclick="switchWatchPartyTab('rooms', this)">🎬 Party Rooms</div>
+            <div class="mgmt-sidebar-item" onclick="switchWatchPartyTab('create', this)">🦇 Create Room</div>
+        </div>
+        <div class="mgmt-content" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column; background:#0a0000;">
+            <div id="wp_tab_rooms" style="flex:1; overflow-y:auto; padding:15px;">
+                <h3 style="color:#d40000; margin:0 0 15px 0; text-shadow:0 0 10px rgba(139,0,0,0.5);">🎬 Active Watch Parties</h3>
+                <button class="ie-btn" style="width:auto; padding:5px 15px; margin-bottom:10px;" onclick="loadWatchPartyRooms()">🔄 Refresh</button>
+                <div id="wp_room_list" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+            <div id="wp_tab_create" style="display:none; padding:15px;">
+                <h3 style="color:#d40000; margin:0 0 15px 0; text-shadow:0 0 10px rgba(139,0,0,0.5);">🦇 Create Watch Party</h3>
+                <p style="color:#666; font-size:10px; margin-bottom:15px;">Gather the coven and watch together in the dark...</p>
+                <input type="text" id="wp_room_name" class="ie-input" placeholder="Room name (e.g., Horror Movie Night)">
+                <input type="text" id="wp_video_url" class="ie-input" placeholder="YouTube URL or Video ID">
+                <select id="wp_room_type" class="ie-input">
+                    <option value="public">🌐 Public - Any vampire may join</option>
+                    <option value="private">🔒 Private - Invite only</option>
+                </select>
+                <button class="ie-btn" onclick="createWatchPartyRoom()">🩸 Create Room</button>
+                <div id="wp_create_result" style="margin-top:10px; font-size:11px;"></div>
+            </div>
+            <div id="wp_tab_room" style="display:none; flex:1; flex-direction:column;">
+                <div style="padding:10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:2px solid #500; display:flex; align-items:center; gap:10px;">
+                    <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="leaveWatchPartyRoom()">← Leave</button>
+                    <span id="wp_room_title" style="color:#d40000; font-weight:bold; text-shadow:0 0 5px rgba(139,0,0,0.5);"></span>
+                    <span id="wp_viewer_count" style="color:#888; font-size:10px; margin-left:auto;">🦇 0 watching</span>
+                </div>
+                <div style="display:flex; flex:1; min-height:0;">
+                    <div style="flex:1; display:flex; flex-direction:column; background:#000;">
+                        <div id="wp_player_container" style="flex:1; display:flex; align-items:center; justify-content:center; min-height:300px; background:#000; border:1px solid #300;">
+                            <div id="wp_player" style="width:100%; height:100%;"></div>
+                        </div>
+                        <div style="padding:10px; background:linear-gradient(180deg, #0a0000, #050000); border-top:1px solid #500; display:flex; gap:10px; align-items:center;">
+                            <button class="ie-btn" style="width:auto; padding:5px 15px;" onclick="wpTogglePlay()" id="wp_play_btn">▶️ Play</button>
+                            <input type="range" id="wp_seek" min="0" max="100" value="0" style="flex:1; accent-color:#d40000;">
+                            <span id="wp_time" style="color:#666; font-size:10px; min-width:80px;">0:00 / 0:00</span>
+                            <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="wpSyncToHost()" title="Sync to host">🔄 Sync</button>
+                        </div>
+                    </div>
+                    <div style="width:250px; display:flex; flex-direction:column; border-left:2px solid #500; background:#050000;">
+                        <div style="padding:10px; background:linear-gradient(180deg, #1a0808, #0a0000); border-bottom:1px solid #500; color:#d40000; font-size:11px; font-weight:bold;">💬 Party Chat</div>
+                        <div id="wp_chat_messages" style="flex:1; overflow-y:auto; padding:10px; font-size:11px; background:#030000;"></div>
+                        <div style="padding:10px; background:#0a0000; border-top:1px solid #500;">
+                            <div style="display:flex; gap:5px;">
+                                <input type="text" id="wp_chat_input" class="ie-input" style="margin:0; flex:1; font-size:10px;" placeholder="Say something..." onkeypress="if(event.key==='Enter')sendWPChat()">
+                                <button class="ie-btn" style="width:auto; padding:5px 10px; font-size:10px;" onclick="sendWPChat()">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- ADMIN PANEL -->
 <div class="window" id="admin_window" style="left:100px; top:40px; width:750px; height:550px; display:none;">
     <div class="title-bar"><div class="title-bar-text">👑 Admin Control Panel</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('admin_window')"></button></div></div>
@@ -627,6 +689,8 @@
                     <h4 style="color:#ff00ff;">📢 Site-Wide Announcement</h4>
                     <input type="text" id="st_announce_title" class="ie-input" placeholder="Announcement title (optional)">
                     <textarea id="st_announce_text" class="ie-input" placeholder="Announcement message..." style="height:80px; resize:none;"></textarea>
+                    <input type="text" id="st_announce_image" class="ie-input" placeholder="Image URL (optional)">
+                    <input type="text" id="st_announce_music" class="ie-input" placeholder="YouTube video ID for music (optional)">
                     <div style="display:flex; gap:5px; margin-top:5px;">
                         <select id="st_announce_type" class="ie-input" style="flex:1;">
                             <option value="info">ℹ️ Info</option>
@@ -634,13 +698,66 @@
                             <option value="warning">⚠️ Warning</option>
                             <option value="event">🎉 Event</option>
                         </select>
-                        <input type="number" id="st_announce_duration" class="ie-input" style="width:80px;" placeholder="Sec" value="10" min="5" max="60">
+                        <input type="number" id="st_announce_duration" class="ie-input" style="width:80px;" placeholder="Sec" value="10" min="5" max="120">
                     </div>
                     <div style="display:flex; gap:5px; margin-top:5px;">
                         <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="sendSiteAnnouncement()">📢 Send Announcement</button>
                         <button class="ie-btn" style="width:auto; background:#333; border-color:#ff00ff;" onclick="previewAnnouncement()">👁️ Preview</button>
                     </div>
                     <div id="st_announce_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">🏰 Club Management</h4>
+                    <div style="margin-bottom:10px;">
+                        <label style="color:#888; font-size:10px;">Create New Club</label>
+                        <input type="text" id="st_club_name" class="ie-input" placeholder="Club name">
+                        <input type="text" id="st_club_owner" class="ie-input" placeholder="Owner username">
+                        <input type="text" id="st_club_color" class="ie-input" placeholder="Color (hex, e.g. #ff0000)" value="#d40000">
+                        <textarea id="st_club_desc" class="ie-input" placeholder="Club description..." style="height:50px; resize:none;"></textarea>
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stCreateClub()">Create Club</button>
+                    </div>
+                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#888; font-size:10px;">Transfer Ownership</label>
+                        <input type="text" id="st_transfer_club" class="ie-input" placeholder="Club name">
+                        <input type="text" id="st_transfer_to" class="ie-input" placeholder="New owner username">
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stTransferClub()">Transfer</button>
+                    </div>
+                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#888; font-size:10px;">Rename Club</label>
+                        <input type="text" id="st_rename_club_old" class="ie-input" placeholder="Current club name">
+                        <input type="text" id="st_rename_club_new" class="ie-input" placeholder="New club name">
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stRenameClub()">Rename</button>
+                    </div>
+                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#888; font-size:10px;">Delete Club</label>
+                        <input type="text" id="st_delete_club" class="ie-input" placeholder="Club name to delete">
+                        <button class="ie-btn" style="background:#700; border-color:#ff00ff;" onclick="stDeleteClub()">🗑️ Delete Club</button>
+                    </div>
+                    <div id="st_club_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">🏷️ Club Chat Tags</h4>
+                    <p style="color:#666; font-size:9px; margin-bottom:10px;">Assign special chat tags to club members (like ##SB, jitz, KEVIN)</p>
+                    <div style="margin-bottom:10px;">
+                        <label style="color:#888; font-size:10px;">Add/Edit Club Tag</label>
+                        <input type="text" id="st_clubtag_club" class="ie-input" placeholder="Club name (exact match, case insensitive)">
+                        <div style="display:flex; gap:5px;">
+                            <input type="text" id="st_clubtag_tag" class="ie-input" placeholder="Tag text (e.g., ##SB)" style="flex:1;">
+                            <input type="text" id="st_clubtag_color" class="ie-input" placeholder="Color" value="#d40000" style="width:100px;">
+                        </div>
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stSetClubTag()">Set Club Tag</button>
+                    </div>
+                    <div style="margin-bottom:10px; padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#888; font-size:10px;">Remove Club Tag</label>
+                        <input type="text" id="st_clubtag_remove" class="ie-input" placeholder="Club name to remove tag from">
+                        <button class="ie-btn" style="background:#700; border-color:#ff00ff;" onclick="stRemoveClubTag()">Remove Tag</button>
+                    </div>
+                    <div style="padding-top:10px; border-top:1px solid #400;">
+                        <label style="color:#888; font-size:10px;">Current Club Tags</label>
+                        <button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:5px;" onclick="loadClubTagsList()">🔄 Refresh</button>
+                        <div id="st_clubtags_list" style="max-height:150px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
+                    </div>
+                    <div id="st_clubtag_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
             </div>
         </div>
@@ -877,7 +994,9 @@ function generateUserId(username) {
 // Club tags - clubs that give special chat tags to members
 const clubTags = {
     'evil jits': { tag: 'jitz', color: '#8B0000' },
-    'intelcord': { tag: 'KEVIN', color: '#f2eded' }
+    'intelcord': { tag: 'KEVIN', color: '#f2eded' },
+    '##sb': { tag: '##SB', color: '#6a03b4' },
+    'sb': { tag: '##SB', color: '#6a03b4' }
 };
 
 function getRankTag(rank, style, username, useCustomTag = true) {
@@ -1046,9 +1165,10 @@ function validateIE() {
             
             if (userDatabase[u].isAdmin) { document.getElementById('admin_icon').style.display = 'block'; }
             if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
-            // Show clubs and messages for all logged in users
+            // Show clubs, messages, and watch party for all logged in users
             document.getElementById('clubs_icon').style.display = 'block';
             document.getElementById('messages_icon').style.display = 'block';
+            document.getElementById('watchparty_icon').style.display = 'block';
             const rank = userDatabase[u].rank;
             if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
                 document.getElementById('vip_image_section').style.display = 'block';
@@ -1073,6 +1193,7 @@ function logout() {
     document.getElementById('admin_icon').style.display = 'none';
     document.getElementById('clubs_icon').style.display = 'none';
     document.getElementById('messages_icon').style.display = 'none';
+    document.getElementById('watchparty_icon').style.display = 'none';
     document.getElementById('st_tab').style.display = 'none';
     document.getElementById('vip_image_section').style.display = 'none';
     toggleWin('chat_win');
@@ -1144,13 +1265,11 @@ function redeemVIPCode() {
 }
 
 function upgradeToVIP(code, codeKey, resultDiv) {
-    // Update user in Firebase
+    // Update user in Firebase - VIP without ##SB tag (that's club-exclusive)
     const vipData = {
         rank: 'VIP',
         fullRank: 'VIP',
-        style: 'sb-style',
-        customTag: '##SB',
-        customTagColor: '#6a03b4',
+        style: 'vip-style',
         upgradedAt: Date.now(),
         upgradedBy: 'VIP_CODE:' + code
     };
@@ -1163,9 +1282,10 @@ function upgradeToVIP(code, codeKey, resultDiv) {
         if (userDatabase[CURRENT_USER]) {
             userDatabase[CURRENT_USER].rank = 'VIP';
             userDatabase[CURRENT_USER].fullRank = 'VIP';
-            userDatabase[CURRENT_USER].style = 'sb-style';
-            userDatabase[CURRENT_USER].customTag = '##SB';
-            userDatabase[CURRENT_USER].customTagColor = '#6a03b4';
+            userDatabase[CURRENT_USER].style = 'vip-style';
+            // Remove any custom tag - VIP tag will show as gold "VIP"
+            delete userDatabase[CURRENT_USER].customTag;
+            delete userDatabase[CURRENT_USER].customTagColor;
         }
         
         // Show VIP image section
@@ -1177,7 +1297,7 @@ function upgradeToVIP(code, codeKey, resultDiv) {
         resultDiv.innerHTML = `
             <div style="color:#0f0; padding:10px; background:#0a1a0a; border:1px solid #0a0; border-radius:4px;">
                 ✅ Account Upgraded to VIP!<br>
-                <span style="color:#ffd700;">You now have the ##SB tag!</span><br>
+                <span style="color:#ffd700;">You now have VIP status!</span><br>
                 <span style="color:#888; font-size:9px;">Refresh the page to see all VIP features.</span>
             </div>
         `;
@@ -2614,6 +2734,8 @@ function sendSiteAnnouncement() {
     const text = document.getElementById('st_announce_text').value.trim();
     const type = document.getElementById('st_announce_type').value;
     const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
+    const imageUrl = document.getElementById('st_announce_image').value.trim();
+    const musicId = document.getElementById('st_announce_music').value.trim();
     
     if (!text) { 
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter announcement text.</span>'; 
@@ -2626,6 +2748,8 @@ function sendSiteAnnouncement() {
         text: text,
         type: type,
         duration: duration,
+        imageUrl: imageUrl || null,
+        musicId: musicId || null,
         timestamp: Date.now(),
         sentBy: CURRENT_USER
     };
@@ -2634,6 +2758,8 @@ function sendSiteAnnouncement() {
         if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Announcement sent to all users!</span>';
         document.getElementById('st_announce_title').value = '';
         document.getElementById('st_announce_text').value = '';
+        document.getElementById('st_announce_image').value = '';
+        document.getElementById('st_announce_music').value = '';
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
@@ -2644,9 +2770,13 @@ function previewAnnouncement() {
     const text = document.getElementById('st_announce_text').value.trim() || 'Preview announcement text...';
     const type = document.getElementById('st_announce_type').value;
     const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
+    const imageUrl = document.getElementById('st_announce_image').value.trim();
+    const musicId = document.getElementById('st_announce_music').value.trim();
     
-    showAnnouncement({ title, text, type, duration });
+    showAnnouncement({ title, text, type, duration, imageUrl, musicId });
 }
+
+let announcementMusicPlayer = null;
 
 function showAnnouncement(data) {
     const overlay = document.getElementById('announcement_overlay');
@@ -2655,11 +2785,16 @@ function showAnnouncement(data) {
     const textEl = document.getElementById('announce_text');
     const iconEl = document.getElementById('announce_icon');
     const cursorEl = document.getElementById('announce_cursor');
+    const imageEl = document.getElementById('announce_image');
+    const musicIndicator = document.getElementById('announce_music_indicator');
     
     // Reset
     titleEl.textContent = '';
     textEl.textContent = '';
     cursorEl.style.display = 'inline-block';
+    imageEl.style.display = 'none';
+    imageEl.innerHTML = '';
+    musicIndicator.style.display = 'none';
     
     // Set type styling
     box.className = '';
@@ -2667,6 +2802,18 @@ function showAnnouncement(data) {
     
     // Set icon
     iconEl.textContent = announceIcons[data.type] || '📢';
+    
+    // Show image if provided
+    if (data.imageUrl) {
+        imageEl.innerHTML = `<img src="${data.imageUrl}" style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid #400;">`;
+        imageEl.style.display = 'block';
+    }
+    
+    // Play music if provided (YouTube video ID)
+    if (data.musicId) {
+        playAnnouncementMusic(data.musicId);
+        musicIndicator.style.display = 'block';
+    }
     
     // Show overlay
     overlay.style.display = 'flex';
@@ -2716,6 +2863,29 @@ function showAnnouncement(data) {
     overlay.onclick = dismissAnnouncement;
 }
 
+function playAnnouncementMusic(videoId) {
+    // Stop any existing announcement music
+    stopAnnouncementMusic();
+    
+    // Create hidden iframe for announcement music
+    const iframe = document.createElement('iframe');
+    iframe.id = 'announcement_music_player';
+    iframe.style.display = 'none';
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1`;
+    iframe.allow = 'autoplay';
+    document.body.appendChild(iframe);
+    announcementMusicPlayer = iframe;
+}
+
+function stopAnnouncementMusic() {
+    if (announcementMusicPlayer) {
+        announcementMusicPlayer.remove();
+        announcementMusicPlayer = null;
+    }
+    const existingPlayer = document.getElementById('announcement_music_player');
+    if (existingPlayer) existingPlayer.remove();
+}
+
 function dismissAnnouncement() {
     const overlay = document.getElementById('announcement_overlay');
     overlay.style.display = 'none';
@@ -2723,9 +2893,8 @@ function dismissAnnouncement() {
         clearTimeout(announcementTypingTimeout);
         announcementTypingTimeout = null;
     }
-    // Clear the announcement from Firebase so it doesn't show again
-    // (optional - comment out if you want it to persist)
-    // db.ref('site_announcement').remove();
+    // Stop announcement music when dismissed
+    stopAnnouncementMusic();
 }
 
 // Listen for site announcements
@@ -2749,6 +2918,553 @@ function startAnnouncementListener() {
 
 // Start listener when page loads
 setTimeout(startAnnouncementListener, 2000);
+
+// ST CLUB MANAGEMENT FUNCTIONS
+function stCreateClub() {
+    const resultEl = document.getElementById('st_club_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const name = document.getElementById('st_club_name').value.trim();
+    const owner = document.getElementById('st_club_owner').value.trim();
+    const color = document.getElementById('st_club_color').value.trim() || '#d40000';
+    const description = document.getElementById('st_club_desc').value.trim();
+    
+    if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter club name.</span>'; return; }
+    if (!owner) { resultEl.innerHTML = '<span style="color:#f00;">Enter owner username.</span>'; return; }
+    if (!userDatabase[owner]) { resultEl.innerHTML = '<span style="color:#f00;">Owner user not found.</span>'; return; }
+    
+    // Check if club name already exists
+    db.ref('clubs').orderByChild('name').equalTo(name).once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            resultEl.innerHTML = '<span style="color:#f00;">Club name already exists.</span>';
+            return;
+        }
+        
+        const clubData = {
+            name: name,
+            owner: owner,
+            color: color,
+            description: description || 'A club created by ST.',
+            members: { [owner]: true },
+            privacy: 'public',
+            createdAt: Date.now(),
+            createdBy: CURRENT_USER + ' (ST)'
+        };
+        
+        db.ref('clubs').push(clubData).then(() => {
+            resultEl.innerHTML = `<span style="color:#0f0;">✓ Club "${name}" created with owner ${owner}!</span>`;
+            document.getElementById('st_club_name').value = '';
+            document.getElementById('st_club_owner').value = '';
+            document.getElementById('st_club_desc').value = '';
+            // Refresh clubs cache
+            loadAllClubs();
+        }).catch(err => {
+            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        });
+    });
+}
+
+function stTransferClub() {
+    const resultEl = document.getElementById('st_club_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const clubName = document.getElementById('st_transfer_club').value.trim();
+    const newOwner = document.getElementById('st_transfer_to').value.trim();
+    
+    if (!clubName) { resultEl.innerHTML = '<span style="color:#f00;">Enter club name.</span>'; return; }
+    if (!newOwner) { resultEl.innerHTML = '<span style="color:#f00;">Enter new owner username.</span>'; return; }
+    if (!userDatabase[newOwner]) { resultEl.innerHTML = '<span style="color:#f00;">New owner user not found.</span>'; return; }
+    
+    // Find the club
+    db.ref('clubs').orderByChild('name').equalTo(clubName).once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            resultEl.innerHTML = '<span style="color:#f00;">Club not found.</span>';
+            return;
+        }
+        
+        let clubKey = null;
+        let clubData = null;
+        snapshot.forEach((child) => {
+            clubKey = child.key;
+            clubData = child.val();
+        });
+        
+        const oldOwner = clubData.owner;
+        
+        // Update owner and ensure new owner is a member
+        const updates = {
+            owner: newOwner,
+            [`members/${newOwner}`]: true
+        };
+        
+        db.ref('clubs/' + clubKey).update(updates).then(() => {
+            resultEl.innerHTML = `<span style="color:#0f0;">✓ Club "${clubName}" transferred from ${oldOwner} to ${newOwner}!</span>`;
+            document.getElementById('st_transfer_club').value = '';
+            document.getElementById('st_transfer_to').value = '';
+            loadAllClubs();
+        }).catch(err => {
+            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        });
+    });
+}
+
+function stRenameClub() {
+    const resultEl = document.getElementById('st_club_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const oldName = document.getElementById('st_rename_club_old').value.trim();
+    const newName = document.getElementById('st_rename_club_new').value.trim();
+    
+    if (!oldName) { resultEl.innerHTML = '<span style="color:#f00;">Enter current club name.</span>'; return; }
+    if (!newName) { resultEl.innerHTML = '<span style="color:#f00;">Enter new club name.</span>'; return; }
+    
+    // Check if new name already exists
+    db.ref('clubs').orderByChild('name').equalTo(newName).once('value', (newSnapshot) => {
+        if (newSnapshot.exists()) {
+            resultEl.innerHTML = '<span style="color:#f00;">New club name already exists.</span>';
+            return;
+        }
+        
+        // Find the club to rename
+        db.ref('clubs').orderByChild('name').equalTo(oldName).once('value', (snapshot) => {
+            if (!snapshot.exists()) {
+                resultEl.innerHTML = '<span style="color:#f00;">Club not found.</span>';
+                return;
+            }
+            
+            let clubKey = null;
+            snapshot.forEach((child) => {
+                clubKey = child.key;
+            });
+            
+            db.ref('clubs/' + clubKey).update({ name: newName }).then(() => {
+                resultEl.innerHTML = `<span style="color:#0f0;">✓ Club renamed from "${oldName}" to "${newName}"!</span>`;
+                document.getElementById('st_rename_club_old').value = '';
+                document.getElementById('st_rename_club_new').value = '';
+                loadAllClubs();
+            }).catch(err => {
+                resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+            });
+        });
+    });
+}
+
+function stDeleteClub() {
+    const resultEl = document.getElementById('st_club_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const clubName = document.getElementById('st_delete_club').value.trim();
+    
+    if (!clubName) { resultEl.innerHTML = '<span style="color:#f00;">Enter club name to delete.</span>'; return; }
+    
+    if (!confirm(`Are you sure you want to DELETE the club "${clubName}"?\n\nThis cannot be undone!`)) {
+        return;
+    }
+    
+    // Find the club
+    db.ref('clubs').orderByChild('name').equalTo(clubName).once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            resultEl.innerHTML = '<span style="color:#f00;">Club not found.</span>';
+            return;
+        }
+        
+        let clubKey = null;
+        snapshot.forEach((child) => {
+            clubKey = child.key;
+        });
+        
+        db.ref('clubs/' + clubKey).remove().then(() => {
+            resultEl.innerHTML = `<span style="color:#0f0;">✓ Club "${clubName}" deleted!</span>`;
+            document.getElementById('st_delete_club').value = '';
+            loadAllClubs();
+        }).catch(err => {
+            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        });
+    });
+}
+
+// CLUB TAG MANAGEMENT
+function stSetClubTag() {
+    const resultEl = document.getElementById('st_clubtag_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const clubName = document.getElementById('st_clubtag_club').value.trim().toLowerCase();
+    const tagText = document.getElementById('st_clubtag_tag').value.trim();
+    const tagColor = document.getElementById('st_clubtag_color').value.trim() || '#d40000';
+    
+    if (!clubName) { resultEl.innerHTML = '<span style="color:#f00;">Enter club name.</span>'; return; }
+    if (!tagText) { resultEl.innerHTML = '<span style="color:#f00;">Enter tag text.</span>'; return; }
+    
+    // Update local clubTags object
+    clubTags[clubName] = { tag: tagText, color: tagColor };
+    
+    // Save to Firebase for persistence
+    db.ref('club_tags/' + clubName.replace(/[.#$/\[\]]/g, '_')).set({
+        clubName: clubName,
+        tag: tagText,
+        color: tagColor,
+        setBy: CURRENT_USER,
+        setAt: Date.now()
+    }).then(() => {
+        resultEl.innerHTML = `<span style="color:#0f0;">✓ Club tag set: "${clubName}" → <span style="color:${tagColor};">[${tagText}]</span></span>`;
+        document.getElementById('st_clubtag_club').value = '';
+        document.getElementById('st_clubtag_tag').value = '';
+        loadClubTagsList();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stRemoveClubTag() {
+    const resultEl = document.getElementById('st_clubtag_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const clubName = document.getElementById('st_clubtag_remove').value.trim().toLowerCase();
+    
+    if (!clubName) { resultEl.innerHTML = '<span style="color:#f00;">Enter club name.</span>'; return; }
+    
+    // Remove from local clubTags
+    delete clubTags[clubName];
+    
+    // Remove from Firebase
+    db.ref('club_tags/' + clubName.replace(/[.#$/\[\]]/g, '_')).remove().then(() => {
+        resultEl.innerHTML = `<span style="color:#0f0;">✓ Club tag removed for "${clubName}"</span>`;
+        document.getElementById('st_clubtag_remove').value = '';
+        loadClubTagsList();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadClubTagsList() {
+    const container = document.getElementById('st_clubtags_list');
+    if (!container) return;
+    
+    // Show local clubTags first
+    let html = '<div style="color:#888; margin-bottom:5px;">Local (hardcoded):</div>';
+    for (const [club, data] of Object.entries(clubTags)) {
+        html += `<div style="padding:3px 0;"><span style="color:#888;">${club}</span> → <span style="color:${data.color}; border:1px solid ${data.color}; padding:1px 4px; border-radius:3px; font-size:9px;">${data.tag}</span></div>`;
+    }
+    
+    // Load from Firebase
+    db.ref('club_tags').once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            html += '<div style="color:#888; margin:10px 0 5px 0; border-top:1px solid #300; padding-top:5px;">From Database:</div>';
+            snapshot.forEach((child) => {
+                const data = child.val();
+                html += `<div style="padding:3px 0;"><span style="color:#888;">${data.clubName}</span> → <span style="color:${data.color}; border:1px solid ${data.color}; padding:1px 4px; border-radius:3px; font-size:9px;">${data.tag}</span></div>`;
+                // Also update local clubTags
+                clubTags[data.clubName] = { tag: data.tag, color: data.color };
+            });
+        }
+        container.innerHTML = html || '<div style="color:#666;">No club tags configured.</div>';
+    });
+}
+
+// Load club tags from Firebase on startup
+function loadClubTagsFromDB() {
+    db.ref('club_tags').once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+                const data = child.val();
+                clubTags[data.clubName] = { tag: data.tag, color: data.color };
+            });
+        }
+    });
+}
+setTimeout(loadClubTagsFromDB, 1500);
+
+// WATCH PARTY SYSTEM
+let currentWatchPartyRoom = null;
+let wpPlayerReady = false;
+let wpPlayer = null;
+let wpChatListener = null;
+let wpSyncInterval = null;
+
+function switchWatchPartyTab(tab, el) {
+    document.querySelectorAll('#watchparty_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
+    document.getElementById('wp_tab_rooms').style.display = tab === 'rooms' ? 'block' : 'none';
+    document.getElementById('wp_tab_create').style.display = tab === 'create' ? 'block' : 'none';
+    document.getElementById('wp_tab_room').style.display = tab === 'room' ? 'flex' : 'none';
+    
+    if (tab === 'rooms') loadWatchPartyRooms();
+}
+
+function loadWatchPartyRooms() {
+    const container = document.getElementById('wp_room_list');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">🦇 Searching the shadows...</div>';
+    
+    db.ref('watch_parties').orderByChild('createdAt').once('value', (snapshot) => {
+        if (!snapshot.exists()) {
+            container.innerHTML = '<div style="color:#555; text-align:center; padding:40px; background:#050000; border:1px dashed #300; border-radius:4px;"><div style="font-size:30px; margin-bottom:10px;">🦇</div>No active watch parties.<br><span style="color:#666; font-size:10px;">Create one and gather the coven!</span></div>';
+            return;
+        }
+        
+        const rooms = [];
+        snapshot.forEach((child) => {
+            rooms.push({ key: child.key, ...child.val() });
+        });
+        
+        rooms.reverse();
+        
+        container.innerHTML = rooms.map(room => {
+            const viewerCount = room.viewers ? Object.keys(room.viewers).length : 0;
+            const isPrivate = room.type === 'private';
+            const isHost = room.host === CURRENT_USER;
+            
+            return `<div style="background:linear-gradient(180deg, #0a0000, #050000); border:1px solid #500; padding:15px; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="color:#d40000; font-weight:bold; text-shadow:0 0 5px rgba(139,0,0,0.3);">${isPrivate ? '🔒 ' : '🎬 '}${escapeHtml(room.name)}</span>
+                    <span style="color:#888; font-size:10px; background:#1a0808; padding:3px 8px; border-radius:10px;">🦇 ${viewerCount} watching</span>
+                </div>
+                <div style="color:#666; font-size:10px; margin-bottom:10px;">Hosted by <span style="color:#888;">${escapeHtml(room.host)}</span></div>
+                <div style="display:flex; gap:8px;">
+                    <button class="ie-btn" style="flex:1; padding:8px 15px;" onclick="joinWatchPartyRoom('${room.key}')">🩸 Join Party</button>
+                    ${isHost ? `<button class="ie-btn" style="width:auto; padding:8px 12px; background:#500;" onclick="deleteWatchPartyRoom('${room.key}')">🗑️</button>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+    });
+}
+
+function createWatchPartyRoom() {
+    const resultEl = document.getElementById('wp_create_result');
+    const name = document.getElementById('wp_room_name').value.trim();
+    const videoUrl = document.getElementById('wp_video_url').value.trim();
+    const type = document.getElementById('wp_room_type').value;
+    
+    if (!CURRENT_USER || IS_GUEST) {
+        resultEl.innerHTML = '<span style="color:#f00;">Must be logged in!</span>';
+        return;
+    }
+    
+    if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter room name.</span>'; return; }
+    if (!videoUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter YouTube URL or video ID.</span>'; return; }
+    
+    // Extract video ID from URL
+    let videoId = videoUrl;
+    const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?]+)/);
+    if (ytMatch) videoId = ytMatch[1];
+    
+    const roomData = {
+        name: name,
+        videoId: videoId,
+        host: CURRENT_USER,
+        type: type,
+        createdAt: Date.now(),
+        currentTime: 0,
+        isPlaying: false,
+        viewers: { [CURRENT_USER]: true }
+    };
+    
+    db.ref('watch_parties').push(roomData).then((ref) => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Room created!</span>';
+        document.getElementById('wp_room_name').value = '';
+        document.getElementById('wp_video_url').value = '';
+        joinWatchPartyRoom(ref.key);
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function joinWatchPartyRoom(roomKey) {
+    currentWatchPartyRoom = roomKey;
+    
+    // Add self to viewers
+    db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).set(true);
+    
+    // Load room data
+    db.ref('watch_parties/' + roomKey).once('value', (snapshot) => {
+        const room = snapshot.val();
+        if (!room) {
+            alert('Room not found!');
+            return;
+        }
+        
+        document.getElementById('wp_room_title').textContent = room.name;
+        
+        // Switch to room view
+        switchWatchPartyTab('room', null);
+        
+        // Initialize YouTube player
+        initWPPlayer(room.videoId, room.currentTime, room.isPlaying);
+        
+        // Start chat listener
+        startWPChatListener(roomKey);
+        
+        // Start sync listener
+        startWPSyncListener(roomKey, room.host);
+        
+        // Update viewer count
+        updateWPViewerCount(roomKey);
+    });
+}
+
+function initWPPlayer(videoId, startTime, autoplay) {
+    const container = document.getElementById('wp_player');
+    container.innerHTML = '';
+    
+    // Create iframe player
+    const iframe = document.createElement('iframe');
+    iframe.id = 'wp_yt_player';
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=${Math.floor(startTime || 0)}&autoplay=${autoplay ? 1 : 0}`;
+    iframe.frameBorder = '0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    container.appendChild(iframe);
+    
+    document.getElementById('wp_play_btn').textContent = autoplay ? '⏸️ Pause' : '▶️ Play';
+}
+
+function wpTogglePlay() {
+    if (!currentWatchPartyRoom) return;
+    
+    db.ref('watch_parties/' + currentWatchPartyRoom).once('value', (snapshot) => {
+        const room = snapshot.val();
+        if (!room) return;
+        
+        const newState = !room.isPlaying;
+        db.ref('watch_parties/' + currentWatchPartyRoom).update({
+            isPlaying: newState
+        });
+        
+        document.getElementById('wp_play_btn').textContent = newState ? '⏸️ Pause' : '▶️ Play';
+    });
+}
+
+function wpSeek(value) {
+    if (!currentWatchPartyRoom) return;
+    // This would require more complex YouTube API integration
+    // For now, just update the time in Firebase
+}
+
+function wpSyncToHost() {
+    if (!currentWatchPartyRoom) return;
+    
+    db.ref('watch_parties/' + currentWatchPartyRoom).once('value', (snapshot) => {
+        const room = snapshot.val();
+        if (!room) return;
+        
+        initWPPlayer(room.videoId, room.currentTime, room.isPlaying);
+    });
+}
+
+function startWPSyncListener(roomKey, host) {
+    // Listen for host's playback state changes
+    db.ref('watch_parties/' + roomKey).on('value', (snapshot) => {
+        const room = snapshot.val();
+        if (!room) return;
+        
+        // Update viewer count
+        const viewerCount = room.viewers ? Object.keys(room.viewers).length : 0;
+        document.getElementById('wp_viewer_count').textContent = `👥 ${viewerCount} watching`;
+        
+        // Update play button
+        document.getElementById('wp_play_btn').textContent = room.isPlaying ? '⏸️ Pause' : '▶️ Play';
+    });
+}
+
+function updateWPViewerCount(roomKey) {
+    db.ref('watch_parties/' + roomKey + '/viewers').on('value', (snapshot) => {
+        const viewers = snapshot.val();
+        const count = viewers ? Object.keys(viewers).length : 0;
+        const countEl = document.getElementById('wp_viewer_count');
+        if (countEl) countEl.textContent = `👥 ${count} watching`;
+    });
+}
+
+function startWPChatListener(roomKey) {
+    if (wpChatListener) db.ref('watch_party_chat/' + wpChatListener).off();
+    wpChatListener = roomKey;
+    
+    const messagesEl = document.getElementById('wp_chat_messages');
+    
+    db.ref('watch_party_chat/' + roomKey).orderByChild('timestamp').limitToLast(50).on('value', (snapshot) => {
+        const msgs = [];
+        snapshot.forEach((child) => {
+            msgs.push(child.val());
+        });
+        
+        messagesEl.innerHTML = msgs.map(m => 
+            `<div style="padding:4px 0; border-bottom:1px solid #200;">
+                <span style="color:#d40000; font-weight:bold;">${escapeHtml(m.user)}</span>
+                <span style="color:#ddd;">${escapeHtml(m.text)}</span>
+            </div>`
+        ).join('');
+        
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    });
+}
+
+function sendWPChat() {
+    if (!currentWatchPartyRoom || !CURRENT_USER || IS_GUEST) return;
+    
+    const input = document.getElementById('wp_chat_input');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    db.ref('watch_party_chat/' + currentWatchPartyRoom).push({
+        user: CURRENT_USER,
+        text: text,
+        timestamp: Date.now()
+    });
+    
+    input.value = '';
+}
+
+function leaveWatchPartyRoom() {
+    if (currentWatchPartyRoom) {
+        // Remove from viewers
+        db.ref('watch_parties/' + currentWatchPartyRoom + '/viewers/' + CURRENT_USER).remove();
+        
+        // Stop listeners
+        if (wpChatListener) {
+            db.ref('watch_party_chat/' + wpChatListener).off();
+            wpChatListener = null;
+        }
+        db.ref('watch_parties/' + currentWatchPartyRoom).off();
+        
+        currentWatchPartyRoom = null;
+    }
+    
+    switchWatchPartyTab('rooms', document.querySelector('#watchparty_window .mgmt-sidebar-item'));
+}
+
+function deleteWatchPartyRoom(roomKey) {
+    if (!confirm('Delete this watch party?')) return;
+    
+    db.ref('watch_parties/' + roomKey).remove();
+    db.ref('watch_party_chat/' + roomKey).remove();
+    
+    if (currentWatchPartyRoom === roomKey) {
+        leaveWatchPartyRoom();
+    } else {
+        loadWatchPartyRooms();
+    }
+}
 
 function uploadVIPImage() {
     const user = userDatabase[CURRENT_USER]; if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
