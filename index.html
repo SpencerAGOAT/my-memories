@@ -1476,13 +1476,15 @@ function createSession(username) {
     const hwid = generateHWID();
     const token = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
     
-    // Store session in Firebase
+    // Store session in Firebase (fire and forget - don't block login)
     db.ref('sessions/' + username).set({
         token: token,
         hwid: hwid,
         created: Date.now(),
         lastActivity: Date.now(),
         userAgent: navigator.userAgent
+    }).catch(err => {
+        console.warn('Session storage failed (non-critical):', err.message);
     });
     
     return { token: token, hwid: hwid };
@@ -1531,31 +1533,40 @@ function verifyAdminHWID(username) {
         const currentHWID = generateHWID();
         
         db.ref('admin_hwids/' + username).once('value', (snapshot) => {
-            const storedHWID = snapshot.val();
+            const storedData = snapshot.val();
             
-            if (!storedHWID) {
+            if (!storedData) {
                 // First time admin login - store their HWID
                 db.ref('admin_hwids/' + username).set({
                     hwid: currentHWID,
                     registeredAt: Date.now(),
                     lastUsed: Date.now()
+                }).then(() => {
+                    resolve({ firstTime: true, hwid: currentHWID });
+                }).catch(err => {
+                    console.warn('Could not save admin HWID:', err.message);
+                    // Still allow login if Firebase fails
+                    resolve({ firstTime: true, hwid: currentHWID, warning: 'HWID not saved' });
                 });
-                resolve({ firstTime: true, hwid: currentHWID });
-            } else if (storedHWID.hwid === currentHWID) {
+            } else if (storedData.hwid === currentHWID) {
                 // HWID matches
-                db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now());
+                db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
                 resolve({ verified: true, hwid: currentHWID });
             } else {
                 // HWID mismatch - log and reject
                 db.ref('security_logs/hwid_mismatch').push({
                     user: username,
-                    expectedHWID: storedHWID.hwid,
+                    expectedHWID: storedData.hwid,
                     attemptedHWID: currentHWID,
                     timestamp: Date.now(),
                     userAgent: navigator.userAgent
-                });
+                }).catch(() => {});
                 reject('HWID does not match registered admin device. Contact ST for HWID reset.');
             }
+        }).catch(err => {
+            console.warn('HWID check failed:', err.message);
+            // If Firebase fails, allow login but warn
+            resolve({ verified: false, warning: 'Could not verify HWID' });
         });
     });
 }
@@ -1573,11 +1584,18 @@ function validateIE() {
             // Create verified session with HWID
             const session = createSession(u);
             
-            // Use protected setter
+            // Use protected setter - this MUST succeed for login to work
             window._setCurrentUser(u, session.token, session.hwid);
             IS_GUEST = false;
             
-            // Store HWID in user's profile
+            // Verify the user was set correctly
+            if (!CURRENT_USER) {
+                console.error('Failed to set CURRENT_USER');
+                alert('Login error. Please try again.');
+                return;
+            }
+            
+            // Store HWID in user's profile (non-blocking)
             db.ref('members/' + u + '/hwid').once('value', (hwidSnap) => {
                 const storedHWID = hwidSnap.val();
                 if (!storedHWID) {
@@ -1592,11 +1610,14 @@ function validateIE() {
                 }
             });
             
-            // If admin/mod, verify or register admin HWID
-            if (userDatabase[u].isAdmin || userDatabase[u].isMod || userDatabase[u].isST) {
+            // Check if user is admin/mod/ST - ONLY these get HWID locked
+            const isAdminUser = userDatabase[u].isAdmin || userDatabase[u].isMod || userDatabase[u].isST;
+            
+            if (isAdminUser) {
+                // Admin users need HWID verification
                 verifyAdminHWID(u).then((result) => {
                     if (result.firstTime) {
-                        console.log('Admin HWID registered for first time');
+                        alert('Admin HWID registered. This device is now linked to your admin account.');
                     }
                     completeLogin(u);
                 }).catch((err) => {
@@ -1605,6 +1626,7 @@ function validateIE() {
                     db.ref('sessions/' + u).remove();
                 });
             } else {
+                // Regular members - just login, no HWID lock
                 completeLogin(u);
             }
         } else { 
