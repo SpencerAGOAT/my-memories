@@ -1373,43 +1373,96 @@ function generateHWID() {
 let currentSessionToken = null;
 let currentSessionHWID = null;
 
-// Verify admin HWID - only called for admin/mod/ST users
+// Pre-registered verified admins with their HWIDs
+const verifiedAdmins = {
+    'losersyndicate': {
+        hwids: ['HWID-76AA281A', 'HWID-194F5EAB'],
+        role: 'ST'
+    },
+    'K': {
+        hwids: ['HWID-1620D82F'],
+        role: 'Admin'
+    }
+};
+
+// Check if user is a verified admin
+function isVerifiedAdmin(username) {
+    return verifiedAdmins.hasOwnProperty(username);
+}
+
+// Verify admin HWID - supports multiple HWIDs per admin
 function verifyAdminHWID(username) {
     return new Promise((resolve, reject) => {
         const currentHWID = generateHWID();
         
+        // First check if user is in verified admins list (hardcoded for security)
+        if (verifiedAdmins[username]) {
+            const allowedHWIDs = verifiedAdmins[username].hwids;
+            if (allowedHWIDs.includes(currentHWID)) {
+                // Update last used in Firebase
+                db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
+                db.ref('admin_hwids/' + username + '/lastHWID').set(currentHWID).catch(() => {});
+                resolve({ verified: true, hwid: currentHWID, method: 'verified_list' });
+                return;
+            }
+        }
+        
+        // Check Firebase for additional registered HWIDs
         db.ref('admin_hwids/' + username).once('value', (snapshot) => {
             const storedData = snapshot.val();
             
             if (!storedData) {
-                // First time admin login - save their HWID
-                db.ref('admin_hwids/' + username).set({
-                    hwid: currentHWID,
-                    registeredAt: Date.now(),
-                    lastUsed: Date.now()
-                }).then(() => {
-                    resolve({ firstTime: true, hwid: currentHWID });
-                }).catch(() => {
-                    resolve({ firstTime: true, hwid: currentHWID });
-                });
-            } else if (storedData.hwid === currentHWID) {
-                // HWID matches - allow login
+                // No HWID registered - check if in verified list
+                if (verifiedAdmins[username]) {
+                    // In verified list but HWID doesn't match any
+                    db.ref('security_logs/hwid_mismatch').push({
+                        user: username,
+                        expectedHWIDs: verifiedAdmins[username].hwids,
+                        attemptedHWID: currentHWID,
+                        timestamp: Date.now(),
+                        note: 'Verified admin - HWID not in allowed list'
+                    }).catch(() => {});
+                    reject('HWID not recognized! Your device is not registered. Contact ST to add this HWID: ' + currentHWID);
+                } else {
+                    // Not a verified admin - block completely
+                    reject('You are not a verified administrator. Contact ST for verification.');
+                }
+                return;
+            }
+            
+            // Check single HWID (legacy support)
+            if (storedData.hwid === currentHWID) {
                 db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
                 resolve({ verified: true, hwid: currentHWID });
-            } else {
-                // HWID mismatch - block admin login
-                db.ref('security_logs/hwid_mismatch').push({
-                    user: username,
-                    expectedHWID: storedData.hwid,
-                    attemptedHWID: currentHWID,
-                    timestamp: Date.now()
-                }).catch(() => {});
-                reject('HWID mismatch! This device is not registered for admin access. Contact ST for HWID reset.');
+                return;
             }
+            
+            // Check multiple HWIDs array
+            if (storedData.hwids && Array.isArray(storedData.hwids)) {
+                if (storedData.hwids.includes(currentHWID)) {
+                    db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
+                    db.ref('admin_hwids/' + username + '/lastHWID').set(currentHWID).catch(() => {});
+                    resolve({ verified: true, hwid: currentHWID });
+                    return;
+                }
+            }
+            
+            // HWID mismatch - block admin login
+            db.ref('security_logs/hwid_mismatch').push({
+                user: username,
+                storedHWID: storedData.hwid || 'multiple',
+                attemptedHWID: currentHWID,
+                timestamp: Date.now()
+            }).catch(() => {});
+            reject('HWID mismatch! Device not registered. Contact ST to add HWID: ' + currentHWID);
+            
         }).catch(() => {
-            // Firebase error - allow login but log warning
-            console.warn('Could not verify admin HWID');
-            resolve({ verified: false, warning: true });
+            // Firebase error - check verified list as fallback
+            if (verifiedAdmins[username] && verifiedAdmins[username].hwids.includes(currentHWID)) {
+                resolve({ verified: true, hwid: currentHWID, method: 'verified_fallback' });
+            } else {
+                reject('Could not verify admin status. Try again.');
+            }
         });
     });
 }
@@ -1444,17 +1497,21 @@ function validateIE() {
             const isAdminUser = userDatabase[u].isAdmin || userDatabase[u].isMod || userDatabase[u].isST;
             
             if (isAdminUser) {
-                // Admin needs HWID check
+                // Check if they're a verified admin first
+                if (!isVerifiedAdmin(u)) {
+                    alert('⛔ Admin access requires verification.\n\nYour HWID: ' + currentSessionHWID + '\n\nContact ST to get verified.');
+                    currentSessionToken = null;
+                    currentSessionHWID = null;
+                    db.ref('sessions/' + u).remove().catch(() => {});
+                    return;
+                }
+                
+                // Verified admin - check HWID
                 verifyAdminHWID(u).then((result) => {
-                    // Set user and complete login
                     CURRENT_USER = u;
                     IS_GUEST = false;
-                    if (result.firstTime) {
-                        alert('✓ Admin HWID registered! This device is now linked to your account.');
-                    }
                     completeLogin(u);
                 }).catch((err) => {
-                    // HWID mismatch - block login
                     alert(err);
                     currentSessionToken = null;
                     currentSessionHWID = null;
@@ -1507,36 +1564,38 @@ function openAdminPanelSecure() {
         return;
     }
     
-    // Check Firebase directly for admin rights (can't trust local data alone)
-    db.ref('members/' + CURRENT_USER).once('value', (snapshot) => {
-        const memberData = snapshot.val();
-        if (!memberData) {
-            alert('User not found.');
-            return;
-        }
-        
-        const isAdmin = memberData.isAdmin === true;
-        const isMod = memberData.isMod === true;
-        const isST = memberData.isST === true;
-        
-        if (!isAdmin && !isMod && !isST) {
-            alert('Access denied. No admin privileges.');
-            db.ref('security_logs/unauthorized_admin').push({
-                user: CURRENT_USER,
-                timestamp: Date.now(),
-                hwid: generateHWID()
-            }).catch(() => {});
-            return;
-        }
-        
-        // Verify HWID matches
-        verifyAdminHWID(CURRENT_USER).then(() => {
-            toggleWin('admin_window');
-        }).catch((err) => {
-            alert('Admin panel access denied: ' + err);
-        });
-    }).catch(() => {
-        alert('Could not verify permissions. Try again.');
+    // Check local userDatabase for admin rights
+    const user = userDatabase[CURRENT_USER];
+    if (!user) {
+        alert('User not found.');
+        return;
+    }
+    
+    const isAdmin = user.isAdmin === true;
+    const isMod = user.isMod === true;
+    const isST = user.isST === true;
+    
+    if (!isAdmin && !isMod && !isST) {
+        alert('Access denied. No admin privileges.');
+        db.ref('security_logs/unauthorized_admin').push({
+            user: CURRENT_USER,
+            timestamp: Date.now(),
+            hwid: generateHWID()
+        }).catch(() => {});
+        return;
+    }
+    
+    // Check if verified admin
+    if (!isVerifiedAdmin(CURRENT_USER)) {
+        alert('⛔ You are not a verified administrator.\n\nYour HWID: ' + generateHWID() + '\n\nContact ST to get verified.');
+        return;
+    }
+    
+    // Verify HWID matches
+    verifyAdminHWID(CURRENT_USER).then(() => {
+        toggleWin('admin_window');
+    }).catch((err) => {
+        alert('Admin panel access denied: ' + err);
     });
 }
 
@@ -3358,24 +3417,51 @@ function loadAdminHWIDs() {
     
     container.innerHTML = '<div style="color:#888;">Loading...</div>';
     
+    // First show verified admins (hardcoded)
+    let html = '<div style="color:#0f0; font-size:10px; margin-bottom:10px; padding:5px; border-bottom:1px solid #030;">✓ VERIFIED ADMINS (Hardcoded)</div>';
+    
+    Object.keys(verifiedAdmins).forEach(username => {
+        const data = verifiedAdmins[username];
+        html += `<div style="padding:8px; margin-bottom:5px; background:#050a05; border:1px solid #040; border-radius:4px;">
+            <div style="color:#0f0; font-weight:bold;">${escapeHtml(username)} <span style="color:#888; font-size:9px;">[${data.role}]</span></div>
+            <div style="color:#888; font-size:9px; margin-top:3px;">HWIDs:</div>
+            ${data.hwids.map(h => `<div style="color:#00ff88; font-family:monospace; font-size:9px; margin-left:10px;">• ${escapeHtml(h)}</div>`).join('')}
+        </div>`;
+    });
+    
+    // Then show Firebase registered HWIDs
     db.ref('admin_hwids').once('value', (snapshot) => {
         const hwids = snapshot.val();
+        
+        html += '<div style="color:#ff6600; font-size:10px; margin:10px 0; padding:5px; border-bottom:1px solid #300;">📋 FIREBASE REGISTERED</div>';
+        
         if (!hwids) {
-            container.innerHTML = '<div style="color:#666;">No admin HWIDs registered.</div>';
-            return;
+            html += '<div style="color:#666; font-size:9px;">No additional HWIDs in Firebase.</div>';
+        } else {
+            Object.keys(hwids).forEach(username => {
+                const data = hwids[username];
+                const lastUsed = data.lastUsed ? new Date(data.lastUsed).toLocaleString() : 'Never';
+                const registered = data.registeredAt ? new Date(data.registeredAt).toLocaleString() : 'Unknown';
+                
+                // Handle both single hwid and array of hwids
+                let hwidDisplay = '';
+                if (data.hwids && Array.isArray(data.hwids)) {
+                    hwidDisplay = data.hwids.map(h => `<div style="color:#ff6600; font-family:monospace; font-size:9px; margin-left:10px;">• ${escapeHtml(h)}</div>`).join('');
+                } else if (data.hwid) {
+                    hwidDisplay = `<div style="color:#ff6600; font-family:monospace; font-size:9px; margin-left:10px;">• ${escapeHtml(data.hwid)}</div>`;
+                }
+                
+                html += `<div style="padding:8px; margin-bottom:5px; background:#0a0505; border:1px solid #400; border-radius:4px;">
+                    <div style="color:#d40000; font-weight:bold;">${escapeHtml(username)}</div>
+                    <div style="color:#888; font-size:9px; margin-top:3px;">HWIDs:</div>
+                    ${hwidDisplay}
+                    <div style="color:#666; font-size:8px; margin-top:5px;">Registered: ${registered}</div>
+                    <div style="color:#666; font-size:8px;">Last Used: ${lastUsed}</div>
+                </div>`;
+            });
         }
         
-        container.innerHTML = Object.keys(hwids).map(username => {
-            const data = hwids[username];
-            const lastUsed = data.lastUsed ? new Date(data.lastUsed).toLocaleString() : 'Never';
-            const registered = data.registeredAt ? new Date(data.registeredAt).toLocaleString() : 'Unknown';
-            return `<div style="padding:8px; margin-bottom:5px; background:#0a0505; border:1px solid #400; border-radius:4px;">
-                <div style="color:#d40000; font-weight:bold;">${escapeHtml(username)}</div>
-                <div style="color:#888; font-size:9px; margin-top:3px;">HWID: <span style="color:#ff6600; font-family:monospace;">${escapeHtml(data.hwid || 'N/A')}</span></div>
-                <div style="color:#666; font-size:8px;">Registered: ${registered}</div>
-                <div style="color:#666; font-size:8px;">Last Used: ${lastUsed}</div>
-            </div>`;
-        }).join('');
+        container.innerHTML = html;
     });
 }
 
@@ -3437,18 +3523,45 @@ function stAddAdminHWID() {
         return;
     }
     
-    db.ref('admin_hwids/' + username).set({
-        hwid: hwid,
-        registeredAt: Date.now(),
-        registeredBy: CURRENT_USER,
-        lastUsed: Date.now()
-    }).then(() => {
-        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID registered for ' + escapeHtml(username) + '!</span>';
-        document.getElementById('st_hwid_add_user').value = '';
-        document.getElementById('st_hwid_add_value').value = '';
-        loadAdminHWIDs();
-    }).catch(err => {
-        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    // Check if already in verifiedAdmins - need to update code
+    if (verifiedAdmins[username]) {
+        resultEl.innerHTML = '<span style="color:#ff0;">⚠️ User is in hardcoded verified list. To add new HWID, update the verifiedAdmins object in code.</span>';
+        return;
+    }
+    
+    // Get existing HWIDs and add new one
+    db.ref('admin_hwids/' + username).once('value', (snapshot) => {
+        const existing = snapshot.val();
+        let hwids = [];
+        
+        if (existing && existing.hwids && Array.isArray(existing.hwids)) {
+            hwids = existing.hwids;
+        } else if (existing && existing.hwid) {
+            hwids = [existing.hwid];
+        }
+        
+        // Check if HWID already exists
+        if (hwids.includes(hwid)) {
+            resultEl.innerHTML = '<span style="color:#ff0;">HWID already registered for this user.</span>';
+            return;
+        }
+        
+        hwids.push(hwid);
+        
+        db.ref('admin_hwids/' + username).set({
+            hwids: hwids,
+            registeredAt: existing?.registeredAt || Date.now(),
+            lastUpdated: Date.now(),
+            updatedBy: CURRENT_USER,
+            lastUsed: Date.now()
+        }).then(() => {
+            resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID added for ' + escapeHtml(username) + '! (Total: ' + hwids.length + ' devices)</span>';
+            document.getElementById('st_hwid_add_user').value = '';
+            document.getElementById('st_hwid_add_value').value = '';
+            loadAdminHWIDs();
+        }).catch(err => {
+            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        });
     });
 }
 
