@@ -1318,109 +1318,17 @@ function enterGuestChat() { IS_GUEST = true; CURRENT_USER = "Guest_" + Math.floo
 
 // LOGIN SYSTEM
 // ==================== SECURITY SYSTEM ====================
-// Anti-tampering, HWID verification, and console protection
+// HWID verification for admins, anti-tampering measures
 
-// Detect and block developer tools
-(function() {
-    // Block right-click context menu
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-    
-    // Block common keyboard shortcuts for dev tools
-    document.addEventListener('keydown', (e) => {
-        // F12
-        if (e.key === 'F12') { e.preventDefault(); return false; }
-        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
-        if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) { e.preventDefault(); return false; }
-        // Ctrl+U (view source)
-        if (e.ctrlKey && e.key.toUpperCase() === 'U') { e.preventDefault(); return false; }
-    });
-    
-    // Detect devtools by checking window size difference
-    let devtoolsOpen = false;
-    const threshold = 160;
-    const checkDevTools = () => {
-        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-        if (widthThreshold || heightThreshold) {
-            if (!devtoolsOpen) {
-                devtoolsOpen = true;
-                handleDevToolsOpen();
-            }
-        } else {
-            devtoolsOpen = false;
-        }
-    };
-    
-    // Check periodically
-    setInterval(checkDevTools, 1000);
-    
-    // Handle devtools detection
-    function handleDevToolsOpen() {
-        console.clear();
-        console.log('%c⛔ SECURITY WARNING ⛔', 'color:red; font-size:30px; font-weight:bold;');
-        console.log('%cDeveloper tools detected. This activity is logged.', 'color:orange; font-size:16px;');
-        
-        // Log to Firebase if user is logged in
-        if (typeof CURRENT_USER !== 'undefined' && CURRENT_USER) {
-            if (typeof db !== 'undefined') {
-                db.ref('security_logs/devtools').push({
-                    user: CURRENT_USER,
-                    timestamp: Date.now(),
-                    userAgent: navigator.userAgent
-                });
-            }
-        }
-    }
-    
-    // Detect console.log override attempts
-    const originalConsole = { ...console };
-    Object.defineProperty(window, 'console', {
-        get: function() { return originalConsole; },
-        set: function() { /* prevent override */ }
-    });
-    
-    // Protect critical variables from modification
-    let _CURRENT_USER = '';
-    let _IS_GUEST = true;
-    let _sessionToken = null;
-    let _sessionHWID = null;
-    
-    Object.defineProperty(window, 'CURRENT_USER', {
-        get: function() { return _CURRENT_USER; },
-        set: function(val) { 
-            // Only allow setting through legitimate login
-            if (_sessionToken && _sessionHWID) {
-                _CURRENT_USER = val;
-            }
-        },
-        configurable: false
-    });
-    
-    Object.defineProperty(window, 'IS_GUEST', {
-        get: function() { return _IS_GUEST; },
-        set: function(val) { _IS_GUEST = val; },
-        configurable: false
-    });
-    
-    // Expose setters for internal use
-    window._setCurrentUser = function(val, token, hwid) {
-        if (token && hwid) {
-            _sessionToken = token;
-            _sessionHWID = hwid;
-            _CURRENT_USER = val;
-        }
-    };
-    window._getSessionToken = function() { return _sessionToken; };
-    window._getSessionHWID = function() { return _sessionHWID; };
-    window._clearSession = function() {
-        _sessionToken = null;
-        _sessionHWID = null;
-        _CURRENT_USER = '';
-        _IS_GUEST = true;
-    };
-})();
+// Basic anti-tampering (non-breaking)
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'F12') { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.key.toUpperCase() === 'U') { e.preventDefault(); return false; }
+});
 
-// Generate HWID fingerprint from browser (enhanced)
+// Generate HWID fingerprint from browser
 function generateHWID() {
     const canvas = document.createElement('canvas');
     canvas.width = 200;
@@ -1432,37 +1340,18 @@ function generateHWID() {
     ctx.fillRect(125, 1, 62, 20);
     ctx.fillStyle = '#069';
     ctx.fillText('HWID-GEN', 2, 15);
-    ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-    ctx.fillText('fangtasia', 4, 17);
     const canvasData = canvas.toDataURL();
     
-    // Collect more fingerprint data
     const fingerprint = [
         navigator.userAgent,
         navigator.language,
-        navigator.languages ? navigator.languages.join(',') : '',
         screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
         new Date().getTimezoneOffset(),
         navigator.hardwareConcurrency || 0,
-        navigator.deviceMemory || 0,
         navigator.platform || '',
-        canvasData.slice(-100),
-        // WebGL fingerprint
-        (function() {
-            try {
-                const gl = document.createElement('canvas').getContext('webgl');
-                if (gl) {
-                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                    if (debugInfo) {
-                        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                    }
-                }
-            } catch(e) {}
-            return 'no-webgl';
-        })()
+        canvasData.slice(-100)
     ].join('|');
     
-    // SHA-like hash
     let hash = 0;
     for (let i = 0; i < fingerprint.length; i++) {
         const char = fingerprint.charCodeAt(i);
@@ -1472,62 +1361,11 @@ function generateHWID() {
     return 'HWID-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
 }
 
-function createSession(username) {
-    const hwid = generateHWID();
-    const token = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
-    
-    // Store session in Firebase (fire and forget - don't block login)
-    db.ref('sessions/' + username).set({
-        token: token,
-        hwid: hwid,
-        created: Date.now(),
-        lastActivity: Date.now(),
-        userAgent: navigator.userAgent
-    }).catch(err => {
-        console.warn('Session storage failed (non-critical):', err.message);
-    });
-    
-    return { token: token, hwid: hwid };
-}
+// Store current session info
+let currentSessionToken = null;
+let currentSessionHWID = null;
 
-function verifySession(username) {
-    return new Promise((resolve, reject) => {
-        const sessionToken = window._getSessionToken();
-        const sessionHWID = window._getSessionHWID();
-        
-        if (!sessionToken || !sessionHWID) {
-            reject('No active session');
-            return;
-        }
-        
-        const currentHWID = generateHWID();
-        if (currentHWID !== sessionHWID) {
-            reject('HWID mismatch - session invalid');
-            return;
-        }
-        
-        db.ref('sessions/' + username).once('value', (snapshot) => {
-            const session = snapshot.val();
-            if (!session) {
-                reject('Session expired');
-                return;
-            }
-            if (session.token !== sessionToken) {
-                reject('Invalid session token');
-                return;
-            }
-            if (session.hwid !== sessionHWID) {
-                reject('HWID verification failed');
-                return;
-            }
-            // Update last activity
-            db.ref('sessions/' + username + '/lastActivity').set(Date.now());
-            resolve(true);
-        });
-    });
-}
-
-// Verify admin HWID against stored admin HWID
+// Verify admin HWID - only called for admin/mod/ST users
 function verifyAdminHWID(username) {
     return new Promise((resolve, reject) => {
         const currentHWID = generateHWID();
@@ -1536,41 +1374,39 @@ function verifyAdminHWID(username) {
             const storedData = snapshot.val();
             
             if (!storedData) {
-                // First time admin login - store their HWID
+                // First time admin login - save their HWID
                 db.ref('admin_hwids/' + username).set({
                     hwid: currentHWID,
                     registeredAt: Date.now(),
                     lastUsed: Date.now()
                 }).then(() => {
                     resolve({ firstTime: true, hwid: currentHWID });
-                }).catch(err => {
-                    console.warn('Could not save admin HWID:', err.message);
-                    // Still allow login if Firebase fails
-                    resolve({ firstTime: true, hwid: currentHWID, warning: 'HWID not saved' });
+                }).catch(() => {
+                    resolve({ firstTime: true, hwid: currentHWID });
                 });
             } else if (storedData.hwid === currentHWID) {
-                // HWID matches
+                // HWID matches - allow login
                 db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
                 resolve({ verified: true, hwid: currentHWID });
             } else {
-                // HWID mismatch - log and reject
+                // HWID mismatch - block admin login
                 db.ref('security_logs/hwid_mismatch').push({
                     user: username,
                     expectedHWID: storedData.hwid,
                     attemptedHWID: currentHWID,
-                    timestamp: Date.now(),
-                    userAgent: navigator.userAgent
+                    timestamp: Date.now()
                 }).catch(() => {});
-                reject('HWID does not match registered admin device. Contact ST for HWID reset.');
+                reject('HWID mismatch! This device is not registered for admin access. Contact ST for HWID reset.');
             }
-        }).catch(err => {
-            console.warn('HWID check failed:', err.message);
-            // If Firebase fails, allow login but warn
-            resolve({ verified: false, warning: 'Could not verify HWID' });
+        }).catch(() => {
+            // Firebase error - allow login but log warning
+            console.warn('Could not verify admin HWID');
+            resolve({ verified: false, warning: true });
         });
     });
 }
 
+// Main login function
 function validateIE() {
     const u = document.getElementById('ie_user').value.trim();
     const p = document.getElementById('ie_pass').value;
@@ -1578,55 +1414,48 @@ function validateIE() {
     
     db.ref('bans/' + u).once('value', (s) => {
         const ban = s.val();
-        if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { alert('Account banned/suspended.'); return; }
+        if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
+            alert('Account banned/suspended.'); 
+            return; 
+        }
         
-        if(userDatabase[u] && userDatabase[u].pass === p) {
-            // Create verified session with HWID
-            const session = createSession(u);
+        if (userDatabase[u] && userDatabase[u].pass === p) {
+            // Generate session
+            currentSessionHWID = generateHWID();
+            currentSessionToken = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
             
-            // Use protected setter - this MUST succeed for login to work
-            window._setCurrentUser(u, session.token, session.hwid);
-            IS_GUEST = false;
+            // Save session to Firebase (non-blocking)
+            db.ref('sessions/' + u).set({
+                token: currentSessionToken,
+                hwid: currentSessionHWID,
+                created: Date.now(),
+                lastActivity: Date.now()
+            }).catch(() => {});
             
-            // Verify the user was set correctly
-            if (!CURRENT_USER) {
-                console.error('Failed to set CURRENT_USER');
-                alert('Login error. Please try again.');
-                return;
-            }
-            
-            // Store HWID in user's profile (non-blocking)
-            db.ref('members/' + u + '/hwid').once('value', (hwidSnap) => {
-                const storedHWID = hwidSnap.val();
-                if (!storedHWID) {
-                    db.ref('members/' + u + '/hwid').set(session.hwid);
-                } else if (storedHWID !== session.hwid) {
-                    db.ref('members/' + u + '/hwidHistory').push({
-                        oldHWID: storedHWID,
-                        newHWID: session.hwid,
-                        timestamp: Date.now()
-                    });
-                    db.ref('members/' + u + '/hwid').set(session.hwid);
-                }
-            });
-            
-            // Check if user is admin/mod/ST - ONLY these get HWID locked
+            // Check if admin/mod/ST - they need HWID verification
             const isAdminUser = userDatabase[u].isAdmin || userDatabase[u].isMod || userDatabase[u].isST;
             
             if (isAdminUser) {
-                // Admin users need HWID verification
+                // Admin needs HWID check
                 verifyAdminHWID(u).then((result) => {
+                    // Set user and complete login
+                    CURRENT_USER = u;
+                    IS_GUEST = false;
                     if (result.firstTime) {
-                        alert('Admin HWID registered. This device is now linked to your admin account.');
+                        alert('✓ Admin HWID registered! This device is now linked to your account.');
                     }
                     completeLogin(u);
                 }).catch((err) => {
-                    alert('Admin HWID verification failed: ' + err);
-                    window._clearSession();
-                    db.ref('sessions/' + u).remove();
+                    // HWID mismatch - block login
+                    alert(err);
+                    currentSessionToken = null;
+                    currentSessionHWID = null;
+                    db.ref('sessions/' + u).remove().catch(() => {});
                 });
             } else {
-                // Regular members - just login, no HWID lock
+                // Regular member - just login
+                CURRENT_USER = u;
+                IS_GUEST = false;
                 completeLogin(u);
             }
         } else { 
@@ -1642,8 +1471,12 @@ function completeLogin(u) {
     
     loadProfile();
     
-    if (userDatabase[u].isAdmin || userDatabase[u].isMod) { document.getElementById('admin_icon').style.display = 'block'; }
-    if (userDatabase[u].isST) { document.getElementById('st_tab').style.display = 'block'; }
+    if (userDatabase[u].isAdmin || userDatabase[u].isMod) { 
+        document.getElementById('admin_icon').style.display = 'block'; 
+    }
+    if (userDatabase[u].isST) { 
+        document.getElementById('st_tab').style.display = 'block'; 
+    }
     setupAdminTabs(userDatabase[u]);
     document.getElementById('clubs_icon').style.display = 'block';
     document.getElementById('messages_icon').style.display = 'block';
@@ -1659,66 +1492,57 @@ function completeLogin(u) {
     }
 }
 
-// Secure admin panel access with session AND HWID verification
+// Secure admin panel access - verifies HWID before opening
 function openAdminPanelSecure() {
     if (!CURRENT_USER || IS_GUEST) {
         alert('You must be logged in to access the admin panel.');
         return;
     }
     
-    // Re-verify from Firebase that user has admin rights (can't trust local data)
+    // Check Firebase directly for admin rights (can't trust local data alone)
     db.ref('members/' + CURRENT_USER).once('value', (snapshot) => {
         const memberData = snapshot.val();
         if (!memberData) {
-            alert('User not found in database.');
-            logout();
+            alert('User not found.');
             return;
         }
         
-        // Check admin/mod flag directly from Firebase
         const isAdmin = memberData.isAdmin === true;
         const isMod = memberData.isMod === true;
         const isST = memberData.isST === true;
         
         if (!isAdmin && !isMod && !isST) {
-            alert('Access denied. You do not have admin privileges.');
-            // Log unauthorized attempt
+            alert('Access denied. No admin privileges.');
             db.ref('security_logs/unauthorized_admin').push({
                 user: CURRENT_USER,
                 timestamp: Date.now(),
                 hwid: generateHWID()
-            });
+            }).catch(() => {});
             return;
         }
         
-        // Verify session
-        verifySession(CURRENT_USER).then(() => {
-            // Verify admin HWID
-            return verifyAdminHWID(CURRENT_USER);
-        }).then(() => {
-            // All checks passed, open admin panel
+        // Verify HWID matches
+        verifyAdminHWID(CURRENT_USER).then(() => {
             toggleWin('admin_window');
         }).catch((err) => {
-            alert('Security verification failed: ' + err + '\nPlease log in again.');
-            logout();
+            alert('Admin panel access denied: ' + err);
         });
+    }).catch(() => {
+        alert('Could not verify permissions. Try again.');
     });
 }
 
 function logout() {
-    const currentUser = CURRENT_USER;
-    
-    // Clear session from Firebase
-    if (currentUser) {
-        db.ref('online/' + currentUser).remove();
-        db.ref('sessions/' + currentUser).remove();
+    if (CURRENT_USER) {
+        db.ref('online/' + CURRENT_USER).remove().catch(() => {});
+        db.ref('sessions/' + CURRENT_USER).remove().catch(() => {});
     }
     
-    // Clear protected session
-    window._clearSession();
+    currentSessionToken = null;
+    currentSessionHWID = null;
+    CURRENT_USER = "";
     IS_GUEST = true;
     
-    // Reset user profile
     userProfile = { status: "", bio: "", mood: "", avatar: "", music: "" };
     document.getElementById('ie_login').style.display = 'block';
     document.getElementById('ie_upload').style.display = 'none';
