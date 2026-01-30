@@ -305,9 +305,26 @@
     <div class="title-bar"><div class="title-bar-text">About fangtasia.wtf</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('about_window')"></button></div></div>
     <div class="window-body"><div class="ie-content" style="text-align: center;"><h2 style="font-size: 28px; margin-bottom: 5px;">fangtasia.wtf</h2><p style="color: #666; font-size: 10px;">Version 6.66</p><div style="border: 1px solid #400; padding: 15px; margin: 15px 0; text-align: left; background: #050000;"><p style="color: #999; font-size: 11px; line-height: 1.6;">Welcome to the digital crypt.<br><br>🦇 <span style="color:#d40000;">Memories</span> - Video archive<br>🦇 <span style="color:#d40000;">Portal</span> - Member access<br>🦇 <span style="color:#d40000;">Games</span> - Silver Stakes<br>🦇 <span style="color:#d40000;">The Lounge</span> - Members only</p></div></div></div>
 </div>
-<div class="window" id="games_window" style="left:180px; top:70px; width:320px; height:400px;">
+<div class="window" id="games_window" style="left:180px; top:70px; width:320px; height:480px;">
     <div class="title-bar"><div class="title-bar-text">🎮 Silver Stakes</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('games_window')"></button></div></div>
-    <div class="window-body"><div style="padding: 10px;"><h3 style="color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3><p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes!</p><div class="game-status" id="game_status">🦇 Stakes: 10</div><div class="stakes-grid" id="stakes_grid"></div><div style="text-align: center; margin-top: 8px;"><button class="ie-btn" style="width: auto; padding: 4px 15px;" onclick="initStakesGame()">New Game</button></div></div></div>
+    <div class="window-body"><div style="padding: 10px;">
+        <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
+        <p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes!</p>
+        <div class="game-status" id="game_status">🦇 Stakes: 10</div>
+        <div class="stakes-grid" id="stakes_grid"></div>
+        <div style="text-align: center; margin-top: 8px;">
+            <button class="ie-btn" style="width: auto; padding: 4px 15px;" onclick="initStakesGame()">New Game</button>
+        </div>
+        <div id="game_my_stats" style="text-align: center; margin-top: 10px; padding: 8px; background: #0a0505; border: 1px solid #300; border-radius: 4px;">
+            <span style="color: #888; font-size: 10px;">Your Wins: </span><span id="my_wins_count" style="color: #ff6600; font-weight: bold;">0</span>
+        </div>
+        <div style="margin-top: 10px; border-top: 1px solid #300; padding-top: 10px;">
+            <div style="color: #d40000; font-size: 10px; font-weight: bold; margin-bottom: 5px;">🏆 Top Players</div>
+            <div id="game_mini_leaderboard" style="font-size: 10px; max-height: 80px; overflow-y: auto;">
+                <div style="color: #666;">Loading...</div>
+            </div>
+        </div>
+    </div></div>
 </div>
 <div class="window" id="leaderboard_window" style="left:220px; top:60px; width:400px; height:480px; display:none;">
     <div class="title-bar"><div class="title-bar-text">🏆 Leaderboards</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('leaderboard_window')"></button></div></div>
@@ -1062,6 +1079,7 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script>
 // Firebase Config
 const firebaseConfig = {
@@ -1075,8 +1093,58 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const auth = firebase.auth();
+let FIREBASE_USER = null; // Stores Firebase Auth user object
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
+
+// Firebase Auth State Listener - auto-login if already authenticated
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        console.log('Auth state: User signed in', user.uid);
+        FIREBASE_USER = user;
+        
+        // Get username from UID
+        const usernameSnap = await db.ref('uid_users/' + user.uid).once('value');
+        const username = usernameSnap.val();
+        
+        if (username && !CURRENT_USER) {
+            console.log('Auto-login as:', username);
+            // Load user data
+            const memberSnap = await db.ref('members/' + username).once('value');
+            const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+            userDatabase[username] = memberData;
+            
+            // Check if not banned
+            const banSnap = await db.ref('bans/' + username).once('value');
+            const ban = banSnap.val();
+            if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
+                console.log('User is banned, signing out');
+                auth.signOut();
+                return;
+            }
+            
+            // Complete login
+            CURRENT_USER = username;
+            IS_GUEST = false;
+            
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => completeLogin(username));
+            } else {
+                // Small delay to ensure all elements are ready
+                setTimeout(() => {
+                    if (document.getElementById('ie_login')) {
+                        completeLogin(username);
+                    }
+                }, 500);
+            }
+        }
+    } else {
+        console.log('Auth state: No user signed in');
+        FIREBASE_USER = null;
+    }
+});
 
 // ========== HWID BLOCK CHECK - RUNS IMMEDIATELY ==========
 (function checkBlockedHWID() {
@@ -1479,14 +1547,56 @@ function revealCell(i) {
         if (CURRENT_USER && !IS_GUEST) {
             db.ref('game_stats/minesweeper/' + CURRENT_USER).once('value', (snap) => {
                 const current = snap.val() || { wins: 0, lastWin: 0 };
+                const newWins = (current.wins || 0) + 1;
                 db.ref('game_stats/minesweeper/' + CURRENT_USER).set({
-                    wins: (current.wins || 0) + 1,
+                    wins: newWins,
                     lastWin: Date.now()
+                }).then(() => {
+                    // Update displays
+                    const myWinsEl = document.getElementById('my_wins_count');
+                    if (myWinsEl) myWinsEl.textContent = newWins;
+                    loadGameMiniLeaderboard();
                 });
             });
         }
     }
     renderStakes();
+}
+
+function loadGameMiniLeaderboard() {
+    const container = document.getElementById('game_mini_leaderboard');
+    if (!container) return;
+    
+    db.ref('game_stats/minesweeper').orderByChild('wins').limitToLast(5).once('value', (snap) => {
+        const stats = [];
+        snap.forEach(c => {
+            stats.push({ user: c.key, wins: c.val().wins || 0 });
+        });
+        stats.sort((a, b) => b.wins - a.wins);
+        
+        if (stats.length === 0) {
+            container.innerHTML = '<div style="color: #666;">No winners yet!</div>';
+            return;
+        }
+        
+        container.innerHTML = stats.map((s, i) => {
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i+1);
+            const isCurrent = s.user === CURRENT_USER;
+            return `<div style="display:flex; justify-content:space-between; padding:2px 0; ${isCurrent ? 'color:#ff6600;' : 'color:#aaa;'}">
+                <span>${medal} ${s.user}</span>
+                <span>${s.wins}</span>
+            </div>`;
+        }).join('');
+    });
+}
+
+function loadMyGameStats() {
+    if (!CURRENT_USER || IS_GUEST) return;
+    db.ref('game_stats/minesweeper/' + CURRENT_USER).once('value', (snap) => {
+        const data = snap.val() || { wins: 0 };
+        const myWinsEl = document.getElementById('my_wins_count');
+        if (myWinsEl) myWinsEl.textContent = data.wins || 0;
+    });
 }
 
 // APPLICATION SYSTEM
@@ -1620,11 +1730,13 @@ function loadClubsLeaderboard() {
     db.ref('clubs').once('value', (snap) => {
         const clubs = snap.val() || {};
         const sorted = Object.entries(clubs)
-            .map(([name, data]) => ({ 
-                name, 
-                members: data.members ? Object.keys(data.members).length : 0,
+            .map(([id, data]) => ({ 
+                id: id,
+                displayName: data.name || id, // Use the actual club name, not the ID
+                members: data.members ? (Array.isArray(data.members) ? data.members.length : Object.keys(data.members).length) : 0,
                 owner: data.owner || 'Unknown',
-                tag: data.tag || ''
+                tag: data.tag || '',
+                color: data.color || '#d40000'
             }))
             .sort((a, b) => b.members - a.members)
             .slice(0, 15);
@@ -1641,8 +1753,8 @@ function loadClubsLeaderboard() {
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 16px;">${medal}</span>
                     <div style="flex: 1;">
-                        <div style="color: #d40000; font-weight: bold;">${club.tag ? '[' + club.tag + '] ' : ''}${club.name}</div>
-                        <div style="color: #666; font-size: 9px;">Owner: ${club.owner}</div>
+                        <div style="color: ${escapeHtml(club.color)}; font-weight: bold;">${club.tag ? '[' + escapeHtml(club.tag) + '] ' : ''}${escapeHtml(club.displayName)}</div>
+                        <div style="color: #666; font-size: 9px;">Owner: ${escapeHtml(club.owner)}</div>
                     </div>
                     <div style="text-align: right;">
                         <div style="color: #ff6600; font-weight: bold;">${club.members}</div>
@@ -1794,41 +1906,102 @@ function verifyAdminHWID(username) {
 }
 
 // Main login function
-function validateIE() {
-    const u = document.getElementById('ie_user').value.trim();
+async function validateIE() {
+    const u = document.getElementById('ie_user').value.trim().toLowerCase();
     const p = document.getElementById('ie_pass').value;
     if (!u || !p) { alert("Enter username and password."); return; }
     
-    db.ref('bans/' + u).once('value', (s) => {
-        const ban = s.val();
-        if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
-            alert('Account banned/suspended.'); 
-            return; 
-        }
+    // Check if banned first
+    const banSnap = await db.ref('bans/' + u).once('value');
+    const ban = banSnap.val();
+    if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
+        alert('Account banned/suspended.'); 
+        return; 
+    }
+    
+    // Create email from username (Firebase Auth requires email format)
+    const email = u + '@fangtasia.wtf';
+    
+    try {
+        // Try to sign in with Firebase Auth
+        const userCredential = await auth.signInWithEmailAndPassword(email, p);
+        FIREBASE_USER = userCredential.user;
+        console.log('Firebase Auth successful, UID:', FIREBASE_USER.uid);
         
-        // Check local userDatabase first (immediate)
-        if (userDatabase[u] && userDatabase[u].pass === p) {
-            proceedWithLogin(u);
-            return;
-        }
+        // Load user data from database
+        const memberSnap = await db.ref('members/' + u).once('value');
+        const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+        userDatabase[u] = memberData;
         
-        // If not in local, check Firebase auth_users (for new users created via ST Tools)
-        db.ref('auth_users/' + u).once('value', async (authSnap) => {
+        proceedWithLogin(u);
+        
+    } catch (authError) {
+        console.log('Firebase Auth failed:', authError.code);
+        
+        // If user doesn't exist in Firebase Auth, check if they exist in old system
+        if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential') {
+            // Check local userDatabase (legacy users)
+            if (userDatabase[u] && userDatabase[u].pass === p) {
+                // Migrate user to Firebase Auth
+                console.log('Migrating legacy user to Firebase Auth...');
+                try {
+                    const newUser = await auth.createUserWithEmailAndPassword(email, p);
+                    FIREBASE_USER = newUser.user;
+                    
+                    // Save UID mapping
+                    await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
+                    await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
+                    
+                    console.log('Migration successful, UID:', FIREBASE_USER.uid);
+                    proceedWithLogin(u);
+                    return;
+                } catch (migrateErr) {
+                    console.error('Migration failed:', migrateErr);
+                    // If email already in use, try signing in again with correct format
+                    if (migrateErr.code === 'auth/email-already-in-use') {
+                        alert('Account exists but password is incorrect.');
+                        return;
+                    }
+                }
+            }
+            
+            // Check Firebase auth_users (users created via ST Tools with hashed passwords)
+            const authSnap = await db.ref('auth_users/' + u).once('value');
             const authData = authSnap.val();
             if (authData && authData.hashedPass) {
                 const enteredHash = await hashPassword(p);
                 if (authData.hashedPass === enteredHash) {
-                    // Get member data from Firebase
-                    const memberSnap = await db.ref('members/' + u).once('value');
-                    const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-                    userDatabase[u] = memberData;
-                    proceedWithLogin(u);
-                    return;
+                    // Migrate this user to Firebase Auth too
+                    console.log('Migrating ST-created user to Firebase Auth...');
+                    try {
+                        const newUser = await auth.createUserWithEmailAndPassword(email, p);
+                        FIREBASE_USER = newUser.user;
+                        
+                        await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
+                        await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
+                        
+                        const memberSnap = await db.ref('members/' + u).once('value');
+                        const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+                        userDatabase[u] = memberData;
+                        
+                        proceedWithLogin(u);
+                        return;
+                    } catch (migrateErr) {
+                        console.error('ST user migration failed:', migrateErr);
+                    }
                 }
             }
-            alert("DENIED.");
-        });
-    });
+            
+            alert("DENIED - Invalid username or password.");
+        } else if (authError.code === 'auth/wrong-password') {
+            alert("DENIED - Wrong password.");
+        } else if (authError.code === 'auth/too-many-requests') {
+            alert("Too many failed attempts. Try again later.");
+        } else {
+            console.error('Auth error:', authError);
+            alert("Login error: " + authError.message);
+        }
+    }
 }
 
 function proceedWithLogin(u) {
@@ -1883,6 +2056,10 @@ function completeLogin(u) {
     startOnlineListener();
     document.getElementById('chat_input').disabled = false;
     document.getElementById('chat_input').placeholder = "/help for commands... @username to mention";
+    
+    // Load game stats
+    loadMyGameStats();
+    loadGameMiniLeaderboard();
     
     // Show leaderboard icon for all members
     document.getElementById('leaderboard_icon').style.display = 'block';
@@ -1949,6 +2126,10 @@ function logout() {
         db.ref('online/' + CURRENT_USER).remove().catch(() => {});
         db.ref('sessions/' + CURRENT_USER).remove().catch(() => {});
     }
+    
+    // Sign out of Firebase Auth
+    auth.signOut().catch(err => console.warn('Auth signout error:', err));
+    FIREBASE_USER = null;
     
     currentSessionToken = null;
     currentSessionHWID = null;
@@ -2733,95 +2914,97 @@ function mentionUser(username) {
     input.focus();
 }
 
-async function sendChat() {
-    if (IS_GUEST) { alert('Guests cannot send messages.'); return; }
-    if (!CURRENT_USER) { alert('Please log in!'); return; }
+function sendChat() {
+    console.log('=== SEND CHAT CALLED ===');
+    console.log('CURRENT_USER:', CURRENT_USER);
+    console.log('IS_GUEST:', IS_GUEST);
+    console.log('db exists:', !!db);
     
-    // Check if user is muted
-    try {
-        const isMuted = await isUserMuted(CURRENT_USER);
-        if (isMuted) {
-            alert('You are currently muted and cannot send messages.');
-            return;
-        }
-    } catch (e) {
-        console.warn('Mute check failed, proceeding:', e);
+    if (IS_GUEST) { 
+        alert('Guests cannot send messages.'); 
+        return; 
+    }
+    if (!CURRENT_USER) { 
+        alert('Please log in!'); 
+        return; 
     }
     
     const input = document.getElementById('chat_input');
-    const rawText = input.value.trim();
-    if (!rawText) return;
+    if (!input) { 
+        console.error('ERROR: Chat input element not found!'); 
+        alert('Chat input not found!');
+        return; 
+    }
     
-    // Sanitize the message text
-    const text = sanitizeInput(rawText);
-    if (!text) return;
+    const rawText = input.value.trim();
+    console.log('Message text:', rawText);
+    
+    if (!rawText) {
+        console.log('Empty message, returning');
+        return;
+    }
+    
+    // Simple HTML escape
+    const text = rawText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     
     const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style' };
     const userRank = u.rank || 'M';
     const userStyle = u.style || 'member-style';
     const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
     
-    if (cmdMatch && chatCommands[cmdMatch[1]]) {
+    // Check for commands
+    const cmdMatch = rawText.match(/^(\/\w+)\s*(.*)?$/);
+    if (cmdMatch && chatCommands && chatCommands[cmdMatch[1]]) {
+        console.log('Command detected:', cmdMatch[1]);
         const result = chatCommands[cmdMatch[1]](cmdMatch[2] || '');
         if (result.type === 'system') { 
             input.value = ''; 
             const logs = document.getElementById('chat_logs'); 
-            logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + escapeHtml(result.text) + '</div>'; 
-            logs.scrollTop = logs.scrollHeight; 
-            return; 
-        } else { 
-            db.ref('chat').push({ 
-                user: CURRENT_USER, 
-                text: sanitizeInput(result.text), 
-                isAction: true, 
-                tag: userRank, 
-                style: userStyle, 
-                time: timeNow, 
-                timestamp: firebase.database.ServerValue.TIMESTAMP 
-            }).catch(err => console.error('Chat send error:', err)); 
-        }
-    } else {
-        // Build message object
-        const msgData = { 
-            user: CURRENT_USER, 
-            text: text, 
-            tag: userRank, 
-            style: userStyle, 
-            time: timeNow, 
-            timestamp: firebase.database.ServerValue.TIMESTAMP 
-        };
-        
-        // Add reply data if replying
-        if (currentReplyTo) {
-            msgData.replyTo = sanitizeInput(currentReplyTo.username);
-            msgData.replyText = sanitizeInput(currentReplyTo.text);
-        }
-        
-        // Check for mentions
-        const mentions = text.match(/@(\w+)/g);
-        if (mentions) {
-            msgData.mentions = mentions.map(m => m.substring(1));
-        }
-        
-        db.ref('chat').push(msgData).catch(err => {
-            console.error('Chat send error:', err);
-            alert('Failed to send message. Check console for details.');
-        });
-        
-        // Bot responses - DISABLED (bot no longer auto-responds)
-        // Admins can still manually send as Eric Northman via admin panel
-        /*
-        for (const br of botResponses) {
-            if (br.trigger.test(text)) {
-                setTimeout(() => { db.ref('chat').push({ user: 'Eric Northman', text: br.response, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); }, 1000 + Math.random() * 1000);
-                break;
+            if (logs) {
+                logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; 
+                logs.scrollTop = logs.scrollHeight; 
             }
+            return; 
         }
-        */
     }
-    input.value = "";
-    cancelReply();
+    
+    // Build message object
+    const msgData = { 
+        user: CURRENT_USER, 
+        text: text, 
+        tag: userRank, 
+        style: userStyle, 
+        time: timeNow, 
+        timestamp: firebase.database.ServerValue.TIMESTAMP 
+    };
+    
+    // Add reply data if replying
+    if (currentReplyTo) {
+        msgData.replyTo = currentReplyTo.username;
+        msgData.replyText = currentReplyTo.text;
+    }
+    
+    // Check for mentions
+    const mentions = rawText.match(/@(\w+)/g);
+    if (mentions) {
+        msgData.mentions = mentions.map(m => m.substring(1));
+    }
+    
+    console.log('Attempting to push message:', msgData);
+    
+    // Try to send
+    db.ref('chat').push(msgData)
+        .then(() => {
+            console.log('SUCCESS: Message sent to Firebase!');
+            input.value = '';
+            cancelReply();
+        })
+        .catch(err => {
+            console.error('FIREBASE ERROR:', err);
+            console.error('Error code:', err.code);
+            console.error('Error message:', err.message);
+            alert('Failed to send message!\n\nError: ' + err.message + '\n\nCheck browser console (F12) and Firebase Rules.');
+        });
 }
 
 let chatListenerSet = false;
@@ -3691,15 +3874,16 @@ async function stCreateUser() {
     const resultEl = document.getElementById('st_create_result');
     if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
     
-    const username = document.getElementById('st_create_username').value.trim();
+    const username = document.getElementById('st_create_username').value.trim().toLowerCase();
     const password = document.getElementById('st_create_password').value;
     const rankSelect = document.getElementById('st_create_rank').value;
     
     if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
-    if (!password || password.length < 4) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 4 characters.</span>'; return; }
+    if (!/^[a-z0-9_]+$/.test(username)) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username can only contain letters, numbers, and underscores.</span>'; return; }
+    if (!password || password.length < 6) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 6 characters.</span>'; return; }
     
-    // Check if username exists in auth_users
-    const existingUser = await db.ref('auth_users/' + username).once('value');
+    // Check if username exists
+    const existingUser = await db.ref('members/' + username).once('value');
     if (existingUser.exists()) { 
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username already exists!</span>'; 
         return; 
@@ -3713,30 +3897,56 @@ async function stCreateUser() {
         'admin': { rank: 'A', fullRank: 'Admin', style: 'admin-style', isAdmin: true }
     };
     
+    const email = username + '@fangtasia.wtf';
+    
     try {
-        // Hash the password
-        const hashedPass = await hashPassword(password);
+        if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">Creating Firebase Auth user...</span>';
         
-        // Store auth data (hashed password only)
-        await db.ref('auth_users/' + username).set({
-            hashedPass: hashedPass,
+        // Store current user to restore after creating new account
+        const currentAuthUser = auth.currentUser;
+        
+        // Create Firebase Auth user
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const newUid = userCredential.user.uid;
+        
+        // Sign back in as the ST user
+        if (currentAuthUser) {
+            // We need to re-authenticate. For now, just sign out the new user
+            // The ST will need to re-login
+            await auth.signOut();
+            if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">User created! Re-authenticating...</span>';
+            // Try to sign back in with stored credentials if available
+        }
+        
+        // Store UID mapping
+        await db.ref('user_uids/' + username).set(newUid);
+        await db.ref('uid_users/' + newUid).set(username);
+        
+        // Store member data
+        const memberData = { 
+            ...rankConfig[rankSelect],
+            uid: newUid,
             createdAt: Date.now(),
             createdBy: CURRENT_USER
-        });
-        
-        // Store member data (no password)
-        const memberData = { ...rankConfig[rankSelect] };
+        };
         await db.ref('members/' + username).set(memberData);
         
         // Update local database
         userDatabase[username] = memberData;
         updateMemberList();
         
-        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User "' + escapeHtml(username) + '" created!</span><br><span style="color:#888; font-size:9px;">Login: ' + escapeHtml(username) + ' / [password hidden]</span>';
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User "' + escapeHtml(username) + '" created with Firebase Auth!</span><br><span style="color:#888; font-size:9px;">Login: ' + escapeHtml(username) + ' / [password hidden]</span><br><span style="color:#ff0; font-size:9px;">⚠️ You may need to re-login</span>';
         document.getElementById('st_create_username').value = '';
         document.getElementById('st_create_password').value = '';
     } catch (err) {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        console.error('Create user error:', err);
+        if (err.code === 'auth/email-already-in-use') {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User already has Firebase Auth account!</span>';
+        } else if (err.code === 'auth/weak-password') {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password too weak. Use at least 6 characters.</span>';
+        } else {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        }
     }
 }
 
