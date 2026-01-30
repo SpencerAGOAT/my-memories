@@ -287,6 +287,28 @@
         <div style="margin-top:10px; color:#666; font-size:10px;">Click anywhere to dismiss</div>
     </div>
 </div>
+<!-- ADMIN MESSAGE NOTIFICATION -->
+<div id="admin_msg_notification" style="display:none; position:fixed; bottom:20px; right:20px; z-index:99998; max-width:350px; animation:slideInRight 0.3s ease;">
+    <div style="background:linear-gradient(180deg, #1a1500, #0a0500); border:2px solid #ffd700; border-radius:8px; box-shadow:0 4px 20px rgba(255,215,0,0.3), inset 0 1px 0 rgba(255,215,0,0.2); overflow:hidden;">
+        <div style="background:linear-gradient(90deg, #3a3000, #2a2000); padding:10px 15px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #5a4a00;">
+            <span style="color:#ffd700; font-weight:bold; font-size:12px; text-shadow:0 0 10px rgba(255,215,0,0.5);">📨 Message from ST</span>
+            <span id="admin_msg_priority_badge" style="font-size:9px; padding:2px 6px; border-radius:3px; background:#2a2000; color:#888;">NORMAL</span>
+        </div>
+        <div style="padding:15px;">
+            <div id="admin_msg_content" style="color:#eee; font-size:12px; line-height:1.5; margin-bottom:12px; max-height:150px; overflow-y:auto;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid #3a3000;">
+                <span id="admin_msg_time" style="color:#666; font-size:9px;"></span>
+                <button onclick="dismissAdminMessage()" style="background:linear-gradient(180deg, #3a3000, #2a2000); border:1px solid #5a4a00; color:#ffd700; padding:6px 15px; border-radius:4px; cursor:pointer; font-size:10px; font-weight:bold;">✓ Mark as Read</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+@keyframes slideInRight {
+    from { transform:translateX(100%); opacity:0; }
+    to { transform:translateX(0); opacity:1; }
+}
+</style>
 <div id="boot-screen" onclick="beginSession()">
     <div style="font-size: 80px; margin-bottom: 20px; animation: batFloat 3s ease-in-out infinite;">🦇</div>
     <h1 class="boot-title">fangtasia.wtf</h1>
@@ -1059,6 +1081,18 @@
                             <textarea id="st_comment_text" class="ie-input" placeholder="Comment..." style="height:50px; resize:none;"></textarea>
                             <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stLeaveComment()">Post Comment</button>
                             <div id="st_comment_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ffd700; background:linear-gradient(180deg, #1a1500, #0a0800);">
+                            <h4 style="color:#ffd700;">📨 Message to Admins</h4>
+                            <p style="font-size:9px; color:#888; margin:0 0 8px 0;">Send a private message to all Admins. They'll see it when online.</p>
+                            <textarea id="st_admin_msg_text" class="ie-input" placeholder="Message to admins..." style="height:60px; resize:none;"></textarea>
+                            <select id="st_admin_msg_priority" class="ie-input">
+                                <option value="normal">📋 Normal</option>
+                                <option value="important">⚠️ Important</option>
+                                <option value="urgent">🚨 Urgent</option>
+                            </select>
+                            <button class="ie-btn" style="background:#4a4a00; border-color:#ffd700; margin-top:5px;" onclick="sendAdminMessage()">📨 Send to Admins</button>
+                            <div id="st_admin_msg_result" style="margin-top:5px; font-size:10px;"></div>
                         </div>
                     </div>
                 </div>
@@ -2170,6 +2204,11 @@ function completeLogin(u) {
     document.getElementById('clubs_icon').style.display = 'block';
     document.getElementById('messages_icon').style.display = 'block';
     document.getElementById('watchparty_icon').style.display = 'block';
+    
+    // Start admin message listener for admins/mods
+    if (userData.isAdmin || userData.isMod) {
+        setTimeout(startAdminMessageListener, 2500);
+    }
     
     const rank = userData.rank || 'M';
     if (rank === 'VIP' || rank === 'CONTRIB' || userData.isAdmin || userData.isST) { 
@@ -5020,6 +5059,130 @@ function startAnnouncementListener() {
 
 // Start listener when page loads
 setTimeout(startAnnouncementListener, 2000);
+
+// ========== ADMIN MESSAGES (ST to Admins) ==========
+
+function sendAdminMessage() {
+    const resultEl = document.getElementById('st_admin_msg_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const text = document.getElementById('st_admin_msg_text').value.trim();
+    const priority = document.getElementById('st_admin_msg_priority').value;
+    
+    if (!text) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a message.</span>'; 
+        return; 
+    }
+    
+    const message = {
+        text: text,
+        priority: priority,
+        from: CURRENT_USER,
+        timestamp: Date.now(),
+        readBy: {}
+    };
+    
+    db.ref('admin_messages').push(message).then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Message sent to all admins!</span>';
+        document.getElementById('st_admin_msg_text').value = '';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function startAdminMessageListener() {
+    if (!db) {
+        setTimeout(startAdminMessageListener, 1000);
+        return;
+    }
+    
+    // Only listen if current user is admin
+    if (!userDatabase[CURRENT_USER]?.isAdmin && !userDatabase[CURRENT_USER]?.isMod) return;
+    
+    db.ref('admin_messages').orderByChild('timestamp').limitToLast(10).on('value', (snapshot) => {
+        if (!snapshot.exists()) return;
+        
+        const messages = [];
+        snapshot.forEach((child) => {
+            messages.push({ key: child.key, ...child.val() });
+        });
+        
+        // Find unread messages for current user
+        const unread = messages.filter(m => !m.readBy || !m.readBy[CURRENT_USER]);
+        
+        if (unread.length > 0) {
+            // Show the most recent unread message
+            const latest = unread[unread.length - 1];
+            showAdminMessageNotification(latest);
+        }
+    });
+}
+
+function showAdminMessageNotification(msg) {
+    const notification = document.getElementById('admin_msg_notification');
+    const content = document.getElementById('admin_msg_content');
+    const timeEl = document.getElementById('admin_msg_time');
+    const badge = document.getElementById('admin_msg_priority_badge');
+    
+    if (!notification || !content) return;
+    
+    // Store current message key for marking as read
+    notification.dataset.msgKey = msg.key;
+    
+    // Set content
+    content.textContent = msg.text;
+    
+    // Set time
+    const date = new Date(msg.timestamp);
+    timeEl.textContent = date.toLocaleString();
+    
+    // Set priority badge
+    const priorities = {
+        'normal': { text: '📋 NORMAL', bg: '#2a2000', color: '#888' },
+        'important': { text: '⚠️ IMPORTANT', bg: '#4a3000', color: '#ffa500' },
+        'urgent': { text: '🚨 URGENT', bg: '#4a0000', color: '#ff4444' }
+    };
+    const p = priorities[msg.priority] || priorities.normal;
+    badge.textContent = p.text;
+    badge.style.background = p.bg;
+    badge.style.color = p.color;
+    
+    // Update border color based on priority
+    if (msg.priority === 'urgent') {
+        notification.querySelector('div').style.borderColor = '#ff4444';
+        notification.querySelector('div').style.boxShadow = '0 4px 20px rgba(255,68,68,0.4), inset 0 1px 0 rgba(255,68,68,0.2)';
+    } else if (msg.priority === 'important') {
+        notification.querySelector('div').style.borderColor = '#ffa500';
+        notification.querySelector('div').style.boxShadow = '0 4px 20px rgba(255,165,0,0.3), inset 0 1px 0 rgba(255,165,0,0.2)';
+    } else {
+        notification.querySelector('div').style.borderColor = '#ffd700';
+        notification.querySelector('div').style.boxShadow = '0 4px 20px rgba(255,215,0,0.3), inset 0 1px 0 rgba(255,215,0,0.2)';
+    }
+    
+    // Show notification
+    notification.style.display = 'block';
+}
+
+function dismissAdminMessage() {
+    const notification = document.getElementById('admin_msg_notification');
+    if (!notification) return;
+    
+    const msgKey = notification.dataset.msgKey;
+    
+    // Mark as read in database
+    if (msgKey && CURRENT_USER) {
+        db.ref('admin_messages/' + msgKey + '/readBy/' + CURRENT_USER).set(Date.now());
+    }
+    
+    // Hide notification
+    notification.style.display = 'none';
+}
+
+// Start admin message listener after login (called from finishLogin)
+// We'll call it from the login success area
 
 // ST CLUB MANAGEMENT FUNCTIONS
 function stCreateClub() {
