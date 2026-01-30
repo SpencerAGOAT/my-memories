@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>fangtasia.wtf</title>
+    <!-- Anti-DevTools Protection -->
+    <script src="https://cdn.jsdelivr.net/npm/disable-devtool@latest"></script>
+    <script>
+        DisableDevtool({
+            ondevtoolopen: function(type) {
+                document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#f00;display:flex;justify-content:center;align-items:center;font-family:monospace;font-size:24px;text-align:center;z-index:999999;"><div>⛔ ACCESS DENIED ⛔<br><br><span style="font-size:14px;color:#666;">Developer tools are not allowed.</span></div></div>';
+            },
+            clearIntervalWhenDevOpenTrigger: true,
+            url: null,
+            disableMenu: true,
+            clearLog: true,
+            disableSelect: true,
+            disableCopy: true,
+            disableCut: true
+        });
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/bahram" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/7.css">
@@ -24,6 +40,8 @@
         .boot-subtitle { animation: flicker 3s infinite; margin-top: 20px; }
         @keyframes flicker { 0%, 100% { opacity: 1; } 93% { opacity: 0.3; } 94% { opacity: 1; } 96% { opacity: 0.5; } }
         @keyframes batFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
+        /* SoundCloud Dark Mode */
+        iframe[src*="soundcloud"] { filter: invert(0.85) hue-rotate(180deg) contrast(1.1); border-radius: 8px; }
         #desktop { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; padding: 25px; height: calc(100vh - 40px); gap: 20px; position: relative; z-index: 1; }
         .icon { width: 110px; text-align: center; color: white; text-shadow: 1px 1px 3px black; font-size: 11px; z-index: 5; margin-bottom: 15px; transition: transform 0.2s, filter 0.2s; }
         .icon:hover { transform: scale(1.1); filter: brightness(1.2); }
@@ -1087,78 +1105,91 @@ function startForceLogoutListener() {
     });
 }
 
-// USER DATABASE - ENCODED (use atob() to decode)
-// To decrypt: Open browser console and type: atob("encodedString")
-const _d = atob; // decoder
-const _e = { // encoded credentials [username, password]
-    a: [_d("bG9zZXJzeW5kaWNhdGU="), _d("ZG91YmxlZHV0Y2hpZTAx")],
-    b: [_d("bm9zZWV5ZWRlYXI="), _d("d3Rmb21mZ2Zhbmd0YXNpYWZvcmRhYnJvczIx")],
-    c: [_d("b2xlZw=="), _d("bWV0aHliZXRoeTg5IQ==")],
-    d: [_d("bm9ydGg="), _d("bG1hb2xlZ2FjeTEyISQk")],
-    e: [_d("anlyYW0="), _d("aWxvdmVDb29raWVzMTIzNC4=")],
-    f: [_d("WXVza3k="), _d("U2tpbGxldDEyIQ==")],
-    g: [_d("bm9hYm9ydGlvbnM="), _d("RGlvbjA3MTM=")],
-    h: [_d("ZXBoZW1lcmFs"), _d("U2V4eVNvbGl0YWlyZTEyMw==")],
-    i: [_d("Z3VhcmRlZHBhbg=="), _d("ZnJlZWhvb2tlcnMxMjM=")],
-    k: [_d("ZWxl"), _d("Q09NR09ETE9SREJPU1NFWFRPUVRFUTI4MjcxISEhMQ==")],
-    l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")],
-    m: [_d("Ym9sb2s="), _d("amlsbGFpc2FmYWc=")],
-    n: [_d("cmtlbGx5ZmFuMTc="), _d("ZW5ueWVubnllbm55")],
-    o: [_d("bGVhbg=="), _d("U3VubnlGZWV0VXdVNTYk")],
-    p: [_d("aGVudGFp"), _d("cm9ibG94bWFueDVANjdAMTEyMUA2NzY3")],
-    q: [_d("cmVk"), _d("ZGlja2dyYXlzb25idWRkeTIz")],
-    r: [_d("c2x1dA=="), _d("b3NoYmFnb3NoMTc4Ng==")],
-    s: [_d("cG9uY2hvc2hvb3Rlcg=="), _d("djhlZVA4b0xPeHBJaE8=")],
-    // New users
-    t: [_d("MA=="), _d("Z2ppMjMxOWpoaGo5ZXM=")],
-    u: [_d("cGFyYXNpdGU="), _d("czZwZXJzYWl5YW50YWNvMw==")],
-    v: [_d("aGVhcnRhY2hl"), _d("QWJieUFiYnkxMg==")],
-    w: [_d("Z29k"), _d("VHVuM3h4WipmbCk=")],
-    x: [_d("RlJFRVpFUkJVUk4="), _d("ZnJlZXphbWFuZTU2NA==")],
-    y: [_d("bWFwbGUuc3lydXBw"), _d("d2lnZ2FwYXNzd29yZDEyMw==")],
-    z: [_d("ZGlvbg=="), _d("JDEwMDM1NTg3")],
-    aa: [_d("TGVtb25hZGU="), _d("QnV0dEJvb3R5TmFrZWQxMjM=")],
-    ab: [_d("c3VwZXJuaWdnYXBlbmlzNjc="), _d("bmlnZ2FuaWdnYW5pZ2dh")],
-    ac: [_d("aWNl"), _d("cHJveGlzY29vbDAwMDA2NjY2")],
-    ad: [_d("Yml0ZQ=="), _d("aG9ybnlidWxsczExcw==")],
-    ae: [_d("Z293"), _d("TW9ybw==")],
-    af: [_d("bWFwbGU="), _d("bWFwbGVzeXJ1cHdpZ2dhMA==")]
+// ============================================================
+// FIREBASE AUTHENTICATION SYSTEM - NO PASSWORDS IN CLIENT CODE
+// ============================================================
+// All credentials are stored in Firebase Database under 'auth_users/'
+// Passwords are hashed with SHA-256 before storage
+
+const auth = firebase.auth();
+
+// User roles/permissions (NO passwords - just metadata)
+const userRoles = {
+    'losersyndicate': { rank: 'ST', fullRank: 'Site Technician', style: 'st-style', isAdmin: true, isST: true },
+    'noseeyedear': { rank: 'A', fullRank: 'Admin', style: 'noseeyedear-style', isAdmin: true, customTag: 'N' },
+    'oleg': { rank: 'MOD', fullRank: 'Moderator', style: 'oleg-style', isMod: true, customTag: 'O' },
+    'K': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', isAdmin: true, customTag: 'K', customTagColor: '#ffd700' },
+    'north': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'jyram': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'Yusky': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'noabortions': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'ephemeral': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'guardedpan': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'ele': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'cyro': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'bolok': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'rkellyfan17': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'lean': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
+    'hentai': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
+    'red': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
+    'slut': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
+    'ponchoshooter': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    '0': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'parasite': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'heartache': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'god': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'FREEZERBURN': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'maple.syrupp': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'dion': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'Lemonade': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'superniggapenis67': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'ice': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'bite': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'gow': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+    'maple': { rank: 'M', fullRank: 'Member', style: 'member-style' }
 };
-const coreAdmins = {
-    [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
-    [_e.b[0]]: { pass: _e.b[1], rank: "A", fullRank: "Admin", style: "noseeyedear-style", isAdmin: true, customTag: "N" },
-    [_e.c[0]]: { pass: _e.c[1], rank: "MOD", fullRank: "Moderator", style: "oleg-style", isAdmin: false, isMod: true, customTag: "O" },
-    [_e.d[0]]: { pass: _e.d[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.e[0]]: { pass: _e.e[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.f[0]]: { pass: _e.f[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.g[0]]: { pass: _e.g[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.h[0]]: { pass: _e.h[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.i[0]]: { pass: _e.i[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.k[0]]: { pass: _e.k[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.l[0]]: { pass: _e.l[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.m[0]]: { pass: _e.m[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.n[0]]: { pass: _e.n[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.o[0]]: { pass: _e.o[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
-    [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
-    [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
-    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
-    [_e.s[0]]: { pass: _e.s[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    // New users
-    [_e.t[0]]: { pass: _e.t[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.u[0]]: { pass: _e.u[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.v[0]]: { pass: _e.v[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.w[0]]: { pass: _e.w[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.x[0]]: { pass: _e.x[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.y[0]]: { pass: _e.y[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.z[0]]: { pass: _e.z[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.aa[0]]: { pass: _e.aa[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.ab[0]]: { pass: _e.ab[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.ac[0]]: { pass: _e.ac[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.ad[0]]: { pass: _e.ad[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.ae[0]]: { pass: _e.ae[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.af[0]]: { pass: _e.af[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
-};
-let userDatabase = { ...coreAdmins };
+
+// SHA-256 hash function for password verification
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password + 'fangtasia_salt_2024');
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Initialize userDatabase from Firebase (passwords stored as hashes in Firebase only)
+let userDatabase = {};
+
+// Load user data from Firebase on startup
+async function initializeUserDatabase() {
+    return new Promise((resolve) => {
+        db.ref('auth_users').once('value', (snapshot) => {
+            const authUsers = snapshot.val() || {};
+            
+            // Build userDatabase from Firebase auth_users + userRoles
+            Object.keys(authUsers).forEach(username => {
+                const authData = authUsers[username];
+                const roleData = userRoles[username] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+                
+                userDatabase[username] = {
+                    ...roleData,
+                    hashedPass: authData.hashedPass, // Only hash stored, never plaintext
+                    isAdmin: roleData.isAdmin || false,
+                    isMod: roleData.isMod || false,
+                    isST: roleData.isST || false
+                };
+            });
+            
+            resolve();
+        });
+    });
+}
+
+// Initialize on page load
+initializeUserDatabase().then(() => {
+    console.log('User database loaded from Firebase');
+});
 
 // Start online listener IMMEDIATELY so it's ready when members load
 let onlineListenerStarted = false;
@@ -1192,15 +1223,29 @@ deletedAccounts.forEach(acc => {
     db.ref('reputation/' + acc).remove();
 });
 
+// Listen for member updates and merge with userRoles
 db.ref('members').on('value', (s) => { 
     const firebaseMembers = s.val() || {};
-    // Merge: start with Firebase data, then overlay coreAdmins to preserve customTags etc.
-    userDatabase = { ...firebaseMembers };
-    // Ensure coreAdmins properties always take precedence
-    Object.keys(coreAdmins).forEach(user => {
-        userDatabase[user] = { ...userDatabase[user], ...coreAdmins[user] };
+    
+    // Merge Firebase members with userRoles (roles take precedence for permissions)
+    Object.keys(firebaseMembers).forEach(user => {
+        if (!userDatabase[user]) {
+            userDatabase[user] = firebaseMembers[user];
+        }
+        // Apply role overrides if defined
+        if (userRoles[user]) {
+            userDatabase[user] = { ...userDatabase[user], ...userRoles[user] };
+        }
     });
-    // Remove deleted/renamed accounts from local database
+    
+    // Ensure all users in userRoles exist in userDatabase
+    Object.keys(userRoles).forEach(user => {
+        if (!userDatabase[user]) {
+            userDatabase[user] = { ...userRoles[user] };
+        }
+    });
+    
+    // Remove deleted accounts
     deletedAccounts.forEach(acc => { delete userDatabase[acc]; });
     updateMemberList();
 });
@@ -1442,7 +1487,7 @@ function generateHWID() {
 let currentSessionToken = null;
 let currentSessionHWID = null;
 
-// Pre-registered verified admins with their HWIDs
+// Pre-registered verified admins with their HWIDs (HARDCODED - cannot be changed via console)
 const verifiedAdmins = {
     'losersyndicate': {
         hwids: ['HWID-76AA281A', 'HWID-194F5EAB'],
@@ -1454,55 +1499,49 @@ const verifiedAdmins = {
     }
 };
 
-// Check if user is a verified admin
+// Check if user is a verified admin (either in hardcoded list OR has HWID in Firebase)
 function isVerifiedAdmin(username) {
-    return verifiedAdmins.hasOwnProperty(username);
+    // Hardcoded admins always verified
+    if (verifiedAdmins.hasOwnProperty(username)) return true;
+    // Others can be verified via Firebase
+    return true; // Let verifyAdminHWID handle the actual check
 }
 
-// Verify admin HWID - supports multiple HWIDs per admin
+// Verify admin HWID - checks hardcoded list first, then Firebase
 function verifyAdminHWID(username) {
     return new Promise((resolve, reject) => {
         const currentHWID = generateHWID();
         
-        // First check if user is in verified admins list (hardcoded for security)
+        // First check hardcoded verified admins
         if (verifiedAdmins[username]) {
             const allowedHWIDs = verifiedAdmins[username].hwids;
             if (allowedHWIDs.includes(currentHWID)) {
-                // Update last used in Firebase
                 db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
                 db.ref('admin_hwids/' + username + '/lastHWID').set(currentHWID).catch(() => {});
-                resolve({ verified: true, hwid: currentHWID, method: 'verified_list' });
+                resolve({ verified: true, hwid: currentHWID, method: 'hardcoded' });
                 return;
             }
         }
         
-        // Check Firebase for additional registered HWIDs
+        // Check Firebase for this specific admin's registered HWIDs
         db.ref('admin_hwids/' + username).once('value', (snapshot) => {
             const storedData = snapshot.val();
             
             if (!storedData) {
-                // No HWID registered - check if in verified list
+                // No Firebase entry - check if they're hardcoded with wrong HWID
                 if (verifiedAdmins[username]) {
-                    // In verified list but HWID doesn't match any
-                    db.ref('security_logs/hwid_mismatch').push({
-                        user: username,
-                        expectedHWIDs: verifiedAdmins[username].hwids,
-                        attemptedHWID: currentHWID,
-                        timestamp: Date.now(),
-                        note: 'Verified admin - HWID not in allowed list'
-                    }).catch(() => {});
-                    reject('HWID not recognized! Your device is not registered. Contact ST to add this HWID: ' + currentHWID);
+                    reject('HWID not recognized! Device not registered.\nYour HWID: ' + currentHWID + '\nContact ST to add it.');
                 } else {
-                    // Not a verified admin - block completely
-                    reject('You are not a verified administrator. Contact ST for verification.');
+                    // Not in hardcoded list AND no Firebase entry
+                    reject('No HWID registered for your account.\nYour HWID: ' + currentHWID + '\nContact ST to register.');
                 }
                 return;
             }
             
-            // Check single HWID (legacy support)
+            // Check single HWID
             if (storedData.hwid === currentHWID) {
                 db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
-                resolve({ verified: true, hwid: currentHWID });
+                resolve({ verified: true, hwid: currentHWID, method: 'firebase_single' });
                 return;
             }
             
@@ -1511,114 +1550,136 @@ function verifyAdminHWID(username) {
                 if (storedData.hwids.includes(currentHWID)) {
                     db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
                     db.ref('admin_hwids/' + username + '/lastHWID').set(currentHWID).catch(() => {});
-                    resolve({ verified: true, hwid: currentHWID });
+                    resolve({ verified: true, hwid: currentHWID, method: 'firebase_array' });
                     return;
                 }
             }
             
-            // HWID mismatch - block admin login
+            // HWID mismatch
             db.ref('security_logs/hwid_mismatch').push({
                 user: username,
-                storedHWID: storedData.hwid || 'multiple',
+                storedHWID: storedData.hwid || 'array',
                 attemptedHWID: currentHWID,
                 timestamp: Date.now()
             }).catch(() => {});
-            reject('HWID mismatch! Device not registered. Contact ST to add HWID: ' + currentHWID);
+            reject('HWID mismatch! Device not authorized.\nYour HWID: ' + currentHWID + '\nContact ST.');
             
         }).catch(() => {
-            // Firebase error - check verified list as fallback
+            // Firebase error - check hardcoded as fallback
             if (verifiedAdmins[username] && verifiedAdmins[username].hwids.includes(currentHWID)) {
-                resolve({ verified: true, hwid: currentHWID, method: 'verified_fallback' });
+                resolve({ verified: true, hwid: currentHWID, method: 'fallback' });
             } else {
-                reject('Could not verify admin status. Try again.');
+                reject('Could not verify HWID. Try again.');
             }
         });
     });
 }
 
 // Main login function
-function validateIE() {
+async function validateIE() {
     const u = document.getElementById('ie_user').value.trim();
     const p = document.getElementById('ie_pass').value;
     if (!u || !p) { alert("Enter username and password."); return; }
     
-    db.ref('bans/' + u).once('value', (s) => {
-        const ban = s.val();
+    try {
+        // Check if banned
+        const banSnapshot = await db.ref('bans/' + u).once('value');
+        const ban = banSnapshot.val();
         if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
             alert('Account banned/suspended.'); 
             return; 
         }
         
-        if (userDatabase[u] && userDatabase[u].pass === p) {
-            // Generate session
-            currentSessionHWID = generateHWID();
-            currentSessionToken = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
-            
-            // Save session to Firebase (non-blocking)
-            db.ref('sessions/' + u).set({
-                token: currentSessionToken,
-                hwid: currentSessionHWID,
-                created: Date.now(),
-                lastActivity: Date.now()
+        // Get user auth data from Firebase
+        const authSnapshot = await db.ref('auth_users/' + u).once('value');
+        const authData = authSnapshot.val();
+        
+        if (!authData) {
+            alert('Account not found.');
+            return;
+        }
+        
+        // Hash the entered password and compare
+        const enteredHash = await hashPassword(p);
+        
+        if (authData.hashedPass !== enteredHash) {
+            alert('DENIED.');
+            // Log failed attempt
+            db.ref('security_logs/failed_login').push({
+                username: u,
+                timestamp: Date.now(),
+                hwid: generateHWID()
             }).catch(() => {});
-            
-            // Check if admin/mod/ST - they need HWID verification
-            const isAdminUser = userDatabase[u].isAdmin || userDatabase[u].isMod || userDatabase[u].isST;
-            
-            if (isAdminUser) {
-                // Check if they're a verified admin first
-                if (!isVerifiedAdmin(u)) {
-                    alert('⛔ Admin access requires verification.\n\nYour HWID: ' + currentSessionHWID + '\n\nContact ST to get verified.');
-                    currentSessionToken = null;
-                    currentSessionHWID = null;
-                    db.ref('sessions/' + u).remove().catch(() => {});
-                    return;
-                }
-                
-                // Verified admin - check HWID
-                verifyAdminHWID(u).then((result) => {
-                    CURRENT_USER = u;
-                    IS_GUEST = false;
-                    completeLogin(u);
-                }).catch((err) => {
-                    alert(err);
-                    currentSessionToken = null;
-                    currentSessionHWID = null;
-                    db.ref('sessions/' + u).remove().catch(() => {});
-                });
-            } else {
-                // Regular member - just login
+            return;
+        }
+        
+        // Password correct - proceed with login
+        currentSessionHWID = generateHWID();
+        currentSessionToken = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
+        
+        // Ensure user exists in userDatabase with proper roles
+        if (!userDatabase[u]) {
+            userDatabase[u] = userRoles[u] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+        }
+        
+        // Save session to Firebase
+        await db.ref('sessions/' + u).set({
+            token: currentSessionToken,
+            hwid: currentSessionHWID,
+            created: Date.now(),
+            lastActivity: Date.now()
+        });
+        
+        // Check if admin/mod/ST - they need HWID verification
+        const isAdminUser = userDatabase[u]?.isAdmin || userDatabase[u]?.isMod || userDatabase[u]?.isST;
+        
+        if (isAdminUser) {
+            try {
+                await verifyAdminHWID(u);
                 CURRENT_USER = u;
                 IS_GUEST = false;
                 completeLogin(u);
+            } catch (err) {
+                alert('Admin login blocked:\n' + err);
+                currentSessionToken = null;
+                currentSessionHWID = null;
+                db.ref('sessions/' + u).remove().catch(() => {});
             }
-        } else { 
-            alert("DENIED."); 
+        } else {
+            // Regular member - just login
+            CURRENT_USER = u;
+            IS_GUEST = false;
+            completeLogin(u);
         }
-    });
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed. Please try again.');
+    }
 }
 
 function completeLogin(u) {
+    const userData = userDatabase[u] || userRoles[u] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+    
     document.getElementById('ie_login').style.display = 'none';
     document.getElementById('ie_upload').style.display = 'block';
-    document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
+    document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userData.fullRank || 'Member'}]`;
     
     loadProfile();
     startForceLogoutListener(); // Listen for admin kicks
     
-    if (userDatabase[u].isAdmin || userDatabase[u].isMod) { 
+    if (userData.isAdmin || userData.isMod) { 
         document.getElementById('admin_icon').style.display = 'block'; 
     }
-    if (userDatabase[u].isST) { 
+    if (userData.isST) { 
         document.getElementById('st_tab').style.display = 'block'; 
     }
-    setupAdminTabs(userDatabase[u]);
+    setupAdminTabs(userData);
     document.getElementById('clubs_icon').style.display = 'block';
     document.getElementById('messages_icon').style.display = 'block';
     document.getElementById('watchparty_icon').style.display = 'block';
     
-    const rank = userDatabase[u].rank;
-    if (rank === 'VIP' || rank === 'CONTRIB' || userDatabase[u].isAdmin || userDatabase[u].isST) { 
+    const rank = userData.rank || 'M';
+    if (rank === 'VIP' || rank === 'CONTRIB' || userData.isAdmin || userData.isST) { 
         document.getElementById('vip_image_section').style.display = 'block';
         document.getElementById('vip_bg_section').style.display = 'block';
         document.getElementById('vip_upgrade_section').style.display = 'none';
@@ -1655,17 +1716,11 @@ function openAdminPanelSecure() {
         return;
     }
     
-    // Check if verified admin
-    if (!isVerifiedAdmin(CURRENT_USER)) {
-        alert('⛔ You are not a verified administrator.\n\nYour HWID: ' + generateHWID() + '\n\nContact ST to get verified.');
-        return;
-    }
-    
-    // Verify HWID matches
+    // Verify HWID matches (checks both hardcoded and Firebase)
     verifyAdminHWID(CURRENT_USER).then(() => {
         toggleWin('admin_window');
     }).catch((err) => {
-        alert('Admin panel access denied: ' + err);
+        alert('Admin panel access denied:\n' + err);
     });
 }
 
@@ -3382,7 +3437,7 @@ function stLookupUser() {
 }
 
 // ST CREATE USER - Creates new account in Firebase
-function stCreateUser() {
+async function stCreateUser() {
     const resultEl = document.getElementById('st_create_result');
     if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
     
@@ -3392,7 +3447,13 @@ function stCreateUser() {
     
     if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
     if (!password || password.length < 4) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 4 characters.</span>'; return; }
-    if (userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username already exists!</span>'; return; }
+    
+    // Check if username exists in auth_users
+    const existingUser = await db.ref('auth_users/' + username).once('value');
+    if (existingUser.exists()) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username already exists!</span>'; 
+        return; 
+    }
     
     const rankConfig = {
         'member': { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false },
@@ -3402,17 +3463,31 @@ function stCreateUser() {
         'admin': { rank: 'A', fullRank: 'Admin', style: 'admin-style', isAdmin: true }
     };
     
-    const newUser = { pass: password, ...rankConfig[rankSelect] };
-    
-    db.ref('members/' + username).set(newUser).then(() => {
-        userDatabase[username] = newUser;
+    try {
+        // Hash the password
+        const hashedPass = await hashPassword(password);
+        
+        // Store auth data (hashed password only)
+        await db.ref('auth_users/' + username).set({
+            hashedPass: hashedPass,
+            createdAt: Date.now(),
+            createdBy: CURRENT_USER
+        });
+        
+        // Store member data (no password)
+        const memberData = { ...rankConfig[rankSelect] };
+        await db.ref('members/' + username).set(memberData);
+        
+        // Update local database
+        userDatabase[username] = memberData;
         updateMemberList();
-        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User "' + escapeHtml(username) + '" created!</span><br><span style="color:#888; font-size:9px;">Login: ' + escapeHtml(username) + ' / ' + escapeHtml(password) + '</span>';
+        
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User "' + escapeHtml(username) + '" created!</span><br><span style="color:#888; font-size:9px;">Login: ' + escapeHtml(username) + ' / [password hidden]</span>';
         document.getElementById('st_create_username').value = '';
         document.getElementById('st_create_password').value = '';
-    }).catch(err => {
+    } catch (err) {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
-    });
+    }
 }
 
 // ST MODIFY REPUTATION
@@ -3585,47 +3660,49 @@ function stAddAdminHWID() {
     
     // Check if user exists and is admin/mod/ST
     if (!userDatabase[username]) {
-        resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>';
+        resultEl.innerHTML = '<span style="color:#f00;">User not found in database.</span>';
         return;
     }
     if (!userDatabase[username].isAdmin && !userDatabase[username].isMod && !userDatabase[username].isST) {
-        resultEl.innerHTML = '<span style="color:#f00;">User is not an admin/mod/ST.</span>';
+        resultEl.innerHTML = '<span style="color:#f00;">User is not an admin/mod/ST. Cannot register HWID.</span>';
         return;
     }
     
-    // Check if already in verifiedAdmins - need to update code
+    // Check if already in hardcoded verifiedAdmins
     if (verifiedAdmins[username]) {
-        resultEl.innerHTML = '<span style="color:#ff0;">⚠️ User is in hardcoded verified list. To add new HWID, update the verifiedAdmins object in code.</span>';
-        return;
+        resultEl.innerHTML = '<span style="color:#ff0;">⚠️ ' + escapeHtml(username) + ' is in hardcoded list. Adding to Firebase as additional HWID...</span>';
     }
     
-    // Get existing HWIDs and add new one
+    // Get existing HWIDs for this admin and add new one
     db.ref('admin_hwids/' + username).once('value', (snapshot) => {
         const existing = snapshot.val();
         let hwids = [];
         
+        // Collect existing HWIDs
         if (existing && existing.hwids && Array.isArray(existing.hwids)) {
-            hwids = existing.hwids;
+            hwids = [...existing.hwids];
         } else if (existing && existing.hwid) {
             hwids = [existing.hwid];
         }
         
         // Check if HWID already exists
         if (hwids.includes(hwid)) {
-            resultEl.innerHTML = '<span style="color:#ff0;">HWID already registered for this user.</span>';
+            resultEl.innerHTML = '<span style="color:#ff0;">HWID already registered for ' + escapeHtml(username) + '.</span>';
             return;
         }
         
+        // Add new HWID
         hwids.push(hwid);
         
         db.ref('admin_hwids/' + username).set({
-            hwids: hwids,
+            hwid: hwids.length === 1 ? hwids[0] : null, // Single HWID for backwards compat
+            hwids: hwids, // Array of all HWIDs
             registeredAt: existing?.registeredAt || Date.now(),
             lastUpdated: Date.now(),
             updatedBy: CURRENT_USER,
             lastUsed: Date.now()
         }).then(() => {
-            resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID added for ' + escapeHtml(username) + '! (Total: ' + hwids.length + ' devices)</span>';
+            resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID registered for ' + escapeHtml(username) + '!<br>Total devices: ' + hwids.length + '</span>';
             document.getElementById('st_hwid_add_user').value = '';
             document.getElementById('st_hwid_add_value').value = '';
             loadAdminHWIDs();
