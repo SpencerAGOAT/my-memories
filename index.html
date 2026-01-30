@@ -3918,6 +3918,13 @@ async function stCreateUser() {
         return; 
     }
     
+    // Check if already has Firebase Auth
+    const existingUid = await db.ref('user_uids/' + username).once('value');
+    if (existingUid.exists()) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username already has Firebase Auth!</span>';
+        return;
+    }
+    
     const rankConfig = {
         'member': { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false },
         'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style', isAdmin: false },
@@ -3927,25 +3934,14 @@ async function stCreateUser() {
     };
     
     const email = username + '@fangtasia.wtf';
+    const stUsername = CURRENT_USER; // Save ST username before auth changes
     
     try {
         if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">Creating Firebase Auth user...</span>';
         
-        // Store current user to restore after creating new account
-        const currentAuthUser = auth.currentUser;
-        
-        // Create Firebase Auth user
+        // Create Firebase Auth user (this will sign us in as the new user temporarily)
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const newUid = userCredential.user.uid;
-        
-        // Sign back in as the ST user
-        if (currentAuthUser) {
-            // We need to re-authenticate. For now, just sign out the new user
-            // The ST will need to re-login
-            await auth.signOut();
-            if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">User created! Re-authenticating...</span>';
-            // Try to sign back in with stored credentials if available
-        }
         
         // Store UID mapping
         await db.ref('user_uids/' + username).set(newUid);
@@ -3956,17 +3952,31 @@ async function stCreateUser() {
             ...rankConfig[rankSelect],
             uid: newUid,
             createdAt: Date.now(),
-            createdBy: CURRENT_USER
+            createdBy: stUsername
         };
         await db.ref('members/' + username).set(memberData);
         
         // Update local database
         userDatabase[username] = memberData;
-        updateMemberList();
         
-        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User "' + escapeHtml(username) + '" created with Firebase Auth!</span><br><span style="color:#888; font-size:9px;">Login: ' + escapeHtml(username) + ' / [password hidden]</span><br><span style="color:#ff0; font-size:9px;">⚠️ You may need to re-login</span>';
+        // Sign out the newly created user
+        await auth.signOut();
+        
+        // Clear the current user state (ST needs to re-login)
+        CURRENT_USER = '';
+        FIREBASE_USER = null;
+        
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ User "' + escapeHtml(username) + '" created!</span><br><span style="color:#888; font-size:9px;">Login: ' + escapeHtml(username) + ' / ' + escapeHtml(password) + '</span><br><span style="color:#ff0; font-size:10px;">⚠️ Please re-login to continue as ST</span>';
         document.getElementById('st_create_username').value = '';
         document.getElementById('st_create_password').value = '';
+        
+        // Show login form
+        setTimeout(() => {
+            alert('User created! Please log back in as ST to continue.');
+            document.getElementById('ie_login').style.display = 'block';
+            document.getElementById('ie_chat').style.display = 'none';
+        }, 1000);
+        
     } catch (err) {
         console.error('Create user error:', err);
         if (err.code === 'auth/email-already-in-use') {
