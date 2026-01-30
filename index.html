@@ -2482,7 +2482,7 @@ function saveProfile() {
     userProfile.avatar = newAvatar;
     userProfile.background = newBg;
     
-    // Create complete profile data object (no ServerValue.TIMESTAMP - can cause issues)
+    // Create profile data object (only fields we want to update - preserves badges)
     const profileData = { 
         status: newStatus, 
         bio: newBio, 
@@ -2495,14 +2495,14 @@ function saveProfile() {
     
     console.log('Saving profile for', CURRENT_USER, ':', profileData);
     
-    // Use set() to create/overwrite entire profile
-    db.ref('profiles/' + CURRENT_USER).set(profileData, (error) => {
+    // Use update() instead of set() to preserve badges and other data
+    db.ref('profiles/' + CURRENT_USER).update(profileData, (error) => {
         if (error) {
             console.error('Save failed:', error);
             alert('Failed to save profile: ' + error.message);
         } else {
             console.log('Profile saved successfully');
-            profileCache[CURRENT_USER] = { ...userProfile };
+            profileCache[CURRENT_USER] = { ...profileCache[CURRENT_USER], ...userProfile };
             alert('Profile saved!');
         }
     });
@@ -2547,32 +2547,22 @@ function updateAvatar() {
 function saveAvatarToFirebase(avatarUrl, avatarDisplay, urlEl) {
     userProfile.avatar = avatarUrl;
     
-    // Get current profile first, then merge with new avatar
-    db.ref('profiles/' + CURRENT_USER).once('value', (snapshot) => {
-        const currentProfile = snapshot.val() || {};
-        const updatedProfile = {
-            status: currentProfile.status || userProfile.status || '',
-            bio: currentProfile.bio || userProfile.bio || '',
-            mood: currentProfile.mood || userProfile.mood || '',
-            music: currentProfile.music || userProfile.music || '',
-            avatar: avatarUrl,
-            lastUpdated: Date.now()
-        };
-        
-        // Save complete profile
-        db.ref('profiles/' + CURRENT_USER).set(updatedProfile, (error) => {
-            if (error) {
-                console.error('Avatar save failed:', error);
-                alert('Failed to save avatar: ' + error.message);
-            } else {
-                console.log('Avatar saved:', avatarUrl);
-                profileCache[CURRENT_USER] = { ...updatedProfile };
-                userProfile = { ...updatedProfile };
-                if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + avatarUrl + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
-                if (urlEl) urlEl.value = avatarUrl;
-                alert('Avatar saved!');
-            }
-        });
+    // Use update() to only change avatar, preserving badges
+    db.ref('profiles/' + CURRENT_USER).update({
+        avatar: avatarUrl,
+        lastUpdated: Date.now()
+    }, (error) => {
+        if (error) {
+            console.error('Avatar save failed:', error);
+            alert('Failed to save avatar: ' + error.message);
+        } else {
+            console.log('Avatar saved:', avatarUrl);
+            userProfile.avatar = avatarUrl;
+            if (profileCache[CURRENT_USER]) profileCache[CURRENT_USER].avatar = avatarUrl;
+            if (avatarDisplay) avatarDisplay.innerHTML = '<img src="' + avatarUrl + '" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML=\'🦇\'">';
+            if (urlEl) urlEl.value = avatarUrl;
+            alert('Avatar saved!');
+        }
     });
 }
 
@@ -2584,29 +2574,19 @@ function updateProfileMusic() {
     
     userProfile.music = url;
     
-    // Get current profile first, then merge with new music
-    db.ref('profiles/' + CURRENT_USER).once('value', (snapshot) => {
-        const currentProfile = snapshot.val() || {};
-        const updatedProfile = {
-            status: currentProfile.status || userProfile.status || '',
-            bio: currentProfile.bio || userProfile.bio || '',
-            mood: currentProfile.mood || userProfile.mood || '',
-            music: url,
-            avatar: currentProfile.avatar || userProfile.avatar || '',
-            lastUpdated: Date.now()
-        };
-        
-        db.ref('profiles/' + CURRENT_USER).set(updatedProfile, (error) => {
-            if (error) {
-                console.error('Music save failed:', error);
-                alert('Failed to save music: ' + error.message);
-            } else {
-                console.log('Profile music saved:', url);
-                profileCache[CURRENT_USER] = { ...updatedProfile };
-                userProfile = { ...updatedProfile };
-                alert('Profile music saved!');
-            }
-        });
+    // Use update() to only change music, preserving badges
+    db.ref('profiles/' + CURRENT_USER).update({
+        music: url,
+        lastUpdated: Date.now()
+    }, (error) => {
+        if (error) {
+            console.error('Music save failed:', error);
+            alert('Failed to save music: ' + error.message);
+        } else {
+            console.log('Profile music saved:', url);
+            if (profileCache[CURRENT_USER]) profileCache[CURRENT_USER].music = url;
+            alert('Profile music saved!');
+        }
     });
 }
 
@@ -4502,13 +4482,18 @@ function sendSiteAnnouncement() {
         sentBy: CURRENT_USER
     };
     
+    console.log('Sending announcement:', announcement);
+    
     db.ref('site_announcement').set(announcement).then(() => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Announcement sent to all users!</span>';
         document.getElementById('st_announce_title').value = '';
         document.getElementById('st_announce_text').value = '';
         document.getElementById('st_announce_image').value = '';
         document.getElementById('st_announce_music').value = '';
+        // Also show to sender immediately
+        showAnnouncement(announcement);
     }).catch(err => {
+        console.error('Announcement send error:', err);
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
 }
@@ -4711,20 +4696,33 @@ function dismissAnnouncement(stopMusic = true) {
 
 // Listen for site announcements
 function startAnnouncementListener() {
+    if (!db) {
+        console.error('DB not ready for announcement listener');
+        setTimeout(startAnnouncementListener, 1000);
+        return;
+    }
+    
+    console.log('Starting announcement listener...');
+    
     db.ref('site_announcement').on('value', (snapshot) => {
         const data = snapshot.val();
+        console.log('Announcement data received:', data);
+        
         if (data && data.timestamp) {
-            // Only show if announcement is recent (within last 60 seconds)
+            // Only show if announcement is recent (within last 5 minutes)
             const age = Date.now() - data.timestamp;
-            if (age < 60000) {
+            if (age < 300000) { // 5 minutes
                 // Check if we already showed this announcement
                 const lastShown = sessionStorage.getItem('lastAnnouncement');
                 if (lastShown !== data.timestamp.toString()) {
                     sessionStorage.setItem('lastAnnouncement', data.timestamp.toString());
+                    console.log('Showing announcement...');
                     showAnnouncement(data);
                 }
             }
         }
+    }, (error) => {
+        console.error('Announcement listener error:', error);
     });
 }
 
