@@ -13,11 +13,11 @@
             },
             clearIntervalWhenDevOpenTrigger: true,
             url: null,
-            disableMenu: true,
+            disableMenu: false,
             clearLog: true,
-            disableSelect: true,
-            disableCopy: true,
-            disableCut: true
+            disableSelect: false,
+            disableCopy: false,
+            disableCut: false
         });
     </script>
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
@@ -1106,50 +1106,14 @@ function startForceLogoutListener() {
 }
 
 // ============================================================
-// FIREBASE AUTHENTICATION SYSTEM - NO PASSWORDS IN CLIENT CODE
+// HYBRID AUTHENTICATION SYSTEM
+// - Immediate access via encoded passwords (backwards compatible)
+// - Also checks Firebase hashed passwords for new users
 // ============================================================
-// All credentials are stored in Firebase Database under 'auth_users/'
-// Passwords are hashed with SHA-256 before storage
 
-const auth = firebase.auth();
+const auth = firebase.auth ? firebase.auth() : null;
 
-// User roles/permissions (NO passwords - just metadata)
-const userRoles = {
-    'losersyndicate': { rank: 'ST', fullRank: 'Site Technician', style: 'st-style', isAdmin: true, isST: true },
-    'noseeyedear': { rank: 'A', fullRank: 'Admin', style: 'noseeyedear-style', isAdmin: true, customTag: 'N' },
-    'oleg': { rank: 'MOD', fullRank: 'Moderator', style: 'oleg-style', isMod: true, customTag: 'O' },
-    'K': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style', isAdmin: true, customTag: 'K', customTagColor: '#ffd700' },
-    'north': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'jyram': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'Yusky': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'noabortions': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'ephemeral': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'guardedpan': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'ele': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'cyro': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'bolok': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'rkellyfan17': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'lean': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
-    'hentai': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
-    'red': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
-    'slut': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
-    'ponchoshooter': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    '0': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'parasite': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'heartache': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'god': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'FREEZERBURN': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'maple.syrupp': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'dion': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'Lemonade': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'superniggapenis67': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'ice': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'bite': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'gow': { rank: 'M', fullRank: 'Member', style: 'member-style' },
-    'maple': { rank: 'M', fullRank: 'Member', style: 'member-style' }
-};
-
-// SHA-256 hash function for password verification
+// SHA-256 hash function for Firebase password verification
 async function hashPassword(password) {
     const encoder = new TextEncoder();
     const data = encoder.encode(password + 'fangtasia_salt_2024');
@@ -1158,38 +1122,75 @@ async function hashPassword(password) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Initialize userDatabase from Firebase (passwords stored as hashes in Firebase only)
-let userDatabase = {};
-
-// Load user data from Firebase on startup
-async function initializeUserDatabase() {
-    return new Promise((resolve) => {
-        db.ref('auth_users').once('value', (snapshot) => {
-            const authUsers = snapshot.val() || {};
-            
-            // Build userDatabase from Firebase auth_users + userRoles
-            Object.keys(authUsers).forEach(username => {
-                const authData = authUsers[username];
-                const roleData = userRoles[username] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-                
-                userDatabase[username] = {
-                    ...roleData,
-                    hashedPass: authData.hashedPass, // Only hash stored, never plaintext
-                    isAdmin: roleData.isAdmin || false,
-                    isMod: roleData.isMod || false,
-                    isST: roleData.isST || false
-                };
-            });
-            
-            resolve();
-        });
-    });
-}
-
-// Initialize on page load
-initializeUserDatabase().then(() => {
-    console.log('User database loaded from Firebase');
-});
+// USER DATABASE - Encoded credentials for immediate access
+const _d = atob;
+const _e = {
+    a: [_d("bG9zZXJzeW5kaWNhdGU="), _d("ZG91YmxlZHV0Y2hpZTAx")],
+    b: [_d("bm9zZWV5ZWRlYXI="), _d("d3Rmb21mZ2Zhbmd0YXNpYWZvcmRhYnJvczIx")],
+    c: [_d("b2xlZw=="), _d("bWV0aHliZXRoeTg5IQ==")],
+    d: [_d("bm9ydGg="), _d("bG1hb2xlZ2FjeTEyISQk")],
+    e: [_d("anlyYW0="), _d("aWxvdmVDb29raWVzMTIzNC4=")],
+    f: [_d("WXVza3k="), _d("U2tpbGxldDEyIQ==")],
+    g: [_d("bm9hYm9ydGlvbnM="), _d("RGlvbjA3MTM=")],
+    h: [_d("ZXBoZW1lcmFs"), _d("U2V4eVNvbGl0YWlyZTEyMw==")],
+    i: [_d("Z3VhcmRlZHBhbg=="), _d("ZnJlZWhvb2tlcnMxMjM=")],
+    k: [_d("ZWxl"), _d("Q09NR09ETE9SREJPU1NFWFRPUVRFUTI4MjcxISEhMQ==")],
+    l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")],
+    m: [_d("Ym9sb2s="), _d("amlsbGFpc2FmYWc=")],
+    n: [_d("cmtlbGx5ZmFuMTc="), _d("ZW5ueWVubnllbm55")],
+    o: [_d("bGVhbg=="), _d("U3VubnlGZWV0VXdVNTYk")],
+    p: [_d("aGVudGFp"), _d("cm9ibG94bWFueDVANjdAMTEyMUA2NzY3")],
+    q: [_d("cmVk"), _d("ZGlja2dyYXlzb25idWRkeTIz")],
+    r: [_d("c2x1dA=="), _d("b3NoYmFnb3NoMTc4Ng==")],
+    s: [_d("cG9uY2hvc2hvb3Rlcg=="), _d("djhlZVA4b0xPeHBJaE8=")],
+    t: [_d("MA=="), _d("Z2ppMjMxOWpoaGo5ZXM=")],
+    u: [_d("cGFyYXNpdGU="), _d("czZwZXJzYWl5YW50YWNvMw==")],
+    v: [_d("aGVhcnRhY2hl"), _d("QWJieUFiYnkxMg==")],
+    w: [_d("Z29k"), _d("VHVuM3h4WipmbCk=")],
+    x: [_d("RlJFRVpFUkJVUk4="), _d("ZnJlZXphbWFuZTU2NA==")],
+    y: [_d("bWFwbGUuc3lydXBw"), _d("d2lnZ2FwYXNzd29yZDEyMw==")],
+    z: [_d("ZGlvbg=="), _d("JDEwMDM1NTg3")],
+    aa: [_d("TGVtb25hZGU="), _d("QnV0dEJvb3R5TmFrZWQxMjM=")],
+    ab: [_d("c3VwZXJuaWdnYXBlbmlzNjc="), _d("bmlnZ2FuaWdnYW5pZ2dh")],
+    ac: [_d("aWNl"), _d("cHJveGlzY29vbDAwMDA2NjY2")],
+    ad: [_d("Yml0ZQ=="), _d("aG9ybnlidWxsczExcw==")],
+    ae: [_d("Z293"), _d("TW9ybw==")],
+    af: [_d("bWFwbGU="), _d("bWFwbGVzeXJ1cHdpZ2dhMA==")]
+};
+const coreAdmins = {
+    [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
+    [_e.b[0]]: { pass: _e.b[1], rank: "A", fullRank: "Admin", style: "noseeyedear-style", isAdmin: true, customTag: "N" },
+    [_e.c[0]]: { pass: _e.c[1], rank: "MOD", fullRank: "Moderator", style: "oleg-style", isAdmin: false, isMod: true, customTag: "O" },
+    [_e.d[0]]: { pass: _e.d[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.e[0]]: { pass: _e.e[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.f[0]]: { pass: _e.f[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.g[0]]: { pass: _e.g[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.h[0]]: { pass: _e.h[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.i[0]]: { pass: _e.i[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.k[0]]: { pass: _e.k[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.l[0]]: { pass: _e.l[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.m[0]]: { pass: _e.m[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.n[0]]: { pass: _e.n[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.o[0]]: { pass: _e.o[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
+    [_e.p[0]]: { pass: _e.p[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
+    [_e.q[0]]: { pass: _e.q[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
+    [_e.r[0]]: { pass: _e.r[1], rank: "VIP", fullRank: "VIP", style: "vip-style", isAdmin: false },
+    [_e.s[0]]: { pass: _e.s[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.t[0]]: { pass: _e.t[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.u[0]]: { pass: _e.u[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.v[0]]: { pass: _e.v[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.w[0]]: { pass: _e.w[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.x[0]]: { pass: _e.x[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.y[0]]: { pass: _e.y[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.z[0]]: { pass: _e.z[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.aa[0]]: { pass: _e.aa[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ab[0]]: { pass: _e.ab[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ac[0]]: { pass: _e.ac[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ad[0]]: { pass: _e.ad[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.ae[0]]: { pass: _e.ae[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
+    [_e.af[0]]: { pass: _e.af[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
+};
+let userDatabase = { ...coreAdmins };
 
 // Start online listener IMMEDIATELY so it's ready when members load
 let onlineListenerStarted = false;
@@ -1223,28 +1224,15 @@ deletedAccounts.forEach(acc => {
     db.ref('reputation/' + acc).remove();
 });
 
-// Listen for member updates and merge with userRoles
+// Listen for member updates - merge with coreAdmins
 db.ref('members').on('value', (s) => { 
     const firebaseMembers = s.val() || {};
-    
-    // Merge Firebase members with userRoles (roles take precedence for permissions)
-    Object.keys(firebaseMembers).forEach(user => {
-        if (!userDatabase[user]) {
-            userDatabase[user] = firebaseMembers[user];
-        }
-        // Apply role overrides if defined
-        if (userRoles[user]) {
-            userDatabase[user] = { ...userDatabase[user], ...userRoles[user] };
-        }
+    // Merge: start with Firebase data, then overlay coreAdmins to preserve customTags etc.
+    userDatabase = { ...firebaseMembers };
+    // Ensure coreAdmins properties always take precedence
+    Object.keys(coreAdmins).forEach(user => {
+        userDatabase[user] = { ...userDatabase[user], ...coreAdmins[user] };
     });
-    
-    // Ensure all users in userRoles exist in userDatabase
-    Object.keys(userRoles).forEach(user => {
-        if (!userDatabase[user]) {
-            userDatabase[user] = { ...userRoles[user] };
-        }
-    });
-    
     // Remove deleted accounts
     deletedAccounts.forEach(acc => { delete userDatabase[acc]; });
     updateMemberList();
@@ -1576,89 +1564,81 @@ function verifyAdminHWID(username) {
 }
 
 // Main login function
-async function validateIE() {
+function validateIE() {
     const u = document.getElementById('ie_user').value.trim();
     const p = document.getElementById('ie_pass').value;
     if (!u || !p) { alert("Enter username and password."); return; }
     
-    try {
-        // Check if banned
-        const banSnapshot = await db.ref('bans/' + u).once('value');
-        const ban = banSnapshot.val();
+    db.ref('bans/' + u).once('value', (s) => {
+        const ban = s.val();
         if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
             alert('Account banned/suspended.'); 
             return; 
         }
         
-        // Get user auth data from Firebase
-        const authSnapshot = await db.ref('auth_users/' + u).once('value');
-        const authData = authSnapshot.val();
-        
-        if (!authData) {
-            alert('Account not found.');
+        // Check local userDatabase first (immediate)
+        if (userDatabase[u] && userDatabase[u].pass === p) {
+            proceedWithLogin(u);
             return;
         }
         
-        // Hash the entered password and compare
-        const enteredHash = await hashPassword(p);
-        
-        if (authData.hashedPass !== enteredHash) {
-            alert('DENIED.');
-            // Log failed attempt
-            db.ref('security_logs/failed_login').push({
-                username: u,
-                timestamp: Date.now(),
-                hwid: generateHWID()
-            }).catch(() => {});
-            return;
-        }
-        
-        // Password correct - proceed with login
-        currentSessionHWID = generateHWID();
-        currentSessionToken = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
-        
-        // Ensure user exists in userDatabase with proper roles
-        if (!userDatabase[u]) {
-            userDatabase[u] = userRoles[u] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-        }
-        
-        // Save session to Firebase
-        await db.ref('sessions/' + u).set({
-            token: currentSessionToken,
-            hwid: currentSessionHWID,
-            created: Date.now(),
-            lastActivity: Date.now()
-        });
-        
-        // Check if admin/mod/ST - they need HWID verification
-        const isAdminUser = userDatabase[u]?.isAdmin || userDatabase[u]?.isMod || userDatabase[u]?.isST;
-        
-        if (isAdminUser) {
-            try {
-                await verifyAdminHWID(u);
-                CURRENT_USER = u;
-                IS_GUEST = false;
-                completeLogin(u);
-            } catch (err) {
-                alert('Admin login blocked:\n' + err);
-                currentSessionToken = null;
-                currentSessionHWID = null;
-                db.ref('sessions/' + u).remove().catch(() => {});
+        // If not in local, check Firebase auth_users (for new users created via ST Tools)
+        db.ref('auth_users/' + u).once('value', async (authSnap) => {
+            const authData = authSnap.val();
+            if (authData && authData.hashedPass) {
+                const enteredHash = await hashPassword(p);
+                if (authData.hashedPass === enteredHash) {
+                    // Get member data from Firebase
+                    const memberSnap = await db.ref('members/' + u).once('value');
+                    const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+                    userDatabase[u] = memberData;
+                    proceedWithLogin(u);
+                    return;
+                }
             }
-        } else {
-            // Regular member - just login
+            alert("DENIED.");
+        });
+    });
+}
+
+function proceedWithLogin(u) {
+    // Generate session
+    currentSessionHWID = generateHWID();
+    currentSessionToken = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
+    
+    // Save session to Firebase (non-blocking)
+    db.ref('sessions/' + u).set({
+        token: currentSessionToken,
+        hwid: currentSessionHWID,
+        created: Date.now(),
+        lastActivity: Date.now()
+    }).catch(() => {});
+    
+    // Check if admin/mod/ST - they need HWID verification
+    const isAdminUser = userDatabase[u]?.isAdmin || userDatabase[u]?.isMod || userDatabase[u]?.isST;
+    
+    if (isAdminUser) {
+        // Admin - verify HWID
+        verifyAdminHWID(u).then((result) => {
             CURRENT_USER = u;
             IS_GUEST = false;
             completeLogin(u);
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('Login failed. Please try again.');
+        }).catch((err) => {
+            alert('Admin login blocked:\n' + err);
+            currentSessionToken = null;
+            currentSessionHWID = null;
+            db.ref('sessions/' + u).remove().catch(() => {});
+        });
+    } else {
+        // Regular member - just login
+        CURRENT_USER = u;
+        IS_GUEST = false;
+        completeLogin(u);
     }
 }
 
 function completeLogin(u) {
-    const userData = userDatabase[u] || userRoles[u] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+    const userData = userDatabase[u] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
     
     document.getElementById('ie_login').style.display = 'none';
     document.getElementById('ie_upload').style.display = 'block';
