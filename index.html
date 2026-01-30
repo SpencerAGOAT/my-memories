@@ -721,6 +721,19 @@
                             <div id="st_hwid_add_result" style="margin-top:5px; font-size:10px;"></div>
                         </div>
                         <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
+                            <h4 style="color:#ff0000;">🚫 Block/Unblock HWID</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Block a device from accessing the site entirely</p>
+                            <input type="text" id="st_hwid_block_value" class="ie-input" placeholder="HWID to block (e.g. HWID-1A2B3C4D)">
+                            <input type="text" id="st_hwid_block_reason" class="ie-input" placeholder="Reason (optional)">
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <button class="ie-btn" style="flex:1; background:#700000; border-color:#ff0000;" onclick="stBlockHWID()">🚫 Block HWID</button>
+                                <button class="ie-btn" style="flex:1; background:#005000; border-color:#00ff00;" onclick="stUnblockHWID()">✓ Unblock</button>
+                            </div>
+                            <div id="st_hwid_block_result" style="margin-top:5px; font-size:10px;"></div>
+                            <button class="ie-btn" style="background:#333; border-color:#ff0000; margin-top:10px;" onclick="loadBlockedHWIDs()">🔄 Load Blocked HWIDs</button>
+                            <div id="st_blocked_hwids" style="max-height:150px; overflow-y:auto; font-size:9px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px; margin-top:5px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
                             <h4 style="color:#ff0000;">Security Logs</h4>
                             <button class="ie-btn" style="background:#500000; border-color:#ff0000; margin-bottom:10px;" onclick="loadSecurityLogs()">🔄 Load Security Logs</button>
                             <div id="st_security_logs" style="max-height:200px; overflow-y:auto; font-size:9px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
@@ -1017,6 +1030,62 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
+
+// ========== HWID BLOCK CHECK - RUNS IMMEDIATELY ==========
+(function checkBlockedHWID() {
+    // Generate HWID early
+    function getHWID() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200; canvas.height = 50;
+        const ctx = canvas.getContext('2d');
+        ctx.textBaseline = 'top'; ctx.font = '14px Arial';
+        ctx.fillStyle = '#f60'; ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = '#069'; ctx.fillText('HWID-GEN', 2, 15);
+        const canvasData = canvas.toDataURL();
+        const fingerprint = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height + 'x' + screen.colorDepth, new Date().getTimezoneOffset(), navigator.hardwareConcurrency || 0, navigator.platform || '', canvasData.slice(-100)].join('|');
+        let hash = 0;
+        for (let i = 0; i < fingerprint.length; i++) { const char = fingerprint.charCodeAt(i); hash = ((hash << 5) - hash) + char; hash = hash & hash; }
+        return 'HWID-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+    }
+    
+    const visitorHWID = getHWID();
+    const hwidKey = visitorHWID.replace(/[.#$/\[\]]/g, '_');
+    
+    // Check if this HWID is blocked
+    db.ref('blocked_hwids/' + hwidKey).once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            const blockData = snapshot.val();
+            // Log blocked attempt
+            db.ref('security_logs/blocked_attempt').push({
+                hwid: visitorHWID,
+                timestamp: Date.now(),
+                reason: blockData.reason
+            });
+            // Block the site completely
+            document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#f00;display:flex;justify-content:center;align-items:center;font-family:monospace;font-size:24px;text-align:center;z-index:999999;"><div>⛔ ACCESS DENIED ⛔<br><br><span style="font-size:14px;color:#666;">Your device has been blocked from this site.</span><br><span style="font-size:10px;color:#333;">HWID: ' + visitorHWID + '</span></div></div>';
+            document.body.style.overflow = 'hidden';
+            return;
+        }
+        
+        // Log unknown visitor for tracking (optional)
+        // db.ref('security_logs/unknown_visitor').push({ hwid: visitorHWID, timestamp: Date.now() });
+    });
+})();
+
+// Force logout listener - checks if user was kicked
+function startForceLogoutListener() {
+    if (!CURRENT_USER) return;
+    db.ref('force_logout/' + CURRENT_USER).on('value', (snapshot) => {
+        if (snapshot.exists()) {
+            // Clear the force logout flag
+            db.ref('force_logout/' + CURRENT_USER).remove();
+            // Force logout
+            alert('You have been logged out by an administrator.');
+            logout();
+            location.reload();
+        }
+    });
+}
 
 // USER DATABASE - ENCODED (use atob() to decode)
 // To decrypt: Open browser console and type: atob("encodedString")
@@ -1535,6 +1604,7 @@ function completeLogin(u) {
     document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userDatabase[u].fullRank}]`;
     
     loadProfile();
+    startForceLogoutListener(); // Listen for admin kicks
     
     if (userDatabase[u].isAdmin || userDatabase[u].isMod) { 
         document.getElementById('admin_icon').style.display = 'block'; 
@@ -3575,23 +3645,35 @@ function loadSecurityLogs() {
     Promise.all([
         db.ref('security_logs/devtools').limitToLast(10).once('value'),
         db.ref('security_logs/hwid_mismatch').limitToLast(10).once('value'),
-        db.ref('security_logs/unauthorized_admin').limitToLast(10).once('value')
-    ]).then(([devtools, hwid, unauth]) => {
+        db.ref('security_logs/unauthorized_admin').limitToLast(10).once('value'),
+        db.ref('security_logs/unknown_visitor').limitToLast(10).once('value'),
+        db.ref('security_logs/blocked_attempt').limitToLast(10).once('value')
+    ]).then(([devtools, hwid, unauth, unknown, blocked]) => {
         const logs = [];
         
         devtools.forEach(child => {
             const d = child.val();
-            logs.push({ type: '🔧 DevTools', user: d.user, time: d.timestamp, details: 'Developer tools detected' });
+            logs.push({ type: '🔧 DevTools', user: d.user, time: d.timestamp, details: 'Developer tools detected', hwid: d.hwid });
         });
         
         hwid.forEach(child => {
             const d = child.val();
-            logs.push({ type: '⚠️ HWID Mismatch', user: d.user, time: d.timestamp, details: `Expected: ${d.expectedHWID?.slice(0,12)}... Got: ${d.attemptedHWID?.slice(0,12)}...` });
+            logs.push({ type: '⚠️ HWID Mismatch', user: d.user, time: d.timestamp, details: `Attempted: ${d.attemptedHWID}`, hwid: d.attemptedHWID });
         });
         
         unauth.forEach(child => {
             const d = child.val();
-            logs.push({ type: '🚫 Unauth Admin', user: d.user, time: d.timestamp, details: `HWID: ${d.hwid?.slice(0,12)}...` });
+            logs.push({ type: '🚫 Unauth Admin', user: d.user, time: d.timestamp, details: `HWID: ${d.hwid}`, hwid: d.hwid });
+        });
+        
+        unknown.forEach(child => {
+            const d = child.val();
+            logs.push({ type: '👁️ Unknown Visitor', user: 'Anonymous', time: d.timestamp, details: `HWID: ${d.hwid}`, hwid: d.hwid });
+        });
+        
+        blocked.forEach(child => {
+            const d = child.val();
+            logs.push({ type: '🚷 Blocked Attempt', user: d.user || 'Unknown', time: d.timestamp, details: `Blocked HWID tried to access`, hwid: d.hwid });
         });
         
         // Sort by time
@@ -3602,14 +3684,32 @@ function loadSecurityLogs() {
             return;
         }
         
-        container.innerHTML = logs.slice(0, 20).map(log => {
+        container.innerHTML = logs.slice(0, 30).map(log => {
             const time = log.time ? new Date(log.time).toLocaleString() : 'Unknown';
+            const blockBtn = log.hwid ? `<button onclick="blockHWIDFromLog('${escapeHtml(log.hwid)}', '${escapeHtml(log.user || 'Unknown')}')" style="margin-left:5px; padding:1px 4px; font-size:7px; background:#700; border:1px solid #f00; color:#fff; cursor:pointer; border-radius:2px;">Block</button>` : '';
             return `<div style="padding:5px; margin-bottom:3px; background:#050000; border-left:2px solid #500;">
-                <span style="color:#ff6600;">${log.type}</span> - <span style="color:#888;">${escapeHtml(log.user || 'Unknown')}</span>
+                <span style="color:#ff6600;">${log.type}</span> - <span style="color:#888;">${escapeHtml(log.user || 'Unknown')}</span>${blockBtn}
                 <div style="color:#666; font-size:8px;">${time}</div>
+                <div style="color:#ff6600; font-size:8px; font-family:monospace;">${escapeHtml(log.hwid || '')}</div>
                 <div style="color:#555; font-size:8px;">${escapeHtml(log.details || '')}</div>
             </div>`;
         }).join('');
+    });
+}
+
+function blockHWIDFromLog(hwid, username) {
+    if (!confirm('Block HWID: ' + hwid + ' (User: ' + username + ')?')) return;
+    
+    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).set({
+        hwid: hwid,
+        username: username,
+        reason: 'Blocked from security logs',
+        blockedBy: CURRENT_USER,
+        blockedAt: Date.now()
+    }).then(() => {
+        alert('HWID blocked: ' + hwid);
+        loadSecurityLogs();
+        loadBlockedHWIDs();
     });
 }
 
@@ -3631,22 +3731,148 @@ function loadActiveSessions() {
             const s = sessions[username];
             const lastActive = s.lastActivity ? new Date(s.lastActivity).toLocaleString() : 'Unknown';
             const age = s.lastActivity ? Math.floor((now - s.lastActivity) / 60000) + ' min ago' : '';
+            const fullHwid = s.hwid || 'N/A';
             return `<div style="padding:5px; margin-bottom:3px; background:#050000; border-left:2px solid #030;">
                 <span style="color:#0f0; font-weight:bold;">${escapeHtml(username)}</span>
-                <div style="color:#666; font-size:8px;">HWID: ${escapeHtml(s.hwid?.slice(0,15) || 'N/A')}...</div>
+                <div style="color:#666; font-size:8px;">HWID: <span style="color:#ff6600;">${escapeHtml(fullHwid)}</span></div>
                 <div style="color:#555; font-size:8px;">Last active: ${lastActive} (${age})</div>
-                <button onclick="forceLogoutUser('${escapeHtml(username)}')" style="margin-top:3px; padding:2px 6px; font-size:8px; background:#500; border:1px solid #a00; color:#fff; cursor:pointer; border-radius:2px;">Force Logout</button>
+                <div style="display:flex; gap:3px; margin-top:3px;">
+                    <button onclick="forceLogoutUser('${escapeHtml(username)}')" style="padding:2px 6px; font-size:8px; background:#500; border:1px solid #a00; color:#fff; cursor:pointer; border-radius:2px;">Kick</button>
+                    <button onclick="blockUserHWID('${escapeHtml(username)}', '${escapeHtml(fullHwid)}')" style="padding:2px 6px; font-size:8px; background:#700; border:1px solid #f00; color:#fff; cursor:pointer; border-radius:2px;">Block HWID</button>
+                </div>
             </div>`;
         }).join('');
     });
 }
 
 function forceLogoutUser(username) {
-    if (!confirm('Force logout ' + username + '?')) return;
+    if (!confirm('Force logout ' + username + '? They will be kicked immediately.')) return;
     
-    db.ref('sessions/' + username).remove().then(() => {
-        alert(username + ' has been logged out.');
+    // Remove session and mark for force logout
+    db.ref('sessions/' + username).remove();
+    db.ref('online/' + username).remove();
+    db.ref('force_logout/' + username).set({
+        by: CURRENT_USER,
+        timestamp: Date.now()
+    }).then(() => {
+        alert(username + ' has been kicked.');
         loadActiveSessions();
+    });
+}
+
+function blockUserHWID(username, hwid) {
+    if (!hwid || hwid === 'N/A') {
+        alert('No HWID found for this user.');
+        return;
+    }
+    const reason = prompt('Reason for blocking ' + username + ' (HWID: ' + hwid + '):');
+    if (reason === null) return;
+    
+    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).set({
+        hwid: hwid,
+        username: username,
+        reason: reason || 'No reason provided',
+        blockedBy: CURRENT_USER,
+        blockedAt: Date.now()
+    }).then(() => {
+        // Also force logout
+        db.ref('sessions/' + username).remove();
+        db.ref('online/' + username).remove();
+        db.ref('force_logout/' + username).set({ by: CURRENT_USER, timestamp: Date.now() });
+        alert('HWID blocked and user kicked: ' + hwid);
+        loadActiveSessions();
+        loadBlockedHWIDs();
+    });
+}
+
+function stBlockHWID() {
+    const resultEl = document.getElementById('st_hwid_block_result');
+    if (!userDatabase[CURRENT_USER]?.isST) {
+        resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+        return;
+    }
+    
+    const hwid = document.getElementById('st_hwid_block_value').value.trim().toUpperCase();
+    const reason = document.getElementById('st_hwid_block_reason').value.trim();
+    
+    if (!hwid) {
+        resultEl.innerHTML = '<span style="color:#f00;">Enter HWID to block.</span>';
+        return;
+    }
+    if (!hwid.startsWith('HWID-')) {
+        resultEl.innerHTML = '<span style="color:#f00;">Invalid HWID format.</span>';
+        return;
+    }
+    
+    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).set({
+        hwid: hwid,
+        reason: reason || 'No reason provided',
+        blockedBy: CURRENT_USER,
+        blockedAt: Date.now()
+    }).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID blocked: ' + escapeHtml(hwid) + '</span>';
+        document.getElementById('st_hwid_block_value').value = '';
+        document.getElementById('st_hwid_block_reason').value = '';
+        loadBlockedHWIDs();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stUnblockHWID() {
+    const resultEl = document.getElementById('st_hwid_block_result');
+    if (!userDatabase[CURRENT_USER]?.isST) {
+        resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+        return;
+    }
+    
+    const hwid = document.getElementById('st_hwid_block_value').value.trim().toUpperCase();
+    
+    if (!hwid) {
+        resultEl.innerHTML = '<span style="color:#f00;">Enter HWID to unblock.</span>';
+        return;
+    }
+    
+    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).remove().then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID unblocked: ' + escapeHtml(hwid) + '</span>';
+        document.getElementById('st_hwid_block_value').value = '';
+        loadBlockedHWIDs();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadBlockedHWIDs() {
+    const container = document.getElementById('st_blocked_hwids');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888;">Loading...</div>';
+    
+    db.ref('blocked_hwids').once('value', (snapshot) => {
+        const blocked = snapshot.val();
+        if (!blocked) {
+            container.innerHTML = '<div style="color:#666;">No blocked HWIDs.</div>';
+            return;
+        }
+        
+        container.innerHTML = Object.keys(blocked).map(key => {
+            const b = blocked[key];
+            const blockedAt = b.blockedAt ? new Date(b.blockedAt).toLocaleString() : 'Unknown';
+            return `<div style="padding:5px; margin-bottom:3px; background:#0a0000; border-left:2px solid #f00;">
+                <div style="color:#f00; font-family:monospace; font-size:10px;">${escapeHtml(b.hwid)}</div>
+                <div style="color:#888; font-size:8px;">User: ${escapeHtml(b.username || 'Unknown')}</div>
+                <div style="color:#666; font-size:8px;">Reason: ${escapeHtml(b.reason || 'None')}</div>
+                <div style="color:#555; font-size:8px;">By: ${escapeHtml(b.blockedBy || '?')} @ ${blockedAt}</div>
+                <button onclick="quickUnblock('${escapeHtml(b.hwid)}')" style="margin-top:3px; padding:2px 6px; font-size:8px; background:#050; border:1px solid #0a0; color:#0f0; cursor:pointer; border-radius:2px;">Unblock</button>
+            </div>`;
+        }).join('');
+    });
+}
+
+function quickUnblock(hwid) {
+    if (!confirm('Unblock HWID: ' + hwid + '?')) return;
+    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).remove().then(() => {
+        loadBlockedHWIDs();
     });
 }
 
