@@ -298,6 +298,7 @@
     <div class="icon" id="clubs_icon" style="display:none;" onclick="toggleWin('clubs_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/network_neighborhood-0.png"><div>Clubs</div></div>
     <div class="icon" id="messages_icon" style="display:none;" onclick="toggleWin('messages_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/mail_-5.png"><div>Messages</div></div>
     <div class="icon" id="watchparty_icon" style="display:none;" onclick="toggleWin('watchparty_window')"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/mplayer-1.png"><div>Watch Party</div></div>
+    <div class="icon" id="leaderboard_icon" style="display:none;" onclick="toggleWin('leaderboard_window'); loadLeaderboards();"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/trophy-0.png"><div>Leaderboards</div></div>
     <div class="icon" id="admin_icon" style="display:none;" onclick="openAdminPanelSecure()"><img class="folder-icon" src="https://win98icons.alexmeub.com/icons/png/lock-0.png"><div>Admin Panel</div></div>
 </div>
 <div class="window" id="about_window" style="left:200px; top:120px; width:350px; height:320px;">
@@ -307,6 +308,34 @@
 <div class="window" id="games_window" style="left:180px; top:70px; width:320px; height:400px;">
     <div class="title-bar"><div class="title-bar-text">🎮 Silver Stakes</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('games_window')"></button></div></div>
     <div class="window-body"><div style="padding: 10px;"><h3 style="color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3><p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes!</p><div class="game-status" id="game_status">🦇 Stakes: 10</div><div class="stakes-grid" id="stakes_grid"></div><div style="text-align: center; margin-top: 8px;"><button class="ie-btn" style="width: auto; padding: 4px 15px;" onclick="initStakesGame()">New Game</button></div></div></div>
+</div>
+<div class="window" id="leaderboard_window" style="left:220px; top:60px; width:400px; height:480px; display:none;">
+    <div class="title-bar"><div class="title-bar-text">🏆 Leaderboards</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('leaderboard_window')"></button></div></div>
+    <div class="window-body" style="padding: 0;">
+        <div class="tab-bar">
+            <div class="tab active" onclick="switchLeaderboardTab('minesweeper', this)">💣 Minesweeper</div>
+            <div class="tab" onclick="switchLeaderboardTab('activity', this)">📊 Activity</div>
+            <div class="tab" onclick="switchLeaderboardTab('clubs', this)">🏰 Clubs</div>
+        </div>
+        <div id="leaderboard_minesweeper" style="padding: 10px;">
+            <h3 style="color: #d40000; text-align: center; margin: 5px 0 10px 0;">🦇 Silver Stakes Champions</h3>
+            <div id="minesweeper_leaderboard" style="max-height: 350px; overflow-y: auto;">
+                <div style="color: #666; text-align: center; padding: 20px;">Loading...</div>
+            </div>
+        </div>
+        <div id="leaderboard_activity" style="padding: 10px; display: none;">
+            <h3 style="color: #d40000; text-align: center; margin: 5px 0 10px 0;">📊 Most Active Members</h3>
+            <div id="activity_leaderboard" style="max-height: 350px; overflow-y: auto;">
+                <div style="color: #666; text-align: center; padding: 20px;">Loading...</div>
+            </div>
+        </div>
+        <div id="leaderboard_clubs" style="padding: 10px; display: none;">
+            <h3 style="color: #d40000; text-align: center; margin: 5px 0 10px 0;">🏰 Top Clubs</h3>
+            <div id="clubs_leaderboard" style="max-height: 350px; overflow-y: auto;">
+                <div style="color: #666; text-align: center; padding: 20px;">Loading...</div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="window" id="apply_window" style="left:160px; top:90px; width:340px; height:440px;">
     <div class="title-bar"><div class="title-bar-text">🔑 Apply for Access</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('apply_window')"></button></div></div>
@@ -1396,7 +1425,20 @@ function revealCell(i) {
     if (stakesBoard[i] === -1) { gameOver = true; stakesRevealed = stakesRevealed.map(() => true); document.getElementById('game_status').textContent = '💀 Staked! Game Over.'; }
     else if (stakesBoard[i] === 0) { const row = Math.floor(i / 9), col = i % 9; for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) { const nr = row + dr, nc = col + dc; if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9) revealCell(nr * 9 + nc); } }
     const unrevealed = stakesRevealed.filter((r, idx) => !r && stakesBoard[idx] !== -1).length;
-    if (unrevealed === 0 && !gameOver) { gameOver = true; document.getElementById('game_status').textContent = '🦇 You survived!'; }
+    if (unrevealed === 0 && !gameOver) { 
+        gameOver = true; 
+        document.getElementById('game_status').textContent = '🦇 You survived!'; 
+        // Track win in Firebase
+        if (CURRENT_USER && !IS_GUEST) {
+            db.ref('game_stats/minesweeper/' + CURRENT_USER).once('value', (snap) => {
+                const current = snap.val() || { wins: 0, lastWin: 0 };
+                db.ref('game_stats/minesweeper/' + CURRENT_USER).set({
+                    wins: (current.wins || 0) + 1,
+                    lastWin: Date.now()
+                });
+            });
+        }
+    }
     renderStakes();
 }
 
@@ -1425,6 +1467,138 @@ function checkAppStatus() {
 }
 function resetAppForm() { document.getElementById('app_form').style.display = 'block'; document.getElementById('app_result').style.display = 'none'; }
 function enterGuestChat() { IS_GUEST = true; CURRENT_USER = "Guest_" + Math.floor(Math.random() * 9999); toggleWin('chat_win'); loadMessages(); startOnlineListener(); document.getElementById('chat_input').placeholder = "Lurking (read-only)..."; document.getElementById('chat_input').disabled = true; }
+
+// LEADERBOARD SYSTEM
+function switchLeaderboardTab(tab, el) {
+    document.querySelectorAll('#leaderboard_window .tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('leaderboard_minesweeper').style.display = tab === 'minesweeper' ? 'block' : 'none';
+    document.getElementById('leaderboard_activity').style.display = tab === 'activity' ? 'block' : 'none';
+    document.getElementById('leaderboard_clubs').style.display = tab === 'clubs' ? 'block' : 'none';
+}
+
+function loadLeaderboards() {
+    loadMinesweeperLeaderboard();
+    loadActivityLeaderboard();
+    loadClubsLeaderboard();
+}
+
+function loadMinesweeperLeaderboard() {
+    const container = document.getElementById('minesweeper_leaderboard');
+    container.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">Loading...</div>';
+    
+    db.ref('game_stats/minesweeper').orderByChild('wins').once('value', (snap) => {
+        const stats = snap.val() || {};
+        const sorted = Object.entries(stats)
+            .map(([user, data]) => ({ user, wins: data.wins || 0, lastWin: data.lastWin || 0 }))
+            .sort((a, b) => b.wins - a.wins)
+            .slice(0, 20);
+        
+        if (sorted.length === 0) {
+            container.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No winners yet! Be the first to survive Silver Stakes.</div>';
+            return;
+        }
+        
+        let html = '<div style="display: flex; flex-direction: column; gap: 5px;">';
+        sorted.forEach((entry, idx) => {
+            const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+            const style = userDatabase[entry.user]?.style || 'member-style';
+            const isCurrentUser = entry.user === CURRENT_USER;
+            html += `<div style="display: flex; align-items: center; padding: 8px; background: ${isCurrentUser ? '#1a0808' : '#0a0505'}; border: 1px solid ${isCurrentUser ? '#d40000' : '#300'}; border-radius: 4px;">
+                <span style="width: 35px; font-size: 14px;">${medal}</span>
+                <span class="${style}" style="flex: 1; cursor: pointer;" onclick="viewUserProfile('${entry.user}')">${entry.user}</span>
+                <span style="color: #ff6600; font-weight: bold;">${entry.wins} wins</span>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    });
+}
+
+function loadActivityLeaderboard() {
+    const container = document.getElementById('activity_leaderboard');
+    container.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">Loading...</div>';
+    
+    // Count messages per user from chat
+    db.ref('chat').limitToLast(1000).once('value', (snap) => {
+        const messages = snap.val() || {};
+        const messageCounts = {};
+        
+        Object.values(messages).forEach(msg => {
+            if (msg.user && !msg.user.startsWith('Guest_') && !msg.isBot) {
+                messageCounts[msg.user] = (messageCounts[msg.user] || 0) + 1;
+            }
+        });
+        
+        const sorted = Object.entries(messageCounts)
+            .map(([user, count]) => ({ user, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 20);
+        
+        if (sorted.length === 0) {
+            container.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No activity recorded yet.</div>';
+            return;
+        }
+        
+        let html = '<div style="display: flex; flex-direction: column; gap: 5px;">';
+        html += '<div style="color: #666; font-size: 9px; text-align: center; margin-bottom: 5px;">Based on last 1000 chat messages</div>';
+        sorted.forEach((entry, idx) => {
+            const medal = idx === 0 ? '🔥' : idx === 1 ? '⚡' : idx === 2 ? '💫' : `#${idx + 1}`;
+            const style = userDatabase[entry.user]?.style || 'member-style';
+            const isCurrentUser = entry.user === CURRENT_USER;
+            html += `<div style="display: flex; align-items: center; padding: 8px; background: ${isCurrentUser ? '#1a0808' : '#0a0505'}; border: 1px solid ${isCurrentUser ? '#d40000' : '#300'}; border-radius: 4px;">
+                <span style="width: 35px; font-size: 14px;">${medal}</span>
+                <span class="${style}" style="flex: 1; cursor: pointer;" onclick="viewUserProfile('${entry.user}')">${entry.user}</span>
+                <span style="color: #0af;">${entry.count} msgs</span>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    });
+}
+
+function loadClubsLeaderboard() {
+    const container = document.getElementById('clubs_leaderboard');
+    container.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">Loading...</div>';
+    
+    db.ref('clubs').once('value', (snap) => {
+        const clubs = snap.val() || {};
+        const sorted = Object.entries(clubs)
+            .map(([name, data]) => ({ 
+                name, 
+                members: data.members ? Object.keys(data.members).length : 0,
+                owner: data.owner || 'Unknown',
+                tag: data.tag || ''
+            }))
+            .sort((a, b) => b.members - a.members)
+            .slice(0, 15);
+        
+        if (sorted.length === 0) {
+            container.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No clubs created yet.</div>';
+            return;
+        }
+        
+        let html = '<div style="display: flex; flex-direction: column; gap: 5px;">';
+        sorted.forEach((club, idx) => {
+            const medal = idx === 0 ? '👑' : idx === 1 ? '🏆' : idx === 2 ? '🎖️' : `#${idx + 1}`;
+            html += `<div style="padding: 10px; background: #0a0505; border: 1px solid #300; border-radius: 4px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 16px;">${medal}</span>
+                    <div style="flex: 1;">
+                        <div style="color: #d40000; font-weight: bold;">${club.tag ? '[' + club.tag + '] ' : ''}${club.name}</div>
+                        <div style="color: #666; font-size: 9px;">Owner: ${club.owner}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #ff6600; font-weight: bold;">${club.members}</div>
+                        <div style="color: #666; font-size: 9px;">members</div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    });
+}
 
 // LOGIN SYSTEM
 // ==================== SECURITY SYSTEM ====================
@@ -1647,6 +1821,16 @@ function completeLogin(u) {
     loadProfile();
     startForceLogoutListener(); // Listen for admin kicks
     
+    // Auto-setup chat and online status
+    setUserOnline();
+    loadMessages();
+    startOnlineListener();
+    document.getElementById('chat_input').disabled = false;
+    document.getElementById('chat_input').placeholder = "/help for commands... @username to mention";
+    
+    // Show leaderboard icon for all members
+    document.getElementById('leaderboard_icon').style.display = 'block';
+    
     if (userData.isAdmin || userData.isMod) { 
         document.getElementById('admin_icon').style.display = 'block'; 
     }
@@ -1724,6 +1908,7 @@ function logout() {
     document.getElementById('clubs_icon').style.display = 'none';
     document.getElementById('messages_icon').style.display = 'none';
     document.getElementById('watchparty_icon').style.display = 'none';
+    document.getElementById('leaderboard_icon').style.display = 'none';
     document.getElementById('st_tab').style.display = 'none';
     document.getElementById('vip_image_section').style.display = 'none';
     document.getElementById('admin_window').style.display = 'none';
@@ -6241,7 +6426,7 @@ function makeDraggable(winId) {
         document.ontouchend = () => { document.ontouchmove = null; document.ontouchend = null; };
     };
 }
-['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'profile_window', 'clubs_window', 'messages_window'].forEach(id => makeDraggable(id));
+['ie_window', 'memories_folder', 'chat_win', 'about_window', 'games_window', 'apply_window', 'admin_window', 'profile_window', 'clubs_window', 'messages_window', 'leaderboard_window', 'watchparty_window'].forEach(id => makeDraggable(id));
 
 window.beginSession = function() {
     document.getElementById('boot-screen').style.display = 'none';
