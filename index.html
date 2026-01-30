@@ -1391,7 +1391,54 @@ function updateVisitorCount() {
 }
 function updateClock() { const now = new Date(); document.getElementById('taskbar_clock').textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0'); }
 setInterval(updateClock, 1000);
-function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+// XSS SANITIZATION FUNCTIONS
+function escapeHtml(text) { 
+    if (!text) return ''; 
+    const div = document.createElement('div'); 
+    div.textContent = text; 
+    return div.innerHTML; 
+}
+
+function sanitizeInput(text) {
+    if (!text) return '';
+    // Remove any HTML tags completely
+    let clean = text.replace(/<[^>]*>/g, '');
+    // Remove javascript: and data: URLs
+    clean = clean.replace(/javascript:/gi, '');
+    clean = clean.replace(/data:/gi, '');
+    clean = clean.replace(/vbscript:/gi, '');
+    // Remove on* event handlers
+    clean = clean.replace(/on\w+\s*=/gi, '');
+    // Escape HTML entities
+    clean = escapeHtml(clean);
+    return clean;
+}
+
+function sanitizeUrl(url) {
+    if (!url) return '';
+    const trimmed = url.trim();
+    // Only allow http, https protocols
+    if (!/^https?:\/\//i.test(trimmed)) {
+        // Check if it starts with dangerous protocols
+        if (/^(javascript|data|vbscript|file):/i.test(trimmed)) {
+            return '';
+        }
+        // If no protocol, assume it's not a URL or add https
+        if (trimmed.includes('.') && !trimmed.includes(' ')) {
+            return 'https://' + trimmed;
+        }
+        return '';
+    }
+    return trimmed;
+}
+
+function sanitizeProfileField(text, maxLength = 500) {
+    if (!text) return '';
+    let clean = String(text).substring(0, maxLength);
+    clean = sanitizeInput(clean);
+    return clean;
+}
 
 // SILVER STAKES GAME
 let stakesBoard = [], stakesRevealed = [], stakesFlagged = [], gameOver = false;
@@ -1444,10 +1491,19 @@ function revealCell(i) {
 
 // APPLICATION SYSTEM
 function submitApplication() {
-    const username = document.getElementById('app_username').value.trim();
-    const reason = document.getElementById('app_reason').value.trim();
+    const username = sanitizeInput(document.getElementById('app_username').value.trim());
+    const reason = sanitizeProfileField(document.getElementById('app_reason').value.trim(), 500);
+    const referral = sanitizeInput(document.getElementById('app_referral').value.trim());
     if (!username || !reason) { alert('Fill required fields.'); return; }
-    db.ref('applications/' + Date.now()).set({ username, referral: document.getElementById('app_referral').value, reason, date: new Date().toLocaleDateString(), status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP });
+    if (username.length < 2 || username.length > 20) { alert('Username must be 2-20 characters.'); return; }
+    db.ref('applications/' + Date.now()).set({ 
+        username: username, 
+        referral: referral, 
+        reason: reason, 
+        date: new Date().toLocaleDateString(), 
+        status: 'pending', 
+        timestamp: firebase.database.ServerValue.TIMESTAMP 
+    });
     document.getElementById('app_form').style.display = 'none';
     document.getElementById('app_result').innerHTML = '<div class="app-status app-pending"><strong>🩸 Blood Pact Received</strong></div>';
     document.getElementById('app_result').style.display = 'block';
@@ -2180,12 +2236,13 @@ function saveProfile() {
     const avatarUrlEl = document.getElementById('avatar_url');
     const bgEl = document.getElementById('profile_bg');
     
-    const newStatus = statusEl ? statusEl.value.trim() : userProfile.status || '';
-    const newBio = bioEl ? bioEl.value.trim() : userProfile.bio || '';
-    const newMood = moodEl ? moodEl.value : userProfile.mood || '';
-    const newMusic = musicEl ? musicEl.value.trim() : userProfile.music || '';
-    const newAvatar = avatarUrlEl ? avatarUrlEl.value.trim() : userProfile.avatar || '';
-    const newBg = bgEl ? bgEl.value.trim() : userProfile.background || '';
+    // Sanitize all inputs
+    const newStatus = sanitizeProfileField(statusEl ? statusEl.value.trim() : userProfile.status || '', 100);
+    const newBio = sanitizeProfileField(bioEl ? bioEl.value.trim() : userProfile.bio || '', 500);
+    const newMood = sanitizeInput(moodEl ? moodEl.value : userProfile.mood || '');
+    const newMusic = sanitizeUrl(musicEl ? musicEl.value.trim() : userProfile.music || '');
+    const newAvatar = sanitizeUrl(avatarUrlEl ? avatarUrlEl.value.trim() : userProfile.avatar || '');
+    const newBg = sanitizeUrl(bgEl ? bgEl.value.trim() : userProfile.background || '');
     
     // Update local profile object
     userProfile.status = newStatus;
@@ -2556,7 +2613,7 @@ function leaveProfileComment() {
     if (!CURRENT_USER || IS_GUEST) { alert('Must be logged in!'); return; }
     if (!currentProfileUser) return;
     const inputEl = document.getElementById('pw_comment_input');
-    const text = inputEl ? inputEl.value.trim() : '';
+    const text = sanitizeProfileField(inputEl ? inputEl.value.trim() : '', 300);
     if (!text) { alert('Please enter a comment.'); return; }
     db.ref('profile_comments/' + currentProfileUser).push({ 
         from: CURRENT_USER, 
@@ -2681,24 +2738,49 @@ async function sendChat() {
     if (!CURRENT_USER) { alert('Please log in!'); return; }
     
     // Check if user is muted
-    const isMuted = await isUserMuted(CURRENT_USER);
-    if (isMuted) {
-        alert('You are currently muted and cannot send messages.');
-        return;
+    try {
+        const isMuted = await isUserMuted(CURRENT_USER);
+        if (isMuted) {
+            alert('You are currently muted and cannot send messages.');
+            return;
+        }
+    } catch (e) {
+        console.warn('Mute check failed, proceeding:', e);
     }
     
     const input = document.getElementById('chat_input');
-    const text = input.value.trim();
+    const rawText = input.value.trim();
+    if (!rawText) return;
+    
+    // Sanitize the message text
+    const text = sanitizeInput(rawText);
     if (!text) return;
+    
     const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style' };
     const userRank = u.rank || 'M';
     const userStyle = u.style || 'member-style';
     const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     const cmdMatch = text.match(/^(\/\w+)\s*(.*)?$/);
+    
     if (cmdMatch && chatCommands[cmdMatch[1]]) {
         const result = chatCommands[cmdMatch[1]](cmdMatch[2] || '');
-        if (result.type === 'system') { input.value = ''; const logs = document.getElementById('chat_logs'); logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + result.text + '</div>'; logs.scrollTop = logs.scrollHeight; return; }
-        else { db.ref('chat').push({ user: CURRENT_USER, text: result.text, isAction: true, tag: userRank, style: userStyle, time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP }); }
+        if (result.type === 'system') { 
+            input.value = ''; 
+            const logs = document.getElementById('chat_logs'); 
+            logs.innerHTML += '<div style="color:#666; font-size:9px; font-style:italic; padding:4px;">' + escapeHtml(result.text) + '</div>'; 
+            logs.scrollTop = logs.scrollHeight; 
+            return; 
+        } else { 
+            db.ref('chat').push({ 
+                user: CURRENT_USER, 
+                text: sanitizeInput(result.text), 
+                isAction: true, 
+                tag: userRank, 
+                style: userStyle, 
+                time: timeNow, 
+                timestamp: firebase.database.ServerValue.TIMESTAMP 
+            }).catch(err => console.error('Chat send error:', err)); 
+        }
     } else {
         // Build message object
         const msgData = { 
@@ -2712,8 +2794,8 @@ async function sendChat() {
         
         // Add reply data if replying
         if (currentReplyTo) {
-            msgData.replyTo = currentReplyTo.username;
-            msgData.replyText = currentReplyTo.text;
+            msgData.replyTo = sanitizeInput(currentReplyTo.username);
+            msgData.replyText = sanitizeInput(currentReplyTo.text);
         }
         
         // Check for mentions
@@ -2722,7 +2804,10 @@ async function sendChat() {
             msgData.mentions = mentions.map(m => m.substring(1));
         }
         
-        db.ref('chat').push(msgData);
+        db.ref('chat').push(msgData).catch(err => {
+            console.error('Chat send error:', err);
+            alert('Failed to send message. Check console for details.');
+        });
         
         // Bot responses - DISABLED (bot no longer auto-responds)
         // Admins can still manually send as Eric Northman via admin panel
@@ -4134,12 +4219,12 @@ function sendSiteAnnouncement() {
         return; 
     }
     
-    const title = document.getElementById('st_announce_title').value.trim();
-    const text = document.getElementById('st_announce_text').value.trim();
+    const title = sanitizeInput(document.getElementById('st_announce_title').value.trim());
+    const text = sanitizeProfileField(document.getElementById('st_announce_text').value.trim(), 500);
     const type = document.getElementById('st_announce_type').value;
-    const duration = parseInt(document.getElementById('st_announce_duration').value) || 10;
-    const imageUrl = document.getElementById('st_announce_image').value.trim();
-    const musicUrl = document.getElementById('st_announce_music').value.trim();
+    const duration = Math.min(Math.max(parseInt(document.getElementById('st_announce_duration').value) || 10, 5), 60);
+    const imageUrl = sanitizeUrl(document.getElementById('st_announce_image').value.trim());
+    const musicUrl = sanitizeUrl(document.getElementById('st_announce_music').value.trim());
     
     if (!text) { 
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter announcement text.</span>'; 
@@ -5362,7 +5447,7 @@ function sendWPChat() {
     if (!currentWatchPartyRoom || !CURRENT_USER || IS_GUEST) return;
     
     const input = document.getElementById('wp_chat_input');
-    const text = input.value.trim();
+    const text = sanitizeInput(input.value.trim());
     if (!text) return;
     
     db.ref('watch_party_chat/' + currentWatchPartyRoom).push({
@@ -5624,12 +5709,14 @@ function checkCanCreateClub() {
 
 function createClub() {
     if (!CURRENT_USER || IS_GUEST) { alert('Please log in!'); return; }
-    const name = document.getElementById('new_club_name').value.trim();
-    const desc = document.getElementById('new_club_desc').value.trim();
-    const color = document.getElementById('new_club_color').value.trim() || '#d40000';
+    const name = sanitizeInput(document.getElementById('new_club_name').value.trim());
+    const desc = sanitizeProfileField(document.getElementById('new_club_desc').value.trim(), 200);
+    const rawColor = document.getElementById('new_club_color').value.trim() || '#d40000';
+    // Validate color is a valid hex color
+    const color = /^#[0-9A-Fa-f]{6}$/.test(rawColor) ? rawColor : '#d40000';
     const resultEl = document.getElementById('create_club_result');
     if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter a club name.</span>'; return; }
-    if (name.length < 3) { resultEl.innerHTML = '<span style="color:#f00;">Name must be at least 3 characters.</span>'; return; }
+    if (name.length < 3 || name.length > 30) { resultEl.innerHTML = '<span style="color:#f00;">Name must be 3-30 characters.</span>'; return; }
     
     db.ref('clubs').orderByChild('owner').equalTo(CURRENT_USER).once('value', (s) => {
         if (s.exists()) { resultEl.innerHTML = '<span style="color:#f00;">You already own a club!</span>'; return; }
@@ -6148,14 +6235,14 @@ function showGroupMediaInput() {
 function sendDM() {
     const input = document.getElementById('dm_input');
     const mediaInput = document.getElementById('dm_media_url');
-    const text = input.value.trim();
-    const mediaUrl = mediaInput ? mediaInput.value.trim() : '';
+    const text = sanitizeProfileField(input.value.trim(), 1000);
+    const mediaUrl = sanitizeUrl(mediaInput ? mediaInput.value.trim() : '');
     
     if ((!text && !mediaUrl) || !dmListener) return;
     
     const message = {
         sender: CURRENT_USER,
-        text: text || (mediaUrl ? '' : ''),
+        text: text || '',
         timestamp: Date.now()
     };
     
