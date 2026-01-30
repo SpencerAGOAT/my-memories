@@ -283,7 +283,8 @@
         <div id="announce_text" style="color:#ddd; font-size:14px; line-height:1.6; min-height:50px;"></div>
         <div id="announce_cursor" style="display:inline-block; width:2px; height:16px; background:#d40000; margin-left:2px; animation:blink 0.7s infinite;"></div>
         <div id="announce_music_indicator" style="display:none; margin-top:15px; color:#ffd700; font-size:11px;">🎵 Now Playing...</div>
-        <div style="margin-top:20px; color:#666; font-size:10px;">Click anywhere to dismiss</div>
+        <div id="announce_from" style="margin-top:15px; font-size:11px; color:#888;"></div>
+        <div style="margin-top:10px; color:#666; font-size:10px;">Click anywhere to dismiss</div>
     </div>
 </div>
 <div id="boot-screen" onclick="beginSession()">
@@ -1495,6 +1496,25 @@ function escapeHtml(text) {
     const div = document.createElement('div'); 
     div.textContent = text; 
     return div.innerHTML; 
+}
+
+// Get color from style class name
+function getStyleColor(style) {
+    const styleColors = {
+        'st-style': '#ff00ff',
+        'a-style': '#ffffff',
+        'admin-style': '#ffffff',
+        'mod-style': '#00ff00',
+        'contrib-style': '#1781ff',
+        'oleg-style': '#ff6b35',
+        'noseeyedear-style': '#00ffcc',
+        'guest-style': '#888888',
+        'vip-style': '#ffd700',
+        'sb-style': '#6a03b4',
+        'member-style': '#ff4444',
+        'bot-style': '#d40000'
+    };
+    return styleColors[style] || '#ff4444';
 }
 
 function sanitizeInput(text) {
@@ -4516,6 +4536,7 @@ function showAnnouncement(data) {
     const cursorEl = document.getElementById('announce_cursor');
     const imageEl = document.getElementById('announce_image');
     const musicIndicator = document.getElementById('announce_music_indicator');
+    const fromEl = document.getElementById('announce_from');
     
     // Reset
     titleEl.textContent = '';
@@ -4524,6 +4545,15 @@ function showAnnouncement(data) {
     imageEl.style.display = 'none';
     imageEl.innerHTML = '';
     musicIndicator.style.display = 'none';
+    if (fromEl) fromEl.innerHTML = '';
+    
+    // Show who sent it
+    if (data.sentBy && fromEl) {
+        const sender = data.sentBy;
+        const senderData = userDatabase[sender] || {};
+        const rankTag = generateRankTag(sender, true);
+        fromEl.innerHTML = `— from ${rankTag} <span style="color:${getStyleColor(senderData.style || 'member-style')}">${escapeHtml(sender)}</span>`;
+    }
     
     // Set type styling
     box.className = '';
@@ -5480,55 +5510,63 @@ let wpCurrentHost = null;
 let wpKeepAwakeInterval = null;
 
 function joinWatchPartyRoom(roomKey) {
-    currentWatchPartyRoom = roomKey;
-    
-    // Add self to viewers
-    db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).set({
-        username: CURRENT_USER,
-        joinedAt: Date.now()
-    });
-    
-    // Remove on disconnect
-    db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).onDisconnect().remove();
-    
-    // Load room data
-    db.ref('watch_parties/' + roomKey).once('value', (snapshot) => {
-        const room = snapshot.val();
-        if (!room) {
-            alert('Room not found!');
+    // First check if user is banned from this room
+    db.ref('watch_parties/' + roomKey + '/banned/' + CURRENT_USER).once('value', (banSnap) => {
+        if (banSnap.exists()) {
+            alert('You have been banned from this watch party room.');
             return;
         }
         
-        wpCurrentHost = room.host;
-        document.getElementById('wp_room_title').textContent = room.name;
+        currentWatchPartyRoom = roomKey;
         
-        // Show host badge if user is host
-        const hostBadge = document.getElementById('wp_host_badge');
-        if (hostBadge) {
-            hostBadge.style.display = (CURRENT_USER === room.host) ? 'inline' : 'none';
-        }
+        // Add self to viewers
+        db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).set({
+            username: CURRENT_USER,
+            joinedAt: Date.now()
+        });
         
-        // Enable/disable host-only controls
-        updateWPHostControls(room.host);
+        // Remove on disconnect
+        db.ref('watch_parties/' + roomKey + '/viewers/' + CURRENT_USER).onDisconnect().remove();
         
-        // Switch to room view
-        switchWatchPartyTab('room', null);
-        
-        // Initialize YouTube player
-        const videoId = room.videoId || room.mediaSource;
-        initWPPlayer(videoId, room.currentTime, room.isPlaying);
-        
-        // Start chat listener
-        startWPChatListener(roomKey);
-        
-        // Start sync listener
-        startWPSyncListener(roomKey, room.host);
-        
-        // Update viewer count and list
-        updateWPViewerCount(roomKey);
-        
-        // Prevent screen from going idle
-        startWPKeepAwake();
+        // Load room data
+        db.ref('watch_parties/' + roomKey).once('value', (snapshot) => {
+            const room = snapshot.val();
+            if (!room) {
+                alert('Room not found!');
+                return;
+            }
+            
+            wpCurrentHost = room.host;
+            document.getElementById('wp_room_title').textContent = room.name;
+            
+            // Show host badge if user is host
+            const hostBadge = document.getElementById('wp_host_badge');
+            if (hostBadge) {
+                hostBadge.style.display = (CURRENT_USER === room.host) ? 'inline' : 'none';
+            }
+            
+            // Enable/disable host-only controls
+            updateWPHostControls(room.host);
+            
+            // Switch to room view
+            switchWatchPartyTab('room', null);
+            
+            // Initialize YouTube player
+            const videoId = room.videoId || room.mediaSource;
+            initWPPlayer(videoId, room.currentTime, room.isPlaying);
+            
+            // Start chat listener
+            startWPChatListener(roomKey);
+            
+            // Start sync listener
+            startWPSyncListener(roomKey, room.host);
+            
+            // Update viewer count and list
+            updateWPViewerCount(roomKey);
+            
+            // Prevent screen from going idle
+            startWPKeepAwake();
+        });
     });
 }
 
@@ -5651,11 +5689,39 @@ function updateWPViewerCount(roomKey) {
         // Update viewer list
         const listEl = document.getElementById('wp_viewer_list');
         if (listEl) {
+            const isHost = CURRENT_USER === wpCurrentHost;
             listEl.innerHTML = viewerNames.map(name => {
-                const isHost = name === wpCurrentHost;
-                return `<span style="background:${isHost ? '#2a2a00' : '#1a0a0a'}; color:${isHost ? '#ffd700' : '#888'}; padding:2px 6px; border-radius:3px; border:1px solid ${isHost ? '#5a5a00' : '#300'};">${isHost ? '👑 ' : ''}${escapeHtml(name)}</span>`;
+                const viewerIsHost = name === wpCurrentHost;
+                const canBan = isHost && !viewerIsHost && name !== CURRENT_USER;
+                return `<span style="background:${viewerIsHost ? '#2a2a00' : '#1a0a0a'}; color:${viewerIsHost ? '#ffd700' : '#888'}; padding:2px 6px; border-radius:3px; border:1px solid ${viewerIsHost ? '#5a5a00' : '#300'}; cursor:${canBan ? 'pointer' : 'default'};" ${canBan ? `onclick="wpBanViewer('${escapeHtml(name)}')" title="Click to ban from room"` : ''}>${viewerIsHost ? '👑 ' : ''}${escapeHtml(name)}${canBan ? ' ✕' : ''}</span>`;
             }).join('');
         }
+    });
+}
+
+// Ban a user from watch party room
+function wpBanViewer(username) {
+    if (!currentWatchPartyRoom || CURRENT_USER !== wpCurrentHost) {
+        alert('Only the host can ban viewers.');
+        return;
+    }
+    
+    if (!confirm(`Ban "${username}" from this watch party? They won't be able to rejoin this room.`)) return;
+    
+    // Add to room's banned list
+    db.ref('watch_parties/' + currentWatchPartyRoom + '/banned/' + username).set({
+        bannedBy: CURRENT_USER,
+        bannedAt: Date.now()
+    });
+    
+    // Remove from viewers
+    db.ref('watch_parties/' + currentWatchPartyRoom + '/viewers/' + username).remove();
+    
+    // Send system message
+    db.ref('watch_party_chat/' + currentWatchPartyRoom).push({
+        user: '🤖 System',
+        text: `${username} was banned from this room by the host.`,
+        timestamp: Date.now()
     });
 }
 
