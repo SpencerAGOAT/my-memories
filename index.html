@@ -5,20 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>fangtasia.wtf</title>
     <!-- Anti-DevTools Protection -->
-    <script src="https://cdn.jsdelivr.net/npm/disable-devtool@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/disable-devtool@latest" onerror="console.log('disable-devtool failed to load')"></script>
     <script>
-        DisableDevtool({
-            ondevtoolopen: function(type) {
-                document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#f00;display:flex;justify-content:center;align-items:center;font-family:monospace;font-size:24px;text-align:center;z-index:999999;"><div>⛔ ACCESS DENIED ⛔<br><br><span style="font-size:14px;color:#666;">Developer tools are not allowed.</span></div></div>';
-            },
-            clearIntervalWhenDevOpenTrigger: true,
-            url: null,
-            disableMenu: false,
-            clearLog: true,
-            disableSelect: false,
-            disableCopy: false,
-            disableCut: false
-        });
+        try {
+            if (typeof DisableDevtool !== 'undefined') {
+                DisableDevtool({
+                    ondevtoolopen: function(type) {
+                        document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#f00;display:flex;justify-content:center;align-items:center;font-family:monospace;font-size:24px;text-align:center;z-index:999999;"><div>⛔ ACCESS DENIED ⛔<br><br><span style="font-size:14px;color:#666;">Developer tools are not allowed.</span></div></div>';
+                    },
+                    clearIntervalWhenDevOpenTrigger: true,
+                    url: null,
+                    disableMenu: false,
+                    clearLog: true,
+                    disableSelect: false,
+                    disableCopy: false,
+                    disableCut: false
+                });
+            }
+        } catch(e) { console.log('DisableDevtool error:', e); }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/bahram" rel="stylesheet">
@@ -1076,11 +1080,17 @@
     <div style="margin-left: auto; margin-right: 15px; color: #888; font-size: 11px;" id="taskbar_clock"></div>
 </div>
 <div id="player" style="position:absolute; top:-999px;"></div>
-<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://www.youtube.com/iframe_api" onerror="console.log('YouTube API failed to load')"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script>
+// Check if Firebase loaded
+if (typeof firebase === 'undefined') {
+    console.error('Firebase failed to load!');
+    alert('Error: Firebase failed to load. Please refresh the page.');
+}
+
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyB7GeyT9SY7zFBeT-lfCM6iHZ_ipFXvemU",
@@ -1091,63 +1101,84 @@ const firebaseConfig = {
     messagingSenderId: "735588641679",
     appId: "1:735588641679:web:5e0b9c5c5c84166b2f79fa"
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const auth = firebase.auth();
+
+let db, auth;
+try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    auth = firebase.auth();
+} catch(e) {
+    console.error('Firebase init error:', e);
+}
+
 let FIREBASE_USER = null; // Stores Firebase Auth user object
+let CURRENT_USER = "", IS_GUEST = false; // Define early for auth listener
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
 
 // Firebase Auth State Listener - auto-login if already authenticated
-auth.onAuthStateChanged(async (user) => {
-    if (user) {
-        console.log('Auth state: User signed in', user.uid);
-        FIREBASE_USER = user;
-        
-        // Get username from UID
-        const usernameSnap = await db.ref('uid_users/' + user.uid).once('value');
-        const username = usernameSnap.val();
-        
-        if (username && !CURRENT_USER) {
-            console.log('Auto-login as:', username);
-            // Load user data
-            const memberSnap = await db.ref('members/' + username).once('value');
-            const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-            userDatabase[username] = memberData;
+if (auth) {
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            console.log('Auth state: User signed in', user.uid);
+            FIREBASE_USER = user;
             
-            // Check if not banned
-            const banSnap = await db.ref('bans/' + username).once('value');
-            const ban = banSnap.val();
-            if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
-                console.log('User is banned, signing out');
-                auth.signOut();
-                return;
-            }
-            
-            // Complete login
-            CURRENT_USER = username;
-            IS_GUEST = false;
-            
-            // Wait for DOM to be ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => completeLogin(username));
-            } else {
-                // Small delay to ensure all elements are ready
-                setTimeout(() => {
-                    if (document.getElementById('ie_login')) {
-                        completeLogin(username);
+            try {
+                // Get username from UID
+                const usernameSnap = await db.ref('uid_users/' + user.uid).once('value');
+                const username = usernameSnap.val();
+                
+                if (username && !CURRENT_USER) {
+                    console.log('Auto-login as:', username);
+                    // Load user data
+                    const memberSnap = await db.ref('members/' + username).once('value');
+                    const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+                    
+                    // Wait for userDatabase to be defined
+                    if (typeof userDatabase !== 'undefined') {
+                        userDatabase[username] = memberData;
                     }
-                }, 500);
+                    
+                    // Check if not banned
+                    const banSnap = await db.ref('bans/' + username).once('value');
+                    const ban = banSnap.val();
+                    if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
+                        console.log('User is banned, signing out');
+                        auth.signOut();
+                        return;
+                    }
+                    
+                    // Complete login
+                    CURRENT_USER = username;
+                    IS_GUEST = false;
+                    
+                    // Wait for DOM to be ready
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', () => {
+                            if (typeof completeLogin === 'function') completeLogin(username);
+                        });
+                    } else {
+                        // Small delay to ensure all elements are ready
+                        setTimeout(() => {
+                            if (document.getElementById('ie_login') && typeof completeLogin === 'function') {
+                                completeLogin(username);
+                            }
+                        }, 500);
+                }
             }
+        } catch (err) {
+            console.error('Auth state change error:', err);
         }
     } else {
         console.log('Auth state: No user signed in');
         FIREBASE_USER = null;
     }
 });
+} // End of auth check
 
 // ========== HWID BLOCK CHECK - RUNS IMMEDIATELY ==========
 (function checkBlockedHWID() {
+    if (!db) { console.log('DB not available for HWID check'); return; }
     // Generate HWID early
     function getHWID() {
         const canvas = document.createElement('canvas');
@@ -1207,8 +1238,6 @@ function startForceLogoutListener() {
 // - Immediate access via encoded passwords (backwards compatible)
 // - Also checks Firebase hashed passwords for new users
 // ============================================================
-
-const auth = firebase.auth ? firebase.auth() : null;
 
 // SHA-256 hash function for Firebase password verification
 async function hashPassword(password) {
@@ -1335,7 +1364,7 @@ db.ref('members').on('value', (s) => {
     updateMemberList();
 });
 
-let CURRENT_USER = "", IS_GUEST = false, currentPage = 1, itemsPerPage = 9;
+let currentPage = 1, itemsPerPage = 9;
 let userProfile = { status: "", bio: "", mood: "", avatar: "", music: "" };
 let currentProfileUser = "", idleTime = 0, screensaverActive = false;
 
