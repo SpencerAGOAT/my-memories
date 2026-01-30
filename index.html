@@ -651,6 +651,7 @@
             <div class="mgmt-sidebar-item" id="admin_tab_bot_btn" onclick="switchAdminTab('bot', this)">🧛 Eric Bot</div>
             <div class="mgmt-sidebar-item" id="admin_tab_videos_btn" onclick="switchAdminTab('videos', this)">📹 Videos</div>
             <div class="mgmt-sidebar-item" id="admin_tab_vip_btn" onclick="switchAdminTab('vip', this)">🌟 VIP Codes</div>
+            <div class="mgmt-sidebar-item" id="admin_tab_sitetools_btn" style="display:none;" onclick="switchAdminTab('sitetools', this)">🎛️ Site Tools</div>
             <div class="mgmt-sidebar-item" id="st_tab" style="display:none;" onclick="switchAdminTab('st', this)">🔮 ST Tools</div>
         </div>
         <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
@@ -665,6 +666,49 @@
                 <div id="all_videos" style="max-height:380px; overflow-y:auto;"></div>
             </div>
             <div id="admin_tab_vip" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">VIP Invite Codes</h3><div class="admin-section"><h4>Generate New Code</h4><div style="display:flex; gap:5px; margin-bottom:10px;"><input type="number" id="vip_code_uses" class="ie-input" placeholder="Max uses" value="5" min="1" max="100" style="width:100px;"><button class="ie-btn" style="flex:1;" onclick="generateVIPCode()">🌟 Generate New Code</button></div><div id="vip_code_display" style="color:#ffd700; font-family:monospace; font-size:16px;"></div></div><div class="admin-section"><h4>Active VIP Codes</h4><button class="ie-btn" style="width:auto; padding:5px 15px; margin-bottom:10px;" onclick="loadVIPCodeHistory()">🔄 Refresh</button><div id="vip_code_history" style="max-height:300px; overflow-y:auto; font-size:11px;"><div style="color:#666;">Click refresh to load codes...</div></div></div></div>
+            
+            <!-- SITE TOOLS (Admin+) -->
+            <div id="admin_tab_sitetools" style="display:none;">
+                <h3 style="color:#ffd700; margin:0 0 15px 0;">🎛️ Site Tools (Admin+)</h3>
+                
+                <div class="admin-section" style="border-color:#ffd700;">
+                    <h4 style="color:#ffd700;">🎵 Site-Wide Music Player</h4>
+                    <p style="font-size:10px; color:#888; margin-bottom:10px;">Play music for ALL users on the site (YouTube or SoundCloud)</p>
+                    <input type="text" id="sitemusic_url" class="ie-input" placeholder="YouTube or SoundCloud URL...">
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button class="ie-btn" style="flex:1; background:#050;" onclick="playSiteMusic()">▶️ Play for Everyone</button>
+                        <button class="ie-btn" style="flex:1; background:#500;" onclick="stopSiteMusic()">⏹️ Stop Music</button>
+                    </div>
+                    <div id="sitemusic_result" style="margin-top:5px; font-size:10px;"></div>
+                    <div id="sitemusic_current" style="margin-top:10px; padding:8px; background:#050000; border:1px solid #300; border-radius:4px; font-size:10px; color:#888;">No music playing</div>
+                </div>
+                
+                <div class="admin-section" style="border-color:#ffd700;">
+                    <h4 style="color:#ffd700;">⭐ Manage Reputation</h4>
+                    <input type="text" id="admin_rep_username" class="ie-input" placeholder="Username">
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <input type="number" id="admin_rep_amount" class="ie-input" placeholder="Amount" value="1" min="1" max="100" style="width:80px;">
+                        <button class="ie-btn" style="flex:1; background:#050;" onclick="adminModifyRep(1)">➕ Add Rep</button>
+                        <button class="ie-btn" style="flex:1; background:#500;" onclick="adminModifyRep(-1)">➖ Remove Rep</button>
+                    </div>
+                    <div id="admin_rep_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                
+                <div class="admin-section" style="border-color:#ffd700;">
+                    <h4 style="color:#ffd700;">🏅 Award Badge</h4>
+                    <input type="text" id="admin_badge_username" class="ie-input" placeholder="Username">
+                    <select id="admin_badge_select" class="ie-input">
+                        <option value="">-- Select Badge --</option>
+                    </select>
+                    <button class="ie-btn" style="width:auto; padding:5px 10px; margin:5px 0;" onclick="loadAdminBadgeOptions()">🔄 Refresh Badges</button>
+                    <div style="display:flex; gap:5px;">
+                        <button class="ie-btn" style="flex:1; background:#050;" onclick="adminAssignBadge()">🏅 Award Badge</button>
+                        <button class="ie-btn" style="flex:1; background:#500;" onclick="adminRemoveBadge()">❌ Remove Badge</button>
+                    </div>
+                    <div id="admin_badge_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+            </div>
+            
             <div id="admin_tab_st" style="display:none;">
                 <h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3>
                 
@@ -2116,6 +2160,9 @@ function completeLogin(u) {
     if (userData.isAdmin || userData.isMod) { 
         document.getElementById('admin_icon').style.display = 'block'; 
     }
+    if (userData.isAdmin || userData.isST) {
+        document.getElementById('admin_tab_sitetools_btn').style.display = 'block';
+    }
     if (userData.isST) { 
         document.getElementById('st_tab').style.display = 'block'; 
     }
@@ -3160,8 +3207,8 @@ function uploadChatFile() {
 // ADMIN PANEL
 function switchAdminTab(tab, el) {
     document.querySelectorAll('.mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-    ['apps', 'members', 'moderation', 'announcements', 'bot', 'videos', 'vip', 'st'].forEach(t => {
+    if (el) el.classList.add('active');
+    ['apps', 'members', 'moderation', 'announcements', 'bot', 'videos', 'vip', 'sitetools', 'st'].forEach(t => {
         const panel = document.getElementById('admin_tab_' + t);
         if (panel) panel.style.display = t === tab ? 'block' : 'none';
     });
@@ -3170,6 +3217,7 @@ function switchAdminTab(tab, el) {
     if (tab === 'moderation') loadBannedUsers();
     if (tab === 'videos') loadAllVideos();
     if (tab === 'vip') loadAllVIPCodes();
+    if (tab === 'sitetools') { loadAdminBadgeOptions(); loadSiteMusicStatus(); }
 }
 function sendBotMessage() { const text = document.getElementById('bot_message').value.trim(); if (!text) return; db.ref('chat').push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); document.getElementById('bot_message').value = ''; }
 function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; alert('Pinned!'); }
@@ -3520,6 +3568,239 @@ function loadVIPCodeHistory() {
     if (!container) return;
     
     container.innerHTML = '<div style="color:#888;">Loading...</div>';
+
+// ========== SITE TOOLS (Admin+) ==========
+
+// Site-Wide Music Player
+function playSiteMusic() {
+    const resultEl = document.getElementById('sitemusic_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
+        return; 
+    }
+    
+    const url = document.getElementById('sitemusic_url').value.trim();
+    if (!url) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a URL.</span>'; 
+        return; 
+    }
+    
+    // Validate URL (YouTube or SoundCloud)
+    const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
+    const isSoundCloud = url.includes('soundcloud.com');
+    
+    if (!isYouTube && !isSoundCloud) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Only YouTube and SoundCloud URLs are supported.</span>';
+        return;
+    }
+    
+    const musicData = {
+        url: url,
+        type: isYouTube ? 'youtube' : 'soundcloud',
+        startedBy: CURRENT_USER,
+        startedAt: Date.now()
+    };
+    
+    db.ref('site_music').set(musicData).then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Music playing for all users!</span>';
+        document.getElementById('sitemusic_url').value = '';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stopSiteMusic() {
+    const resultEl = document.getElementById('sitemusic_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
+        return; 
+    }
+    
+    db.ref('site_music').remove().then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Music stopped.</span>';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadSiteMusicStatus() {
+    const statusEl = document.getElementById('sitemusic_current');
+    if (!statusEl) return;
+    
+    db.ref('site_music').once('value', (snapshot) => {
+        const music = snapshot.val();
+        if (music && music.url) {
+            statusEl.innerHTML = `<span style="color:#0f0;">▶️ Now Playing:</span> <span style="color:#ffd700;">${music.type.toUpperCase()}</span><br><span style="color:#888; font-size:9px;">Started by ${music.startedBy}</span>`;
+        } else {
+            statusEl.innerHTML = 'No music playing';
+        }
+    });
+}
+
+// Site music listener for all users
+function startSiteMusicListener() {
+    if (!db) return;
+    
+    db.ref('site_music').on('value', (snapshot) => {
+        const music = snapshot.val();
+        if (music && music.url) {
+            playSiteMusicAudio(music);
+        } else {
+            stopSiteMusicAudio();
+        }
+    });
+}
+
+let siteMusicPlayer = null;
+let siteMusicIframe = null;
+
+function playSiteMusicAudio(music) {
+    // Stop any existing
+    stopSiteMusicAudio();
+    
+    // Create hidden player
+    const container = document.createElement('div');
+    container.id = 'site_music_player';
+    container.style.cssText = 'position:fixed; bottom:10px; right:10px; z-index:9999; background:#0a0000; border:2px solid #500; border-radius:8px; padding:10px; width:280px;';
+    
+    if (music.type === 'youtube') {
+        // Extract video ID
+        let videoId = '';
+        if (music.url.includes('youtu.be/')) {
+            videoId = music.url.split('youtu.be/')[1].split('?')[0];
+        } else if (music.url.includes('v=')) {
+            videoId = music.url.split('v=')[1].split('&')[0];
+        }
+        
+        container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="color:#d40000; font-size:10px; font-weight:bold;">🎵 Site Music (YouTube)</span>
+                <button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:#888; cursor:pointer; font-size:14px;">✕</button>
+            </div>
+            <iframe width="260" height="60" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" style="border-radius:4px;"></iframe>
+        `;
+    } else if (music.type === 'soundcloud') {
+        container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="color:#d40000; font-size:10px; font-weight:bold;">🎵 Site Music (SoundCloud)</span>
+                <button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:#888; cursor:pointer; font-size:14px;">✕</button>
+            </div>
+            <iframe width="260" height="80" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(music.url)}&color=%23d40000&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false" style="border-radius:4px;"></iframe>
+        `;
+    }
+    
+    document.body.appendChild(container);
+    siteMusicPlayer = container;
+}
+
+function stopSiteMusicAudio() {
+    const player = document.getElementById('site_music_player');
+    if (player) player.remove();
+    siteMusicPlayer = null;
+}
+
+// Start site music listener
+setTimeout(startSiteMusicListener, 3000);
+
+// Admin Reputation Management
+function adminModifyRep(direction) {
+    const resultEl = document.getElementById('admin_rep_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('admin_rep_username').value.trim();
+    const amount = parseInt(document.getElementById('admin_rep_amount').value) || 1;
+    
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    const change = direction * amount;
+    
+    db.ref('reputation/' + username).once('value', (snapshot) => {
+        const current = snapshot.val() || 0;
+        const newRep = current + change;
+        
+        db.ref('reputation/' + username).set(newRep).then(() => {
+            if (resultEl) resultEl.innerHTML = `<span style="color:#0f0;">✓ ${username}'s rep: ${current} → ${newRep} (${change >= 0 ? '+' : ''}${change})</span>`;
+        }).catch(err => {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        });
+    });
+}
+
+// Admin Badge Management
+function loadAdminBadgeOptions() {
+    const select = document.getElementById('admin_badge_select');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">-- Loading... --</option>';
+    
+    db.ref('badge_definitions').once('value', (snapshot) => {
+        select.innerHTML = '<option value="">-- Select Badge --</option>';
+        if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+                const badge = child.val();
+                const opt = document.createElement('option');
+                opt.value = child.key;
+                opt.textContent = badge.name || child.key;
+                select.appendChild(opt);
+            });
+        }
+    });
+}
+
+function adminAssignBadge() {
+    const resultEl = document.getElementById('admin_badge_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('admin_badge_username').value.trim();
+    const badgeId = document.getElementById('admin_badge_select').value;
+    
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
+    if (!badgeId) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Select a badge.</span>'; return; }
+    if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    
+    db.ref('profiles/' + username + '/badges/' + badgeId).set({
+        id: badgeId,
+        assignedBy: CURRENT_USER,
+        assignedAt: Date.now()
+    }).then(() => {
+        const badgeName = badgeDefinitions[badgeId]?.name || badgeId;
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge "' + badgeName + '" awarded to ' + username + '!</span>';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function adminRemoveBadge() {
+    const resultEl = document.getElementById('admin_badge_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('admin_badge_username').value.trim();
+    const badgeId = document.getElementById('admin_badge_select').value;
+    
+    if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
+    if (!badgeId) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Select a badge.</span>'; return; }
+    
+    db.ref('profiles/' + username + '/badges/' + badgeId).remove().then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge removed from ' + username + '!</span>';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
     
     db.ref('vip_codes').orderByChild('created').once('value', (snapshot) => {
         if (!snapshot.exists()) {
@@ -4040,14 +4321,15 @@ function stLeaveComment() {
     if (!userDatabase[targetUser]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
     
     const comment = {
-        from: CURRENT_USER,
+        from: '@Admin',
         text: commentText,
         timestamp: Date.now(),
-        isAdmin: true
+        isAdmin: true,
+        actualFrom: CURRENT_USER
     };
     
     db.ref('profile_comments/' + targetUser).push(comment).then(() => {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Comment posted on ' + escapeHtml(targetUser) + '\'s profile</span>';
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Comment posted on ' + escapeHtml(targetUser) + '\'s profile as @Admin</span>';
         document.getElementById('st_comment_text').value = '';
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
