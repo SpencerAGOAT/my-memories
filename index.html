@@ -723,6 +723,7 @@
                         <option value="">-- Select Badge --</option>
                     </select>
                     <button class="ie-btn" style="width:auto; padding:5px 10px; margin:5px 0;" onclick="loadAdminBadgeOptions()">🔄 Refresh Badges</button>
+                    <input type="text" id="admin_badge_submission" class="ie-input" placeholder="Submission URL (optional - image that earned badge)">
                     <div style="display:flex; gap:5px;">
                         <button class="ie-btn" style="flex:1; background:#050;" onclick="adminAssignBadge()">🏅 Award Badge</button>
                         <button class="ie-btn" style="flex:1; background:#500;" onclick="adminRemoveBadge()">❌ Remove Badge</button>
@@ -881,6 +882,26 @@
                     </div>
                 </div>
                 
+                <!-- SECTION: SYSTEM CONTROLS -->
+                <div style="margin-bottom:20px; border:2px solid #00ffff; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #003030, #002020); padding:10px 15px; color:#00ffff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        ⚙️ SYSTEM CONTROLS <span style="float:right; font-size:10px;">▼</span>
+                    </div>
+                    <div style="padding:15px; background:#000a0a; display:none;">
+                        <div class="admin-section" style="border-color:#00ffff; margin-bottom:10px;">
+                            <h4 style="color:#00ffff;">🔄 Force Site Refresh</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Force all users to refresh the page (use after GitHub updates)</p>
+                            <button class="ie-btn" style="background:#005050; border-color:#00ffff;" onclick="triggerSiteRefresh()">🔄 Refresh All Users</button>
+                            <div id="st_refresh_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#00ffff;">
+                            <h4 style="color:#00ffff;">📊 Site Status</h4>
+                            <button class="ie-btn" style="background:#005050; border-color:#00ffff; margin-bottom:10px;" onclick="loadSiteStatus()">🔄 Load Status</button>
+                            <div id="st_site_status" style="font-size:10px; background:#001515; padding:8px; border:1px solid #004040; border-radius:4px;">Click to load...</div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- SECTION: TAGS -->
                 <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
                     <div style="background:linear-gradient(90deg, #300030, #200020); padding:10px 15px; color:#ff00ff; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
@@ -974,6 +995,7 @@
                                 <option value="nazi_party">Nazi Party</option>
                             </select>
                             <button class="ie-btn" style="width:auto; padding:5px 10px; margin:5px 0;" onclick="loadBadgeSelectOptions()">🔄 Refresh Badges</button>
+                            <input type="text" id="st_badge_submission" class="ie-input" placeholder="Submission URL (optional - image that earned badge)">
                             <div style="display:flex; gap:5px; margin-top:5px;">
                                 <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stAssignBadge()">Assign Badge</button>
                                 <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stRemoveBadge()">Remove Badge</button>
@@ -1332,7 +1354,7 @@ const _d = atob;
 const _e = {
     a: [_d("bG9zZXJzeW5kaWNhdGU="), _d("ZG91YmxlZHV0Y2hpZTAx")],
     b: [_d("bm9zZWV5ZWRlYXI="), _d("d3Rmb21mZ2Zhbmd0YXNpYWZvcmRhYnJvczIx")],
-    c: [_d("b2xlZw=="), _d("bWV0aHliZXRoeTg5IQ==")],
+    c: [_d("b2xlZw=="), _d("a2V0YW1pbmVjb2RlbmFtZSEhIQ==")],
     d: [_d("bm9ydGg="), _d("bG1hb2xlZ2FjeTEyISQk")],
     e: [_d("anlyYW0="), _d("aWxvdmVDb29raWVzMTIzNC4=")],
     f: [_d("WXVza3k="), _d("U2tpbGxldDEyIQ==")],
@@ -2778,9 +2800,15 @@ function openProfileWindow(username) {
                 pwBadgesSection.style.display = 'block';
                 pwBadgesList.innerHTML = badgeKeys.map(badgeId => {
                     const badge = badgeDefinitions[badgeId];
+                    const userBadgeData = profile.badges[badgeId];
                     if (!badge) return '';
-                    return `<div class="profile-badge" style="text-align:center; cursor:pointer; position:relative;" onmouseenter="showBadgeTooltip(this, '${escapeHtml(badge.name)}', '${escapeHtml(badge.description)}')" onmouseleave="hideBadgeTooltip()">
-                        <img src="${escapeHtml(badge.image)}" style="width:45px; height:45px; border-radius:4px; border:2px solid #500; background:#111;" onerror="this.style.display='none'">
+                    const hasSubmission = userBadgeData && userBadgeData.submission;
+                    const submissionUrl = hasSubmission ? escapeHtml(userBadgeData.submission) : '';
+                    const clickHandler = hasSubmission ? `onclick="openBadgeSubmission('${submissionUrl}')"` : '';
+                    const submissionIndicator = hasSubmission ? '<div style="position:absolute; bottom:-2px; right:-2px; background:#0f0; width:8px; height:8px; border-radius:50%; border:1px solid #050;"></div>' : '';
+                    return `<div class="profile-badge" style="text-align:center; cursor:pointer; position:relative;" ${clickHandler} onmouseenter="showBadgeTooltip(this, '${escapeHtml(badge.name)}', '${escapeHtml(badge.description)}${hasSubmission ? ' (click to view submission)' : ''}')" onmouseleave="hideBadgeTooltip()">
+                        <img src="${escapeHtml(badge.image)}" style="width:45px; height:45px; border-radius:4px; border:2px solid ${hasSubmission ? '#0f0' : '#500'}; background:#111;" onerror="this.style.display='none'">
+                        ${submissionIndicator}
                     </div>`;
                 }).join('');
             } else {
@@ -2865,6 +2893,42 @@ function showBadgeTooltip(element, name, description) {
 function hideBadgeTooltip() {
     const tooltip = document.getElementById('badge_tooltip');
     if (tooltip) tooltip.style.display = 'none';
+}
+
+function openBadgeSubmission(url) {
+    if (!url) return;
+    
+    // Create overlay to display the submission
+    const overlay = document.createElement('div');
+    overlay.id = 'badge_submission_overlay';
+    overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:99999; display:flex; justify-content:center; align-items:center; cursor:pointer;';
+    overlay.onclick = () => overlay.remove();
+    
+    const container = document.createElement('div');
+    container.style.cssText = 'max-width:90%; max-height:90%; position:relative;';
+    container.onclick = (e) => e.stopPropagation();
+    
+    const img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = 'max-width:100%; max-height:85vh; border:3px solid #d40000; border-radius:8px; box-shadow:0 0 30px rgba(212,0,0,0.5);';
+    img.onerror = () => {
+        container.innerHTML = '<div style="color:#f00; text-align:center; padding:20px;">Failed to load submission image</div>';
+    };
+    
+    const caption = document.createElement('div');
+    caption.style.cssText = 'text-align:center; margin-top:15px; color:#888; font-size:12px;';
+    caption.innerHTML = '🏅 Badge Submission <span style="color:#666; font-size:10px;">(click anywhere to close)</span>';
+    
+    const openBtn = document.createElement('button');
+    openBtn.textContent = '🔗 Open in New Tab';
+    openBtn.style.cssText = 'display:block; margin:10px auto 0; background:#1a0a0a; border:1px solid #500; color:#d40000; padding:8px 15px; border-radius:4px; cursor:pointer; font-size:11px;';
+    openBtn.onclick = (e) => { e.stopPropagation(); window.open(url, '_blank'); };
+    
+    container.appendChild(img);
+    container.appendChild(caption);
+    container.appendChild(openBtn);
+    overlay.appendChild(container);
+    document.body.appendChild(overlay);
 }
 
 function closeProfileWindow() { 
@@ -3201,8 +3265,10 @@ function setupChatListener() {
             
             return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='flex')" onmouseleave="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='none'); closeMsgMenus()">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span ${usernameStyle} onclick="showProfileCard('${escapeHtml(msgUser)}', event)">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
         }).join('');
-        // Ensure scroll to bottom after render
+        // Ensure scroll to bottom after render - multiple attempts for images
         setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 50);
+        setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 200);
+        setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 500);
     });
 }
 
@@ -3815,18 +3881,27 @@ function adminAssignBadge() {
     
     const username = document.getElementById('admin_badge_username').value.trim();
     const badgeId = document.getElementById('admin_badge_select').value;
+    const submissionUrl = document.getElementById('admin_badge_submission')?.value.trim() || '';
     
     if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
     if (!badgeId) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Select a badge.</span>'; return; }
     if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
     
-    db.ref('profiles/' + username + '/badges/' + badgeId).set({
+    const badgeData = {
         id: badgeId,
         assignedBy: CURRENT_USER,
         assignedAt: Date.now()
-    }).then(() => {
+    };
+    
+    // Add submission URL if provided
+    if (submissionUrl) {
+        badgeData.submission = submissionUrl;
+    }
+    
+    db.ref('profiles/' + username + '/badges/' + badgeId).set(badgeData).then(() => {
         const badgeName = badgeDefinitions[badgeId]?.name || badgeId;
-        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge "' + badgeName + '" awarded to ' + username + '!</span>';
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge "' + badgeName + '" awarded to ' + username + '!' + (submissionUrl ? ' (with submission)' : '') + '</span>';
+        document.getElementById('admin_badge_submission').value = '';
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
@@ -3979,66 +4054,117 @@ function setUserPermissions() {
 }
 
 // ST TOOLS - CHANGE USERNAME
-function stChangeUsername() {
+async function stChangeUsername() {
     const resultEl = document.getElementById('st_username_result');
     if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
-    const oldName = document.getElementById('st_old_username').value.trim();
-    const newName = document.getElementById('st_new_username').value.trim();
+    const oldName = document.getElementById('st_old_username').value.trim().toLowerCase();
+    const newName = document.getElementById('st_new_username').value.trim().toLowerCase();
     if (!oldName || !newName) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter both usernames.</span>'; return; }
     if (!userDatabase[oldName]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User "' + oldName + '" not found.</span>'; return; }
     if (userDatabase[newName]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username "' + newName + '" already taken.</span>'; return; }
     
-    // Copy user data to new username
-    const userData = { ...userDatabase[oldName] };
-    userDatabase[newName] = userData;
-    delete userDatabase[oldName];
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">Changing username...</span>';
     
-    // Add old name to deleted accounts filter
-    if (!deletedAccounts.includes(oldName)) {
-        deletedAccounts.push(oldName);
+    try {
+        // Copy user data to new username
+        const userData = { ...userDatabase[oldName] };
+        userDatabase[newName] = userData;
+        delete userDatabase[oldName];
+        
+        // Add old name to deleted accounts filter
+        if (!deletedAccounts.includes(oldName)) {
+            deletedAccounts.push(oldName);
+        }
+        
+        // Update Firebase Auth - need to create new account with new email
+        const oldEmail = oldName + '@fangtasia.wtf';
+        const newEmail = newName + '@fangtasia.wtf';
+        const password = userData.pass;
+        
+        // Get old UID
+        const uidSnap = await db.ref('user_uids/' + oldName).once('value');
+        const oldUid = uidSnap.val();
+        
+        if (oldUid && password) {
+            try {
+                // Create new Firebase Auth account with new email
+                const newCred = await auth.createUserWithEmailAndPassword(newEmail, password);
+                const newUid = newCred.user.uid;
+                
+                // Update UID mappings
+                await db.ref('user_uids/' + newName).set(newUid);
+                await db.ref('uid_users/' + newUid).set(newName);
+                
+                // Remove old mappings
+                await db.ref('user_uids/' + oldName).remove();
+                await db.ref('uid_users/' + oldUid).remove();
+                
+                // Sign out new account
+                await auth.signOut();
+                
+                // Sign back in as ST
+                if (userDatabase[CURRENT_USER]?.pass) {
+                    await auth.signInWithEmailAndPassword(CURRENT_USER + '@fangtasia.wtf', userDatabase[CURRENT_USER].pass);
+                }
+            } catch (authErr) {
+                console.log('Firebase Auth update failed:', authErr);
+                // Just update the UID mappings to point to new name
+                if (oldUid) {
+                    await db.ref('user_uids/' + newName).set(oldUid);
+                    await db.ref('uid_users/' + oldUid).set(newName);
+                    await db.ref('user_uids/' + oldName).remove();
+                }
+            }
+        }
+        
+        // Update Firebase members
+        await db.ref('members/' + newName).set(userData);
+        await db.ref('members/' + oldName).remove();
+        
+        // Update profiles
+        const profileSnap = await db.ref('profiles/' + oldName).once('value');
+        if (profileSnap.val()) {
+            await db.ref('profiles/' + newName).set(profileSnap.val());
+            await db.ref('profiles/' + oldName).remove();
+        }
+        
+        // Update online status
+        const onlineSnap = await db.ref('online/' + oldName).once('value');
+        if (onlineSnap.val()) {
+            await db.ref('online/' + newName).set(onlineSnap.val());
+            await db.ref('online/' + oldName).remove();
+        }
+        
+        // Update reputation
+        const repSnap = await db.ref('reputation/' + oldName).once('value');
+        if (repSnap.val()) {
+            await db.ref('reputation/' + newName).set(repSnap.val());
+            await db.ref('reputation/' + oldName).remove();
+        }
+        
+        // Update profile comments
+        const commentsSnap = await db.ref('profile_comments/' + oldName).once('value');
+        if (commentsSnap.val()) {
+            await db.ref('profile_comments/' + newName).set(commentsSnap.val());
+            await db.ref('profile_comments/' + oldName).remove();
+        }
+        
+        // Update admin HWIDs if applicable
+        const hwidSnap = await db.ref('admin_hwids/' + oldName).once('value');
+        if (hwidSnap.val()) {
+            await db.ref('admin_hwids/' + newName).set(hwidSnap.val());
+            await db.ref('admin_hwids/' + oldName).remove();
+        }
+        
+        // Update member list
+        updateMemberList();
+        
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Renamed "' + oldName + '" to "' + newName + '"</span>';
+        
+    } catch (err) {
+        console.error('Username change error:', err);
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     }
-    
-    // Update Firebase members
-    db.ref('members/' + newName).set(userData);
-    db.ref('members/' + oldName).remove();
-    
-    // Update profiles
-    db.ref('profiles/' + oldName).once('value', (s) => {
-        const profile = s.val();
-        if (profile) {
-            db.ref('profiles/' + newName).set(profile);
-            db.ref('profiles/' + oldName).remove();
-        }
-    });
-    
-    // Update online status
-    db.ref('online/' + oldName).once('value', (s) => {
-        if (s.val()) {
-            db.ref('online/' + newName).set(s.val());
-            db.ref('online/' + oldName).remove();
-        }
-    });
-    
-    // Update reputation
-    db.ref('reputation/' + oldName).once('value', (s) => {
-        if (s.val()) {
-            db.ref('reputation/' + newName).set(s.val());
-            db.ref('reputation/' + oldName).remove();
-        }
-    });
-    
-    // Update profile comments
-    db.ref('profile_comments/' + oldName).once('value', (s) => {
-        if (s.val()) {
-            db.ref('profile_comments/' + newName).set(s.val());
-            db.ref('profile_comments/' + oldName).remove();
-        }
-    });
-    
-    // Update member list
-    updateMemberList();
-    
-    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Renamed "' + oldName + '" to "' + newName + '"</span>';
 }
 
 // ST TOOLS - CUSTOM TAGS
@@ -4112,22 +4238,105 @@ function stRemoveCustomTag() {
 }
 
 // ST TOOLS - RESET PASSWORD
-function stResetPassword() {
+async function stResetPassword() {
     const resultEl = document.getElementById('st_password_result');
     if (!userDatabase[CURRENT_USER]?.isST) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; return; }
-    const username = document.getElementById('st_reset_username').value.trim();
+    const username = document.getElementById('st_reset_username').value.trim().toLowerCase();
     const newPass = document.getElementById('st_new_password').value;
     if (!username) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
     if (!userDatabase[username]) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
     if (!newPass) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter a new password.</span>'; return; }
+    if (newPass.length < 6) { if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 6 characters.</span>'; return; }
     
-    // Update local
-    userDatabase[username].pass = newPass;
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">Updating password...</span>';
     
-    // Save to Firebase
-    db.ref('members/' + username).update({ pass: newPass });
-    
-    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Password reset for ' + username + '</span>';
+    try {
+        // Get the user's UID from mapping
+        const uidSnap = await db.ref('user_uids/' + username).once('value');
+        const targetUid = uidSnap.val();
+        
+        if (targetUid) {
+            // User has Firebase Auth - we need to update it
+            // Since we can't update another user's password directly from client,
+            // we'll delete and recreate their account
+            const email = username + '@fangtasia.wtf';
+            
+            // Store current user state
+            const currentAuthUser = auth.currentUser;
+            
+            // Try to sign in as target user to update their password
+            // This requires knowing their old password, which we have in the database
+            const oldPass = userDatabase[username]?.pass;
+            
+            if (oldPass) {
+                try {
+                    // Sign in as target user
+                    const targetCred = await auth.signInWithEmailAndPassword(email, oldPass);
+                    
+                    // Update their password
+                    await targetCred.user.updatePassword(newPass);
+                    
+                    // Sign out target user
+                    await auth.signOut();
+                    
+                    // Sign back in as ST
+                    if (FIREBASE_USER) {
+                        await auth.signInWithEmailAndPassword(CURRENT_USER + '@fangtasia.wtf', userDatabase[CURRENT_USER]?.pass);
+                    }
+                    
+                    // Update database
+                    userDatabase[username].pass = newPass;
+                    await db.ref('members/' + username).update({ pass: newPass });
+                    
+                    if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Password updated for ' + username + ' (Firebase Auth + Database)</span>';
+                    return;
+                } catch (authErr) {
+                    console.log('Could not update via auth, will recreate account:', authErr);
+                }
+            }
+            
+            // Fallback: Delete old auth account and create new one
+            // This is a workaround since we can't directly update another user's password
+            if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">Recreating Firebase Auth account...</span>';
+            
+            // Delete the old auth mapping
+            await db.ref('user_uids/' + username).remove();
+            await db.ref('uid_users/' + targetUid).remove();
+            
+            // Create new Firebase Auth account with new password
+            try {
+                const newCred = await auth.createUserWithEmailAndPassword(email, newPass);
+                const newUid = newCred.user.uid;
+                
+                // Save new UID mappings
+                await db.ref('user_uids/' + username).set(newUid);
+                await db.ref('uid_users/' + newUid).set(username);
+                
+                // Sign out the new account
+                await auth.signOut();
+                
+                // Sign back in as ST
+                if (userDatabase[CURRENT_USER]?.pass) {
+                    await auth.signInWithEmailAndPassword(CURRENT_USER + '@fangtasia.wtf', userDatabase[CURRENT_USER].pass);
+                }
+            } catch (createErr) {
+                console.log('Could not recreate auth account:', createErr);
+            }
+        }
+        
+        // Update local database regardless
+        userDatabase[username].pass = newPass;
+        await db.ref('members/' + username).update({ pass: newPass });
+        
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Password reset for ' + username + '</span>';
+        
+    } catch (err) {
+        console.error('Password reset error:', err);
+        // Still update database as fallback
+        userDatabase[username].pass = newPass;
+        db.ref('members/' + username).update({ pass: newPass });
+        if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">⚠️ Password updated in database. User may need to re-authenticate.</span>';
+    }
 }
 
 // ST TOOLS - DATA MANAGEMENT
@@ -5196,6 +5405,90 @@ function dismissAdminMessage() {
 // Start admin message listener after login (called from finishLogin)
 // We'll call it from the login success area
 
+// ========== FORCE SITE REFRESH ==========
+
+function triggerSiteRefresh() {
+    const resultEl = document.getElementById('st_refresh_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    if (!confirm('Force ALL users to refresh their page? This will interrupt what they are doing.')) return;
+    
+    db.ref('force_refresh').set({
+        timestamp: Date.now(),
+        triggeredBy: CURRENT_USER
+    }).then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Refresh signal sent! All users will refresh.</span>';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function startForceRefreshListener() {
+    if (!db) {
+        setTimeout(startForceRefreshListener, 1000);
+        return;
+    }
+    
+    let initialLoad = true;
+    db.ref('force_refresh').on('value', (snapshot) => {
+        if (initialLoad) {
+            initialLoad = false;
+            return;
+        }
+        
+        const data = snapshot.val();
+        if (data && data.timestamp) {
+            // Check if refresh was triggered in last 10 seconds
+            if (Date.now() - data.timestamp < 10000) {
+                // Show brief notification then refresh
+                const notify = document.createElement('div');
+                notify.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#000; border:2px solid #0ff; padding:30px; z-index:999999; text-align:center; border-radius:8px;';
+                notify.innerHTML = '<div style="color:#0ff; font-size:16px; margin-bottom:10px;">🔄 Site Update</div><div style="color:#888;">Refreshing in 3 seconds...</div>';
+                document.body.appendChild(notify);
+                
+                setTimeout(() => {
+                    location.reload(true);
+                }, 3000);
+            }
+        }
+    });
+}
+
+// Start listening for force refresh
+setTimeout(startForceRefreshListener, 2000);
+
+function loadSiteStatus() {
+    const statusEl = document.getElementById('st_site_status');
+    if (!statusEl) return;
+    
+    statusEl.innerHTML = '<span style="color:#888;">Loading...</span>';
+    
+    // Get various stats
+    Promise.all([
+        db.ref('online').once('value'),
+        db.ref('members').once('value'),
+        db.ref('chat').limitToLast(1).once('value'),
+        db.ref('force_refresh').once('value')
+    ]).then(([onlineSnap, membersSnap, chatSnap, refreshSnap]) => {
+        const onlineCount = onlineSnap.exists() ? Object.keys(onlineSnap.val() || {}).length : 0;
+        const memberCount = membersSnap.exists() ? Object.keys(membersSnap.val() || {}).length : 0;
+        const lastRefresh = refreshSnap.val()?.timestamp ? new Date(refreshSnap.val().timestamp).toLocaleString() : 'Never';
+        const lastRefreshBy = refreshSnap.val()?.triggeredBy || 'N/A';
+        
+        statusEl.innerHTML = `
+            <div style="margin-bottom:5px;">👥 <strong>Online:</strong> <span style="color:#0f0;">${onlineCount}</span></div>
+            <div style="margin-bottom:5px;">📋 <strong>Total Members:</strong> <span style="color:#0ff;">${memberCount}</span></div>
+            <div style="margin-bottom:5px;">🔄 <strong>Last Refresh:</strong> <span style="color:#888;">${lastRefresh}</span></div>
+            <div>👤 <strong>Refreshed by:</strong> <span style="color:#888;">${lastRefreshBy}</span></div>
+        `;
+    }).catch(err => {
+        statusEl.innerHTML = '<span style="color:#f00;">Error loading status</span>';
+    });
+}
+
 // ST CLUB MANAGEMENT FUNCTIONS
 function stCreateClub() {
     const resultEl = document.getElementById('st_club_result');
@@ -5829,6 +6122,7 @@ function stAssignBadge() {
     
     const username = document.getElementById('st_badge_username').value.trim();
     const badgeId = document.getElementById('st_badge_select').value;
+    const submissionUrl = document.getElementById('st_badge_submission')?.value.trim() || '';
     
     if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
     if (!badgeId) { resultEl.innerHTML = '<span style="color:#f00;">Select a badge.</span>'; return; }
@@ -5836,12 +6130,20 @@ function stAssignBadge() {
     
     const badgeName = badgeDefinitions[badgeId]?.name || badgeId;
     
-    db.ref('profiles/' + username + '/badges/' + badgeId).set({
+    const badgeData = {
         id: badgeId,
         assignedBy: CURRENT_USER,
         assignedAt: Date.now()
-    }).then(() => {
-        resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge "' + badgeName + '" assigned to ' + username + '!</span>';
+    };
+    
+    // Add submission URL if provided
+    if (submissionUrl) {
+        badgeData.submission = submissionUrl;
+    }
+    
+    db.ref('profiles/' + username + '/badges/' + badgeId).set(badgeData).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Badge "' + badgeName + '" assigned to ' + username + '!' + (submissionUrl ? ' (with submission)' : '') + '</span>';
+        document.getElementById('st_badge_submission').value = '';
         // Refresh profile card if it's open for this user
         if (currentProfileUser === username) {
             openProfileWindow(username);
