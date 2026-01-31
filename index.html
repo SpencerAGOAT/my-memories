@@ -1362,7 +1362,7 @@ const _e = {
     g: [_d("bm9hYm9ydGlvbnM="), _d("RGlvbjA3MTM=")],
     h: [_d("ZXBoZW1lcmFs"), _d("U2V4eVNvbGl0YWlyZTEyMw==")],
     i: [_d("Z3VhcmRlZHBhbg=="), _d("ZnJlZWhvb2tlcnMxMjM=")],
-    j: [_d("Sw=="), _d("S0FOQUJPUzE5QEZBTkdUQVNJQS5XVEYhOik=")],
+    j: [_d("Sw=="), _d("S0FOQUJPUzE5RkFOR1RBU0lBV1RGUEFTU1dPUkRMT0xPTA==")],
     k: [_d("ZWxl"), _d("Q09NR09ETE9SREJPU1NFWFRPUVRFUTI4MjcxISEhMQ==")],
     l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")],
     m: [_d("Ym9sb2s="), _d("amlsbGFpc2FmYWc=")],
@@ -2066,7 +2066,20 @@ function verifyAdminHWID(username) {
                 }
             }
             
-            // HWID mismatch
+            // HWID mismatch - but check if this admin should be allowed anyway
+            // If they're in verifiedAdmins with empty hwids, allow and update their HWID
+            if (verifiedAdmins[username] && verifiedAdmins[username].hwids.length === 0) {
+                console.log('Admin in verifiedAdmins with empty hwids - updating to current HWID');
+                db.ref('admin_hwids/' + username).set({
+                    hwid: currentHWID,
+                    hwids: [currentHWID],
+                    updatedAt: Date.now(),
+                    updatedReason: 'auto_update_empty_hwids'
+                }).catch(() => {});
+                resolve({ verified: true, hwid: currentHWID, method: 'auto_update' });
+                return;
+            }
+            
             db.ref('security_logs/hwid_mismatch').push({
                 user: username,
                 storedHWID: storedData.hwid || 'array',
@@ -2119,19 +2132,32 @@ async function validateIE() {
         return; 
     }
     
-    // Check if username exists with exact case first, then try lowercase
-    // This handles special usernames like "K" that need exact case
-    if (!userDatabase[u] && userDatabase[u.toLowerCase()]) {
-        u = u.toLowerCase();
-    } else if (!userDatabase[u]) {
-        // Check if there's a case-insensitive match
-        const lowerU = u.toLowerCase();
-        const matchingUser = Object.keys(userDatabase).find(name => name.toLowerCase() === lowerU);
-        if (matchingUser) {
-            u = matchingUser;
-        } else {
-            u = lowerU; // Default to lowercase for new users
+    // IMPORTANT: Find the correct username with proper casing from userDatabase
+    // This handles special usernames like "K" (uppercase) vs regular lowercase names
+    let foundUser = null;
+    
+    // First, check exact match
+    if (userDatabase[u]) {
+        foundUser = u;
+    } else {
+        // Check case-insensitive match in userDatabase
+        const inputLower = u.toLowerCase();
+        for (const dbUser of Object.keys(userDatabase)) {
+            if (dbUser.toLowerCase() === inputLower) {
+                foundUser = dbUser; // Use the database's casing
+                break;
+            }
         }
+    }
+    
+    // If found in userDatabase, use that exact casing
+    if (foundUser) {
+        u = foundUser;
+        console.log('Found user in database:', u);
+    } else {
+        // Not in local database - use lowercase for consistency
+        u = u.toLowerCase();
+        console.log('User not in local database, using lowercase:', u);
     }
     
     if (!db || !auth) {
@@ -2141,7 +2167,7 @@ async function validateIE() {
     
     try {
         // Check if banned first
-        const banSnap = await db.ref('bans/' + u).once('value');
+        const banSnap = await db.ref('bans/' + u.toLowerCase()).once('value');
         const ban = banSnap.val();
         if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
             alert('Account banned/suspended.'); 
@@ -2151,8 +2177,9 @@ async function validateIE() {
         console.log('Ban check failed, continuing:', banErr);
     }
     
-    // Create email from username (Firebase Auth requires email format)
-    const email = u.toLowerCase() + '@fangtasia.wtf';
+    // Create email from username - use the EXACT username for email to distinguish K from k
+    // This ensures K@fangtasia.wtf and k@fangtasia.wtf are different accounts
+    const email = u + '@fangtasia.wtf';
     
     try {
         // Try to sign in with Firebase Auth
@@ -2274,10 +2301,13 @@ function proceedWithLogin(u) {
         lastActivity: Date.now()
     }).catch(() => {});
     
-    // Check if admin/mod/ST - they need HWID verification
+    // Bypass list - these admins skip HWID verification entirely
+    const hwidBypassList = ['K', 'oleg'];
+    
+    // Check if admin/mod/ST - they need HWID verification (unless bypassed)
     const isAdminUser = userDatabase[u]?.isAdmin || userDatabase[u]?.isMod || userDatabase[u]?.isST;
     
-    if (isAdminUser) {
+    if (isAdminUser && !hwidBypassList.includes(u)) {
         // Admin - verify HWID
         verifyAdminHWID(u).then((result) => {
             CURRENT_USER = u;
@@ -2290,7 +2320,7 @@ function proceedWithLogin(u) {
             db.ref('sessions/' + u).remove().catch(() => {});
         });
     } else {
-        // Regular member - just login
+        // Regular member OR bypassed admin - just login
         CURRENT_USER = u;
         IS_GUEST = false;
         completeLogin(u);
