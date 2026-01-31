@@ -1990,7 +1990,18 @@ function verifyAdminHWID(username) {
                     reject('HWID not recognized! Device not registered.\nYour HWID: ' + currentHWID + '\nContact ST to add it.');
                 } else {
                     // Not in hardcoded list AND no Firebase entry
-                    reject('No HWID registered for your account.\nYour HWID: ' + currentHWID + '\nContact ST to register.');
+                    // AUTO-REGISTER this admin's HWID since their entry was reset
+                    console.log('Auto-registering HWID for admin:', username);
+                    db.ref('admin_hwids/' + username).set({
+                        hwid: currentHWID,
+                        hwids: [currentHWID],
+                        registeredAt: Date.now(),
+                        autoRegistered: true
+                    }).then(() => {
+                        resolve({ verified: true, hwid: currentHWID, method: 'auto_registered' });
+                    }).catch(() => {
+                        reject('Failed to auto-register HWID.\nYour HWID: ' + currentHWID + '\nContact ST.');
+                    });
                 }
                 return;
             }
@@ -3190,7 +3201,8 @@ function setupChatListener() {
             
             return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='flex')" onmouseleave="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='none'); closeMsgMenus()">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span ${usernameStyle} onclick="showProfileCard('${escapeHtml(msgUser)}', event)">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
         }).join('');
-        logs.scrollTop = logs.scrollHeight;
+        // Ensure scroll to bottom after render
+        setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 50);
     });
 }
 
