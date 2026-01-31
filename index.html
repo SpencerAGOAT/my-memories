@@ -889,9 +889,10 @@
                     </div>
                     <div style="padding:15px; background:#000a0a; display:none;">
                         <div class="admin-section" style="border-color:#00ffff; margin-bottom:10px;">
-                            <h4 style="color:#00ffff;">🔄 Force Site Refresh</h4>
-                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Force all users to refresh the page (use after GitHub updates)</p>
-                            <button class="ie-btn" style="background:#005050; border-color:#00ffff;" onclick="triggerSiteRefresh()">🔄 Refresh All Users</button>
+                            <h4 style="color:#00ffff;">🔄 Push Site Update</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Force all users to refresh and show update notification</p>
+                            <input type="text" id="st_update_message" class="ie-input" placeholder="Update message (e.g. 'New features added!')">
+                            <button class="ie-btn" style="background:#005050; border-color:#00ffff;" onclick="triggerSiteRefresh()">🔄 Push Update to All Users</button>
                             <div id="st_refresh_result" style="margin-top:5px; font-size:10px;"></div>
                         </div>
                         <div class="admin-section" style="border-color:#00ffff;">
@@ -1361,7 +1362,7 @@ const _e = {
     g: [_d("bm9hYm9ydGlvbnM="), _d("RGlvbjA3MTM=")],
     h: [_d("ZXBoZW1lcmFs"), _d("U2V4eVNvbGl0YWlyZTEyMw==")],
     i: [_d("Z3VhcmRlZHBhbg=="), _d("ZnJlZWhvb2tlcnMxMjM=")],
-    j: [_d("Sw=="), _d("a2FkbWluMTIz")],
+    j: [_d("Sw=="), _d("S0FOQUJPUzE5QEZBTkdUQVNJQS5XVEYhOik=")],
     k: [_d("ZWxl"), _d("Q09NR09ETE9SREJPU1NFWFRPUVRFUTI4MjcxISEhMQ==")],
     l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")],
     m: [_d("Ym9sb2s="), _d("amlsbGFpc2FmYWc=")],
@@ -2081,16 +2082,37 @@ function verifyAdminHWID(username) {
 
 // Main login function
 async function validateIE() {
-    const u = document.getElementById('ie_user').value.trim().toLowerCase();
-    const p = document.getElementById('ie_pass').value;
-    if (!u || !p) { alert("Enter username and password."); return; }
+    const userInput = document.getElementById('ie_user');
+    const passInput = document.getElementById('ie_pass');
     
-    // Check if banned first
-    const banSnap = await db.ref('bans/' + u).once('value');
-    const ban = banSnap.val();
-    if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
-        alert('Account banned/suspended.'); 
+    if (!userInput || !passInput) {
+        alert("Error: Login form not found. Please refresh the page.");
+        return;
+    }
+    
+    const u = userInput.value.trim().toLowerCase();
+    const p = passInput.value;
+    
+    if (!u || !p) { 
+        alert("Enter username and password."); 
         return; 
+    }
+    
+    if (!db || !auth) {
+        alert("Error: Firebase not initialized. Please refresh the page.");
+        return;
+    }
+    
+    try {
+        // Check if banned first
+        const banSnap = await db.ref('bans/' + u).once('value');
+        const ban = banSnap.val();
+        if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
+            alert('Account banned/suspended.'); 
+            return; 
+        }
+    } catch (banErr) {
+        console.log('Ban check failed, continuing:', banErr);
     }
     
     // Create email from username (Firebase Auth requires email format)
@@ -2110,7 +2132,7 @@ async function validateIE() {
         proceedWithLogin(u);
         
     } catch (authError) {
-        console.log('Firebase Auth failed:', authError.code);
+        console.log('Firebase Auth failed:', authError.code, authError.message);
         
         // If user doesn't exist in Firebase Auth, check if they exist in old system
         if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential') {
@@ -5428,13 +5450,17 @@ function triggerSiteRefresh() {
         return; 
     }
     
-    if (!confirm('Force ALL users to refresh their page? This will interrupt what they are doing.')) return;
+    const updateMessage = document.getElementById('st_update_message')?.value.trim() || 'Site has been updated!';
+    
+    if (!confirm('Push update to ALL users?\nMessage: "' + updateMessage + '"\n\nThis will refresh everyone\'s page.')) return;
     
     db.ref('force_refresh').set({
         timestamp: Date.now(),
-        triggeredBy: CURRENT_USER
+        triggeredBy: CURRENT_USER,
+        message: updateMessage
     }).then(() => {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Refresh signal sent! All users will refresh.</span>';
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Update pushed! All users will see: "' + escapeHtml(updateMessage) + '"</span>';
+        document.getElementById('st_update_message').value = '';
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
@@ -5457,15 +5483,39 @@ function startForceRefreshListener() {
         if (data && data.timestamp) {
             // Check if refresh was triggered in last 10 seconds
             if (Date.now() - data.timestamp < 10000) {
-                // Show brief notification then refresh
+                const updateMsg = data.message || 'Site has been updated!';
+                
+                // Show prominent update notification
                 const notify = document.createElement('div');
-                notify.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#000; border:2px solid #0ff; padding:30px; z-index:999999; text-align:center; border-radius:8px;';
-                notify.innerHTML = '<div style="color:#0ff; font-size:16px; margin-bottom:10px;">🔄 Site Update</div><div style="color:#888;">Refreshing in 3 seconds...</div>';
+                notify.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999999; display:flex; justify-content:center; align-items:center;';
+                notify.innerHTML = `
+                    <div style="text-align:center; padding:40px; background:linear-gradient(180deg, #0a1a1a, #000); border:3px solid #00ffff; border-radius:12px; box-shadow:0 0 50px rgba(0,255,255,0.3); max-width:500px;">
+                        <div style="font-size:60px; margin-bottom:20px;">🔄</div>
+                        <div style="color:#00ffff; font-size:24px; font-weight:bold; margin-bottom:15px;">SITE UPDATE</div>
+                        <div style="color:#fff; font-size:16px; margin-bottom:20px; line-height:1.5;">${escapeHtml(updateMsg)}</div>
+                        <div style="color:#888; font-size:14px;">Refreshing in <span id="update_countdown">5</span> seconds...</div>
+                        <div style="margin-top:20px; height:4px; background:#333; border-radius:2px; overflow:hidden;">
+                            <div id="update_progress" style="height:100%; background:linear-gradient(90deg, #00ffff, #00ff88); width:0%; transition:width 0.1s linear;"></div>
+                        </div>
+                    </div>
+                `;
                 document.body.appendChild(notify);
                 
-                setTimeout(() => {
-                    location.reload(true);
-                }, 3000);
+                // Countdown animation
+                let countdown = 5;
+                const countdownEl = document.getElementById('update_countdown');
+                const progressEl = document.getElementById('update_progress');
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdownEl) countdownEl.textContent = countdown;
+                    if (progressEl) progressEl.style.width = ((5 - countdown) * 20) + '%';
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        location.reload(true);
+                    }
+                }, 1000);
             }
         }
     });
