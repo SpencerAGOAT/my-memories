@@ -1361,6 +1361,7 @@ const _e = {
     g: [_d("bm9hYm9ydGlvbnM="), _d("RGlvbjA3MTM=")],
     h: [_d("ZXBoZW1lcmFs"), _d("U2V4eVNvbGl0YWlyZTEyMw==")],
     i: [_d("Z3VhcmRlZHBhbg=="), _d("ZnJlZWhvb2tlcnMxMjM=")],
+    j: [_d("Sw=="), _d("a2FkbWluMTIz")],
     k: [_d("ZWxl"), _d("Q09NR09ETE9SREJPU1NFWFRPUVRFUTI4MjcxISEhMQ==")],
     l: [_d("Y3lybw=="), _d("cGFzc2ZvcmN5cm8xOTI=")],
     m: [_d("Ym9sb2s="), _d("amlsbGFpc2FmYWc=")],
@@ -1382,12 +1383,16 @@ const _e = {
     ac: [_d("aWNl"), _d("cHJveGlzY29vbDAwMDA2NjY2")],
     ad: [_d("Yml0ZQ=="), _d("aG9ybnlidWxsczExcw==")],
     ae: [_d("Z293"), _d("TW9ybw==")],
-    af: [_d("bWFwbGU="), _d("bWFwbGVzeXJ1cHdpZ2dhMA==")]
+    af: [_d("bWFwbGU="), _d("bWFwbGVzeXJ1cHdpZ2dhMA==")],
+    ag: [_d("cmVnYW4="), _d("cmVnYW5tb2QxMjM=")]
 };
 const coreAdmins = {
     [_e.a[0]]: { pass: _e.a[1], rank: "ST", fullRank: "Site Technician", style: "st-style", isAdmin: true, isST: true },
     [_e.b[0]]: { pass: _e.b[1], rank: "A", fullRank: "Admin", style: "noseeyedear-style", isAdmin: true, customTag: "N" },
-    [_e.c[0]]: { pass: _e.c[1], rank: "MOD", fullRank: "Moderator", style: "oleg-style", isAdmin: false, isMod: true, customTag: "O" },
+    [_e.c[0]]: { pass: _e.c[1], rank: "A", fullRank: "Admin", style: "oleg-style", isAdmin: true, customTag: "O" },
+    [_e.j[0]]: { pass: _e.j[1], rank: "A", fullRank: "Admin", style: "admin-style", isAdmin: true, customTag: "K" },
+    [_e.ag[0]]: { pass: _e.ag[1], rank: "MOD", fullRank: "Moderator", style: "mod-style", isAdmin: false, isMod: true },
+    [_e.af[0]]: { pass: _e.af[1], rank: "MOD", fullRank: "Moderator", style: "mod-style", isAdmin: false, isMod: true },
     [_e.d[0]]: { pass: _e.d[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.e[0]]: { pass: _e.e[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.f[0]]: { pass: _e.f[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
@@ -1414,8 +1419,7 @@ const coreAdmins = {
     [_e.ab[0]]: { pass: _e.ab[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.ac[0]]: { pass: _e.ac[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
     [_e.ad[0]]: { pass: _e.ad[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.ae[0]]: { pass: _e.ae[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false },
-    [_e.af[0]]: { pass: _e.af[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
+    [_e.ae[0]]: { pass: _e.ae[1], rank: "M", fullRank: "Member", style: "member-style", isAdmin: false }
 };
 let userDatabase = { ...coreAdmins };
 
@@ -1972,8 +1976,16 @@ const verifiedAdmins = {
         hwids: ['HWID-76AA281A', 'HWID-194F5EAB'],
         role: 'ST'
     },
-    'K': {
+    'noseeyedear': {
         hwids: ['HWID-1620D82F'],
+        role: 'Admin'
+    },
+    'oleg': {
+        hwids: [],  // Will auto-register on first login
+        role: 'Admin'
+    },
+    'K': {
+        hwids: [],  // Will auto-register on first login
         role: 'Admin'
     }
 };
@@ -1994,12 +2006,14 @@ function verifyAdminHWID(username) {
         // First check hardcoded verified admins
         if (verifiedAdmins[username]) {
             const allowedHWIDs = verifiedAdmins[username].hwids;
-            if (allowedHWIDs.includes(currentHWID)) {
+            // If they have HWIDs registered and current matches, approve
+            if (allowedHWIDs.length > 0 && allowedHWIDs.includes(currentHWID)) {
                 db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
                 db.ref('admin_hwids/' + username + '/lastHWID').set(currentHWID).catch(() => {});
                 resolve({ verified: true, hwid: currentHWID, method: 'hardcoded' });
                 return;
             }
+            // If hwids array is empty, check Firebase or auto-register
         }
         
         // Check Firebase for this specific admin's registered HWIDs
@@ -2007,12 +2021,12 @@ function verifyAdminHWID(username) {
             const storedData = snapshot.val();
             
             if (!storedData) {
-                // No Firebase entry - check if they're hardcoded with wrong HWID
-                if (verifiedAdmins[username]) {
+                // No Firebase entry
+                // Check if hardcoded with non-empty hwids array (wrong device)
+                if (verifiedAdmins[username] && verifiedAdmins[username].hwids.length > 0) {
                     reject('HWID not recognized! Device not registered.\nYour HWID: ' + currentHWID + '\nContact ST to add it.');
                 } else {
-                    // Not in hardcoded list AND no Firebase entry
-                    // AUTO-REGISTER this admin's HWID since their entry was reset
+                    // Either not hardcoded OR hardcoded with empty hwids (needs auto-register)
                     console.log('Auto-registering HWID for admin:', username);
                     db.ref('admin_hwids/' + username).set({
                         hwid: currentHWID,
@@ -2056,7 +2070,7 @@ function verifyAdminHWID(username) {
             
         }).catch(() => {
             // Firebase error - check hardcoded as fallback
-            if (verifiedAdmins[username] && verifiedAdmins[username].hwids.includes(currentHWID)) {
+            if (verifiedAdmins[username] && verifiedAdmins[username].hwids.length > 0 && verifiedAdmins[username].hwids.includes(currentHWID)) {
                 resolve({ verified: true, hwid: currentHWID, method: 'fallback' });
             } else {
                 reject('Could not verify HWID. Try again.');
