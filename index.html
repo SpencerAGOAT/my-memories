@@ -2187,10 +2187,13 @@ async function validateIE() {
         FIREBASE_USER = userCredential.user;
         console.log('Firebase Auth successful, UID:', FIREBASE_USER.uid);
         
-        // Load user data from database
+        // Load user data from database - but MERGE with coreAdmins, don't overwrite
         const memberSnap = await db.ref('members/' + u).once('value');
-        const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-        userDatabase[u] = memberData;
+        const firebaseData = memberSnap.val() || {};
+        const coreData = coreAdmins[u] || {};
+        
+        // Merge: Firebase data first, then coreAdmins overrides (preserves isAdmin, isST, etc.)
+        userDatabase[u] = { ...firebaseData, ...coreData };
         
         proceedWithLogin(u);
         
@@ -2256,8 +2259,9 @@ async function validateIE() {
                             await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
                             
                             const memberSnap = await db.ref('members/' + u).once('value');
-                            const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-                            userDatabase[u] = memberData;
+                            const firebaseData = memberSnap.val() || {};
+                            const coreData = coreAdmins[u] || {};
+                            userDatabase[u] = { ...firebaseData, ...coreData };
                             
                             proceedWithLogin(u);
                             return;
