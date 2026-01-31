@@ -2111,12 +2111,27 @@ async function validateIE() {
         return;
     }
     
-    const u = userInput.value.trim().toLowerCase();
+    let u = userInput.value.trim();
     const p = passInput.value;
     
     if (!u || !p) { 
         alert("Enter username and password."); 
         return; 
+    }
+    
+    // Check if username exists with exact case first, then try lowercase
+    // This handles special usernames like "K" that need exact case
+    if (!userDatabase[u] && userDatabase[u.toLowerCase()]) {
+        u = u.toLowerCase();
+    } else if (!userDatabase[u]) {
+        // Check if there's a case-insensitive match
+        const lowerU = u.toLowerCase();
+        const matchingUser = Object.keys(userDatabase).find(name => name.toLowerCase() === lowerU);
+        if (matchingUser) {
+            u = matchingUser;
+        } else {
+            u = lowerU; // Default to lowercase for new users
+        }
     }
     
     if (!db || !auth) {
@@ -2137,7 +2152,7 @@ async function validateIE() {
     }
     
     // Create email from username (Firebase Auth requires email format)
-    const email = u + '@fangtasia.wtf';
+    const email = u.toLowerCase() + '@fangtasia.wtf';
     
     try {
         // Try to sign in with Firebase Auth
@@ -2156,7 +2171,7 @@ async function validateIE() {
         console.log('Firebase Auth failed:', authError.code, authError.message);
         
         // If user doesn't exist in Firebase Auth, check if they exist in old system
-        if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential' || authError.code === 'auth/invalid-email') {
+        if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential' || authError.code === 'auth/invalid-email' || authError.code === 'auth/invalid-login-credentials') {
             // Check local userDatabase (legacy users including hardcoded admins)
             if (userDatabase[u] && userDatabase[u].pass === p) {
                 console.log('Legacy user found, attempting migration...');
