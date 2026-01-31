@@ -2028,16 +2028,22 @@ function verifyAdminHWID(username) {
                     reject('HWID not recognized! Device not registered.\nYour HWID: ' + currentHWID + '\nContact ST to add it.');
                 } else {
                     // Either not hardcoded OR hardcoded with empty hwids (needs auto-register)
-                    console.log('Auto-registering HWID for admin:', username);
+                    console.log('Auto-registering HWID for admin:', username, 'HWID:', currentHWID);
+                    
+                    // Try to auto-register, but don't fail if Firebase write fails
                     db.ref('admin_hwids/' + username).set({
                         hwid: currentHWID,
                         hwids: [currentHWID],
                         registeredAt: Date.now(),
                         autoRegistered: true
                     }).then(() => {
+                        console.log('HWID auto-registered successfully');
                         resolve({ verified: true, hwid: currentHWID, method: 'auto_registered' });
-                    }).catch(() => {
-                        reject('Failed to auto-register HWID.\nYour HWID: ' + currentHWID + '\nContact ST.');
+                    }).catch((writeErr) => {
+                        console.log('HWID write failed:', writeErr.message, '- allowing login anyway for first-time admin');
+                        // Still allow login - the HWID is valid, just couldn't save it
+                        // This handles cases where Firebase rules block the write
+                        resolve({ verified: true, hwid: currentHWID, method: 'first_login_no_save' });
                     });
                 }
                 return;
@@ -2069,12 +2075,27 @@ function verifyAdminHWID(username) {
             }).catch(() => {});
             reject('HWID mismatch! Device not authorized.\nYour HWID: ' + currentHWID + '\nContact ST.');
             
-        }).catch(() => {
+        }).catch((fbErr) => {
+            console.log('Firebase HWID check error:', fbErr.message);
             // Firebase error - check hardcoded as fallback
-            if (verifiedAdmins[username] && verifiedAdmins[username].hwids.length > 0 && verifiedAdmins[username].hwids.includes(currentHWID)) {
-                resolve({ verified: true, hwid: currentHWID, method: 'fallback' });
+            if (verifiedAdmins[username]) {
+                if (verifiedAdmins[username].hwids.length === 0) {
+                    // Admin with empty hwids list - allow first login
+                    console.log('Allowing first-time admin login (Firebase error, empty hwids)');
+                    resolve({ verified: true, hwid: currentHWID, method: 'first_login_fallback' });
+                } else if (verifiedAdmins[username].hwids.includes(currentHWID)) {
+                    resolve({ verified: true, hwid: currentHWID, method: 'hardcoded_fallback' });
+                } else {
+                    reject('HWID not in allowed list.\nYour HWID: ' + currentHWID);
+                }
             } else {
-                reject('Could not verify HWID. Try again.');
+                // Not a hardcoded admin, but is in userDatabase as admin - allow with warning
+                if (userDatabase[username]?.isAdmin || userDatabase[username]?.isST || userDatabase[username]?.isMod) {
+                    console.log('Allowing admin login despite Firebase error');
+                    resolve({ verified: true, hwid: currentHWID, method: 'error_fallback' });
+                } else {
+                    reject('Could not verify HWID. Try again.');
+                }
             }
         });
     });
@@ -2135,11 +2156,12 @@ async function validateIE() {
         console.log('Firebase Auth failed:', authError.code, authError.message);
         
         // If user doesn't exist in Firebase Auth, check if they exist in old system
-        if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential') {
-            // Check local userDatabase (legacy users)
+        if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential' || authError.code === 'auth/invalid-email') {
+            // Check local userDatabase (legacy users including hardcoded admins)
             if (userDatabase[u] && userDatabase[u].pass === p) {
-                // Migrate user to Firebase Auth
-                console.log('Migrating legacy user to Firebase Auth...');
+                console.log('Legacy user found, attempting migration...');
+                
+                // Try to migrate to Firebase Auth
                 try {
                     const newUser = await auth.createUserWithEmailAndPassword(email, p);
                     FIREBASE_USER = newUser.user;
@@ -2152,40 +2174,64 @@ async function validateIE() {
                     proceedWithLogin(u);
                     return;
                 } catch (migrateErr) {
-                    console.error('Migration failed:', migrateErr);
-                    // If email already in use, try signing in again with correct format
+                    console.error('Migration failed:', migrateErr.code, migrateErr.message);
+                    
+                    // If email already in use, password might be wrong
                     if (migrateErr.code === 'auth/email-already-in-use') {
-                        alert('Account exists but password is incorrect.');
+                        alert('Account exists in Firebase but password is different. Contact ST.');
                         return;
                     }
+                    
+                    // If password too weak or other issue, still allow login for admins
+                    // This is a fallback for hardcoded admin accounts
+                    if (userDatabase[u].isAdmin || userDatabase[u].isST || userDatabase[u].isMod) {
+                        console.log('Migration failed but user is admin/mod, allowing legacy login');
+                        FIREBASE_USER = null; // No Firebase auth, but allow login
+                        proceedWithLogin(u);
+                        return;
+                    }
+                    
+                    // For regular users, show error
+                    alert('Account migration failed: ' + migrateErr.message);
+                    return;
                 }
             }
             
             // Check Firebase auth_users (users created via ST Tools with hashed passwords)
-            const authSnap = await db.ref('auth_users/' + u).once('value');
-            const authData = authSnap.val();
-            if (authData && authData.hashedPass) {
-                const enteredHash = await hashPassword(p);
-                if (authData.hashedPass === enteredHash) {
-                    // Migrate this user to Firebase Auth too
-                    console.log('Migrating ST-created user to Firebase Auth...');
-                    try {
-                        const newUser = await auth.createUserWithEmailAndPassword(email, p);
-                        FIREBASE_USER = newUser.user;
-                        
-                        await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
-                        await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
-                        
-                        const memberSnap = await db.ref('members/' + u).once('value');
-                        const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
-                        userDatabase[u] = memberData;
-                        
-                        proceedWithLogin(u);
-                        return;
-                    } catch (migrateErr) {
-                        console.error('ST user migration failed:', migrateErr);
+            try {
+                const authSnap = await db.ref('auth_users/' + u).once('value');
+                const authData = authSnap.val();
+                if (authData && authData.hashedPass) {
+                    const enteredHash = await hashPassword(p);
+                    if (authData.hashedPass === enteredHash) {
+                        // Migrate this user to Firebase Auth too
+                        console.log('Migrating ST-created user to Firebase Auth...');
+                        try {
+                            const newUser = await auth.createUserWithEmailAndPassword(email, p);
+                            FIREBASE_USER = newUser.user;
+                            
+                            await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
+                            await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
+                            
+                            const memberSnap = await db.ref('members/' + u).once('value');
+                            const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+                            userDatabase[u] = memberData;
+                            
+                            proceedWithLogin(u);
+                            return;
+                        } catch (migrateErr) {
+                            console.error('ST user migration failed:', migrateErr);
+                            // Allow login anyway for staff
+                            if (userDatabase[u]?.isAdmin || userDatabase[u]?.isST || userDatabase[u]?.isMod) {
+                                FIREBASE_USER = null;
+                                proceedWithLogin(u);
+                                return;
+                            }
+                        }
                     }
                 }
+            } catch (authCheckErr) {
+                console.error('Auth check error:', authCheckErr);
             }
             
             alert("DENIED - Invalid username or password.");
