@@ -829,45 +829,18 @@
                     </div>
                 </div>
                 
-                <!-- SECTION: SECURITY -->
+                <!-- SECTION: SECURITY (Simplified) -->
                 <div style="margin-bottom:20px; border:2px solid #ff0000; border-radius:8px; overflow:hidden;">
                     <div style="background:linear-gradient(90deg, #400000, #200000); padding:10px 15px; color:#ff0000; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
-                        🔒 SECURITY & HWID <span style="float:right; font-size:10px;">▼</span>
+                        🔒 SECURITY <span style="float:right; font-size:10px;">▼</span>
                     </div>
                     <div style="padding:15px; background:#0a0000; display:none;">
                         <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
-                            <h4 style="color:#ff0000;">Admin HWID Management</h4>
-                            <p style="color:#666; font-size:9px; margin-bottom:10px;">View and reset admin HWIDs for device verification</p>
-                            <button class="ie-btn" style="background:#500000; border-color:#ff0000; margin-bottom:10px;" onclick="loadAdminHWIDs()">🔄 Load Admin HWIDs</button>
-                            <div id="st_admin_hwids" style="max-height:200px; overflow-y:auto; font-size:10px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
-                        </div>
-                        <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
-                            <h4 style="color:#ff0000;">Reset Admin HWID</h4>
-                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Allow admin to login from new device</p>
-                            <input type="text" id="st_hwid_reset_user" class="ie-input" placeholder="Admin username">
-                            <button class="ie-btn" style="background:#700000; border-color:#ff0000;" onclick="stResetAdminHWID()">Reset HWID</button>
-                            <div id="st_hwid_reset_result" style="margin-top:5px; font-size:10px;"></div>
-                        </div>
-                        <div class="admin-section" style="border-color:#00ff00; margin-bottom:10px;">
-                            <h4 style="color:#00ff00;">Register Admin HWID</h4>
-                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Manually add an admin's HWID (get it from hwid-grabber.html)</p>
-                            <input type="text" id="st_hwid_add_user" class="ie-input" placeholder="Admin username">
-                            <input type="text" id="st_hwid_add_value" class="ie-input" placeholder="HWID (e.g. HWID-1A2B3C4D)">
-                            <button class="ie-btn" style="background:#005000; border-color:#00ff00;" onclick="stAddAdminHWID()">Register HWID</button>
-                            <div id="st_hwid_add_result" style="margin-top:5px; font-size:10px;"></div>
-                        </div>
-                        <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
-                            <h4 style="color:#ff0000;">🚫 Block/Unblock HWID</h4>
-                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Block a device from accessing the site entirely</p>
-                            <input type="text" id="st_hwid_block_value" class="ie-input" placeholder="HWID to block (e.g. HWID-1A2B3C4D)">
-                            <input type="text" id="st_hwid_block_reason" class="ie-input" placeholder="Reason (optional)">
-                            <div style="display:flex; gap:5px; margin-top:5px;">
-                                <button class="ie-btn" style="flex:1; background:#700000; border-color:#ff0000;" onclick="stBlockHWID()">🚫 Block HWID</button>
-                                <button class="ie-btn" style="flex:1; background:#005000; border-color:#00ff00;" onclick="stUnblockHWID()">✓ Unblock</button>
-                            </div>
-                            <div id="st_hwid_block_result" style="margin-top:5px; font-size:10px;"></div>
-                            <button class="ie-btn" style="background:#333; border-color:#ff0000; margin-top:10px;" onclick="loadBlockedHWIDs()">🔄 Load Blocked HWIDs</button>
-                            <div id="st_blocked_hwids" style="max-height:150px; overflow-y:auto; font-size:9px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px; margin-top:5px;"></div>
+                            <h4 style="color:#ff0000;">Force Logout User</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Force a user to logout from all sessions</p>
+                            <input type="text" id="st_force_logout_user" class="ie-input" placeholder="Username">
+                            <button class="ie-btn" style="background:#700000; border-color:#ff0000;" onclick="stForceLogoutUser()">Force Logout</button>
+                            <div id="st_force_logout_result" style="margin-top:5px; font-size:10px;"></div>
                         </div>
                         <div class="admin-section" style="border-color:#ff0000; margin-bottom:10px;">
                             <h4 style="color:#ff0000;">Security Logs</h4>
@@ -878,6 +851,18 @@
                             <h4 style="color:#ff0000;">Active Sessions</h4>
                             <button class="ie-btn" style="background:#500000; border-color:#ff0000; margin-bottom:10px;" onclick="loadActiveSessions()">🔄 Load Sessions</button>
                             <div id="st_active_sessions" style="max-height:200px; overflow-y:auto; font-size:9px; background:#050000; padding:8px; border:1px solid #400; border-radius:4px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ffd700; margin-top:10px;">
+                            <h4 style="color:#ffd700;">🔧 Data Recovery</h4>
+                            <p style="color:#666; font-size:9px; margin-bottom:10px;">Recover user data from duplicate/case-mismatch accounts</p>
+                            <input type="text" id="st_recover_from" class="ie-input" placeholder="Source username (e.g. k)">
+                            <input type="text" id="st_recover_to" class="ie-input" placeholder="Target username (e.g. K)">
+                            <button class="ie-btn" style="background:#555000; border-color:#ffd700;" onclick="stRecoverUserData()">🔄 Recover Data</button>
+                            <div id="st_recover_result" style="margin-top:5px; font-size:10px;"></div>
+                            <div style="margin-top:10px; padding:8px; background:#1a1a00; border:1px solid #554400; border-radius:4px;">
+                                <div style="color:#ffd700; font-size:10px; margin-bottom:5px;">Quick Fix: Recover K's Data</div>
+                                <button class="ie-btn" style="background:#554400; border-color:#ffd700; font-size:9px;" onclick="recoverKData()">🔄 Recover K from k</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1228,13 +1213,31 @@ if (auth) {
             try {
                 // Get username from UID
                 const usernameSnap = await db.ref('uid_users/' + user.uid).once('value');
-                const username = usernameSnap.val();
+                let username = usernameSnap.val();
                 
                 if (username && !CURRENT_USER) {
+                    // Check if this username exists in coreAdmins with different casing
+                    for (const coreUser of Object.keys(coreAdmins)) {
+                        if (coreUser.toLowerCase() === username.toLowerCase()) {
+                            username = coreUser; // Use coreAdmins casing
+                            break;
+                        }
+                    }
+                    
                     console.log('Auto-login as:', username);
-                    // Load user data
+                    // Load user data from Firebase
                     const memberSnap = await db.ref('members/' + username).once('value');
-                    const memberData = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+                    const firebaseData = memberSnap.val() || {};
+                    
+                    // IMPORTANT: Merge with coreAdmins - coreAdmins takes precedence
+                    const coreData = coreAdmins[username] || {};
+                    const memberData = { 
+                        rank: 'M', 
+                        fullRank: 'Member', 
+                        style: 'member-style',
+                        ...firebaseData,
+                        ...coreData  // coreAdmins overwrites Firebase
+                    };
                     
                     // Wait for userDatabase to be defined
                     if (typeof userDatabase !== 'undefined') {
@@ -1242,7 +1245,7 @@ if (auth) {
                     }
                     
                     // Check if not banned
-                    const banSnap = await db.ref('bans/' + username).once('value');
+                    const banSnap = await db.ref('bans/' + username.toLowerCase()).once('value');
                     const ban = banSnap.val();
                     if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
                         console.log('User is banned, signing out');
@@ -1277,48 +1280,6 @@ if (auth) {
     }
 });
 } // End of auth check
-
-// ========== HWID BLOCK CHECK - RUNS IMMEDIATELY ==========
-(function checkBlockedHWID() {
-    if (!db) { console.log('DB not available for HWID check'); return; }
-    // Generate HWID early
-    function getHWID() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 200; canvas.height = 50;
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'top'; ctx.font = '14px Arial';
-        ctx.fillStyle = '#f60'; ctx.fillRect(125, 1, 62, 20);
-        ctx.fillStyle = '#069'; ctx.fillText('HWID-GEN', 2, 15);
-        const canvasData = canvas.toDataURL();
-        const fingerprint = [navigator.userAgent, navigator.language, screen.width + 'x' + screen.height + 'x' + screen.colorDepth, new Date().getTimezoneOffset(), navigator.hardwareConcurrency || 0, navigator.platform || '', canvasData.slice(-100)].join('|');
-        let hash = 0;
-        for (let i = 0; i < fingerprint.length; i++) { const char = fingerprint.charCodeAt(i); hash = ((hash << 5) - hash) + char; hash = hash & hash; }
-        return 'HWID-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-    }
-    
-    const visitorHWID = getHWID();
-    const hwidKey = visitorHWID.replace(/[.#$/\[\]]/g, '_');
-    
-    // Check if this HWID is blocked
-    db.ref('blocked_hwids/' + hwidKey).once('value', (snapshot) => {
-        if (snapshot.exists()) {
-            const blockData = snapshot.val();
-            // Log blocked attempt
-            db.ref('security_logs/blocked_attempt').push({
-                hwid: visitorHWID,
-                timestamp: Date.now(),
-                reason: blockData.reason
-            });
-            // Block the site completely
-            document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#f00;display:flex;justify-content:center;align-items:center;font-family:monospace;font-size:24px;text-align:center;z-index:999999;"><div>⛔ ACCESS DENIED ⛔<br><br><span style="font-size:14px;color:#666;">Your device has been blocked from this site.</span><br><span style="font-size:10px;color:#333;">HWID: ' + visitorHWID + '</span></div></div>';
-            document.body.style.overflow = 'hidden';
-            return;
-        }
-        
-        // Log unknown visitor for tracking (optional)
-        // db.ref('security_logs/unknown_visitor').push({ hwid: visitorHWID, timestamp: Date.now() });
-    });
-})();
 
 // Force logout listener - checks if user was kicked
 function startForceLogoutListener() {
@@ -1923,8 +1884,7 @@ function loadClubsLeaderboard() {
 }
 
 // LOGIN SYSTEM
-// ==================== SECURITY SYSTEM ====================
-// HWID verification for admins, anti-tampering measures
+// ==================== SIMPLIFIED SECURITY ====================
 
 // Basic anti-tampering (non-breaking)
 document.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -1934,185 +1894,8 @@ document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key.toUpperCase() === 'U') { e.preventDefault(); return false; }
 });
 
-// Generate HWID fingerprint from browser
-function generateHWID() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 200;
-    canvas.height = 50;
-    const ctx = canvas.getContext('2d');
-    ctx.textBaseline = 'top';
-    ctx.font = '14px Arial';
-    ctx.fillStyle = '#f60';
-    ctx.fillRect(125, 1, 62, 20);
-    ctx.fillStyle = '#069';
-    ctx.fillText('HWID-GEN', 2, 15);
-    const canvasData = canvas.toDataURL();
-    
-    const fingerprint = [
-        navigator.userAgent,
-        navigator.language,
-        screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
-        new Date().getTimezoneOffset(),
-        navigator.hardwareConcurrency || 0,
-        navigator.platform || '',
-        canvasData.slice(-100)
-    ].join('|');
-    
-    let hash = 0;
-    for (let i = 0; i < fingerprint.length; i++) {
-        const char = fingerprint.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    return 'HWID-' + Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-}
-
 // Store current session info
 let currentSessionToken = null;
-let currentSessionHWID = null;
-
-// Pre-registered verified admins with their HWIDs (HARDCODED - cannot be changed via console)
-const verifiedAdmins = {
-    'losersyndicate': {
-        hwids: ['HWID-76AA281A', 'HWID-194F5EAB'],
-        role: 'ST'
-    },
-    'noseeyedear': {
-        hwids: ['HWID-1620D82F'],
-        role: 'Admin'
-    },
-    'oleg': {
-        hwids: [],  // Will auto-register on first login
-        role: 'Admin'
-    },
-    'K': {
-        hwids: [],  // Will auto-register on first login
-        role: 'Admin'
-    }
-};
-
-// Check if user is a verified admin (either in hardcoded list OR has HWID in Firebase)
-function isVerifiedAdmin(username) {
-    // Hardcoded admins always verified
-    if (verifiedAdmins.hasOwnProperty(username)) return true;
-    // Others can be verified via Firebase
-    return true; // Let verifyAdminHWID handle the actual check
-}
-
-// Verify admin HWID - checks hardcoded list first, then Firebase
-function verifyAdminHWID(username) {
-    return new Promise((resolve, reject) => {
-        const currentHWID = generateHWID();
-        
-        // First check hardcoded verified admins
-        if (verifiedAdmins[username]) {
-            const allowedHWIDs = verifiedAdmins[username].hwids;
-            // If they have HWIDs registered and current matches, approve
-            if (allowedHWIDs.length > 0 && allowedHWIDs.includes(currentHWID)) {
-                db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
-                db.ref('admin_hwids/' + username + '/lastHWID').set(currentHWID).catch(() => {});
-                resolve({ verified: true, hwid: currentHWID, method: 'hardcoded' });
-                return;
-            }
-            // If hwids array is empty, check Firebase or auto-register
-        }
-        
-        // Check Firebase for this specific admin's registered HWIDs
-        db.ref('admin_hwids/' + username).once('value', (snapshot) => {
-            const storedData = snapshot.val();
-            
-            if (!storedData) {
-                // No Firebase entry
-                // Check if hardcoded with non-empty hwids array (wrong device)
-                if (verifiedAdmins[username] && verifiedAdmins[username].hwids.length > 0) {
-                    reject('HWID not recognized! Device not registered.\nYour HWID: ' + currentHWID + '\nContact ST to add it.');
-                } else {
-                    // Either not hardcoded OR hardcoded with empty hwids (needs auto-register)
-                    console.log('Auto-registering HWID for admin:', username, 'HWID:', currentHWID);
-                    
-                    // Try to auto-register, but don't fail if Firebase write fails
-                    db.ref('admin_hwids/' + username).set({
-                        hwid: currentHWID,
-                        hwids: [currentHWID],
-                        registeredAt: Date.now(),
-                        autoRegistered: true
-                    }).then(() => {
-                        console.log('HWID auto-registered successfully');
-                        resolve({ verified: true, hwid: currentHWID, method: 'auto_registered' });
-                    }).catch((writeErr) => {
-                        console.log('HWID write failed:', writeErr.message, '- allowing login anyway for first-time admin');
-                        // Still allow login - the HWID is valid, just couldn't save it
-                        // This handles cases where Firebase rules block the write
-                        resolve({ verified: true, hwid: currentHWID, method: 'first_login_no_save' });
-                    });
-                }
-                return;
-            }
-            
-            // Check single HWID
-            if (storedData.hwid === currentHWID) {
-                db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
-                resolve({ verified: true, hwid: currentHWID, method: 'firebase_single' });
-                return;
-            }
-            
-            // Check multiple HWIDs array
-            if (storedData.hwids && Array.isArray(storedData.hwids)) {
-                if (storedData.hwids.includes(currentHWID)) {
-                    db.ref('admin_hwids/' + username + '/lastUsed').set(Date.now()).catch(() => {});
-                    db.ref('admin_hwids/' + username + '/lastHWID').set(currentHWID).catch(() => {});
-                    resolve({ verified: true, hwid: currentHWID, method: 'firebase_array' });
-                    return;
-                }
-            }
-            
-            // HWID mismatch - but check if this admin should be allowed anyway
-            // If they're in verifiedAdmins with empty hwids, allow and update their HWID
-            if (verifiedAdmins[username] && verifiedAdmins[username].hwids.length === 0) {
-                console.log('Admin in verifiedAdmins with empty hwids - updating to current HWID');
-                db.ref('admin_hwids/' + username).set({
-                    hwid: currentHWID,
-                    hwids: [currentHWID],
-                    updatedAt: Date.now(),
-                    updatedReason: 'auto_update_empty_hwids'
-                }).catch(() => {});
-                resolve({ verified: true, hwid: currentHWID, method: 'auto_update' });
-                return;
-            }
-            
-            db.ref('security_logs/hwid_mismatch').push({
-                user: username,
-                storedHWID: storedData.hwid || 'array',
-                attemptedHWID: currentHWID,
-                timestamp: Date.now()
-            }).catch(() => {});
-            reject('HWID mismatch! Device not authorized.\nYour HWID: ' + currentHWID + '\nContact ST.');
-            
-        }).catch((fbErr) => {
-            console.log('Firebase HWID check error:', fbErr.message);
-            // Firebase error - check hardcoded as fallback
-            if (verifiedAdmins[username]) {
-                if (verifiedAdmins[username].hwids.length === 0) {
-                    // Admin with empty hwids list - allow first login
-                    console.log('Allowing first-time admin login (Firebase error, empty hwids)');
-                    resolve({ verified: true, hwid: currentHWID, method: 'first_login_fallback' });
-                } else if (verifiedAdmins[username].hwids.includes(currentHWID)) {
-                    resolve({ verified: true, hwid: currentHWID, method: 'hardcoded_fallback' });
-                } else {
-                    reject('HWID not in allowed list.\nYour HWID: ' + currentHWID);
-                }
-            } else {
-                // Not a hardcoded admin, but is in userDatabase as admin - allow with warning
-                if (userDatabase[username]?.isAdmin || userDatabase[username]?.isST || userDatabase[username]?.isMod) {
-                    console.log('Allowing admin login despite Firebase error');
-                    resolve({ verified: true, hwid: currentHWID, method: 'error_fallback' });
-                } else {
-                    reject('Could not verify HWID. Try again.');
-                }
-            }
-        });
-    });
-}
 
 // Main login function
 async function validateIE() {
@@ -2132,32 +1915,18 @@ async function validateIE() {
         return; 
     }
     
-    // IMPORTANT: Find the correct username with proper casing from userDatabase
-    // This handles special usernames like "K" (uppercase) vs regular lowercase names
+    // Find correct username casing from coreAdmins first
     let foundUser = null;
-    
-    // First, check exact match
-    if (userDatabase[u]) {
-        foundUser = u;
-    } else {
-        // Check case-insensitive match in userDatabase
-        const inputLower = u.toLowerCase();
-        for (const dbUser of Object.keys(userDatabase)) {
-            if (dbUser.toLowerCase() === inputLower) {
-                foundUser = dbUser; // Use the database's casing
-                break;
-            }
+    for (const coreUser of Object.keys(coreAdmins)) {
+        if (coreUser.toLowerCase() === u.toLowerCase()) {
+            foundUser = coreUser;
+            break;
         }
     }
-    
-    // If found in userDatabase, use that exact casing
     if (foundUser) {
         u = foundUser;
-        console.log('Found user in database:', u);
     } else {
-        // Not in local database - use lowercase for consistency
-        u = u.toLowerCase();
-        console.log('User not in local database, using lowercase:', u);
+        u = u.toLowerCase(); // Regular users are lowercase
     }
     
     if (!db || !auth) {
@@ -2165,174 +1934,139 @@ async function validateIE() {
         return;
     }
     
+    // Check if banned
     try {
-        // Check if banned first
         const banSnap = await db.ref('bans/' + u.toLowerCase()).once('value');
         const ban = banSnap.val();
         if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) { 
             alert('Account banned/suspended.'); 
             return; 
         }
-    } catch (banErr) {
-        console.log('Ban check failed, continuing:', banErr);
+    } catch (e) {}
+    
+    // PRIORITY 1: Check coreAdmins (hardcoded staff) - bypass Firebase entirely
+    if (coreAdmins[u] && coreAdmins[u].pass === p) {
+        console.log('Core admin authenticated:', u);
+        userDatabase[u] = { ...userDatabase[u], ...coreAdmins[u] };
+        proceedWithLogin(u);
+        return;
     }
     
-    // Create email from username - use the EXACT username for email to distinguish K from k
-    // This ensures K@fangtasia.wtf and k@fangtasia.wtf are different accounts
-    const email = u + '@fangtasia.wtf';
+    // PRIORITY 2: Check auth_users (ST-created accounts with hashed passwords)
+    try {
+        const authSnap = await db.ref('auth_users/' + u.toLowerCase()).once('value');
+        const authData = authSnap.val();
+        if (authData && authData.hashedPass) {
+            const enteredHash = await hashPassword(p);
+            if (authData.hashedPass === enteredHash) {
+                console.log('ST-created user authenticated:', u);
+                const memberSnap = await db.ref('members/' + u).once('value');
+                userDatabase[u] = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+                proceedWithLogin(u);
+                return;
+            } else {
+                alert("DENIED - Wrong password.");
+                return;
+            }
+        }
+    } catch (e) {
+        console.log('Auth users check error:', e);
+    }
+    
+    // PRIORITY 3: Try Firebase Auth
+    const email = u.toLowerCase() + '@fangtasia.wtf';
     
     try {
-        // Try to sign in with Firebase Auth
         const userCredential = await auth.signInWithEmailAndPassword(email, p);
         FIREBASE_USER = userCredential.user;
-        console.log('Firebase Auth successful, UID:', FIREBASE_USER.uid);
+        console.log('Firebase Auth successful:', u);
         
-        // Load user data from database - but MERGE with coreAdmins, don't overwrite
         const memberSnap = await db.ref('members/' + u).once('value');
-        const firebaseData = memberSnap.val() || {};
-        const coreData = coreAdmins[u] || {};
-        
-        // Merge: Firebase data first, then coreAdmins overrides (preserves isAdmin, isST, etc.)
-        userDatabase[u] = { ...firebaseData, ...coreData };
+        userDatabase[u] = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
         
         proceedWithLogin(u);
+        return;
         
     } catch (authError) {
-        console.log('Firebase Auth failed:', authError.code, authError.message);
+        console.log('Firebase Auth error:', authError.code);
         
-        // If user doesn't exist in Firebase Auth, check if they exist in old system
-        if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential' || authError.code === 'auth/invalid-email' || authError.code === 'auth/invalid-login-credentials') {
-            // Check local userDatabase (legacy users including hardcoded admins)
-            if (userDatabase[u] && userDatabase[u].pass === p) {
-                console.log('Legacy user found, attempting migration...');
-                
-                // Try to migrate to Firebase Auth
-                try {
-                    const newUser = await auth.createUserWithEmailAndPassword(email, p);
-                    FIREBASE_USER = newUser.user;
-                    
-                    // Save UID mapping
-                    await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
-                    await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
-                    
-                    console.log('Migration successful, UID:', FIREBASE_USER.uid);
-                    proceedWithLogin(u);
-                    return;
-                } catch (migrateErr) {
-                    console.error('Migration failed:', migrateErr.code, migrateErr.message);
-                    
-                    // If email already in use, password might be wrong
-                    if (migrateErr.code === 'auth/email-already-in-use') {
-                        alert('Account exists in Firebase but password is different. Contact ST.');
-                        return;
-                    }
-                    
-                    // If password too weak or other issue, still allow login for admins
-                    // This is a fallback for hardcoded admin accounts
-                    if (userDatabase[u].isAdmin || userDatabase[u].isST || userDatabase[u].isMod) {
-                        console.log('Migration failed but user is admin/mod, allowing legacy login');
-                        FIREBASE_USER = null; // No Firebase auth, but allow login
+        // Handle specific Firebase errors
+        if (authError.code === 'auth/wrong-password' || authError.code === 'auth/invalid-credential') {
+            alert("DENIED - Wrong password.");
+            return;
+        }
+        
+        if (authError.code === 'auth/too-many-requests') {
+            alert("Too many failed attempts. Please wait a few minutes.");
+            return;
+        }
+        
+        if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-email') {
+            // User doesn't exist in Firebase Auth - check if they exist in members
+            try {
+                const memberSnap = await db.ref('members/' + u).once('value');
+                if (memberSnap.exists()) {
+                    // User exists in database but not in Firebase Auth
+                    // This is a legacy user - create their Firebase Auth account
+                    try {
+                        const newUser = await auth.createUserWithEmailAndPassword(email, p);
+                        FIREBASE_USER = newUser.user;
+                        console.log('Created Firebase Auth for existing member:', u);
+                        
+                        userDatabase[u] = memberSnap.val();
                         proceedWithLogin(u);
                         return;
-                    }
-                    
-                    // For regular users, show error
-                    alert('Account migration failed: ' + migrateErr.message);
-                    return;
-                }
-            }
-            
-            // Check Firebase auth_users (users created via ST Tools with hashed passwords)
-            try {
-                const authSnap = await db.ref('auth_users/' + u).once('value');
-                const authData = authSnap.val();
-                if (authData && authData.hashedPass) {
-                    const enteredHash = await hashPassword(p);
-                    if (authData.hashedPass === enteredHash) {
-                        // Migrate this user to Firebase Auth too
-                        console.log('Migrating ST-created user to Firebase Auth...');
-                        try {
-                            const newUser = await auth.createUserWithEmailAndPassword(email, p);
-                            FIREBASE_USER = newUser.user;
-                            
-                            await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
-                            await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
-                            
-                            const memberSnap = await db.ref('members/' + u).once('value');
-                            const firebaseData = memberSnap.val() || {};
-                            const coreData = coreAdmins[u] || {};
-                            userDatabase[u] = { ...firebaseData, ...coreData };
-                            
-                            proceedWithLogin(u);
+                    } catch (createErr) {
+                        if (createErr.code === 'auth/email-already-in-use') {
+                            // Email exists but password is wrong
+                            alert("DENIED - Wrong password. If you forgot your password, contact an admin.");
                             return;
-                        } catch (migrateErr) {
-                            console.error('ST user migration failed:', migrateErr);
-                            // Allow login anyway for staff
-                            if (userDatabase[u]?.isAdmin || userDatabase[u]?.isST || userDatabase[u]?.isMod) {
-                                FIREBASE_USER = null;
-                                proceedWithLogin(u);
-                                return;
-                            }
                         }
+                        if (createErr.code === 'auth/weak-password') {
+                            alert("Password too weak. Use at least 6 characters.");
+                            return;
+                        }
+                        console.log('Create user error:', createErr.code);
                     }
                 }
-            } catch (authCheckErr) {
-                console.error('Auth check error:', authCheckErr);
-            }
+            } catch (e) {}
             
             alert("DENIED - Invalid username or password.");
-        } else if (authError.code === 'auth/wrong-password') {
-            alert("DENIED - Wrong password.");
-        } else if (authError.code === 'auth/too-many-requests') {
-            alert("Too many failed attempts. Try again later.");
-        } else {
-            console.error('Auth error:', authError);
-            alert("Login error: " + authError.message);
+            return;
         }
+        
+        // Unknown error
+        alert("Login error. Please try again.");
     }
 }
 
 function proceedWithLogin(u) {
-    // Generate session
-    currentSessionHWID = generateHWID();
+    // Generate session token
     currentSessionToken = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
     
     // Save session to Firebase (non-blocking)
     db.ref('sessions/' + u).set({
         token: currentSessionToken,
-        hwid: currentSessionHWID,
         created: Date.now(),
         lastActivity: Date.now()
     }).catch(() => {});
     
-    // Bypass list - these admins skip HWID verification entirely
-    const hwidBypassList = ['K', 'oleg'];
-    
-    // Check if admin/mod/ST - they need HWID verification (unless bypassed)
-    const isAdminUser = userDatabase[u]?.isAdmin || userDatabase[u]?.isMod || userDatabase[u]?.isST;
-    
-    if (isAdminUser && !hwidBypassList.includes(u)) {
-        // Admin - verify HWID
-        verifyAdminHWID(u).then((result) => {
-            CURRENT_USER = u;
-            IS_GUEST = false;
-            completeLogin(u);
-        }).catch((err) => {
-            alert('Admin login blocked:\n' + err);
-            currentSessionToken = null;
-            currentSessionHWID = null;
-            db.ref('sessions/' + u).remove().catch(() => {});
-        });
-    } else {
-        // Regular member OR bypassed admin - just login
-        CURRENT_USER = u;
-        IS_GUEST = false;
-        completeLogin(u);
+    // Make sure coreAdmins data is in userDatabase
+    if (coreAdmins[u]) {
+        userDatabase[u] = { ...userDatabase[u], ...coreAdmins[u] };
     }
+    
+    CURRENT_USER = u;
+    IS_GUEST = false;
+    completeLogin(u);
 }
 
 function completeLogin(u) {
-    const userData = userDatabase[u] || { rank: 'M', fullRank: 'Member', style: 'member-style' };
+    // Ensure we have the correct user data with coreAdmins taking precedence
+    const coreData = coreAdmins[u] || {};
+    const dbData = userDatabase[u] || {};
+    const userData = { ...{ rank: 'M', fullRank: 'Member', style: 'member-style' }, ...dbData, ...coreData };
+    userDatabase[u] = userData;
     
     document.getElementById('ie_login').style.display = 'none';
     document.getElementById('ie_upload').style.display = 'block';
@@ -2384,7 +2118,7 @@ function completeLogin(u) {
     }
 }
 
-// Secure admin panel access - verifies HWID before opening
+// Admin panel access - just check permissions
 function openAdminPanelSecure() {
     if (!CURRENT_USER || IS_GUEST) {
         alert('You must be logged in to access the admin panel.');
@@ -2404,20 +2138,11 @@ function openAdminPanelSecure() {
     
     if (!isAdmin && !isMod && !isST) {
         alert('Access denied. No admin privileges.');
-        db.ref('security_logs/unauthorized_admin').push({
-            user: CURRENT_USER,
-            timestamp: Date.now(),
-            hwid: generateHWID()
-        }).catch(() => {});
         return;
     }
     
-    // Verify HWID matches (checks both hardcoded and Firebase)
-    verifyAdminHWID(CURRENT_USER).then(() => {
-        toggleWin('admin_window');
-    }).catch((err) => {
-        alert('Admin panel access denied:\n' + err);
-    });
+    // Open admin panel
+    toggleWin('admin_window');
 }
 
 function logout() {
@@ -2431,7 +2156,6 @@ function logout() {
     FIREBASE_USER = null;
     
     currentSessionToken = null;
-    currentSessionHWID = null;
     CURRENT_USER = "";
     IS_GUEST = true;
     
@@ -4280,13 +4004,6 @@ async function stChangeUsername() {
             await db.ref('profile_comments/' + oldName).remove();
         }
         
-        // Update admin HWIDs if applicable
-        const hwidSnap = await db.ref('admin_hwids/' + oldName).once('value');
-        if (hwidSnap.val()) {
-            await db.ref('admin_hwids/' + newName).set(hwidSnap.val());
-            await db.ref('admin_hwids/' + oldName).remove();
-        }
-        
         // Update member list
         updateMemberList();
         
@@ -4727,202 +4444,28 @@ function stLeaveComment() {
     });
 }
 
-// SECURITY & HWID MANAGEMENT
-function loadAdminHWIDs() {
-    const container = document.getElementById('st_admin_hwids');
-    if (!container) return;
-    
-    container.innerHTML = '<div style="color:#888;">Loading...</div>';
-    
-    // First show verified admins (hardcoded)
-    let html = '<div style="color:#0f0; font-size:10px; margin-bottom:10px; padding:5px; border-bottom:1px solid #030;">✓ VERIFIED ADMINS (Hardcoded)</div>';
-    
-    Object.keys(verifiedAdmins).forEach(username => {
-        const data = verifiedAdmins[username];
-        html += `<div style="padding:8px; margin-bottom:5px; background:#050a05; border:1px solid #040; border-radius:4px;">
-            <div style="color:#0f0; font-weight:bold;">${escapeHtml(username)} <span style="color:#888; font-size:9px;">[${data.role}]</span></div>
-            <div style="color:#888; font-size:9px; margin-top:3px;">HWIDs:</div>
-            ${data.hwids.map(h => `<div style="color:#00ff88; font-family:monospace; font-size:9px; margin-left:10px;">• ${escapeHtml(h)}</div>`).join('')}
-        </div>`;
-    });
-    
-    // Then show Firebase registered HWIDs
-    db.ref('admin_hwids').once('value', (snapshot) => {
-        const hwids = snapshot.val();
-        
-        html += '<div style="color:#ff6600; font-size:10px; margin:10px 0; padding:5px; border-bottom:1px solid #300;">📋 FIREBASE REGISTERED</div>';
-        
-        if (!hwids) {
-            html += '<div style="color:#666; font-size:9px;">No additional HWIDs in Firebase.</div>';
-        } else {
-            Object.keys(hwids).forEach(username => {
-                const data = hwids[username];
-                const lastUsed = data.lastUsed ? new Date(data.lastUsed).toLocaleString() : 'Never';
-                const registered = data.registeredAt ? new Date(data.registeredAt).toLocaleString() : 'Unknown';
-                
-                // Handle both single hwid and array of hwids
-                let hwidDisplay = '';
-                if (data.hwids && Array.isArray(data.hwids)) {
-                    hwidDisplay = data.hwids.map(h => `<div style="color:#ff6600; font-family:monospace; font-size:9px; margin-left:10px;">• ${escapeHtml(h)}</div>`).join('');
-                } else if (data.hwid) {
-                    hwidDisplay = `<div style="color:#ff6600; font-family:monospace; font-size:9px; margin-left:10px;">• ${escapeHtml(data.hwid)}</div>`;
-                }
-                
-                html += `<div style="padding:8px; margin-bottom:5px; background:#0a0505; border:1px solid #400; border-radius:4px;">
-                    <div style="color:#d40000; font-weight:bold;">${escapeHtml(username)}</div>
-                    <div style="color:#888; font-size:9px; margin-top:3px;">HWIDs:</div>
-                    ${hwidDisplay}
-                    <div style="color:#666; font-size:8px; margin-top:5px;">Registered: ${registered}</div>
-                    <div style="color:#666; font-size:8px;">Last Used: ${lastUsed}</div>
-                </div>`;
-            });
-        }
-        
-        container.innerHTML = html;
-    });
-}
-
-function stResetAdminHWID() {
-    const resultEl = document.getElementById('st_hwid_reset_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
-        return; 
-    }
-    
-    const username = document.getElementById('st_hwid_reset_user').value.trim();
-    if (!username) {
-        resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>';
-        return;
-    }
-    
-    if (!confirm('Reset HWID for ' + username + '? They will need to login again to register new device.')) return;
-    
-    db.ref('admin_hwids/' + username).remove().then(() => {
-        // Also clear their session
-        db.ref('sessions/' + username).remove();
-        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID reset for ' + escapeHtml(username) + '. They can now login from a new device.</span>';
-        loadAdminHWIDs();
-    }).catch(err => {
-        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
-    });
-}
-
-function stAddAdminHWID() {
-    const resultEl = document.getElementById('st_hwid_add_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
-        return; 
-    }
-    
-    const username = document.getElementById('st_hwid_add_user').value.trim();
-    const hwid = document.getElementById('st_hwid_add_value').value.trim().toUpperCase();
-    
-    if (!username) {
-        resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>';
-        return;
-    }
-    if (!hwid) {
-        resultEl.innerHTML = '<span style="color:#f00;">Enter HWID.</span>';
-        return;
-    }
-    if (!hwid.startsWith('HWID-')) {
-        resultEl.innerHTML = '<span style="color:#f00;">Invalid HWID format. Should start with HWID-</span>';
-        return;
-    }
-    
-    // Check if user exists and is admin/mod/ST
-    if (!userDatabase[username]) {
-        resultEl.innerHTML = '<span style="color:#f00;">User not found in database.</span>';
-        return;
-    }
-    if (!userDatabase[username].isAdmin && !userDatabase[username].isMod && !userDatabase[username].isST) {
-        resultEl.innerHTML = '<span style="color:#f00;">User is not an admin/mod/ST. Cannot register HWID.</span>';
-        return;
-    }
-    
-    // Check if already in hardcoded verifiedAdmins
-    if (verifiedAdmins[username]) {
-        resultEl.innerHTML = '<span style="color:#ff0;">⚠️ ' + escapeHtml(username) + ' is in hardcoded list. Adding to Firebase as additional HWID...</span>';
-    }
-    
-    // Get existing HWIDs for this admin and add new one
-    db.ref('admin_hwids/' + username).once('value', (snapshot) => {
-        const existing = snapshot.val();
-        let hwids = [];
-        
-        // Collect existing HWIDs
-        if (existing && existing.hwids && Array.isArray(existing.hwids)) {
-            hwids = [...existing.hwids];
-        } else if (existing && existing.hwid) {
-            hwids = [existing.hwid];
-        }
-        
-        // Check if HWID already exists
-        if (hwids.includes(hwid)) {
-            resultEl.innerHTML = '<span style="color:#ff0;">HWID already registered for ' + escapeHtml(username) + '.</span>';
-            return;
-        }
-        
-        // Add new HWID
-        hwids.push(hwid);
-        
-        db.ref('admin_hwids/' + username).set({
-            hwid: hwids.length === 1 ? hwids[0] : null, // Single HWID for backwards compat
-            hwids: hwids, // Array of all HWIDs
-            registeredAt: existing?.registeredAt || Date.now(),
-            lastUpdated: Date.now(),
-            updatedBy: CURRENT_USER,
-            lastUsed: Date.now()
-        }).then(() => {
-            resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID registered for ' + escapeHtml(username) + '!<br>Total devices: ' + hwids.length + '</span>';
-            document.getElementById('st_hwid_add_user').value = '';
-            document.getElementById('st_hwid_add_value').value = '';
-            loadAdminHWIDs();
-        }).catch(err => {
-            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
-        });
-    });
-}
-
+// SECURITY MANAGEMENT
 function loadSecurityLogs() {
     const container = document.getElementById('st_security_logs');
     if (!container) return;
     
     container.innerHTML = '<div style="color:#888;">Loading...</div>';
     
-    // Load various security logs
+    // Load security logs
     Promise.all([
-        db.ref('security_logs/devtools').limitToLast(10).once('value'),
-        db.ref('security_logs/hwid_mismatch').limitToLast(10).once('value'),
-        db.ref('security_logs/unauthorized_admin').limitToLast(10).once('value'),
-        db.ref('security_logs/unknown_visitor').limitToLast(10).once('value'),
-        db.ref('security_logs/blocked_attempt').limitToLast(10).once('value')
-    ]).then(([devtools, hwid, unauth, unknown, blocked]) => {
+        db.ref('security_logs/login_attempts').limitToLast(20).once('value'),
+        db.ref('security_logs/admin_actions').limitToLast(20).once('value')
+    ]).then(([loginAttempts, adminActions]) => {
         const logs = [];
         
-        devtools.forEach(child => {
+        loginAttempts.forEach(child => {
             const d = child.val();
-            logs.push({ type: '🔧 DevTools', user: d.user, time: d.timestamp, details: 'Developer tools detected', hwid: d.hwid });
+            logs.push({ type: '🔑 Login', user: d.user || 'Unknown', time: d.timestamp, details: d.success ? 'Success' : 'Failed' });
         });
         
-        hwid.forEach(child => {
+        adminActions.forEach(child => {
             const d = child.val();
-            logs.push({ type: '⚠️ HWID Mismatch', user: d.user, time: d.timestamp, details: `Attempted: ${d.attemptedHWID}`, hwid: d.attemptedHWID });
-        });
-        
-        unauth.forEach(child => {
-            const d = child.val();
-            logs.push({ type: '🚫 Unauth Admin', user: d.user, time: d.timestamp, details: `HWID: ${d.hwid}`, hwid: d.hwid });
-        });
-        
-        unknown.forEach(child => {
-            const d = child.val();
-            logs.push({ type: '👁️ Unknown Visitor', user: 'Anonymous', time: d.timestamp, details: `HWID: ${d.hwid}`, hwid: d.hwid });
-        });
-        
-        blocked.forEach(child => {
-            const d = child.val();
-            logs.push({ type: '🚷 Blocked Attempt', user: d.user || 'Unknown', time: d.timestamp, details: `Blocked HWID tried to access`, hwid: d.hwid });
+            logs.push({ type: '⚡ Admin Action', user: d.admin || 'Unknown', time: d.timestamp, details: d.action || 'Unknown action' });
         });
         
         // Sort by time
@@ -4935,31 +4478,154 @@ function loadSecurityLogs() {
         
         container.innerHTML = logs.slice(0, 30).map(log => {
             const time = log.time ? new Date(log.time).toLocaleString() : 'Unknown';
-            const blockBtn = log.hwid ? `<button onclick="blockHWIDFromLog('${escapeHtml(log.hwid)}', '${escapeHtml(log.user || 'Unknown')}')" style="margin-left:5px; padding:1px 4px; font-size:7px; background:#700; border:1px solid #f00; color:#fff; cursor:pointer; border-radius:2px;">Block</button>` : '';
             return `<div style="padding:5px; margin-bottom:3px; background:#050000; border-left:2px solid #500;">
-                <span style="color:#ff6600;">${log.type}</span> - <span style="color:#888;">${escapeHtml(log.user || 'Unknown')}</span>${blockBtn}
+                <span style="color:#ff6600;">${log.type}</span> - <span style="color:#888;">${escapeHtml(log.user)}</span>
                 <div style="color:#666; font-size:8px;">${time}</div>
-                <div style="color:#ff6600; font-size:8px; font-family:monospace;">${escapeHtml(log.hwid || '')}</div>
-                <div style="color:#555; font-size:8px;">${escapeHtml(log.details || '')}</div>
+                <div style="color:#555; font-size:8px;">${escapeHtml(log.details)}</div>
             </div>`;
         }).join('');
+    }).catch(() => {
+        container.innerHTML = '<div style="color:#666;">No security logs found.</div>';
     });
 }
 
-function blockHWIDFromLog(hwid, username) {
-    if (!confirm('Block HWID: ' + hwid + ' (User: ' + username + ')?')) return;
+function stForceLogoutUser() {
+    const resultEl = document.getElementById('st_force_logout_result');
+    if (!userDatabase[CURRENT_USER]?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+        return;
+    }
     
-    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).set({
-        hwid: hwid,
-        username: username,
-        reason: 'Blocked from security logs',
-        blockedBy: CURRENT_USER,
-        blockedAt: Date.now()
-    }).then(() => {
-        alert('HWID blocked: ' + hwid);
-        loadSecurityLogs();
-        loadBlockedHWIDs();
+    const username = document.getElementById('st_force_logout_user')?.value.trim();
+    if (!username) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>';
+        return;
+    }
+    
+    // Set force logout flag and clear their session
+    Promise.all([
+        db.ref('force_logout/' + username).set({ timestamp: Date.now(), by: CURRENT_USER }),
+        db.ref('sessions/' + username).remove(),
+        db.ref('online/' + username).remove()
+    ]).then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Force logout sent to ' + escapeHtml(username) + '</span>';
+        document.getElementById('st_force_logout_user').value = '';
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
+}
+
+// Data recovery - copy user data from one account to another
+async function stRecoverUserData() {
+    const resultEl = document.getElementById('st_recover_result');
+    if (!userDatabase[CURRENT_USER]?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+        return;
+    }
+    
+    const fromUser = document.getElementById('st_recover_from')?.value.trim();
+    const toUser = document.getElementById('st_recover_to')?.value.trim();
+    
+    if (!fromUser || !toUser) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter both usernames.</span>';
+        return;
+    }
+    
+    if (fromUser === toUser) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Source and target must be different.</span>';
+        return;
+    }
+    
+    if (!confirm('This will copy profile, comments, reputation, and badges from "' + fromUser + '" to "' + toUser + '". Continue?')) {
+        return;
+    }
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">⏳ Recovering data...</span>';
+    
+    try {
+        const paths = ['profiles', 'profile_comments', 'reputation', 'members'];
+        let recovered = [];
+        
+        for (const path of paths) {
+            const snap = await db.ref(path + '/' + fromUser).once('value');
+            if (snap.exists()) {
+                await db.ref(path + '/' + toUser).set(snap.val());
+                recovered.push(path);
+            }
+        }
+        
+        if (recovered.length > 0) {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Recovered: ' + recovered.join(', ') + '</span>';
+        } else {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">No data found for "' + escapeHtml(fromUser) + '"</span>';
+        }
+    } catch (err) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    }
+}
+
+// Quick fix for K's data - recovers from lowercase k
+async function recoverKData() {
+    const resultEl = document.getElementById('st_recover_result');
+    if (!userDatabase[CURRENT_USER]?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+        return;
+    }
+    
+    if (!confirm('This will copy all data from lowercase "k" to uppercase "K". Continue?')) {
+        return;
+    }
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">⏳ Recovering K\'s data from k...</span>';
+    
+    try {
+        const paths = ['profiles', 'profile_comments', 'reputation'];
+        let recovered = [];
+        
+        for (const path of paths) {
+            const snap = await db.ref(path + '/k').once('value');
+            if (snap.exists()) {
+                const data = snap.val();
+                // Check if target doesn't have data or has less data
+                const targetSnap = await db.ref(path + '/K').once('value');
+                if (!targetSnap.exists() || (path === 'reputation' && (!targetSnap.val() || targetSnap.val() < data))) {
+                    await db.ref(path + '/K').set(data);
+                    recovered.push(path);
+                } else if (path === 'profile_comments' && targetSnap.exists()) {
+                    // Merge comments
+                    const existingComments = targetSnap.val() || {};
+                    const newComments = { ...existingComments, ...data };
+                    await db.ref(path + '/K').set(newComments);
+                    recovered.push(path + ' (merged)');
+                } else if (path === 'profiles') {
+                    // Only copy if K's profile is empty
+                    const targetData = targetSnap.val() || {};
+                    if (!targetData.avatar && !targetData.bio) {
+                        await db.ref(path + '/K').set(data);
+                        recovered.push(path);
+                    }
+                }
+            }
+        }
+        
+        // Also update K's member data with admin style
+        await db.ref('members/K').update({
+            rank: 'A',
+            fullRank: 'Admin',
+            style: 'admin-style',
+            isAdmin: true,
+            customTag: 'K'
+        });
+        recovered.push('members (admin style)');
+        
+        if (recovered.length > 0) {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Recovered for K: ' + recovered.join(', ') + '</span>';
+        } else {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">No recoverable data found in lowercase "k"</span>';
+        }
+    } catch (err) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    }
 }
 
 function loadActiveSessions() {
@@ -4980,14 +4646,11 @@ function loadActiveSessions() {
             const s = sessions[username];
             const lastActive = s.lastActivity ? new Date(s.lastActivity).toLocaleString() : 'Unknown';
             const age = s.lastActivity ? Math.floor((now - s.lastActivity) / 60000) + ' min ago' : '';
-            const fullHwid = s.hwid || 'N/A';
             return `<div style="padding:5px; margin-bottom:3px; background:#050000; border-left:2px solid #030;">
                 <span style="color:#0f0; font-weight:bold;">${escapeHtml(username)}</span>
-                <div style="color:#666; font-size:8px;">HWID: <span style="color:#ff6600;">${escapeHtml(fullHwid)}</span></div>
                 <div style="color:#555; font-size:8px;">Last active: ${lastActive} (${age})</div>
                 <div style="display:flex; gap:3px; margin-top:3px;">
                     <button onclick="forceLogoutUser('${escapeHtml(username)}')" style="padding:2px 6px; font-size:8px; background:#500; border:1px solid #a00; color:#fff; cursor:pointer; border-radius:2px;">Kick</button>
-                    <button onclick="blockUserHWID('${escapeHtml(username)}', '${escapeHtml(fullHwid)}')" style="padding:2px 6px; font-size:8px; background:#700; border:1px solid #f00; color:#fff; cursor:pointer; border-radius:2px;">Block HWID</button>
                 </div>
             </div>`;
         }).join('');
@@ -5006,122 +4669,6 @@ function forceLogoutUser(username) {
     }).then(() => {
         alert(username + ' has been kicked.');
         loadActiveSessions();
-    });
-}
-
-function blockUserHWID(username, hwid) {
-    if (!hwid || hwid === 'N/A') {
-        alert('No HWID found for this user.');
-        return;
-    }
-    const reason = prompt('Reason for blocking ' + username + ' (HWID: ' + hwid + '):');
-    if (reason === null) return;
-    
-    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).set({
-        hwid: hwid,
-        username: username,
-        reason: reason || 'No reason provided',
-        blockedBy: CURRENT_USER,
-        blockedAt: Date.now()
-    }).then(() => {
-        // Also force logout
-        db.ref('sessions/' + username).remove();
-        db.ref('online/' + username).remove();
-        db.ref('force_logout/' + username).set({ by: CURRENT_USER, timestamp: Date.now() });
-        alert('HWID blocked and user kicked: ' + hwid);
-        loadActiveSessions();
-        loadBlockedHWIDs();
-    });
-}
-
-function stBlockHWID() {
-    const resultEl = document.getElementById('st_hwid_block_result');
-    if (!userDatabase[CURRENT_USER]?.isST) {
-        resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
-        return;
-    }
-    
-    const hwid = document.getElementById('st_hwid_block_value').value.trim().toUpperCase();
-    const reason = document.getElementById('st_hwid_block_reason').value.trim();
-    
-    if (!hwid) {
-        resultEl.innerHTML = '<span style="color:#f00;">Enter HWID to block.</span>';
-        return;
-    }
-    if (!hwid.startsWith('HWID-')) {
-        resultEl.innerHTML = '<span style="color:#f00;">Invalid HWID format.</span>';
-        return;
-    }
-    
-    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).set({
-        hwid: hwid,
-        reason: reason || 'No reason provided',
-        blockedBy: CURRENT_USER,
-        blockedAt: Date.now()
-    }).then(() => {
-        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID blocked: ' + escapeHtml(hwid) + '</span>';
-        document.getElementById('st_hwid_block_value').value = '';
-        document.getElementById('st_hwid_block_reason').value = '';
-        loadBlockedHWIDs();
-    }).catch(err => {
-        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
-    });
-}
-
-function stUnblockHWID() {
-    const resultEl = document.getElementById('st_hwid_block_result');
-    if (!userDatabase[CURRENT_USER]?.isST) {
-        resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
-        return;
-    }
-    
-    const hwid = document.getElementById('st_hwid_block_value').value.trim().toUpperCase();
-    
-    if (!hwid) {
-        resultEl.innerHTML = '<span style="color:#f00;">Enter HWID to unblock.</span>';
-        return;
-    }
-    
-    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).remove().then(() => {
-        resultEl.innerHTML = '<span style="color:#0f0;">✓ HWID unblocked: ' + escapeHtml(hwid) + '</span>';
-        document.getElementById('st_hwid_block_value').value = '';
-        loadBlockedHWIDs();
-    }).catch(err => {
-        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
-    });
-}
-
-function loadBlockedHWIDs() {
-    const container = document.getElementById('st_blocked_hwids');
-    if (!container) return;
-    
-    container.innerHTML = '<div style="color:#888;">Loading...</div>';
-    
-    db.ref('blocked_hwids').once('value', (snapshot) => {
-        const blocked = snapshot.val();
-        if (!blocked) {
-            container.innerHTML = '<div style="color:#666;">No blocked HWIDs.</div>';
-            return;
-        }
-        
-        container.innerHTML = Object.keys(blocked).map(key => {
-            const b = blocked[key];
-            const blockedAt = b.blockedAt ? new Date(b.blockedAt).toLocaleString() : 'Unknown';
-            return `<div style="padding:5px; margin-bottom:3px; background:#0a0000; border-left:2px solid #f00;">
-                <div style="color:#f00; font-family:monospace; font-size:10px;">${escapeHtml(b.hwid)}</div>
-                <div style="color:#888; font-size:8px;">User: ${escapeHtml(b.username || 'Unknown')}</div>
-                <div style="color:#666; font-size:8px;">Reason: ${escapeHtml(b.reason || 'None')}</div>
-                <div style="color:#555; font-size:8px;">By: ${escapeHtml(b.blockedBy || '?')} @ ${blockedAt}</div>
-                <button onclick="quickUnblock('${escapeHtml(b.hwid)}')" style="margin-top:3px; padding:2px 6px; font-size:8px; background:#050; border:1px solid #0a0; color:#0f0; cursor:pointer; border-radius:2px;">Unblock</button>
-            </div>`;
-        }).join('');
-    });
-}
-
-function quickUnblock(hwid) {
-    if (!confirm('Unblock HWID: ' + hwid + '?')) return;
-    db.ref('blocked_hwids/' + hwid.replace(/[.#$/\[\]]/g, '_')).remove().then(() => {
-        loadBlockedHWIDs();
     });
 }
 
