@@ -664,7 +664,7 @@
 <!-- ADMIN PANEL -->
 <div class="window" id="admin_window" style="left:100px; top:40px; width:750px; height:550px; display:none;">
     <div class="title-bar"><div class="title-bar-text">👑 Admin Control Panel</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('admin_window')"></button></div></div>
-    <div class="window-body" style="display:flex; height:100%;">
+    <div class="window-body" style="display:flex; height:calc(100% - 32px);">
         <div class="mgmt-sidebar">
             <div class="mgmt-sidebar-item active" id="admin_tab_apps_btn" onclick="switchAdminTab('apps', this)">📝 Applications</div>
             <div class="mgmt-sidebar-item" id="admin_tab_members_btn" onclick="switchAdminTab('members', this)">👥 Members</div>
@@ -676,7 +676,7 @@
             <div class="mgmt-sidebar-item" id="admin_tab_sitetools_btn" style="display:none;" onclick="switchAdminTab('sitetools', this)">🎛️ Site Tools</div>
             <div class="mgmt-sidebar-item" id="st_tab" style="display:none;" onclick="switchAdminTab('st', this)">🔮 ST Tools</div>
         </div>
-        <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto;">
+        <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto; max-height:100%;">
             <div id="admin_tab_apps"><h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option></select><input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()"></div><div id="all_applications" style="max-height:380px; overflow-y:auto;"></div></div>
             <div id="admin_tab_members" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3><div id="all_members" style="max-height:420px; overflow-y:auto;"></div></div>
             <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="warn">⚠️ Warn</option><option value="mute">🔇 Mute (can't chat)</option><option value="timeout">⏱️ Timeout (can't chat)</option><option value="kick">👢 Kick (offline)</option><option value="softban">🚫 Soft Ban</option><option value="hardban">⛔ Hard Ban</option><option value="unmute">🔊 Unmute</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="360">6 hours</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>🗑️ Delete Message</h4><input type="text" id="delete_msg_id" class="ie-input" placeholder="Message ID (from chat 3-dot menu)"><button class="ie-btn" style="background:#700;" onclick="deleteMessageById()">Delete Message</button><div id="delete_msg_result" style="margin-top:5px; font-size:10px;"></div></div><div class="admin-section"><h4>🔇 Muted Users</h4><button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:5px;" onclick="loadMutedUsers()">🔄 Refresh</button><div id="muted_users" style="max-height:100px; overflow-y:auto; font-size:10px;">Click refresh to load...</div></div><div class="admin-section"><h4>🚫 Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
@@ -2166,6 +2166,10 @@ function completeLogin(u) {
     document.getElementById('chat_input').disabled = false;
     document.getElementById('chat_input').placeholder = "/help for commands... @username to mention";
     
+    // Scroll chat to bottom after messages load
+    setTimeout(scrollChatToBottom, 1500);
+    setTimeout(scrollChatToBottom, 3000);
+    
     // Load game stats
     loadMyGameStats();
     loadGameMiniLeaderboard();
@@ -3140,6 +3144,10 @@ let chatListenerSet = false;
 function setupChatListener() {
     if (chatListenerSet) return;
     chatListenerSet = true;
+    
+    const logs = document.getElementById('chat_logs');
+    if (logs) logs.innerHTML = '<div style="color:#555; text-align:center; padding:40px;">Loading messages...</div>';
+    
     db.ref('chat').orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
         const logs = document.getElementById('chat_logs');
         if (!logs) return;
@@ -3208,6 +3216,11 @@ function setupChatListener() {
         setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 50);
         setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 200);
         setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 500);
+    }, (error) => {
+        // Error handler for chat listener
+        console.error('Chat listener error:', error);
+        const logs = document.getElementById('chat_logs');
+        if (logs) logs.innerHTML = '<div style="color:#f00; text-align:center; padding:40px;">Error loading chat: ' + error.message + '<br><br><button onclick="chatListenerSet=false; setupChatListener();" style="padding:5px 15px; background:#500; border:1px solid #a00; color:#fff; cursor:pointer;">Retry</button></div>';
     });
 }
 
@@ -3240,7 +3253,22 @@ function copyMsgText(text) {
     closeMsgMenus();
 }
 
-function loadMessages() { setupChatListener(); }
+function loadMessages() { 
+    setupChatListener(); 
+    // Scroll to bottom after messages load
+    scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+    const logs = document.getElementById('chat_logs');
+    if (logs) {
+        setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 100);
+        setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 300);
+        setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 600);
+        setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 1000);
+    }
+}
+
 function uploadChatFile() {
     if (IS_GUEST || !CURRENT_USER) { alert('Must be logged in!'); return; }
     const file = document.getElementById('chat_file').files[0]; if (!file) return;
@@ -7574,6 +7602,7 @@ function toggleWin(id) {
     if (id === 'admin_window') { loadAllApplications(); }
     if (id === 'clubs_window') { loadAllClubs(); loadMyClubs(); }
     if (id === 'messages_window') { loadDMList(); loadFriendRequests(); loadFriendsList(); loadGroupList(); }
+    if (id === 'chat_win' && el.style.display === 'block') { scrollChatToBottom(); }
 }
 function makeDraggable(winId) {
     const win = document.getElementById(winId); if (!win) return;
