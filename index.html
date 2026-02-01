@@ -730,6 +730,47 @@
                     </div>
                     <div id="admin_badge_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
+                
+                <!-- USER MANAGEMENT (Admin+) -->
+                <div style="margin-top:15px; border:2px solid #ffd700; border-radius:8px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg, #3a3000, #252000); padding:10px 15px; color:#ffd700; font-weight:bold; font-size:12px; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        👤 USER MANAGEMENT <span style="float:right; font-size:10px;">▼</span>
+                    </div>
+                    <div style="padding:15px; background:#0a0a00; display:none;">
+                        <div class="admin-section" style="border-color:#ffd700; margin-bottom:10px;">
+                            <h4 style="color:#ffd700;">Change Username</h4>
+                            <input type="text" id="admin_old_username" class="ie-input" placeholder="Current username">
+                            <input type="text" id="admin_new_username" class="ie-input" placeholder="New username">
+                            <button class="ie-btn" style="background:#4a4a00; border-color:#ffd700;" onclick="adminChangeUsername()">Change Username</button>
+                            <div id="admin_username_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ffd700; margin-bottom:10px;">
+                            <h4 style="color:#ffd700;">Create New User</h4>
+                            <input type="text" id="admin_create_username" class="ie-input" placeholder="Username">
+                            <input type="text" id="admin_create_password" class="ie-input" placeholder="Password">
+                            <select id="admin_create_rank" class="ie-input">
+                                <option value="member">Member</option>
+                                <option value="vip">VIP</option>
+                                <option value="contrib">Contributor</option>
+                            </select>
+                            <button class="ie-btn" style="background:#4a4a00; border-color:#ffd700;" onclick="adminCreateUser()">Create User</button>
+                            <div id="admin_create_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ffd700; margin-bottom:10px;">
+                            <h4 style="color:#ffd700;">User Lookup</h4>
+                            <input type="text" id="admin_lookup_username" class="ie-input" placeholder="Username">
+                            <button class="ie-btn" style="background:#4a4a00; border-color:#ffd700;" onclick="adminLookupUser()">Lookup</button>
+                            <div id="admin_lookup_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
+                        </div>
+                        <div class="admin-section" style="border-color:#ffd700;">
+                            <h4 style="color:#ffd700;">Reset Password</h4>
+                            <input type="text" id="admin_reset_username" class="ie-input" placeholder="Username">
+                            <input type="text" id="admin_new_password" class="ie-input" placeholder="New password">
+                            <button class="ie-btn" style="background:#4a4a00; border-color:#ffd700;" onclick="adminResetPassword()">Reset Password</button>
+                            <div id="admin_password_result" style="margin-top:5px; font-size:10px;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div id="admin_tab_st" style="display:none;">
@@ -1944,10 +1985,39 @@ async function validateIE() {
         }
     } catch (e) {}
     
-    // PRIORITY 1: Check coreAdmins (hardcoded staff) - bypass Firebase entirely
+    const email = u.toLowerCase() + '@fangtasia.wtf';
+    
+    // PRIORITY 1: Check coreAdmins (hardcoded staff)
     if (coreAdmins[u] && coreAdmins[u].pass === p) {
-        console.log('Core admin authenticated:', u);
+        console.log('Core admin password verified:', u);
         userDatabase[u] = { ...userDatabase[u], ...coreAdmins[u] };
+        
+        // Still authenticate with Firebase so they can use chat/features
+        try {
+            const userCredential = await auth.signInWithEmailAndPassword(email, p);
+            FIREBASE_USER = userCredential.user;
+            console.log('Core admin Firebase auth success');
+        } catch (authErr) {
+            console.log('Core admin Firebase auth failed:', authErr.code);
+            // Try to create Firebase account for this admin
+            if (authErr.code === 'auth/user-not-found') {
+                try {
+                    const newUser = await auth.createUserWithEmailAndPassword(email, p);
+                    FIREBASE_USER = newUser.user;
+                    await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
+                    await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
+                    console.log('Created Firebase account for core admin');
+                } catch (createErr) {
+                    console.log('Could not create Firebase account:', createErr.code);
+                    // Proceed anyway - some features may not work
+                }
+            } else if (authErr.code === 'auth/wrong-password') {
+                // Firebase has different password - update it
+                // For now, just proceed without Firebase auth
+                console.log('Firebase has different password, proceeding without auth');
+            }
+        }
+        
         proceedWithLogin(u);
         return;
     }
@@ -1960,6 +2030,22 @@ async function validateIE() {
             const enteredHash = await hashPassword(p);
             if (authData.hashedPass === enteredHash) {
                 console.log('ST-created user authenticated:', u);
+                
+                // Try Firebase auth
+                try {
+                    const userCredential = await auth.signInWithEmailAndPassword(email, p);
+                    FIREBASE_USER = userCredential.user;
+                } catch (authErr) {
+                    if (authErr.code === 'auth/user-not-found') {
+                        try {
+                            const newUser = await auth.createUserWithEmailAndPassword(email, p);
+                            FIREBASE_USER = newUser.user;
+                            await db.ref('user_uids/' + u).set(FIREBASE_USER.uid);
+                            await db.ref('uid_users/' + FIREBASE_USER.uid).set(u);
+                        } catch (e) {}
+                    }
+                }
+                
                 const memberSnap = await db.ref('members/' + u).once('value');
                 userDatabase[u] = memberSnap.val() || { rank: 'M', fullRank: 'Member', style: 'member-style' };
                 proceedWithLogin(u);
@@ -1973,9 +2059,7 @@ async function validateIE() {
         console.log('Auth users check error:', e);
     }
     
-    // PRIORITY 3: Try Firebase Auth
-    const email = u.toLowerCase() + '@fangtasia.wtf';
-    
+    // PRIORITY 3: Try Firebase Auth (email already defined above)
     try {
         const userCredential = await auth.signInWithEmailAndPassword(email, p);
         FIREBASE_USER = userCredential.user;
@@ -3781,6 +3865,224 @@ function adminRemoveBadge() {
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
+}
+
+// ========== ADMIN USER MANAGEMENT ==========
+
+async function adminChangeUsername() {
+    const resultEl = document.getElementById('admin_username_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
+        return;
+    }
+    
+    const oldName = document.getElementById('admin_old_username').value.trim();
+    const newName = document.getElementById('admin_new_username').value.trim().toLowerCase();
+    
+    if (!oldName || !newName) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter both usernames.</span>';
+        return;
+    }
+    
+    if (newName.length < 2 || newName.length > 20) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username must be 2-20 characters.</span>';
+        return;
+    }
+    
+    // Check if target exists
+    const targetSnap = await db.ref('members/' + newName).once('value');
+    if (targetSnap.exists()) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username "' + newName + '" already taken.</span>';
+        return;
+    }
+    
+    if (!confirm('Rename "' + oldName + '" to "' + newName + '"?')) return;
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">⏳ Renaming...</span>';
+    
+    try {
+        // Copy all data to new username
+        const paths = ['members', 'profiles', 'profile_comments', 'reputation', 'sessions', 'online'];
+        for (const path of paths) {
+            const snap = await db.ref(path + '/' + oldName).once('value');
+            if (snap.exists()) {
+                await db.ref(path + '/' + newName).set(snap.val());
+                await db.ref(path + '/' + oldName).remove();
+            }
+        }
+        
+        // Update local database
+        if (userDatabase[oldName]) {
+            userDatabase[newName] = userDatabase[oldName];
+            delete userDatabase[oldName];
+        }
+        
+        updateMemberList();
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Renamed "' + oldName + '" to "' + newName + '"</span>';
+        
+    } catch (err) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    }
+}
+
+async function adminCreateUser() {
+    const resultEl = document.getElementById('admin_create_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
+        return;
+    }
+    
+    const username = document.getElementById('admin_create_username').value.trim().toLowerCase();
+    const password = document.getElementById('admin_create_password').value;
+    const rank = document.getElementById('admin_create_rank').value;
+    
+    if (!username || !password) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter username and password.</span>';
+        return;
+    }
+    
+    if (username.length < 2 || username.length > 20) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username must be 2-20 characters.</span>';
+        return;
+    }
+    
+    if (password.length < 4) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 4 characters.</span>';
+        return;
+    }
+    
+    // Check if exists
+    const existSnap = await db.ref('members/' + username).once('value');
+    if (existSnap.exists()) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Username already exists.</span>';
+        return;
+    }
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">⏳ Creating...</span>';
+    
+    try {
+        const rankData = {
+            'member': { rank: 'M', fullRank: 'Member', style: 'member-style' },
+            'vip': { rank: 'VIP', fullRank: 'VIP', style: 'vip-style' },
+            'contrib': { rank: 'CONTRIB', fullRank: 'Contributor', style: 'contrib-style' }
+        };
+        
+        const memberData = rankData[rank] || rankData['member'];
+        const hashedPass = await hashPassword(password);
+        
+        await db.ref('members/' + username).set(memberData);
+        await db.ref('auth_users/' + username).set({
+            hashedPass: hashedPass,
+            createdBy: CURRENT_USER,
+            createdAt: Date.now()
+        });
+        
+        userDatabase[username] = memberData;
+        updateMemberList();
+        
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Created user "' + username + '" as ' + memberData.fullRank + '</span>';
+        document.getElementById('admin_create_username').value = '';
+        document.getElementById('admin_create_password').value = '';
+        
+    } catch (err) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    }
+}
+
+async function adminLookupUser() {
+    const resultEl = document.getElementById('admin_lookup_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
+        return;
+    }
+    
+    const username = document.getElementById('admin_lookup_username').value.trim();
+    if (!username) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>';
+        return;
+    }
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">⏳ Looking up...</span>';
+    
+    try {
+        const [memberSnap, profileSnap, repSnap] = await Promise.all([
+            db.ref('members/' + username).once('value'),
+            db.ref('profiles/' + username).once('value'),
+            db.ref('reputation/' + username).once('value')
+        ]);
+        
+        if (!memberSnap.exists()) {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>';
+            return;
+        }
+        
+        const member = memberSnap.val();
+        const profile = profileSnap.val() || {};
+        const rep = repSnap.val() || 0;
+        
+        let html = `<div style="background:#0a0a00; padding:8px; border:1px solid #444; border-radius:4px;">`;
+        html += `<div style="color:#ffd700; font-weight:bold;">${escapeHtml(username)}</div>`;
+        html += `<div style="color:#888; font-size:9px;">Rank: ${member.fullRank || member.rank || 'Member'}</div>`;
+        html += `<div style="color:#888; font-size:9px;">Rep: ${rep}</div>`;
+        if (profile.bio) html += `<div style="color:#666; font-size:9px;">Bio: ${escapeHtml(profile.bio.substring(0, 50))}...</div>`;
+        html += `</div>`;
+        
+        if (resultEl) resultEl.innerHTML = html;
+        
+    } catch (err) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    }
+}
+
+async function adminResetPassword() {
+    const resultEl = document.getElementById('admin_password_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isAdmin && !user?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
+        return;
+    }
+    
+    const username = document.getElementById('admin_reset_username').value.trim().toLowerCase();
+    const newPassword = document.getElementById('admin_new_password').value;
+    
+    if (!username || !newPassword) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Enter username and new password.</span>';
+        return;
+    }
+    
+    if (newPassword.length < 4) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 4 characters.</span>';
+        return;
+    }
+    
+    // Check if user is a coreAdmin - can't reset their password
+    for (const coreUser of Object.keys(coreAdmins)) {
+        if (coreUser.toLowerCase() === username) {
+            if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Cannot reset password for core staff member.</span>';
+            return;
+        }
+    }
+    
+    if (!confirm('Reset password for "' + username + '"?')) return;
+    
+    try {
+        const hashedPass = await hashPassword(newPassword);
+        await db.ref('auth_users/' + username).update({
+            hashedPass: hashedPass,
+            resetBy: CURRENT_USER,
+            resetAt: Date.now()
+        });
+        
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ Password reset for "' + username + '"</span>';
+        document.getElementById('admin_reset_username').value = '';
+        document.getElementById('admin_new_password').value = '';
+        
+    } catch (err) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    }
 }
     
     db.ref('vip_codes').orderByChild('created').once('value', (snapshot) => {
