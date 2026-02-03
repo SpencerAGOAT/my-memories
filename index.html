@@ -475,7 +475,10 @@
                 <div id="clubs_list" style="min-height:200px; max-height:350px; overflow-y:auto; border:1px solid #300; border-radius:4px; background:#050000; padding:10px;"></div>
             </div>
             <div id="club_tab_my" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">My Clubs <span style="color:#666; font-size:11px;">(Max 5)</span></h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:#d40000; margin:0;">My Clubs <span style="color:#666; font-size:11px;">(Max 5)</span></h3>
+                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="loadMyClubs(); this.textContent='Loading...'; setTimeout(() => this.textContent='🔄 Refresh', 500);">🔄 Refresh</button>
+                </div>
                 <div id="my_clubs_list"></div>
             </div>
             <div id="club_tab_create" style="display:none;">
@@ -493,7 +496,10 @@
                 </div>
             </div>
             <div id="club_tab_invites" style="display:none;">
-                <h3 style="color:#d40000; margin:0 0 15px 0;">Club Invites</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:#d40000; margin:0;">Club Invites</h3>
+                    <button class="ie-btn" style="width:auto; padding:5px 12px; font-size:10px; margin:0;" onclick="loadClubInvites(); this.textContent='Loading...'; setTimeout(() => this.textContent='🔄 Refresh', 500);">🔄 Refresh</button>
+                </div>
                 <div id="club_invites_list"></div>
             </div>
             <div id="club_tab_manage" style="display:none;">
@@ -6764,13 +6770,35 @@ let clubRefreshInterval = null;
 function startClubAutoRefresh() {
     if (clubRefreshInterval) clearInterval(clubRefreshInterval);
     
-    // Refresh clubs every 30 minutes (1800000 ms)
+    // Refresh clubs every 5 minutes for accurate stats
     clubRefreshInterval = setInterval(() => {
-        console.log('Auto-refreshing clubs...');
+        console.log('Auto-refreshing all club data...');
         loadAllClubs();
         loadMyClubs();
+        loadClubInvites();
         loadClubsLeaderboard();
-    }, 30 * 60 * 1000); // 30 minutes
+        // Refresh owned club data
+        if (ownedClub) {
+            db.ref('clubs/' + ownedClub.id).once('value', (s) => {
+                if (s.exists()) {
+                    ownedClub = { id: s.key, ...s.val() };
+                }
+            });
+        }
+    }, 5 * 60 * 1000); // 5 minutes
+}
+
+// Function to refresh all club data on demand
+function refreshAllClubData() {
+    console.log('Manual club data refresh...');
+    loadAllClubs();
+    loadMyClubs();
+    loadClubInvites();
+    loadClubsLeaderboard();
+    if (ownedClub) {
+        ownedClub = null;
+        loadManageClub();
+    }
 }
 
 function loadAllClubs() {
@@ -7008,7 +7036,31 @@ function leaveClub(clubId) {
 
 function loadManageClub() {
     const container = document.getElementById('manage_club_content');
-    if (!container || !ownedClub) return;
+    if (!container) return;
+    
+    // If ownedClub not loaded yet, fetch it first
+    if (!ownedClub) {
+        container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">Loading your club...</div>';
+        db.ref('clubs').orderByChild('owner').equalTo(CURRENT_USER).once('value', (s) => {
+            if (s.exists()) {
+                s.forEach(c => { ownedClub = { id: c.key, ...c.val() }; });
+                document.getElementById('club_manage_tab').style.display = 'block';
+                renderManageClub(container);
+            } else {
+                container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">You don\'t own a club yet.<br><br><button class="ie-btn" onclick="switchClubTab(\'create\', document.querySelector(\'#clubs_window .mgmt-sidebar-item\'))">Create a Club</button></div>';
+                document.getElementById('club_manage_tab').style.display = 'none';
+            }
+        }).catch(err => {
+            container.innerHTML = '<div style="color:#f00; text-align:center; padding:20px;">Error loading club: ' + err.message + '</div>';
+        });
+        return;
+    }
+    
+    renderManageClub(container);
+}
+
+function renderManageClub(container) {
+    if (!ownedClub) return;
     
     db.ref('club_requests/' + ownedClub.id).once('value', (reqSnap) => {
         const requests = [];
@@ -7017,6 +7069,7 @@ function loadManageClub() {
         let html = `<div class="admin-section">
             <h4 style="color:#d40000;">Club: ${escapeHtml(ownedClub.name)}</h4>
             <p style="color:#888; font-size:10px;">Members: ${(ownedClub.members || []).length + 1}</p>
+            <button class="ie-btn" style="width:auto; padding:3px 10px; font-size:9px;" onclick="refreshOwnedClub()">🔄 Refresh</button>
         </div>`;
         
         html += `<div class="admin-section">
@@ -7055,7 +7108,14 @@ function loadManageClub() {
         html += `<button class="ie-btn" style="background:#500; margin-top:10px;" onclick="deleteClub()">🗑️ Delete Club</button>`;
         
         container.innerHTML = html;
+    }).catch(err => {
+        container.innerHTML = '<div style="color:#f00; text-align:center; padding:20px;">Error: ' + err.message + '</div>';
     });
+}
+
+function refreshOwnedClub() {
+    ownedClub = null;
+    loadManageClub();
 }
 
 function inviteToClub() {
@@ -7688,7 +7748,7 @@ function toggleWin(id) {
     el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
     if(el.style.display === 'block') { document.querySelectorAll('.window').forEach(w => w.style.zIndex = "10"); el.style.zIndex = "200"; }
     if (id === 'admin_window') { loadAllApplications(); }
-    if (id === 'clubs_window') { loadAllClubs(); loadMyClubs(); }
+    if (id === 'clubs_window') { loadAllClubs(); loadMyClubs(); loadClubInvites(); checkCanCreateClub(); }
     if (id === 'messages_window') { loadDMList(); loadFriendRequests(); loadFriendsList(); loadGroupList(); }
     if (id === 'chat_win' && el.style.display === 'block') { scrollChatToBottom(); }
 }
