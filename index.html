@@ -292,18 +292,19 @@
         <div style="margin-top:10px; color:#666; font-size:10px;">Click anywhere to dismiss</div>
     </div>
 </div>
-<!-- MAINTENANCE MODE OVERLAY -->
-<div id="maintenance_overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999999; justify-content:center; align-items:center;">
-    <div style="background:linear-gradient(180deg, #1a0808, #0a0000); border:2px solid #d40000; border-radius:12px; padding:50px 60px; max-width:500px; width:90%; text-align:center; box-shadow:0 0 80px rgba(139,0,0,0.6);">
-        <div style="font-size:60px; margin-bottom:20px;">🔧</div>
-        <div style="color:#d40000; font-size:28px; font-weight:bold; margin-bottom:15px; text-shadow:0 0 20px rgba(212,0,0,0.5);">MAINTENANCE MODE</div>
-        <div id="maintenance_overlay_message" style="color:#ccc; font-size:14px; line-height:1.8; margin-bottom:25px;">We're performing scheduled maintenance. Please check back soon!</div>
-        <div style="display:flex; justify-content:center; gap:8px; margin-bottom:20px;">
-            <div class="maintenance-dot" style="width:12px; height:12px; background:#d40000; border-radius:50%; animation:pulse 1.5s infinite;"></div>
-            <div class="maintenance-dot" style="width:12px; height:12px; background:#d40000; border-radius:50%; animation:pulse 1.5s infinite 0.3s;"></div>
-            <div class="maintenance-dot" style="width:12px; height:12px; background:#d40000; border-radius:50%; animation:pulse 1.5s infinite 0.6s;"></div>
+<!-- MAINTENANCE MODE OVERLAY - FULL LOCK SCREEN -->
+<div id="maintenance_overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0000; z-index:9999999; justify-content:center; align-items:center; flex-direction:column;">
+    <div style="text-align:center; padding:40px;">
+        <div style="font-size:80px; margin-bottom:30px; animation:pulse 2s infinite;">🔧</div>
+        <div style="color:#d40000; font-size:36px; font-weight:bold; margin-bottom:20px; text-shadow:0 0 30px rgba(212,0,0,0.5);">MAINTENANCE MODE</div>
+        <div id="maintenance_overlay_message" style="color:#ccc; font-size:16px; line-height:1.8; margin-bottom:30px; max-width:500px;">We're performing scheduled maintenance. Please check back soon!</div>
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:30px;">
+            <div style="width:15px; height:15px; background:#d40000; border-radius:50%; animation:pulse 1.5s infinite;"></div>
+            <div style="width:15px; height:15px; background:#d40000; border-radius:50%; animation:pulse 1.5s infinite 0.3s;"></div>
+            <div style="width:15px; height:15px; background:#d40000; border-radius:50%; animation:pulse 1.5s infinite 0.6s;"></div>
         </div>
-        <div style="color:#666; font-size:11px;">You are still connected. The site will be available shortly.</div>
+        <div style="color:#666; font-size:12px;">The site will be available when maintenance is complete.</div>
+        <div style="color:#444; font-size:10px; margin-top:20px;">This page will automatically refresh when ready.</div>
     </div>
 </div>
 <style>
@@ -1637,6 +1638,7 @@ try {
 
 let FIREBASE_USER = null; // Stores Firebase Auth user object
 let CURRENT_USER = "", IS_GUEST = false; // Define early for auth listener
+let maintenanceEnabled = false; // Track maintenance mode globally
 let currentUserDisplayName = null; // VIP display name
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
@@ -1688,6 +1690,15 @@ if (auth) {
                     if (ban && (ban.expiry === 0 || ban.expiry > Date.now())) {
                         console.log('User is banned, signing out');
                         auth.signOut();
+                        return;
+                    }
+                    
+                    // Check maintenance mode - only ST can auto-login during maintenance
+                    const maintSnap = await db.ref('site_settings/maintenance').once('value');
+                    const maintData = maintSnap.val() || {};
+                    if (maintData.enabled && !memberData.isST) {
+                        console.log('Maintenance mode active, blocking non-ST auto-login');
+                        // Don't sign out, just don't complete login - show maintenance screen
                         return;
                     }
                     
@@ -3394,6 +3405,15 @@ async function validateIE() {
 }
 
 function proceedWithLogin(u) {
+    // Check if maintenance mode is active - only ST can login
+    if (maintenanceEnabled) {
+        const userData = coreAdmins[u] || userDatabase[u] || {};
+        if (!userData.isST) {
+            alert('Site is currently under maintenance. Please try again later.');
+            return;
+        }
+    }
+    
     // Generate session token
     currentSessionToken = 'SES-' + Date.now() + '-' + Math.random().toString(36).substr(2, 12);
     
@@ -3479,7 +3499,14 @@ function completeLogin(u) {
         document.getElementById('vip_upgrade_section').style.display = 'block';
     }
     
-    // Setup maintenance mode listener
+    // ST users bypass maintenance mode - hide overlay immediately
+    if (userData.isST) {
+        const overlay = document.getElementById('maintenance_overlay');
+        if (overlay) overlay.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    // Setup maintenance mode listener (will keep checking for changes)
     setupMaintenanceListener();
 }
 
@@ -6844,6 +6871,7 @@ function stDeleteShopItem() {
 }
 
 // ========== MAINTENANCE MODE ==========
+
 function toggleMaintenanceMode(enable) {
     const resultEl = document.getElementById('maintenance_result');
     if (!userDatabase[CURRENT_USER]?.isST) {
@@ -6904,8 +6932,10 @@ function setupMaintenanceListener() {
         const overlay = document.getElementById('maintenance_overlay');
         const messageEl = document.getElementById('maintenance_overlay_message');
         
-        // ST users bypass maintenance mode
-        if (userDatabase[CURRENT_USER]?.isST) {
+        maintenanceEnabled = data.enabled || false;
+        
+        // ST users always bypass maintenance mode
+        if (CURRENT_USER && userDatabase[CURRENT_USER]?.isST) {
             if (overlay) overlay.style.display = 'none';
             updateMaintenanceStatus();
             return;
@@ -6914,11 +6944,43 @@ function setupMaintenanceListener() {
         if (data.enabled) {
             if (messageEl) messageEl.textContent = data.message || 'We\'re performing scheduled maintenance. Please check back soon!';
             if (overlay) overlay.style.display = 'flex';
+            // Disable all interaction
+            document.body.style.overflow = 'hidden';
         } else {
             if (overlay) overlay.style.display = 'none';
+            document.body.style.overflow = '';
         }
     });
 }
+
+// Start maintenance check immediately when Firebase is ready
+function initMaintenanceCheck() {
+    if (!db) {
+        setTimeout(initMaintenanceCheck, 500);
+        return;
+    }
+    
+    // Check maintenance status immediately on page load
+    db.ref('site_settings/maintenance').once('value', (snap) => {
+        const data = snap.val() || {};
+        const overlay = document.getElementById('maintenance_overlay');
+        const messageEl = document.getElementById('maintenance_overlay_message');
+        
+        maintenanceEnabled = data.enabled || false;
+        
+        if (data.enabled) {
+            if (messageEl) messageEl.textContent = data.message || 'We\'re performing scheduled maintenance. Please check back soon!';
+            if (overlay) overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    });
+    
+    // Then setup the real-time listener
+    setupMaintenanceListener();
+}
+
+// Run maintenance check as soon as possible
+setTimeout(initMaintenanceCheck, 100);
 
 function stGiveTokens() {
     const resultEl = document.getElementById('st_token_result');
