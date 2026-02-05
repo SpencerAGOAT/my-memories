@@ -215,7 +215,7 @@
         <div style="background:linear-gradient(180deg, rgba(32,0,0,0.9), rgba(16,0,0,0.9)); padding:20px; text-align:center; border-bottom:2px solid #500;">
             <div id="pw_avatar_wrapper" style="position:relative; width:130px; height:130px; margin:0 auto 15px;">
                 <div id="pw_avatar" style="width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden; box-sizing:content-box;">🦇</div>
-                <div id="pw_avatar_frame" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:138px; height:138px; z-index:15; pointer-events:none;"></div>
+                <div id="pw_avatar_frame" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:160px; height:160px; z-index:15; pointer-events:none;"></div>
                 <div id="pw_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
                 <div id="pw_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
             </div>
@@ -704,7 +704,7 @@
                 <div style="text-align:center;">
                     <div id="my_avatar_wrapper" style="position:relative; width:130px; height:130px; margin:0 auto;">
                         <div id="my_avatar_display" style="width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden; box-sizing:content-box;">🦇</div>
-                        <div id="my_avatar_frame" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:138px; height:138px; z-index:15; pointer-events:none;"></div>
+                        <div id="my_avatar_frame" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:160px; height:160px; z-index:15; pointer-events:none;"></div>
                         <div id="my_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
                         <div id="my_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
                     </div>
@@ -1513,6 +1513,20 @@
                     <div id="shop_edit_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
                 
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">Bulk Upload Items</h4>
+                    <p style="color:#888; font-size:9px; margin:0 0 8px 0;">Upload multiple images at once. File names become item names.</p>
+                    <input type="file" id="bulk_item_files" multiple accept="image/*" style="color:#888; font-size:10px; margin-bottom:8px; display:block;">
+                    <select id="bulk_item_type" class="ie-input">
+                        <option value="hat">Hat (above avatar)</option>
+                        <option value="accessory">Accessory/Facialwear (on face)</option>
+                        <option value="frame">Frame (around avatar)</option>
+                    </select>
+                    <input type="number" id="bulk_item_price" class="ie-input" placeholder="Default Price" value="500" min="1">
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="bulkUploadItems()">Upload All</button>
+                    <div id="bulk_upload_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
+                </div>
+
                 <div class="admin-section" style="border-color:#ff00ff;">
                     <h4 style="color:#ff00ff;">Give Tokens</h4>
                     <input type="text" id="st_token_username" class="ie-input" placeholder="Username">
@@ -6725,47 +6739,66 @@ function initBuiltinShopItems() {
     
     resultEl.innerHTML = '<span style="color:#ffd700;">Initializing items... This loads item URLs from the system.</span>';
     
-    // These are URL references - the actual images need to be hosted somewhere accessible
+    // These are URL references - images stored in assets/avatars folder
     const builtinItems = {
-        'builtin_officers_hat': { name: 'Officers Hat', price: 1000, type: 'hat' },
-        'builtin_player_one': { name: 'Player One', price: 500, type: 'hat' },
-        'builtin_postal_conscience': { name: 'Postal Conscience', price: 750, type: 'hat' },
-        'builtin_red_fedora': { name: 'Red Fedora', price: 600, type: 'hat' },
-        'builtin_retard': { name: 'Retard', price: 400, type: 'hat' },
-        'builtin_rip_bozo': { name: 'RIP BOZO', price: 800, type: 'frame' },
-        'builtin_the_merchant': { name: 'The Merchant', price: 500, type: 'hat' },
-        'builtin_the_raped': { name: 'The Raped', price: 350, type: 'hat' },
-        'builtin_wanted': { name: 'Wanted', price: 700, type: 'frame' },
-        'builtin_confederate_cap': { name: 'Confederate Cap', price: 900, type: 'hat' },
-        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'hat' },
-        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'hat' },
-        'builtin_dunce_cap': { name: 'Dunce Cap', price: 300, type: 'hat' },
-        'builtin_hazmat_suit': { name: 'Hazmat Suit', price: 550, type: 'hat' },
-        'builtin_ice_cap': { name: 'ICE Cap', price: 400, type: 'hat' },
-        'builtin_israeli_friend_pins': { name: 'Israeli Friend Pins', price: 500, type: 'hat' },
-        'builtin_japanese_text': { name: 'Japanese Text', price: 450, type: 'hat' },
-        'builtin_liveleak': { name: 'LiveLeak', price: 600, type: 'hat' },
-        'builtin_nazi_officer': { name: 'Nazi Officer', price: 1000, type: 'hat' },
-        'builtin_noose': { name: 'Noose', price: 500, type: 'frame' }
+        'builtin_officers_hat': { name: 'Officers Hat', price: 1000, type: 'hat', imageUrl: 'assets/avatars/officers_hat.png' },
+        'builtin_player_one': { name: 'Player One', price: 500, type: 'hat', imageUrl: 'assets/avatars/player_one.png' },
+        'builtin_postal_conscience': { name: 'Postal Conscience', price: 750, type: 'hat', imageUrl: 'assets/avatars/postal_conscience.png' },
+        'builtin_red_fedora': { name: 'Red Fedora', price: 600, type: 'hat', imageUrl: 'assets/avatars/red_fedora.png' },
+        'builtin_retard': { name: 'Retard', price: 400, type: 'hat', imageUrl: 'assets/avatars/retard.png' },
+        'builtin_rip_bozo': { name: 'RIP BOZO', price: 800, type: 'frame', imageUrl: 'assets/avatars/rip_bozo.png' },
+        'builtin_the_merchant': { name: 'The Merchant', price: 500, type: 'hat', imageUrl: 'assets/avatars/the_merchant.png' },
+        'builtin_the_raped': { name: 'The Raped', price: 350, type: 'hat', imageUrl: 'assets/avatars/the_raped.png' },
+        'builtin_wanted': { name: 'Wanted', price: 700, type: 'frame', imageUrl: 'assets/avatars/wanted.png' },
+        'builtin_confederate_cap': { name: 'Confederate Cap', price: 900, type: 'hat', imageUrl: 'assets/avatars/confederate_cap.png' },
+        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'hat', imageUrl: 'assets/avatars/dead_pedo_bear.png' },
+        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'hat', imageUrl: 'assets/avatars/dharmachakra.png' },
+        'builtin_dunce_cap': { name: 'Dunce Cap', price: 300, type: 'hat', imageUrl: 'assets/avatars/dunce_cap.png' },
+        'builtin_hazmat_suit': { name: 'Hazmat Suit', price: 550, type: 'hat', imageUrl: 'assets/avatars/hazmat_suit.png' },
+        'builtin_ice_cap': { name: 'ICE Cap', price: 400, type: 'hat', imageUrl: 'assets/avatars/ice_cap.png' },
+        'builtin_israeli_friend_pins': { name: 'Israeli Friend Pins', price: 500, type: 'hat', imageUrl: 'assets/avatars/israeli_friend_pins.png' },
+        'builtin_japanese_text': { name: 'Japanese Text', price: 450, type: 'hat', imageUrl: 'assets/avatars/japanese_text.png' },
+        'builtin_liveleak': { name: 'LiveLeak', price: 600, type: 'hat', imageUrl: 'assets/avatars/liveleak.png' },
+        'builtin_nazi_officer': { name: 'Nazi Officer', price: 1000, type: 'hat', imageUrl: 'assets/avatars/nazi_officer.png' },
+        'builtin_noose': { name: 'Noose', price: 500, type: 'frame', imageUrl: 'assets/avatars/noose.png' },
+        'builtin_homer_head': { name: 'Homer Head', price: 500, type: 'frame', imageUrl: 'assets/avatars/homer_head.png' }
     };
     
-    // Check which items need to be added (only add if they have imageUrl set)
+    // Check which items need to be added and add them automatically
     db.ref('shop_items').once('value', (snap) => {
         const existing = snap.val() || {};
-        let needsUrls = [];
-        
+        let toAdd = [];
+
         for (const [id, item] of Object.entries(builtinItems)) {
-            if (!existing[id]) {
-                needsUrls.push(id);
+            if (!existing[id] && item.imageUrl) {
+                toAdd.push({ id, item });
             }
         }
-        
-        if (needsUrls.length === 0) {
+
+        if (toAdd.length === 0) {
             resultEl.innerHTML = '<span style="color:#0f0;">All builtin items already exist!</span>';
             return;
         }
-        
-        resultEl.innerHTML = '<span style="color:#ffd700;">Items need image URLs. Use "Add Custom Shop Item" to add each item with an image URL, or upload images to a hosting service first.</span><br><br><span style="color:#888;">Missing items: ' + needsUrls.join(', ') + '</span>';
+
+        // Add all missing items
+        let added = 0;
+        let promises = toAdd.map(({ id, item }) => {
+            return db.ref('shop_items/' + id).set({
+                name: item.name,
+                imageUrl: item.imageUrl,
+                price: item.price,
+                type: item.type,
+                addedBy: 'system',
+                addedAt: Date.now()
+            }).then(() => { added++; });
+        });
+
+        Promise.all(promises).then(() => {
+            resultEl.innerHTML = '<span style="color:#0f0;">Added ' + added + ' items to shop!</span>';
+            loadSTShopList();
+        }).catch(err => {
+            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        });
     });
 }
 
@@ -6868,6 +6901,75 @@ function stDeleteShopItem() {
     }).catch(err => {
         resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
+}
+
+async function bulkUploadItems() {
+    const resultEl = document.getElementById('bulk_upload_result');
+    if (!userDatabase[CURRENT_USER]?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+        return;
+    }
+
+    const fileInput = document.getElementById('bulk_item_files');
+    const type = document.getElementById('bulk_item_type').value;
+    const price = parseInt(document.getElementById('bulk_item_price').value) || 500;
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+        resultEl.innerHTML = '<span style="color:#f00;">Select at least one image file.</span>';
+        return;
+    }
+
+    const files = Array.from(fileInput.files);
+    resultEl.innerHTML = '<span style="color:#ffd700;">Uploading ' + files.length + ' items...</span>';
+
+    let success = 0, failed = 0;
+    let log = '';
+
+    for (const file of files) {
+        // Get name from filename (remove extension)
+        const name = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ').replace(/-/g, ' ');
+
+        try {
+            // Upload to Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
+            const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.secure_url) {
+                // Add to Firebase
+                const itemId = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                await db.ref('shop_items/' + itemId).set({
+                    name: name,
+                    imageUrl: data.secure_url,
+                    price: price,
+                    type: type,
+                    addedBy: CURRENT_USER,
+                    addedAt: Date.now()
+                });
+                success++;
+                log += '<div style="color:#0f0;">✓ ' + name + '</div>';
+            } else {
+                failed++;
+                log += '<div style="color:#f00;">✗ ' + name + ' - Upload failed</div>';
+            }
+        } catch (err) {
+            failed++;
+            log += '<div style="color:#f00;">✗ ' + name + ' - ' + err.message + '</div>';
+        }
+
+        // Update progress
+        resultEl.innerHTML = '<span style="color:#ffd700;">Progress: ' + (success + failed) + '/' + files.length + '</span><br>' + log;
+    }
+
+    resultEl.innerHTML = '<span style="color:#0f0;">Done! ' + success + ' uploaded, ' + failed + ' failed.</span><br>' + log;
+    fileInput.value = '';
+    loadSTShopList();
 }
 
 // ========== MAINTENANCE MODE ==========
