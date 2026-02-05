@@ -332,29 +332,290 @@
     <div class="title-bar"><div class="title-bar-text">About fangtasia.wtf</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('about_window')"></button></div></div>
     <div class="window-body"><div class="ie-content" style="text-align: center;"><h2 style="font-size: 28px; margin-bottom: 5px;">fangtasia.wtf</h2><p style="color: #666; font-size: 10px;">Version 6.66</p><div style="border: 1px solid #400; padding: 15px; margin: 15px 0; text-align: left; background: #050000;"><p style="color: #999; font-size: 11px; line-height: 1.6;">Welcome to the digital crypt.<br><br>🦇 <span style="color:#d40000;">Memories</span> - Video archive<br>🦇 <span style="color:#d40000;">Portal</span> - Member access<br>🦇 <span style="color:#d40000;">Games</span> - Silver Stakes<br>🦇 <span style="color:#d40000;">The Lounge</span> - Members only</p></div></div></div>
 </div>
-<div class="window" id="games_window" style="left:180px; top:70px; width:320px; height:480px;">
-    <div class="title-bar"><div class="title-bar-text">🎮 Silver Stakes</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('games_window')"></button></div></div>
-    <div class="window-body"><div style="padding: 10px;">
-        <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
-        <p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes!</p>
-        <div class="game-status" id="game_status">🦇 Stakes: 10</div>
-        <div class="stakes-grid" id="stakes_grid"></div>
-        <div style="text-align: center; margin-top: 8px;">
-            <button class="ie-btn" style="width: auto; padding: 4px 15px;" onclick="initStakesGame()">New Game</button>
-        </div>
-        <div id="game_my_stats" style="text-align: center; margin-top: 10px; padding: 8px; background: #0a0505; border: 1px solid #300; border-radius: 4px;">
-            <span style="color: #888; font-size: 10px;">Your Wins: </span><span id="my_wins_count" style="color: #ff6600; font-weight: bold;">0</span>
-        </div>
-        <div style="margin-top: 10px; border-top: 1px solid #300; padding-top: 10px;">
-            <div style="color: #d40000; font-size: 10px; font-weight: bold; margin-bottom: 5px;">🏆 Top Players</div>
-            <div id="game_mini_leaderboard" style="font-size: 10px; max-height: 80px; overflow-y: auto;">
-                <div style="color: #666;">Loading...</div>
+<div class="window" id="games_window" style="left:100px; top:50px; width:500px; height:600px;">
+    <div class="title-bar"><div class="title-bar-text">Fangtasia Games & Shop</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('games_window')"></button></div></div>
+    <div class="window-body" style="padding:0; display:flex; flex-direction:column; height:calc(100% - 25px);">
+        <!-- Token Display Bar -->
+        <div style="background:linear-gradient(90deg, #1a0808, #0a0000); padding:8px 15px; border-bottom:1px solid #500; display:flex; justify-content:space-between; align-items:center;">
+            <div><span style="color:#888; font-size:11px;">Blood Tokens:</span> <span id="main_token_display" style="color:#d40000; font-weight:bold; font-size:14px;">0</span></div>
+            <div style="display:flex; gap:10px;">
+                <button class="ie-btn" style="width:auto; padding:3px 10px; font-size:9px; margin:0;" onclick="showGiftTokens()">Gift</button>
+                <button class="ie-btn" style="width:auto; padding:3px 10px; font-size:9px; margin:0;" onclick="showTokenLeaderboard()">Ranks</button>
             </div>
         </div>
-    </div></div>
+        
+        <div class="tab-bar" style="flex-wrap:wrap;">
+            <div class="tab active" onclick="switchGameTab('stakes', this)">Stakes</div>
+            <div class="tab" onclick="switchGameTab('blackjack', this)">Blackjack</div>
+            <div class="tab" onclick="switchGameTab('slots', this)">Slots</div>
+            <div class="tab" onclick="switchGameTab('snake', this)">Snake</div>
+            <div class="tab" onclick="switchGameTab('daily', this)">Daily</div>
+            <div class="tab" onclick="switchGameTab('shop', this)">Shop</div>
+        </div>
+        
+        <div style="flex:1; overflow-y:auto;">
+            <!-- SILVER STAKES -->
+            <div id="game_tab_stakes" style="padding: 10px;">
+                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
+                <p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes! Win: 50 tokens</p>
+                <div class="game-status" id="game_status">Stakes: 10</div>
+                <div class="stakes-grid" id="stakes_grid"></div>
+                <div style="text-align: center; margin-top: 8px;">
+                    <button class="ie-btn" style="width: auto; padding: 4px 15px;" onclick="initStakesGame()">New Game</button>
+                </div>
+                <div id="game_my_stats" style="text-align: center; margin-top: 10px; padding: 8px; background: #0a0505; border: 1px solid #300; border-radius: 4px;">
+                    <span style="color: #888; font-size: 10px;">Your Wins: </span><span id="my_wins_count" style="color: #ff6600; font-weight: bold;">0</span>
+                </div>
+            </div>
+            
+            <!-- BLACKJACK -->
+            <div id="game_tab_blackjack" style="padding: 10px; display:none;">
+                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Blood Blackjack</h3>
+                <p style="color: #666; font-size: 9px; text-align: center;">Beat the dealer! Bet: 10 | Win: 20</p>
+                
+                <div style="background:#0a0505; border:1px solid #400; border-radius:8px; padding:15px; margin:10px 0;">
+                    <div style="text-align:center; margin-bottom:15px;">
+                        <div style="color:#888; font-size:10px;">Dealer</div>
+                        <div id="bj_dealer_hand" style="display:flex; justify-content:center; gap:5px; margin-top:5px; min-height:60px;"></div>
+                        <div id="bj_dealer_score" style="color:#ffd700; font-size:12px; margin-top:5px;"></div>
+                    </div>
+                    <div style="border-top:1px solid #400; margin:10px 0;"></div>
+                    <div style="text-align:center;">
+                        <div style="color:#888; font-size:10px;">You</div>
+                        <div id="bj_player_hand" style="display:flex; justify-content:center; gap:5px; margin-top:5px; min-height:60px;"></div>
+                        <div id="bj_player_score" style="color:#0f0; font-size:12px; margin-top:5px;"></div>
+                    </div>
+                </div>
+                
+                <div id="bj_result" style="text-align:center; font-size:14px; font-weight:bold; margin:10px 0; min-height:20px;"></div>
+                
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+                    <button class="ie-btn" id="bj_hit_btn" style="width:auto; padding:8px 20px;" onclick="bjHit()">Hit</button>
+                    <button class="ie-btn" id="bj_stand_btn" style="width:auto; padding:8px 20px;" onclick="bjStand()">Stand</button>
+                    <button class="ie-btn" id="bj_new_btn" style="width:auto; padding:8px 20px; background:#050;" onclick="bjNewGame()">New</button>
+                </div>
+                
+                <div style="text-align:center; margin-top:10px; padding:8px; background:#0a0505; border:1px solid #300; border-radius:4px;">
+                    <span style="color:#888; font-size:10px;">Wins: </span><span id="bj_wins" style="color:#0f0; font-weight:bold;">0</span>
+                </div>
+            </div>
+            
+            <!-- SLOTS -->
+            <div id="game_tab_slots" style="padding: 10px; display:none;">
+                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Blood Slots</h3>
+                <p style="color: #666; font-size: 9px; text-align: center;">Cost: 10 | Max Win: 500</p>
+                
+                <div style="background:linear-gradient(180deg, #1a0505, #0a0000); border:2px solid #700; border-radius:10px; padding:20px; margin:15px 0;">
+                    <div id="slots_reels" style="display:flex; justify-content:center; gap:10px;">
+                        <div class="slot-reel" id="slot1">V</div>
+                        <div class="slot-reel" id="slot2">B</div>
+                        <div class="slot-reel" id="slot3">C</div>
+                    </div>
+                    <div id="slots_result" style="text-align:center; margin-top:15px; font-size:14px; font-weight:bold; min-height:20px;"></div>
+                </div>
+                
+                <div style="text-align:center;">
+                    <button class="ie-btn" id="spin_btn" style="width:auto; padding:12px 40px; font-size:14px; background:linear-gradient(180deg, #700, #400);" onclick="spinSlots()">SPIN (10)</button>
+                </div>
+                
+                <div style="margin-top:15px; padding:10px; background:#0a0505; border:1px solid #300; border-radius:4px;">
+                    <div style="color:#666; font-size:9px; text-align:center;">
+                        VVV = 500 | BBB = 250 | CCC = 100 | Match 2 = 15
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SNAKE -->
+            <div id="game_tab_snake" style="padding: 10px; display:none;">
+                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Blood Snake</h3>
+                <p style="color: #666; font-size: 9px; text-align: center;">Collect blood drops! 1 token per drop (max 200)</p>
+                
+                <div style="text-align:center; margin:10px 0;">
+                    <canvas id="snake_canvas" width="280" height="280" style="background:#0a0000; border:2px solid #500;"></canvas>
+                </div>
+                
+                <div id="snake_score" style="text-align:center; color:#d40000; font-size:14px; font-weight:bold; margin:10px 0;">Score: 0</div>
+                
+                <div style="text-align:center;">
+                    <button class="ie-btn" style="width:auto; padding:8px 20px;" onclick="startSnakeGame()">Start Game</button>
+                </div>
+                
+                <div style="color:#666; font-size:9px; text-align:center; margin-top:10px;">Use arrow keys or WASD to move</div>
+            </div>
+            
+            <!-- DAILY SPIN -->
+            <div id="game_tab_daily" style="padding: 10px; display:none;">
+                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Daily Rewards</h3>
+                
+                <!-- Login Streak -->
+                <div style="background:#0a0505; border:1px solid #400; border-radius:8px; padding:15px; margin:10px 0;">
+                    <div style="color:#ffd700; font-size:12px; font-weight:bold; margin-bottom:10px;">Login Streak</div>
+                    <div style="display:flex; justify-content:center; gap:5px; margin-bottom:10px;">
+                        <div id="streak_day_1" class="streak-day">1</div>
+                        <div id="streak_day_2" class="streak-day">2</div>
+                        <div id="streak_day_3" class="streak-day">3</div>
+                        <div id="streak_day_4" class="streak-day">4</div>
+                        <div id="streak_day_5" class="streak-day">5</div>
+                        <div id="streak_day_6" class="streak-day">6</div>
+                        <div id="streak_day_7" class="streak-day bonus">7</div>
+                    </div>
+                    <div id="login_bonus_status" style="color:#888; font-size:10px; text-align:center;"></div>
+                    <div style="text-align:center; margin-top:10px;">
+                        <button class="ie-btn" id="claim_login_btn" style="width:auto; padding:8px 20px;" onclick="claimLoginBonus()">Claim Daily Bonus</button>
+                    </div>
+                </div>
+                
+                <!-- Daily Spin -->
+                <div style="background:#0a0505; border:1px solid #400; border-radius:8px; padding:15px; margin:10px 0;">
+                    <div style="color:#ffd700; font-size:12px; font-weight:bold; margin-bottom:10px;">Daily Spin (Free once per day)</div>
+                    <div id="daily_wheel" style="position:relative; width:200px; height:200px; margin:0 auto;">
+                        <div id="wheel_spinner" style="width:100%; height:100%; border-radius:50%; background:conic-gradient(#500 0deg 45deg, #300 45deg 90deg, #700 90deg 135deg, #400 135deg 180deg, #600 180deg 225deg, #200 225deg 270deg, #800 270deg 315deg, #350 315deg 360deg); border:3px solid #900; display:flex; align-items:center; justify-content:center; transition:transform 3s ease-out;">
+                            <div style="width:30px; height:30px; background:#d40000; border-radius:50%; border:2px solid #fff;"></div>
+                        </div>
+                        <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); color:#fff; font-size:20px;">V</div>
+                    </div>
+                    <div id="spin_reward" style="text-align:center; color:#ffd700; font-size:14px; font-weight:bold; margin:15px 0; min-height:20px;"></div>
+                    <div style="text-align:center;">
+                        <button class="ie-btn" id="daily_spin_btn" style="width:auto; padding:8px 30px;" onclick="spinDailyWheel()">SPIN</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SHOP -->
+            <div id="game_tab_shop" style="padding: 10px; display:none;">
+                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Token Shop</h3>
+                <p style="color: #666; font-size: 9px; text-align: center;">Buy items to customize your profile</p>
+                
+                <div id="shop_items" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:15px; max-height:350px; overflow-y:auto;">
+                    <div style="color:#666; text-align:center; padding:20px; grid-column:span 3;">Loading shop...</div>
+                </div>
+                
+                <div style="margin-top:15px; border-top:1px solid #400; padding-top:15px;">
+                    <div style="color:#888; font-size:10px; margin-bottom:5px;">Your Equipped Items:</div>
+                    <div id="equipped_items" style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <span style="color:#666; font-size:10px;">None</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Gift Tokens Modal -->
+<div id="gift_modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#1a0808; border:2px solid #700; border-radius:8px; padding:20px; width:300px;">
+        <h3 style="color:#ffd700; margin:0 0 15px 0;">Gift Tokens</h3>
+        <input type="text" id="gift_username" class="ie-input" placeholder="Username">
+        <input type="number" id="gift_amount" class="ie-input" placeholder="Amount" min="1">
+        <div id="gift_result" style="margin:10px 0; font-size:11px; min-height:20px;"></div>
+        <div style="display:flex; gap:10px;">
+            <button class="ie-btn" style="flex:1;" onclick="sendGift()">Send</button>
+            <button class="ie-btn" style="flex:1; background:#333;" onclick="hideGiftModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Token Leaderboard Modal -->
+<div id="token_leaderboard_modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#1a0808; border:2px solid #700; border-radius:8px; padding:20px; width:350px; max-height:500px;">
+        <h3 style="color:#ffd700; margin:0 0 15px 0;">Richest Vampires</h3>
+        <div id="token_leaderboard_list" style="max-height:350px; overflow-y:auto;"></div>
+        <div style="text-align:center; margin-top:15px;">
+            <button class="ie-btn" style="width:auto; padding:8px 30px;" onclick="hideTokenLeaderboard()">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.slot-reel {
+    width: 60px;
+    height: 70px;
+    background: linear-gradient(180deg, #200, #100);
+    border: 2px solid #500;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #d40000;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+.slot-reel.spinning {
+    animation: slotSpin 0.1s infinite;
+}
+@keyframes slotSpin {
+    0% { transform: translateY(-5px); }
+    50% { transform: translateY(5px); }
+    100% { transform: translateY(-5px); }
+}
+.bj-card {
+    width: 40px;
+    height: 55px;
+    background: linear-gradient(180deg, #fff, #ddd);
+    border: 1px solid #333;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+.bj-card.red { color: #d40000; }
+.bj-card.black { color: #000; }
+.bj-card.hidden { background: linear-gradient(45deg, #300, #500); color: transparent; }
+.streak-day {
+    width: 30px;
+    height: 30px;
+    background: #200;
+    border: 1px solid #400;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 11px;
+    font-weight: bold;
+}
+.streak-day.claimed {
+    background: #050;
+    border-color: #0a0;
+    color: #0f0;
+}
+.streak-day.bonus {
+    background: #330;
+    border-color: #ffd700;
+    color: #ffd700;
+}
+.streak-day.bonus.claimed {
+    background: #550;
+}
+.shop-item {
+    background: #0a0505;
+    border: 1px solid #400;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+.shop-item:hover {
+    border-color: #d40000;
+}
+.shop-item.owned {
+    border-color: #0a0;
+    background: #050505;
+}
+.shop-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+</style>
 <div class="window" id="leaderboard_window" style="left:220px; top:60px; width:400px; height:480px; display:none;">
-    <div class="title-bar"><div class="title-bar-text">🏆 Leaderboards</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('leaderboard_window')"></button></div></div>
+    <div class="title-bar"><div class="title-bar-text">Leaderboards</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('leaderboard_window')"></button></div></div>
     <div class="window-body" style="padding: 0;">
         <div class="tab-bar">
             <div class="tab active" onclick="switchLeaderboardTab('minesweeper', this)">💣 Minesweeper</div>
@@ -362,7 +623,7 @@
             <div class="tab" onclick="switchLeaderboardTab('clubs', this)">🏰 Clubs</div>
         </div>
         <div id="leaderboard_minesweeper" style="padding: 10px;">
-            <h3 style="color: #d40000; text-align: center; margin: 5px 0 10px 0;">🦇 Silver Stakes Champions</h3>
+            <h3 style="color: #d40000; text-align: center; margin: 5px 0 10px 0;">Silver Stakes Champions</h3>
             <div id="minesweeper_leaderboard" style="max-height: 350px; overflow-y: auto;">
                 <div style="color: #666; text-align: center; padding: 20px;">Loading...</div>
             </div>
@@ -415,7 +676,11 @@
         <div id="chat_avatar" style="display: none; padding: 20px; overflow-y: auto; height: calc(100% - 40px);">
             <div style="display:flex; gap:20px; margin-bottom:20px;">
                 <div style="text-align:center;">
-                    <div id="my_avatar_display" style="width:120px; height:120px; border-radius:50%; background:#111; border:3px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden; margin:0 auto;">🦇</div>
+                    <div id="my_avatar_wrapper" style="position:relative; width:140px; height:160px; margin:0 auto;">
+                        <div id="my_avatar_hat" style="position:absolute; top:-20px; left:50%; transform:translateX(-50%); width:80px; height:60px; z-index:10; pointer-events:none;"></div>
+                        <div id="my_avatar_frame" style="position:absolute; top:20px; left:10px; width:120px; height:120px; z-index:5; pointer-events:none;"></div>
+                        <div id="my_avatar_display" style="position:absolute; top:20px; left:10px; width:120px; height:120px; border-radius:50%; background:#111; border:3px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden;">🦇</div>
+                    </div>
                     <div id="my_username_display" style="color:#d40000; font-size:18px; font-weight:bold; margin-top:10px;"></div>
                     <div id="my_rank_display" style="color:#888; font-size:12px;"></div>
                 </div>
@@ -680,7 +945,8 @@
             <div class="mgmt-sidebar-item" id="admin_tab_videos_btn" onclick="switchAdminTab('videos', this)">📹 Videos</div>
             <div class="mgmt-sidebar-item" id="admin_tab_vip_btn" onclick="switchAdminTab('vip', this)">🌟 VIP Codes</div>
             <div class="mgmt-sidebar-item" id="admin_tab_sitetools_btn" style="display:none;" onclick="switchAdminTab('sitetools', this)">🎛️ Site Tools</div>
-            <div class="mgmt-sidebar-item" id="st_tab" style="display:none;" onclick="switchAdminTab('st', this)">🔮 ST Tools</div>
+            <div class="mgmt-sidebar-item" id="st_tab" style="display:none;" onclick="switchAdminTab('st', this)">ST Tools</div>
+            <div class="mgmt-sidebar-item" id="st_tab2" style="display:none;" onclick="switchAdminTab('st2', this)">ST Shop</div>
         </div>
         <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto; max-height:100%;">
             <div id="admin_tab_apps"><h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option></select><input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()"></div><div id="all_applications" style="max-height:380px; overflow-y:auto;"></div></div>
@@ -780,7 +1046,7 @@
             </div>
             
             <div id="admin_tab_st" style="display:none;">
-                <h3 style="color:#ff00ff; margin:0 0 15px 0;">🔮 Site Technician Tools</h3>
+                <h3 style="color:#ff00ff; margin:0 0 15px 0;">Site Technician Tools</h3>
                 
                 <!-- SECTION: USER MANAGEMENT -->
                 <div style="margin-bottom:20px; border:2px solid #600060; border-radius:8px; overflow:hidden;">
@@ -1151,6 +1417,59 @@
                         </div>
                     </div>
                 </div>
+                
+            </div>
+            
+            <!-- ST TOOLS PAGE 2 - TOKEN/SHOP MANAGEMENT -->
+            <div id="admin_tab_st2" style="display:none;">
+                <h3 style="color:#ff00ff; margin:0 0 15px 0;">ST Shop & Token Management</h3>
+                
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">Initialize Builtin Items</h4>
+                    <p style="color:#888; font-size:9px; margin:5px 0;">Load the default shop items (hats, frames, etc.)</p>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="initBuiltinShopItems()">Load Builtin Items</button>
+                    <div id="builtin_init_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">Add Custom Shop Item</h4>
+                    <input type="text" id="shop_item_name" class="ie-input" placeholder="Item Name">
+                    <input type="text" id="shop_item_image" class="ie-input" placeholder="Image URL">
+                    <input type="number" id="shop_item_price" class="ie-input" placeholder="Price (tokens)" min="1">
+                    <select id="shop_item_type" class="ie-input">
+                        <option value="hat">Hat/Accessory</option>
+                        <option value="frame">Profile Frame</option>
+                        <option value="effect">Chat Effect</option>
+                        <option value="badge">Custom Badge</option>
+                    </select>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stAddShopItem()">Add Item</button>
+                    <div id="shop_add_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">Current Shop Items</h4>
+                    <div id="st_shop_list" style="max-height:200px; overflow-y:auto; font-size:10px;"></div>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff; margin-top:5px;" onclick="loadSTShopList()">Refresh List</button>
+                </div>
+                
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">Edit Item Price</h4>
+                    <input type="text" id="shop_edit_id" class="ie-input" placeholder="Item ID">
+                    <input type="number" id="shop_edit_price" class="ie-input" placeholder="New Price" min="1">
+                    <div style="display:flex; gap:5px;">
+                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="stEditShopPrice()">Update Price</button>
+                        <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stDeleteShopItem()">Delete Item</button>
+                    </div>
+                    <div id="shop_edit_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">Give Tokens</h4>
+                    <input type="text" id="st_token_username" class="ie-input" placeholder="Username">
+                    <input type="number" id="st_token_amount" class="ie-input" placeholder="Amount" min="1">
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stGiveTokens()">Give Tokens</button>
+                    <div id="st_token_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -1188,7 +1507,18 @@
             <input type="file" id="ie_file_picker" class="ie-input" style="border:none;" accept="video/*">
             <button class="ie-btn" id="upload_status" onclick="processIEUpload()">Push to Cloud</button>
             <div id="vip_image_section" style="display:none; margin-top:15px; border-top:1px solid #400; padding-top:15px;">
-                <h3 style="color:#ffd700; margin: 0 0 5px 0; font-size: 13px;">🌟 VIP Image Hosting</h3>
+                <h3 style="color:#ffd700; margin: 0 0 5px 0; font-size: 13px;">🌟 VIP Features</h3>
+                
+                <div style="margin-bottom:12px; padding:10px; background:#1a1500; border:1px solid #5a4a00; border-radius:4px;">
+                    <label style="color:#ffd700; font-size:10px; display:block; margin-bottom:5px;">✨ Display Name (shows in chat)</label>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="vip_display_name" class="ie-input" placeholder="Your display name..." maxlength="25" style="flex:1; margin:0;">
+                        <button class="ie-btn" style="width:auto; padding:8px 12px; margin:0; background:#5a4a00;" onclick="saveDisplayName()">Save</button>
+                    </div>
+                    <div id="display_name_result" style="margin-top:5px; font-size:9px;"></div>
+                </div>
+                
+                <label style="color:#888; font-size:10px; display:block; margin-bottom:5px;">📷 VIP Image Hosting</label>
                 <input type="file" id="vip_image_picker" class="ie-input" style="border:none;" accept="image/*">
                 <button class="ie-btn" style="background:#5a4a00;" onclick="uploadVIPImage()">Upload Image</button>
                 <div id="vip_image_result" style="margin-top:8px;"></div>
@@ -1247,6 +1577,7 @@ try {
 
 let FIREBASE_USER = null; // Stores Firebase Auth user object
 let CURRENT_USER = "", IS_GUEST = false; // Define early for auth listener
+let currentUserDisplayName = null; // VIP display name
 const CLOUD_NAME = "fangtasia-14197";
 const UPLOAD_PRESET = "fangtasia";
 
@@ -1683,7 +2014,7 @@ function initStakesGame() {
         stakesBoard[i] = count;
     }
     renderStakes();
-    document.getElementById('game_status').textContent = '🦇 Stakes: 10';
+    document.getElementById('game_status').textContent = 'Stakes: 10';
     
     // Log game play for leaderboard
     if (CURRENT_USER && !IS_GUEST) {
@@ -1706,14 +2037,19 @@ function renderStakes() {
 function revealCell(i) {
     if (gameOver || stakesRevealed[i] || stakesFlagged[i]) return;
     stakesRevealed[i] = true;
-    if (stakesBoard[i] === -1) { gameOver = true; stakesRevealed = stakesRevealed.map(() => true); document.getElementById('game_status').textContent = '💀 Staked! Game Over.'; }
+    if (stakesBoard[i] === -1) { gameOver = true; stakesRevealed = stakesRevealed.map(() => true); document.getElementById('game_status').textContent = 'Staked! Game Over.'; }
     else if (stakesBoard[i] === 0) { const row = Math.floor(i / 9), col = i % 9; for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) { const nr = row + dr, nc = col + dc; if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9) revealCell(nr * 9 + nc); } }
     const unrevealed = stakesRevealed.filter((r, idx) => !r && stakesBoard[idx] !== -1).length;
     if (unrevealed === 0 && !gameOver) { 
         gameOver = true; 
-        document.getElementById('game_status').textContent = '🦇 You survived!'; 
-        // Track win in Firebase
+        document.getElementById('game_status').textContent = 'You survived! +50 tokens'; 
+        // Track win in Firebase and award tokens
         if (CURRENT_USER && !IS_GUEST) {
+            // Award 50 tokens for winning
+            playerTokens += 50;
+            updateTokenDisplays();
+            savePlayerTokens();
+            
             db.ref('game_stats/minesweeper/' + CURRENT_USER).once('value', (snap) => {
                 const current = snap.val() || { wins: 0, lastWin: 0 };
                 const newWins = (current.wins || 0) + 1;
@@ -1765,6 +2101,795 @@ function loadMyGameStats() {
         const data = snap.val() || { wins: 0 };
         const myWinsEl = document.getElementById('my_wins_count');
         if (myWinsEl) myWinsEl.textContent = data.wins || 0;
+    });
+    // Load tokens for other games
+    loadPlayerTokens();
+}
+
+// ========== GAME TAB SWITCHING ==========
+function switchGameTab(tab, el) {
+    document.querySelectorAll('#games_window .tab').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    document.getElementById('game_tab_stakes').style.display = tab === 'stakes' ? 'block' : 'none';
+    document.getElementById('game_tab_blackjack').style.display = tab === 'blackjack' ? 'block' : 'none';
+    document.getElementById('game_tab_slots').style.display = tab === 'slots' ? 'block' : 'none';
+    document.getElementById('game_tab_snake').style.display = tab === 'snake' ? 'block' : 'none';
+    document.getElementById('game_tab_daily').style.display = tab === 'daily' ? 'block' : 'none';
+    document.getElementById('game_tab_shop').style.display = tab === 'shop' ? 'block' : 'none';
+    
+    // Load data for specific tabs
+    if (tab === 'daily') loadDailyStatus();
+    if (tab === 'shop') loadShopItems();
+}
+
+// ========== BLOOD TOKENS SYSTEM ==========
+let playerTokens = 100;
+
+function loadPlayerTokens() {
+    if (!CURRENT_USER || IS_GUEST) return;
+    db.ref('game_stats/tokens/' + CURRENT_USER).once('value', (snap) => {
+        playerTokens = snap.val() || 100;
+        updateTokenDisplays();
+    });
+}
+
+function savePlayerTokens() {
+    if (!CURRENT_USER || IS_GUEST) return;
+    db.ref('game_stats/tokens/' + CURRENT_USER).set(playerTokens);
+}
+
+function updateTokenDisplays() {
+    const mainTokens = document.getElementById('main_token_display');
+    const bjTokens = document.getElementById('bj_tokens');
+    const slotsTokens = document.getElementById('slots_tokens');
+    if (mainTokens) mainTokens.textContent = playerTokens;
+    if (bjTokens) bjTokens.textContent = playerTokens;
+    if (slotsTokens) slotsTokens.textContent = playerTokens;
+}
+
+// ========== BLACKJACK ==========
+let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjGameOver = false, bjPlayerWins = 0;
+
+function createDeck() {
+    const suits = ['♥', '♦', '♣', '♠'];
+    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const deck = [];
+    for (const suit of suits) {
+        for (const value of values) {
+            deck.push({ suit, value, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
+        }
+    }
+    return deck.sort(() => Math.random() - 0.5);
+}
+
+function getCardValue(card) {
+    if (['J', 'Q', 'K'].includes(card.value)) return 10;
+    if (card.value === 'A') return 11;
+    return parseInt(card.value);
+}
+
+function getHandValue(hand) {
+    let value = 0, aces = 0;
+    for (const card of hand) {
+        value += getCardValue(card);
+        if (card.value === 'A') aces++;
+    }
+    while (value > 21 && aces > 0) { value -= 10; aces--; }
+    return value;
+}
+
+function renderCard(card, hidden = false) {
+    if (hidden) return '<div class="bj-card hidden">?</div>';
+    return `<div class="bj-card ${card.color}">${card.value}${card.suit}</div>`;
+}
+
+function renderHands(showDealer = false) {
+    const dealerEl = document.getElementById('bj_dealer_hand');
+    const playerEl = document.getElementById('bj_player_hand');
+    const dealerScoreEl = document.getElementById('bj_dealer_score');
+    const playerScoreEl = document.getElementById('bj_player_score');
+    
+    if (showDealer) {
+        dealerEl.innerHTML = bjDealerHand.map(c => renderCard(c)).join('');
+        dealerScoreEl.textContent = 'Score: ' + getHandValue(bjDealerHand);
+    } else {
+        dealerEl.innerHTML = renderCard(bjDealerHand[0]) + renderCard(null, true);
+        dealerScoreEl.textContent = 'Score: ?';
+    }
+    
+    playerEl.innerHTML = bjPlayerHand.map(c => renderCard(c)).join('');
+    playerScoreEl.textContent = 'Score: ' + getHandValue(bjPlayerHand);
+}
+
+function bjNewGame() {
+    bjDeck = createDeck();
+    bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
+    bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
+    bjGameOver = false;
+    
+    document.getElementById('bj_result').innerHTML = '';
+    document.getElementById('bj_hit_btn').disabled = false;
+    document.getElementById('bj_stand_btn').disabled = false;
+    
+    renderHands(false);
+    
+    // Check for blackjack
+    if (getHandValue(bjPlayerHand) === 21) {
+        bjStand();
+    }
+}
+
+function bjHit() {
+    if (bjGameOver) return;
+    bjPlayerHand.push(bjDeck.pop());
+    renderHands(false);
+    
+    if (getHandValue(bjPlayerHand) > 21) {
+        bjEndGame('bust');
+    }
+}
+
+function bjStand() {
+    if (bjGameOver) return;
+    
+    // Dealer draws
+    while (getHandValue(bjDealerHand) < 17) {
+        bjDealerHand.push(bjDeck.pop());
+    }
+    
+    renderHands(true);
+    
+    const playerVal = getHandValue(bjPlayerHand);
+    const dealerVal = getHandValue(bjDealerHand);
+    
+    if (dealerVal > 21) bjEndGame('dealer_bust');
+    else if (playerVal > dealerVal) bjEndGame('win');
+    else if (playerVal < dealerVal) bjEndGame('lose');
+    else bjEndGame('push');
+}
+
+function bjEndGame(result) {
+    bjGameOver = true;
+    document.getElementById('bj_hit_btn').disabled = true;
+    document.getElementById('bj_stand_btn').disabled = true;
+    renderHands(true);
+    
+    const resultEl = document.getElementById('bj_result');
+    let msg = '', tokenChange = 0;
+    
+    switch(result) {
+        case 'bust':
+            msg = '<span style="color:#f00;">💀 BUST! You lose.</span>';
+            tokenChange = -10;
+            break;
+        case 'dealer_bust':
+            msg = '<span style="color:#0f0;">Dealer busts! You win!</span>';
+            tokenChange = 20;
+            bjPlayerWins++;
+            break;
+        case 'win':
+            msg = '<span style="color:#0f0;">You win!</span>';
+            tokenChange = 20;
+            bjPlayerWins++;
+            break;
+        case 'lose':
+            msg = '<span style="color:#f00;">Dealer wins.</span>';
+            tokenChange = -10;
+            break;
+        case 'push':
+            msg = '<span style="color:#ffd700;">Push - Tie!</span>';
+            break;
+    }
+    
+    resultEl.innerHTML = msg;
+    playerTokens += tokenChange;
+    if (playerTokens < 0) playerTokens = 0;
+    updateTokenDisplays();
+    savePlayerTokens();
+    document.getElementById('bj_wins').textContent = bjPlayerWins;
+    
+    // Save wins to Firebase
+    if (bjPlayerWins > 0 && CURRENT_USER && !IS_GUEST) {
+        db.ref('game_stats/blackjack/' + CURRENT_USER).update({
+            wins: bjPlayerWins,
+            lastWin: Date.now()
+        });
+    }
+}
+
+// ========== SLOTS ==========
+const slotSymbols = ['V', 'B', 'C', 'X', 'M', 'S']; // Vampire, Blood, Coffin, X, Moon, Stake
+let slotsSpinning = false;
+
+function spinSlots() {
+    if (slotsSpinning) return;
+    if (playerTokens < 10) {
+        document.getElementById('slots_result').innerHTML = '<span style="color:#f00;">Not enough tokens!</span>';
+        return;
+    }
+    
+    playerTokens -= 10;
+    updateTokenDisplays();
+    slotsSpinning = true;
+    
+    const slot1 = document.getElementById('slot1');
+    const slot2 = document.getElementById('slot2');
+    const slot3 = document.getElementById('slot3');
+    const resultEl = document.getElementById('slots_result');
+    const spinBtn = document.getElementById('spin_btn');
+    
+    spinBtn.disabled = true;
+    resultEl.innerHTML = '';
+    slot1.classList.add('spinning');
+    slot2.classList.add('spinning');
+    slot3.classList.add('spinning');
+    
+    // Random spin animation
+    let spinCount = 0;
+    const spinInterval = setInterval(() => {
+        slot1.textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        slot2.textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        slot3.textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        spinCount++;
+        
+        if (spinCount > 20) {
+            clearInterval(spinInterval);
+            
+            // Final results (slightly weighted)
+            const results = [
+                slotSymbols[Math.floor(Math.random() * slotSymbols.length)],
+                slotSymbols[Math.floor(Math.random() * slotSymbols.length)],
+                slotSymbols[Math.floor(Math.random() * slotSymbols.length)]
+            ];
+            
+            slot1.textContent = results[0];
+            slot2.textContent = results[1];
+            slot3.textContent = results[2];
+            
+            slot1.classList.remove('spinning');
+            slot2.classList.remove('spinning');
+            slot3.classList.remove('spinning');
+            
+            // Calculate winnings (max 500)
+            let winnings = 0;
+            if (results[0] === results[1] && results[1] === results[2]) {
+                // Three of a kind
+                switch(results[0]) {
+                    case 'V': winnings = 500; break;  // Vampire - jackpot
+                    case 'B': winnings = 250; break;  // Blood
+                    case 'C': winnings = 100; break;  // Coffin
+                    case 'X': winnings = 50; break;   // X
+                    default: winnings = 25; break;
+                }
+                resultEl.innerHTML = `<span style="color:#ffd700;">JACKPOT! +${winnings} tokens!</span>`;
+            } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+                // Two of a kind
+                winnings = 15;
+                resultEl.innerHTML = `<span style="color:#0f0;">Match! +${winnings} tokens</span>`;
+            } else {
+                resultEl.innerHTML = '<span style="color:#888;">No match</span>';
+            }
+            
+            playerTokens += winnings;
+            updateTokenDisplays();
+            savePlayerTokens();
+            
+            // Track slot wins
+            if (winnings > 0 && CURRENT_USER && !IS_GUEST) {
+                db.ref('game_stats/slots/' + CURRENT_USER + '/totalWinnings').transaction((current) => {
+                    return (current || 0) + winnings;
+                });
+            }
+            
+            spinBtn.disabled = false;
+            slotsSpinning = false;
+        }
+    }, 80);
+}
+
+// ========== SNAKE GAME ==========
+let snakeGame = null;
+let snakeInterval = null;
+let snakeScore = 0;
+
+function startSnakeGame() {
+    const canvas = document.getElementById('snake_canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // Stop existing game
+    if (snakeInterval) clearInterval(snakeInterval);
+    
+    const gridSize = 20;
+    const tileCount = 14;
+    
+    let snake = [{ x: 7, y: 7 }];
+    let food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+    let dx = 0, dy = 0;
+    let score = 0;
+    let gameRunning = true;
+    
+    // Handle input
+    const handleKey = (e) => {
+        if (!gameRunning) return;
+        switch(e.key.toLowerCase()) {
+            case 'arrowup': case 'w': if (dy !== 1) { dx = 0; dy = -1; } break;
+            case 'arrowdown': case 's': if (dy !== -1) { dx = 0; dy = 1; } break;
+            case 'arrowleft': case 'a': if (dx !== 1) { dx = -1; dy = 0; } break;
+            case 'arrowright': case 'd': if (dx !== -1) { dx = 1; dy = 0; } break;
+        }
+    };
+    
+    document.addEventListener('keydown', handleKey);
+    
+    function gameLoop() {
+        if (!gameRunning) return;
+        
+        // Move snake
+        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+        
+        // Check wall collision
+        if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+            endSnakeGame(score);
+            document.removeEventListener('keydown', handleKey);
+            return;
+        }
+        
+        // Check self collision
+        for (let segment of snake) {
+            if (head.x === segment.x && head.y === segment.y) {
+                endSnakeGame(score);
+                document.removeEventListener('keydown', handleKey);
+                return;
+            }
+        }
+        
+        snake.unshift(head);
+        
+        // Check food
+        if (head.x === food.x && head.y === food.y) {
+            score++;
+            document.getElementById('snake_score').textContent = 'Score: ' + score;
+            food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+        } else {
+            snake.pop();
+        }
+        
+        // Draw
+        ctx.fillStyle = '#0a0000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw food (blood drop)
+        ctx.fillStyle = '#d40000';
+        ctx.beginPath();
+        ctx.arc(food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2, gridSize/2 - 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw snake
+        snake.forEach((segment, i) => {
+            ctx.fillStyle = i === 0 ? '#ff0000' : '#880000';
+            ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
+        });
+    }
+    
+    snakeInterval = setInterval(gameLoop, 120);
+    document.getElementById('snake_score').textContent = 'Score: 0';
+}
+
+function endSnakeGame(score) {
+    if (snakeInterval) clearInterval(snakeInterval);
+    snakeInterval = null;
+    
+    // Award tokens (1 per drop, max 200)
+    const tokens = Math.min(score, 200);
+    if (tokens > 0 && CURRENT_USER && !IS_GUEST) {
+        playerTokens += tokens;
+        updateTokenDisplays();
+        savePlayerTokens();
+        
+        // Save high score
+        db.ref('game_stats/snake/' + CURRENT_USER).once('value', (snap) => {
+            const current = snap.val() || { highScore: 0 };
+            if (score > (current.highScore || 0)) {
+                db.ref('game_stats/snake/' + CURRENT_USER).set({ highScore: score, lastPlayed: Date.now() });
+            }
+        });
+    }
+    
+    document.getElementById('snake_score').textContent = `Game Over! Score: ${score} (+${tokens} tokens)`;
+}
+
+// ========== DAILY LOGIN BONUS ==========
+function loadDailyStatus() {
+    if (!CURRENT_USER || IS_GUEST) {
+        document.getElementById('login_bonus_status').textContent = 'Login to claim daily rewards';
+        document.getElementById('claim_login_btn').disabled = true;
+        document.getElementById('daily_spin_btn').disabled = true;
+        return;
+    }
+    
+    db.ref('game_stats/daily/' + CURRENT_USER).once('value', (snap) => {
+        const data = snap.val() || {};
+        const today = new Date().toDateString();
+        const lastClaim = data.lastClaim || '';
+        const streak = data.streak || 0;
+        const lastSpin = data.lastSpin || '';
+        
+        // Update streak display
+        for (let i = 1; i <= 7; i++) {
+            const dayEl = document.getElementById('streak_day_' + i);
+            if (dayEl) {
+                dayEl.classList.remove('claimed');
+                if (i <= streak) dayEl.classList.add('claimed');
+            }
+        }
+        
+        // Check if already claimed today
+        if (lastClaim === today) {
+            document.getElementById('login_bonus_status').innerHTML = `<span style="color:#0f0;">Already claimed today! Streak: ${streak}</span>`;
+            document.getElementById('claim_login_btn').disabled = true;
+        } else {
+            document.getElementById('login_bonus_status').innerHTML = `<span style="color:#ffd700;">Streak: ${streak} - Claim your bonus!</span>`;
+            document.getElementById('claim_login_btn').disabled = false;
+        }
+        
+        // Check daily spin
+        if (lastSpin === today) {
+            document.getElementById('daily_spin_btn').disabled = true;
+            document.getElementById('daily_spin_btn').textContent = 'Spun Today';
+        } else {
+            document.getElementById('daily_spin_btn').disabled = false;
+            document.getElementById('daily_spin_btn').textContent = 'SPIN';
+        }
+    });
+}
+
+function claimLoginBonus() {
+    if (!CURRENT_USER || IS_GUEST) return;
+    
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    
+    db.ref('game_stats/daily/' + CURRENT_USER).once('value', (snap) => {
+        const data = snap.val() || {};
+        const lastClaim = data.lastClaim || '';
+        let streak = data.streak || 0;
+        
+        if (lastClaim === today) return;
+        
+        // Check if streak continues or resets
+        if (lastClaim === yesterday) {
+            streak = Math.min(streak + 1, 7);
+        } else {
+            streak = 1;
+        }
+        
+        // Calculate bonus based on streak
+        const bonuses = [10, 15, 20, 30, 40, 50, 100]; // Day 1-7 bonuses
+        const bonus = bonuses[streak - 1] || 10;
+        
+        playerTokens += bonus;
+        updateTokenDisplays();
+        savePlayerTokens();
+        
+        db.ref('game_stats/daily/' + CURRENT_USER).update({
+            lastClaim: today,
+            streak: streak
+        });
+        
+        document.getElementById('login_bonus_status').innerHTML = `<span style="color:#0f0;">+${bonus} tokens! Streak: ${streak}</span>`;
+        document.getElementById('claim_login_btn').disabled = true;
+        
+        // Update streak display
+        for (let i = 1; i <= 7; i++) {
+            const dayEl = document.getElementById('streak_day_' + i);
+            if (dayEl) {
+                dayEl.classList.remove('claimed');
+                if (i <= streak) dayEl.classList.add('claimed');
+            }
+        }
+    });
+}
+
+function spinDailyWheel() {
+    if (!CURRENT_USER || IS_GUEST) return;
+    
+    const today = new Date().toDateString();
+    const wheel = document.getElementById('wheel_spinner');
+    const resultEl = document.getElementById('spin_reward');
+    const btn = document.getElementById('daily_spin_btn');
+    
+    btn.disabled = true;
+    
+    // Spin animation
+    const spins = 5 + Math.random() * 3;
+    const degrees = spins * 360 + Math.random() * 360;
+    wheel.style.transform = `rotate(${degrees}deg)`;
+    
+    // Calculate reward based on where it lands
+    const rewards = [5, 10, 15, 20, 25, 50, 75, 100];
+    const rewardIndex = Math.floor(((degrees % 360) / 360) * rewards.length);
+    const reward = rewards[rewardIndex];
+    
+    setTimeout(() => {
+        playerTokens += reward;
+        updateTokenDisplays();
+        savePlayerTokens();
+        
+        db.ref('game_stats/daily/' + CURRENT_USER + '/lastSpin').set(today);
+        
+        resultEl.innerHTML = `<span style="color:#ffd700;">+${reward} tokens!</span>`;
+        btn.textContent = 'Spun Today';
+    }, 3000);
+}
+
+// ========== GIFT TOKENS ==========
+function showGiftTokens() {
+    if (!CURRENT_USER || IS_GUEST) {
+        alert('Login to gift tokens');
+        return;
+    }
+    document.getElementById('gift_modal').style.display = 'flex';
+    document.getElementById('gift_result').innerHTML = '';
+    document.getElementById('gift_username').value = '';
+    document.getElementById('gift_amount').value = '';
+}
+
+function hideGiftModal() {
+    document.getElementById('gift_modal').style.display = 'none';
+}
+
+function sendGift() {
+    const username = document.getElementById('gift_username').value.trim();
+    const amount = parseInt(document.getElementById('gift_amount').value);
+    const resultEl = document.getElementById('gift_result');
+    
+    if (!username) {
+        resultEl.innerHTML = '<span style="color:#f00;">Enter a username</span>';
+        return;
+    }
+    if (!amount || amount < 1) {
+        resultEl.innerHTML = '<span style="color:#f00;">Enter a valid amount</span>';
+        return;
+    }
+    if (amount > playerTokens) {
+        resultEl.innerHTML = '<span style="color:#f00;">Not enough tokens</span>';
+        return;
+    }
+    if (username === CURRENT_USER) {
+        resultEl.innerHTML = '<span style="color:#f00;">Cannot gift yourself</span>';
+        return;
+    }
+    if (!userDatabase[username]) {
+        resultEl.innerHTML = '<span style="color:#f00;">User not found</span>';
+        return;
+    }
+    
+    // Transfer tokens
+    playerTokens -= amount;
+    updateTokenDisplays();
+    savePlayerTokens();
+    
+    db.ref('game_stats/tokens/' + username).transaction((current) => {
+        return (current || 0) + amount;
+    }).then(() => {
+        resultEl.innerHTML = `<span style="color:#0f0;">Sent ${amount} tokens to ${username}!</span>`;
+        
+        // Log gift
+        db.ref('game_stats/gifts').push({
+            from: CURRENT_USER,
+            to: username,
+            amount: amount,
+            timestamp: Date.now()
+        });
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        // Refund on error
+        playerTokens += amount;
+        updateTokenDisplays();
+        savePlayerTokens();
+    });
+}
+
+// ========== TOKEN LEADERBOARD ==========
+function showTokenLeaderboard() {
+    document.getElementById('token_leaderboard_modal').style.display = 'flex';
+    loadTokenLeaderboard();
+}
+
+function hideTokenLeaderboard() {
+    document.getElementById('token_leaderboard_modal').style.display = 'none';
+}
+
+function loadTokenLeaderboard() {
+    const container = document.getElementById('token_leaderboard_list');
+    container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">Loading...</div>';
+    
+    db.ref('game_stats/tokens').once('value', (snap) => {
+        const data = snap.val() || {};
+        const sorted = Object.entries(data)
+            .map(([user, tokens]) => ({ user, tokens }))
+            .sort((a, b) => b.tokens - a.tokens)
+            .slice(0, 20);
+        
+        if (sorted.length === 0) {
+            container.innerHTML = '<div style="color:#888; text-align:center; padding:20px;">No data yet</div>';
+            return;
+        }
+        
+        container.innerHTML = sorted.map((entry, i) => {
+            const medal = i === 0 ? '1st' : i === 1 ? '2nd' : i === 2 ? '3rd' : `#${i+1}`;
+            const style = userDatabase[entry.user]?.style || 'member-style';
+            const isMe = entry.user === CURRENT_USER;
+            return `<div style="display:flex; align-items:center; padding:8px; background:${isMe ? '#1a0808' : '#0a0505'}; border:1px solid ${isMe ? '#d40000' : '#300'}; border-radius:4px; margin-bottom:5px;">
+                <span style="width:40px; color:${i < 3 ? '#ffd700' : '#888'}; font-weight:bold;">${medal}</span>
+                <span class="${style}" style="flex:1; cursor:pointer;" onclick="viewUserProfile('${entry.user}')">${entry.user}</span>
+                <span style="color:#d40000; font-weight:bold;">${entry.tokens}</span>
+            </div>`;
+        }).join('');
+    });
+}
+
+// ========== TOKEN SHOP ==========
+let shopItems = {};
+
+function loadShopItems() {
+    const container = document.getElementById('shop_items');
+    container.innerHTML = '<div style="color:#888; text-align:center; padding:20px; grid-column:span 3;">Loading shop...</div>';
+    
+    db.ref('shop_items').once('value', (snap) => {
+        shopItems = snap.val() || {};
+        
+        if (Object.keys(shopItems).length === 0) {
+            container.innerHTML = '<div style="color:#888; text-align:center; padding:20px; grid-column:span 3;">Shop is empty. ST can add items.</div>';
+            return;
+        }
+        
+        // Get user's owned items
+        db.ref('profiles/' + CURRENT_USER + '/shopItems').once('value', (ownedSnap) => {
+            const ownedItems = ownedSnap.val() || {};
+            
+            container.innerHTML = Object.entries(shopItems).map(([id, item]) => {
+                const owned = ownedItems[id];
+                return `<div class="shop-item ${owned ? 'owned' : ''}" onclick="${owned ? `equipItem('${id}')` : `buyShopItem('${id}')`}">
+                    <img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50?text=?'">
+                    <div style="color:#fff; font-size:10px; font-weight:bold;">${escapeHtml(item.name)}</div>
+                    <div style="color:${owned ? '#0f0' : '#ffd700'}; font-size:9px;">${owned ? 'OWNED' : item.price + ' tokens'}</div>
+                </div>`;
+            }).join('');
+        });
+    });
+    
+    loadEquippedItems();
+}
+
+function buyShopItem(itemId) {
+    if (!CURRENT_USER || IS_GUEST) {
+        alert('Login to buy items');
+        return;
+    }
+    
+    const item = shopItems[itemId];
+    if (!item) return;
+    
+    if (playerTokens < item.price) {
+        alert('Not enough tokens! Need ' + item.price);
+        return;
+    }
+    
+    if (!confirm(`Buy "${item.name}" for ${item.price} tokens?`)) return;
+    
+    playerTokens -= item.price;
+    updateTokenDisplays();
+    savePlayerTokens();
+    
+    db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId).set({
+        purchasedAt: Date.now(),
+        equipped: false
+    }).then(() => {
+        loadShopItems();
+    });
+}
+
+function equipItem(itemId) {
+    if (!CURRENT_USER || IS_GUEST) return;
+    
+    const item = shopItems[itemId];
+    if (!item) return;
+    
+    // Toggle equipped status
+    db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId + '/equipped').once('value', (snap) => {
+        const isEquipped = snap.val();
+        db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId + '/equipped').set(!isEquipped).then(() => {
+            loadEquippedItems();
+            loadShopItems();
+        });
+    });
+}
+
+function loadEquippedItems() {
+    const container = document.getElementById('equipped_items');
+    if (!container || !CURRENT_USER || IS_GUEST) return;
+    
+    db.ref('profiles/' + CURRENT_USER + '/shopItems').once('value', (snap) => {
+        const items = snap.val() || {};
+        const equipped = Object.entries(items).filter(([id, data]) => data.equipped);
+        
+        // Clear hat and frame displays
+        const hatEl = document.getElementById('my_avatar_hat');
+        const frameEl = document.getElementById('my_avatar_frame');
+        if (hatEl) hatEl.innerHTML = '';
+        if (frameEl) frameEl.innerHTML = '';
+        
+        if (equipped.length === 0) {
+            container.innerHTML = '<span style="color:#666; font-size:10px;">None equipped</span>';
+            return;
+        }
+        
+        let hatHtml = '';
+        let frameHtml = '';
+        let listHtml = '';
+        
+        for (const [id, data] of equipped) {
+            const item = shopItems[id];
+            if (!item) continue;
+            
+            if (item.type === 'hat') {
+                // Show hat on top of avatar
+                hatHtml = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
+            } else if (item.type === 'frame') {
+                // Show frame around avatar
+                frameHtml = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
+            }
+            
+            listHtml += `<div style="background:#0a0505; border:1px solid #0a0; border-radius:4px; padding:5px; display:flex; align-items:center; gap:5px;">
+                <img src="${item.imageUrl}" style="width:20px; height:20px; object-fit:contain;">
+                <span style="color:#0f0; font-size:9px;">${escapeHtml(item.name)}</span>
+            </div>`;
+        }
+        
+        // Apply hat and frame to avatar display
+        if (hatEl && hatHtml) hatEl.innerHTML = hatHtml;
+        if (frameEl && frameHtml) frameEl.innerHTML = frameHtml;
+        
+        container.innerHTML = listHtml || '<span style="color:#666; font-size:10px;">None equipped</span>';
+    });
+}
+
+// ========== VIP DISPLAY NAME ==========
+function saveDisplayName() {
+    const displayName = document.getElementById('vip_display_name').value.trim();
+    const resultEl = document.getElementById('display_name_result');
+    
+    if (!CURRENT_USER || IS_GUEST) {
+        resultEl.innerHTML = '<span style="color:#f00;">Must be logged in.</span>';
+        return;
+    }
+    
+    // Validate display name
+    if (displayName.length > 25) {
+        resultEl.innerHTML = '<span style="color:#f00;">Max 25 characters.</span>';
+        return;
+    }
+    
+    // Save to profile and update global variable
+    db.ref('profiles/' + CURRENT_USER + '/displayName').set(displayName || null).then(() => {
+        currentUserDisplayName = displayName || null;
+        resultEl.innerHTML = displayName ? 
+            '<span style="color:#0f0;">✓ Display name saved!</span>' : 
+            '<span style="color:#888;">Display name cleared.</span>';
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadDisplayName() {
+    if (!CURRENT_USER || IS_GUEST) return;
+    db.ref('profiles/' + CURRENT_USER + '/displayName').once('value', (snap) => {
+        const displayName = snap.val();
+        currentUserDisplayName = displayName || null;
+        const input = document.getElementById('vip_display_name');
+        if (input && displayName) input.value = displayName;
     });
 }
 
@@ -1936,7 +3061,7 @@ function loadClubsLeaderboard() {
         
         let html = '<div style="display: flex; flex-direction: column; gap: 5px;">';
         sorted.forEach((club, idx) => {
-            const medal = idx === 0 ? '👑' : idx === 1 ? '🏆' : idx === 2 ? '🎖️' : `#${idx + 1}`;
+            const medal = idx === 0 ? '1st' : idx === 1 ? '2nd' : idx === 2 ? '3rd' : `#${idx + 1}`;
             html += `<div style="padding: 10px; background: #0a0505; border: 1px solid #300; border-radius: 4px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 16px;">${medal}</span>
@@ -2189,6 +3314,7 @@ function completeLogin(u) {
     document.getElementById('logged_in_as').innerText = `IDENTIFIED: ${u} [${userData.fullRank || 'Member'}]`;
     
     loadProfile();
+    loadDisplayName(); // Load VIP display name
     startForceLogoutListener(); // Listen for admin kicks
     
     // Auto-setup chat and online status
@@ -2217,6 +3343,7 @@ function completeLogin(u) {
     }
     if (userData.isST) { 
         document.getElementById('st_tab').style.display = 'block'; 
+        document.getElementById('st_tab2').style.display = 'block'; 
     }
     setupAdminTabs(userData);
     document.getElementById('clubs_icon').style.display = 'block';
@@ -3146,6 +4273,11 @@ function sendChat() {
         timestamp: firebase.database.ServerValue.TIMESTAMP 
     };
     
+    // Add display name if user has one (VIP feature)
+    if (currentUserDisplayName) {
+        msgData.displayName = currentUserDisplayName;
+    }
+    
     // Add reply data if replying
     if (currentReplyTo) {
         msgData.replyTo = currentReplyTo.username;
@@ -3238,6 +4370,12 @@ function setupChatListener() {
             const rankTag = getRankTag(msgTag, msgStyle, msgUser);
             const usernameStyle = clubTag ? `style="font-weight:bold; cursor:pointer; color:${clubTag.color};"` : `class="${msgStyle}" style="font-weight:bold; cursor:pointer;"`;
             
+            // Display name for VIP users (from message data)
+            let displayNameHtml = '';
+            if (m.displayName) {
+                displayNameHtml = `<span style="color:#ffd700; font-size:10px; font-style:italic; margin-left:5px;">"${escapeHtml(m.displayName)}"</span>`;
+            }
+            
             // Reply indicator
             let replyHtml = '';
             if (m.replyTo) {
@@ -3272,7 +4410,7 @@ function setupChatListener() {
                 </div>
             </div>`;
             
-            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='flex')" onmouseleave="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='none'); closeMsgMenus()">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span ${usernameStyle} onclick="showProfileCard('${escapeHtml(msgUser)}', event)">${escapeHtml(msgUser)}</span><span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
+            return `<div class="chat-entry${botClass}" style="padding:10px 8px; border-bottom:1px solid #300; position:relative;${mentionClass}" onmouseenter="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='flex')" onmouseleave="this.querySelector('.chat-actions')&&(this.querySelector('.chat-actions').style.display='none'); closeMsgMenus()">${actionBtns}<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">${rankTag}<span ${usernameStyle} onclick="showProfileCard('${escapeHtml(msgUser)}', event)">${escapeHtml(msgUser)}</span>${displayNameHtml}<span style="color:#444; font-size:9px; margin-left:auto;">${msgTime}</span></div>${replyHtml}<div style="color:#ddd; font-size:12px; padding-left:35px; line-height:1.5;">${formattedText}${mediaHtml}</div></div>`;
         }).join('');
         // Ensure scroll to bottom after render - multiple attempts for images
         setTimeout(() => { logs.scrollTop = logs.scrollHeight; }, 50);
@@ -3354,7 +4492,7 @@ function uploadChatFile() {
 function switchAdminTab(tab, el) {
     document.querySelectorAll('.mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
-    ['apps', 'members', 'moderation', 'announcements', 'bot', 'videos', 'vip', 'sitetools', 'st'].forEach(t => {
+    ['apps', 'members', 'moderation', 'announcements', 'bot', 'videos', 'vip', 'sitetools', 'st', 'st2'].forEach(t => {
         const panel = document.getElementById('admin_tab_' + t);
         if (panel) panel.style.display = t === tab ? 'block' : 'none';
     });
@@ -3364,6 +4502,7 @@ function switchAdminTab(tab, el) {
     if (tab === 'videos') loadAllVideos();
     if (tab === 'vip') loadAllVIPCodes();
     if (tab === 'sitetools') { loadAdminBadgeOptions(); loadSiteMusicStatus(); }
+    if (tab === 'st2') loadSTShopList();
 }
 function sendBotMessage() { const text = document.getElementById('bot_message').value.trim(); if (!text) return; db.ref('chat').push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); document.getElementById('bot_message').value = ''; }
 function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; alert('Pinned!'); }
@@ -5399,6 +6538,188 @@ function sendAdminMessage() {
         document.getElementById('st_admin_msg_text').value = '';
     }).catch(err => {
         if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+// ========== ST SHOP MANAGEMENT ==========
+
+// Built-in shop items will be loaded from Firebase or initialized by ST
+function initBuiltinShopItems() {
+    const resultEl = document.getElementById('builtin_init_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    resultEl.innerHTML = '<span style="color:#ffd700;">Initializing items... This loads item URLs from the system.</span>';
+    
+    // These are URL references - the actual images need to be hosted somewhere accessible
+    const builtinItems = {
+        'builtin_officers_hat': { name: 'Officers Hat', price: 1000, type: 'hat' },
+        'builtin_player_one': { name: 'Player One', price: 500, type: 'hat' },
+        'builtin_postal_conscience': { name: 'Postal Conscience', price: 750, type: 'hat' },
+        'builtin_red_fedora': { name: 'Red Fedora', price: 600, type: 'hat' },
+        'builtin_retard': { name: 'Retard', price: 400, type: 'hat' },
+        'builtin_rip_bozo': { name: 'RIP BOZO', price: 800, type: 'frame' },
+        'builtin_the_merchant': { name: 'The Merchant', price: 500, type: 'hat' },
+        'builtin_the_raped': { name: 'The Raped', price: 350, type: 'hat' },
+        'builtin_wanted': { name: 'Wanted', price: 700, type: 'frame' },
+        'builtin_confederate_cap': { name: 'Confederate Cap', price: 900, type: 'hat' },
+        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'hat' },
+        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'hat' },
+        'builtin_dunce_cap': { name: 'Dunce Cap', price: 300, type: 'hat' },
+        'builtin_hazmat_suit': { name: 'Hazmat Suit', price: 550, type: 'hat' },
+        'builtin_ice_cap': { name: 'ICE Cap', price: 400, type: 'hat' },
+        'builtin_israeli_friend_pins': { name: 'Israeli Friend Pins', price: 500, type: 'hat' },
+        'builtin_japanese_text': { name: 'Japanese Text', price: 450, type: 'hat' },
+        'builtin_liveleak': { name: 'LiveLeak', price: 600, type: 'hat' },
+        'builtin_nazi_officer': { name: 'Nazi Officer', price: 1000, type: 'hat' },
+        'builtin_noose': { name: 'Noose', price: 500, type: 'frame' }
+    };
+    
+    // Check which items need to be added (only add if they have imageUrl set)
+    db.ref('shop_items').once('value', (snap) => {
+        const existing = snap.val() || {};
+        let needsUrls = [];
+        
+        for (const [id, item] of Object.entries(builtinItems)) {
+            if (!existing[id]) {
+                needsUrls.push(id);
+            }
+        }
+        
+        if (needsUrls.length === 0) {
+            resultEl.innerHTML = '<span style="color:#0f0;">All builtin items already exist!</span>';
+            return;
+        }
+        
+        resultEl.innerHTML = '<span style="color:#ffd700;">Items need image URLs. Use "Add Custom Shop Item" to add each item with an image URL, or upload images to a hosting service first.</span><br><br><span style="color:#888;">Missing items: ' + needsUrls.join(', ') + '</span>';
+    });
+}
+
+function stAddShopItem() {
+    const resultEl = document.getElementById('shop_add_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const name = document.getElementById('shop_item_name').value.trim();
+    const imageUrl = document.getElementById('shop_item_image').value.trim();
+    const price = parseInt(document.getElementById('shop_item_price').value);
+    const type = document.getElementById('shop_item_type').value;
+    
+    if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter item name.</span>'; return; }
+    if (!imageUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter image URL.</span>'; return; }
+    if (!price || price < 1) { resultEl.innerHTML = '<span style="color:#f00;">Enter valid price.</span>'; return; }
+    
+    const itemId = 'item_' + Date.now();
+    db.ref('shop_items/' + itemId).set({
+        name: name,
+        imageUrl: imageUrl,
+        price: price,
+        type: type,
+        addedBy: CURRENT_USER,
+        addedAt: Date.now()
+    }).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">Item added! ID: ' + itemId + '</span>';
+        document.getElementById('shop_item_name').value = '';
+        document.getElementById('shop_item_image').value = '';
+        document.getElementById('shop_item_price').value = '';
+        loadSTShopList();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadSTShopList() {
+    const container = document.getElementById('st_shop_list');
+    if (!container) return;
+    
+    container.innerHTML = '<div style="color:#888;">Loading...</div>';
+    
+    db.ref('shop_items').once('value', (snap) => {
+        const items = snap.val() || {};
+        if (Object.keys(items).length === 0) {
+            container.innerHTML = '<div style="color:#888;">No items in shop</div>';
+            return;
+        }
+        
+        container.innerHTML = Object.entries(items).map(([id, item]) => {
+            return `<div style="display:flex; align-items:center; gap:8px; padding:5px; border-bottom:1px solid #300;">
+                <img src="${item.imageUrl}" style="width:25px; height:25px; object-fit:contain; border:1px solid #400;" onerror="this.src='https://via.placeholder.com/25?text=?'">
+                <span style="flex:1; color:#fff;">${escapeHtml(item.name)}</span>
+                <span style="color:#ffd700;">${item.price}</span>
+                <span style="color:#666; font-size:8px;">${id}</span>
+            </div>`;
+        }).join('');
+    });
+}
+
+function stEditShopPrice() {
+    const resultEl = document.getElementById('shop_edit_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const itemId = document.getElementById('shop_edit_id').value.trim();
+    const newPrice = parseInt(document.getElementById('shop_edit_price').value);
+    
+    if (!itemId) { resultEl.innerHTML = '<span style="color:#f00;">Enter item ID.</span>'; return; }
+    if (!newPrice || newPrice < 1) { resultEl.innerHTML = '<span style="color:#f00;">Enter valid price.</span>'; return; }
+    
+    db.ref('shop_items/' + itemId + '/price').set(newPrice).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">Price updated!</span>';
+        loadSTShopList();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stDeleteShopItem() {
+    const resultEl = document.getElementById('shop_edit_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const itemId = document.getElementById('shop_edit_id').value.trim();
+    if (!itemId) { resultEl.innerHTML = '<span style="color:#f00;">Enter item ID.</span>'; return; }
+    
+    if (!confirm('Delete shop item ' + itemId + '?')) return;
+    
+    db.ref('shop_items/' + itemId).remove().then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">Item deleted!</span>';
+        document.getElementById('shop_edit_id').value = '';
+        loadSTShopList();
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function stGiveTokens() {
+    const resultEl = document.getElementById('st_token_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('st_token_username').value.trim();
+    const amount = parseInt(document.getElementById('st_token_amount').value);
+    
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
+    if (!userDatabase[username]) { resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    if (!amount || amount < 1) { resultEl.innerHTML = '<span style="color:#f00;">Enter valid amount.</span>'; return; }
+    
+    db.ref('game_stats/tokens/' + username).transaction((current) => {
+        return (current || 0) + amount;
+    }).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">Gave ' + amount + ' tokens to ' + username + '!</span>';
+        document.getElementById('st_token_username').value = '';
+        document.getElementById('st_token_amount').value = '';
+    }).catch(err => {
+        resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
 }
 
@@ -7793,6 +9114,7 @@ window.addEventListener('load', () => {
     updateVisitorCount();
     updateClock();
     initStakesGame();
+    bjNewGame(); // Initialize blackjack
     startOnlineListener();
 });
 </script>
