@@ -213,7 +213,11 @@
         <div id="pw_bg_overlay" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); pointer-events:none; z-index:0; display:none;"></div>
         <div style="position:relative; z-index:1;">
         <div style="background:linear-gradient(180deg, rgba(32,0,0,0.9), rgba(16,0,0,0.9)); padding:20px; text-align:center; border-bottom:2px solid #500;">
-            <div id="pw_avatar" style="width:100px; height:100px; border-radius:50%; background:#111; border:4px solid #700; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden;">🦇</div>
+            <div id="pw_avatar_wrapper" style="position:relative; width:140px; height:160px; margin:0 auto 15px;">
+                <div id="pw_avatar_hat" style="position:absolute; top:-20px; left:50%; transform:translateX(-50%); width:80px; height:60px; z-index:10; pointer-events:none;"></div>
+                <div id="pw_avatar_frame" style="position:absolute; top:20px; left:20px; width:100px; height:100px; z-index:5; pointer-events:none;"></div>
+                <div id="pw_avatar" style="position:absolute; top:20px; left:20px; width:100px; height:100px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden;">🦇</div>
+            </div>
             <div id="pw_name" style="font-size:22px; font-weight:bold; color:#d40000;"></div>
             <div id="pw_rank" style="font-size:12px; color:#888; margin-top:5px;"></div>
             <div id="pw_status" style="font-size:11px; color:#aaa; margin-top:8px; font-style:italic;"></div>
@@ -1469,6 +1473,17 @@
                     <input type="number" id="st_token_amount" class="ie-input" placeholder="Amount" min="1">
                     <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stGiveTokens()">Give Tokens</button>
                     <div id="st_token_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">Give Shop Item</h4>
+                    <input type="text" id="st_give_item_username" class="ie-input" placeholder="Username">
+                    <select id="st_give_item_id" class="ie-input">
+                        <option value="">-- Select Item --</option>
+                    </select>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stGiveItem()">Give Item</button>
+                    <button class="ie-btn" style="background:#333; border-color:#ff00ff; margin-top:5px;" onclick="loadGiveItemDropdown()">Refresh Items</button>
+                    <div id="st_give_item_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
             </div>
         </div>
@@ -2797,13 +2812,38 @@ function equipItem(itemId) {
     const item = shopItems[itemId];
     if (!item) return;
     
-    // Toggle equipped status
+    // Check if we're equipping or unequipping
     db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId + '/equipped').once('value', (snap) => {
-        const isEquipped = snap.val();
-        db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId + '/equipped').set(!isEquipped).then(() => {
-            loadEquippedItems();
-            loadShopItems();
-        });
+        const isCurrentlyEquipped = snap.val();
+        
+        if (isCurrentlyEquipped) {
+            // Just unequip this item
+            db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId + '/equipped').set(false).then(() => {
+                loadEquippedItems();
+                loadShopItems();
+            });
+        } else {
+            // Equipping - first unequip any other items of the same type
+            db.ref('profiles/' + CURRENT_USER + '/shopItems').once('value', (allSnap) => {
+                const allItems = allSnap.val() || {};
+                const updates = {};
+                
+                // Find and unequip items of the same type
+                for (const [id, data] of Object.entries(allItems)) {
+                    if (data.equipped && shopItems[id] && shopItems[id].type === item.type) {
+                        updates['profiles/' + CURRENT_USER + '/shopItems/' + id + '/equipped'] = false;
+                    }
+                }
+                
+                // Equip the new item
+                updates['profiles/' + CURRENT_USER + '/shopItems/' + itemId + '/equipped'] = true;
+                
+                db.ref().update(updates).then(() => {
+                    loadEquippedItems();
+                    loadShopItems();
+                });
+            });
+        }
     });
 }
 
@@ -3870,6 +3910,29 @@ function openProfileWindow(username) {
             else pwAvatar.innerHTML = '🦇';
         }
         
+        // Load equipped shop items (hats/frames)
+        const pwHat = document.getElementById('pw_avatar_hat');
+        const pwFrame = document.getElementById('pw_avatar_frame');
+        if (pwHat) pwHat.innerHTML = '';
+        if (pwFrame) pwFrame.innerHTML = '';
+        
+        if (profile.shopItems) {
+            const equippedItems = Object.entries(profile.shopItems).filter(([id, data]) => data.equipped);
+            for (const [itemId, data] of equippedItems) {
+                // Get item details from shop
+                db.ref('shop_items/' + itemId).once('value', (itemSnap) => {
+                    const item = itemSnap.val();
+                    if (!item) return;
+                    
+                    if (item.type === 'hat' && pwHat) {
+                        pwHat.innerHTML = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
+                    } else if (item.type === 'frame' && pwFrame) {
+                        pwFrame.innerHTML = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
+                    }
+                });
+            }
+        }
+        
         // Animated background for VIP users - lighter overlay for visibility
         const winBody = win.querySelector('.window-body');
         const bgOverlay = document.getElementById('pw_bg_overlay');
@@ -4502,7 +4565,7 @@ function switchAdminTab(tab, el) {
     if (tab === 'videos') loadAllVideos();
     if (tab === 'vip') loadAllVIPCodes();
     if (tab === 'sitetools') { loadAdminBadgeOptions(); loadSiteMusicStatus(); }
-    if (tab === 'st2') loadSTShopList();
+    if (tab === 'st2') { loadSTShopList(); loadGiveItemDropdown(); }
 }
 function sendBotMessage() { const text = document.getElementById('bot_message').value.trim(); if (!text) return; db.ref('chat').push({ user: 'Eric Northman', text: text, tag: 'BOT', style: 'bot-style', isBot: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), timestamp: firebase.database.ServerValue.TIMESTAMP }); document.getElementById('bot_message').value = ''; }
 function pinMessage() { const text = document.getElementById('pin_message').value.trim(); if (!text) return; db.ref('pinned').set(text); document.getElementById('pin_message').value = ''; alert('Pinned!'); }
@@ -6720,6 +6783,59 @@ function stGiveTokens() {
         document.getElementById('st_token_amount').value = '';
     }).catch(err => {
         resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+function loadGiveItemDropdown() {
+    const select = document.getElementById('st_give_item_id');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Loading...</option>';
+    
+    db.ref('shop_items').once('value', (snap) => {
+        const items = snap.val() || {};
+        let options = '<option value="">-- Select Item --</option>';
+        
+        for (const [id, item] of Object.entries(items)) {
+            options += `<option value="${id}">${escapeHtml(item.name)} (${item.type}) - ${item.price} tokens</option>`;
+        }
+        
+        select.innerHTML = options;
+    });
+}
+
+function stGiveItem() {
+    const resultEl = document.getElementById('st_give_item_result');
+    if (!userDatabase[CURRENT_USER]?.isST) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+        return; 
+    }
+    
+    const username = document.getElementById('st_give_item_username').value.trim();
+    const itemId = document.getElementById('st_give_item_id').value;
+    
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter username.</span>'; return; }
+    if (!userDatabase[username]) { resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    if (!itemId) { resultEl.innerHTML = '<span style="color:#f00;">Select an item.</span>'; return; }
+    
+    // Check if user already owns this item
+    db.ref('profiles/' + username + '/shopItems/' + itemId).once('value', (snap) => {
+        if (snap.exists()) {
+            resultEl.innerHTML = '<span style="color:#f00;">User already owns this item!</span>';
+            return;
+        }
+        
+        // Give the item to the user
+        db.ref('profiles/' + username + '/shopItems/' + itemId).set({
+            purchasedAt: Date.now(),
+            equipped: false,
+            giftedBy: CURRENT_USER
+        }).then(() => {
+            resultEl.innerHTML = '<span style="color:#0f0;">Item given to ' + username + '!</span>';
+            document.getElementById('st_give_item_username').value = '';
+        }).catch(err => {
+            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+        });
     });
 }
 
