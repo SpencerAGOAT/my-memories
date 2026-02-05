@@ -213,11 +213,11 @@
         <div id="pw_bg_overlay" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); pointer-events:none; z-index:0; display:none;"></div>
         <div style="position:relative; z-index:1;">
         <div style="background:linear-gradient(180deg, rgba(32,0,0,0.9), rgba(16,0,0,0.9)); padding:20px; text-align:center; border-bottom:2px solid #500;">
-            <div id="pw_avatar_wrapper" style="position:relative; width:130px; height:130px; margin:0 auto 15px;">
-                <div id="pw_avatar_frame" style="position:absolute; top:-10px; left:-10px; width:150px; height:150px; z-index:15; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                <div id="pw_avatar" style="position:absolute; top:0; left:0; width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden; z-index:10;">🦇</div>
-                <div id="pw_avatar_hat" style="position:absolute; top:-25px; left:5px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                <div id="pw_avatar_accessory" style="position:absolute; top:25px; left:5px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+            <div id="pw_avatar_wrapper" style="position:relative; width:150px; height:150px; margin:0 auto 15px;">
+                <div id="pw_avatar_frame" style="position:absolute; top:0; left:0; width:150px; height:150px; z-index:15; pointer-events:none;"></div>
+                <div id="pw_avatar" style="position:absolute; top:10px; left:10px; width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden; z-index:10;">🦇</div>
+                <div id="pw_avatar_hat" style="position:absolute; top:-15px; left:15px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                <div id="pw_avatar_accessory" style="position:absolute; top:35px; left:15px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
             </div>
             <div id="pw_name" style="font-size:22px; font-weight:bold; color:#d40000;"></div>
             <div id="pw_rank" style="font-size:12px; color:#888; margin-top:5px;"></div>
@@ -681,13 +681,13 @@
         <div id="chat_avatar" style="display: none; padding: 20px; overflow-y: auto; height: calc(100% - 40px);">
             <div style="display:flex; gap:20px; margin-bottom:20px;">
                 <div style="text-align:center;">
-                    <div id="my_avatar_wrapper" style="position:relative; width:130px; height:130px; margin:0 auto;">
-                        <div id="my_avatar_frame" style="position:absolute; top:-10px; left:-10px; width:150px; height:150px; z-index:15; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                        <div id="my_avatar_display" style="position:absolute; top:0; left:0; width:130px; height:130px; border-radius:50%; background:#111; border:3px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden; z-index:10;">🦇</div>
-                        <div id="my_avatar_hat" style="position:absolute; top:-25px; left:5px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                        <div id="my_avatar_accessory" style="position:absolute; top:25px; left:5px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                    <div id="my_avatar_wrapper" style="position:relative; width:150px; height:150px; margin:0 auto;">
+                        <div id="my_avatar_frame" style="position:absolute; top:0; left:0; width:150px; height:150px; z-index:15; pointer-events:none;"></div>
+                        <div id="my_avatar_display" style="position:absolute; top:10px; left:10px; width:130px; height:130px; border-radius:50%; background:#111; border:3px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden; z-index:10;">🦇</div>
+                        <div id="my_avatar_hat" style="position:absolute; top:-15px; left:15px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                        <div id="my_avatar_accessory" style="position:absolute; top:35px; left:15px; width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
                     </div>
-                    <div id="my_username_display" style="color:#d40000; font-size:18px; font-weight:bold; margin-top:20px;"></div>
+                    <div id="my_username_display" style="color:#d40000; font-size:18px; font-weight:bold; margin-top:10px;"></div>
                     <div id="my_rank_display" style="color:#888; font-size:12px;"></div>
                 </div>
                 <div style="flex:1;">
@@ -2426,16 +2426,18 @@ function startSnakeGame() {
     let dx = 0, dy = 0;
     let score = 0;
     let gameRunning = true;
+    let gameStarted = false; // Wait for first keypress
     
     // Handle input
     const handleKey = (e) => {
         if (!gameRunning) return;
         switch(e.key.toLowerCase()) {
-            case 'arrowup': case 'w': if (dy !== 1) { dx = 0; dy = -1; } break;
-            case 'arrowdown': case 's': if (dy !== -1) { dx = 0; dy = 1; } break;
-            case 'arrowleft': case 'a': if (dx !== 1) { dx = -1; dy = 0; } break;
-            case 'arrowright': case 'd': if (dx !== -1) { dx = 1; dy = 0; } break;
+            case 'arrowup': case 'w': if (dy !== 1) { dx = 0; dy = -1; gameStarted = true; } break;
+            case 'arrowdown': case 's': if (dy !== -1) { dx = 0; dy = 1; gameStarted = true; } break;
+            case 'arrowleft': case 'a': if (dx !== 1) { dx = -1; dy = 0; gameStarted = true; } break;
+            case 'arrowright': case 'd': if (dx !== -1) { dx = 1; dy = 0; gameStarted = true; } break;
         }
+        e.preventDefault(); // Prevent page scroll
     };
     
     document.addEventListener('keydown', handleKey);
@@ -2443,37 +2445,7 @@ function startSnakeGame() {
     function gameLoop() {
         if (!gameRunning) return;
         
-        // Move snake
-        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-        
-        // Check wall collision
-        if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-            endSnakeGame(score);
-            document.removeEventListener('keydown', handleKey);
-            return;
-        }
-        
-        // Check self collision
-        for (let segment of snake) {
-            if (head.x === segment.x && head.y === segment.y) {
-                endSnakeGame(score);
-                document.removeEventListener('keydown', handleKey);
-                return;
-            }
-        }
-        
-        snake.unshift(head);
-        
-        // Check food
-        if (head.x === food.x && head.y === food.y) {
-            score++;
-            document.getElementById('snake_score').textContent = 'Score: ' + score;
-            food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
-        } else {
-            snake.pop();
-        }
-        
-        // Draw
+        // Draw first (even before movement starts)
         ctx.fillStyle = '#0a0000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
@@ -2488,10 +2460,48 @@ function startSnakeGame() {
             ctx.fillStyle = i === 0 ? '#ff0000' : '#880000';
             ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
         });
+        
+        // Don't move until player presses a key
+        if (!gameStarted) return;
+        
+        // Move snake
+        const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+        
+        // Check wall collision
+        if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+            gameRunning = false;
+            endSnakeGame(score);
+            document.removeEventListener('keydown', handleKey);
+            return;
+        }
+        
+        // Check self collision
+        for (let segment of snake) {
+            if (head.x === segment.x && head.y === segment.y) {
+                gameRunning = false;
+                endSnakeGame(score);
+                document.removeEventListener('keydown', handleKey);
+                return;
+            }
+        }
+        
+        snake.unshift(head);
+        
+        // Check food
+        if (head.x === food.x && head.y === food.y) {
+            score++;
+            document.getElementById('snake_score').textContent = 'Score: ' + score;
+            // Make sure food doesn't spawn on snake
+            do {
+                food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+            } while (snake.some(s => s.x === food.x && s.y === food.y));
+        } else {
+            snake.pop();
+        }
     }
     
     snakeInterval = setInterval(gameLoop, 120);
-    document.getElementById('snake_score').textContent = 'Score: 0';
+    document.getElementById('snake_score').textContent = 'Press arrow keys or WASD to start!';
 }
 
 function endSnakeGame(score) {
