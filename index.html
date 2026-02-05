@@ -1513,6 +1513,20 @@
                     <div id="shop_edit_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
                 
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">Bulk Upload Items</h4>
+                    <p style="color:#888; font-size:9px; margin:0 0 8px 0;">Upload multiple images at once. File names become item names.</p>
+                    <input type="file" id="bulk_item_files" multiple accept="image/*" style="color:#888; font-size:10px; margin-bottom:8px; display:block;">
+                    <select id="bulk_item_type" class="ie-input">
+                        <option value="hat">Hat (above avatar)</option>
+                        <option value="accessory">Accessory/Facialwear (on face)</option>
+                        <option value="frame">Frame (around avatar)</option>
+                    </select>
+                    <input type="number" id="bulk_item_price" class="ie-input" placeholder="Default Price" value="500" min="1">
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="bulkUploadItems()">Upload All</button>
+                    <div id="bulk_upload_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
+                </div>
+
                 <div class="admin-section" style="border-color:#ff00ff;">
                     <h4 style="color:#ff00ff;">Give Tokens</h4>
                     <input type="text" id="st_token_username" class="ie-input" placeholder="Username">
@@ -6737,8 +6751,8 @@ function initBuiltinShopItems() {
         'builtin_the_raped': { name: 'The Raped', price: 350, type: 'hat', imageUrl: 'assets/avatars/the_raped.png' },
         'builtin_wanted': { name: 'Wanted', price: 700, type: 'frame', imageUrl: 'assets/avatars/wanted.png' },
         'builtin_confederate_cap': { name: 'Confederate Cap', price: 900, type: 'hat', imageUrl: 'assets/avatars/confederate_cap.png' },
-        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'frame', imageUrl: 'assets/avatars/dead_pedo_bear.png' },
-        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'frame', imageUrl: 'assets/avatars/dharmachakra.png' },
+        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'hat', imageUrl: 'assets/avatars/dead_pedo_bear.png' },
+        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'hat', imageUrl: 'assets/avatars/dharmachakra.png' },
         'builtin_dunce_cap': { name: 'Dunce Cap', price: 300, type: 'hat', imageUrl: 'assets/avatars/dunce_cap.png' },
         'builtin_hazmat_suit': { name: 'Hazmat Suit', price: 550, type: 'hat', imageUrl: 'assets/avatars/hazmat_suit.png' },
         'builtin_ice_cap': { name: 'ICE Cap', price: 400, type: 'hat', imageUrl: 'assets/avatars/ice_cap.png' },
@@ -6887,6 +6901,75 @@ function stDeleteShopItem() {
     }).catch(err => {
         resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
     });
+}
+
+async function bulkUploadItems() {
+    const resultEl = document.getElementById('bulk_upload_result');
+    if (!userDatabase[CURRENT_USER]?.isST) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+        return;
+    }
+
+    const fileInput = document.getElementById('bulk_item_files');
+    const type = document.getElementById('bulk_item_type').value;
+    const price = parseInt(document.getElementById('bulk_item_price').value) || 500;
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+        resultEl.innerHTML = '<span style="color:#f00;">Select at least one image file.</span>';
+        return;
+    }
+
+    const files = Array.from(fileInput.files);
+    resultEl.innerHTML = '<span style="color:#ffd700;">Uploading ' + files.length + ' items...</span>';
+
+    let success = 0, failed = 0;
+    let log = '';
+
+    for (const file of files) {
+        // Get name from filename (remove extension)
+        const name = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ').replace(/-/g, ' ');
+
+        try {
+            // Upload to Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
+            const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.secure_url) {
+                // Add to Firebase
+                const itemId = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                await db.ref('shop_items/' + itemId).set({
+                    name: name,
+                    imageUrl: data.secure_url,
+                    price: price,
+                    type: type,
+                    addedBy: CURRENT_USER,
+                    addedAt: Date.now()
+                });
+                success++;
+                log += '<div style="color:#0f0;">✓ ' + name + '</div>';
+            } else {
+                failed++;
+                log += '<div style="color:#f00;">✗ ' + name + ' - Upload failed</div>';
+            }
+        } catch (err) {
+            failed++;
+            log += '<div style="color:#f00;">✗ ' + name + ' - ' + err.message + '</div>';
+        }
+
+        // Update progress
+        resultEl.innerHTML = '<span style="color:#ffd700;">Progress: ' + (success + failed) + '/' + files.length + '</span><br>' + log;
+    }
+
+    resultEl.innerHTML = '<span style="color:#0f0;">Done! ' + success + ' uploaded, ' + failed + ' failed.</span><br>' + log;
+    fileInput.value = '';
+    loadSTShopList();
 }
 
 // ========== MAINTENANCE MODE ==========
