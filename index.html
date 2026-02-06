@@ -6883,34 +6883,38 @@ function initBuiltinShopItems() {
         'builtin_fx_golden': { name: 'Golden', price: 5000, type: 'effect', effectClass: 'golden', imageUrl: '' }
     };
     
-    // Add missing items AND update existing items with correct data
+    // ONLY add items that don't exist yet - never overwrite existing custom images
     db.ref('shop_items').once('value', (snap) => {
         const existing = snap.val() || {};
-        let toProcess = [];
+        let toAdd = [];
 
         for (const [id, item] of Object.entries(builtinItems)) {
-            toProcess.push({ id, item, isNew: !existing[id] });
+            if (!existing[id]) {
+                toAdd.push({ id, item });
+            }
+        }
+
+        if (toAdd.length === 0) {
+            resultEl.innerHTML = '<span style="color:#0f0;">All ' + Object.keys(builtinItems).length + ' builtin items already exist. Your custom images are safe.</span>';
+            return;
         }
 
         let added = 0;
-        let updated = 0;
-        let promises = toProcess.map(({ id, item, isNew }) => {
+        let promises = toAdd.map(({ id, item }) => {
             const data = {
                 name: item.name,
                 imageUrl: item.imageUrl || '',
                 price: item.price,
                 type: item.type,
                 addedBy: 'system',
-                addedAt: existing[id]?.addedAt || Date.now()
+                addedAt: Date.now()
             };
             if (item.effectClass) data.effectClass = item.effectClass;
-            return db.ref('shop_items/' + id).set(data).then(() => { 
-                if (isNew) added++; else updated++;
-            });
+            return db.ref('shop_items/' + id).set(data).then(() => { added++; });
         });
 
         Promise.all(promises).then(() => {
-            resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + added + ' added, ' + updated + ' updated!</span>';
+            resultEl.innerHTML = '<span style="color:#0f0;">✓ Added ' + added + ' new items. Existing items untouched.</span>';
             loadSTShopList();
         }).catch(err => {
             resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
