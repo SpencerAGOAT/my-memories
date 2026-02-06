@@ -213,11 +213,12 @@
         <div id="pw_bg_overlay" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); pointer-events:none; z-index:0; display:none;"></div>
         <div style="position:relative; z-index:1;">
         <div style="background:linear-gradient(180deg, rgba(32,0,0,0.9), rgba(16,0,0,0.9)); padding:20px; text-align:center; border-bottom:2px solid #500;">
-            <div id="pw_avatar_wrapper" style="position:relative; width:160px; height:160px; margin:-15px auto 0; display:flex; align-items:center; justify-content:center;">
-                <div id="pw_avatar" style="width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden; box-sizing:content-box;">🦇</div>
-                <div id="pw_avatar_frame" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:160px; height:160px; z-index:15; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                <div id="pw_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                <div id="pw_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+            <div id="pw_avatar_wrapper" style="position:relative; width:160px; height:160px; margin:-15px auto 0;">
+                <div id="pw_avatar_effect" style="position:absolute; top:-5px; left:-5px; width:170px; height:170px; z-index:0; pointer-events:none; border-radius:50%;"></div>
+                <div id="pw_avatar" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1; width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden; box-sizing:content-box;">🦇</div>
+                <div id="pw_avatar_frame" style="position:absolute; top:0; left:0; width:160px; height:160px; z-index:2; pointer-events:none; border-radius:50%; overflow:hidden; -webkit-mask:radial-gradient(circle,transparent 62px,black 66px); mask:radial-gradient(circle,transparent 62px,black 66px);"></div>
+                <div id="pw_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                <div id="pw_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
             </div>
             <div id="pw_name" style="font-size:22px; font-weight:bold; color:#d40000;"></div>
             <div id="pw_rank" style="font-size:12px; color:#888; margin-top:5px;"></div>
@@ -305,6 +306,7 @@
         </div>
         <div style="color:#666; font-size:12px;">The site will be available when maintenance is complete.</div>
         <div style="color:#444; font-size:10px; margin-top:20px;">This page will automatically refresh when ready.</div>
+        <div id="maintenance_music_player" style="margin-top:20px; width:300px; max-width:90%;"></div>
     </div>
 </div>
 <style>
@@ -334,6 +336,58 @@
     from { transform:translateX(100%); opacity:0; }
     to { transform:translateX(0); opacity:1; }
 }
+</style>
+<style>
+/* ===== PROFILE EFFECTS ===== */
+@keyframes fx-blood-pulse {
+    0%, 100% { box-shadow: 0 0 15px 5px rgba(180,0,0,0.4), 0 0 30px 10px rgba(120,0,0,0.2); }
+    50% { box-shadow: 0 0 25px 10px rgba(220,0,0,0.7), 0 0 50px 20px rgba(180,0,0,0.4); }
+}
+@keyframes fx-hellfire {
+    0% { box-shadow: 0 0 15px 5px rgba(255,80,0,0.5), 0 0 30px 10px rgba(255,0,0,0.3); }
+    33% { box-shadow: 0 0 20px 8px rgba(255,50,0,0.6), 0 0 40px 15px rgba(200,0,0,0.4); }
+    66% { box-shadow: 0 0 25px 10px rgba(255,100,0,0.7), 0 0 35px 12px rgba(255,30,0,0.3); }
+    100% { box-shadow: 0 0 15px 5px rgba(255,80,0,0.5), 0 0 30px 10px rgba(255,0,0,0.3); }
+}
+@keyframes fx-phantom {
+    0%, 100% { box-shadow: 0 0 15px 5px rgba(100,150,255,0.3), 0 0 30px 10px rgba(50,80,200,0.15); }
+    50% { box-shadow: 0 0 25px 12px rgba(150,200,255,0.6), 0 0 50px 20px rgba(100,150,255,0.3); }
+}
+@keyframes fx-toxic {
+    0%, 100% { box-shadow: 0 0 15px 5px rgba(0,200,50,0.4), 0 0 30px 10px rgba(0,150,30,0.2); }
+    50% { box-shadow: 0 0 25px 10px rgba(0,255,80,0.7), 0 0 50px 20px rgba(0,200,50,0.3); }
+}
+@keyframes fx-void {
+    0%, 100% { box-shadow: 0 0 20px 8px rgba(80,0,150,0.5), 0 0 40px 15px rgba(40,0,80,0.3); }
+    50% { box-shadow: 0 0 30px 15px rgba(120,0,200,0.7), 0 0 60px 25px rgba(80,0,150,0.4); }
+}
+@keyframes fx-rainbow {
+    0% { box-shadow: 0 0 20px 8px rgba(255,0,0,0.6); }
+    16% { box-shadow: 0 0 20px 8px rgba(255,165,0,0.6); }
+    33% { box-shadow: 0 0 20px 8px rgba(255,255,0,0.6); }
+    50% { box-shadow: 0 0 20px 8px rgba(0,255,0,0.6); }
+    66% { box-shadow: 0 0 20px 8px rgba(0,100,255,0.6); }
+    83% { box-shadow: 0 0 20px 8px rgba(150,0,255,0.6); }
+    100% { box-shadow: 0 0 20px 8px rgba(255,0,0,0.6); }
+}
+@keyframes fx-glitch {
+    0%, 100% { box-shadow: -3px 0 8px rgba(255,0,0,0.5), 3px 0 8px rgba(0,255,255,0.5); }
+    25% { box-shadow: 3px 0 8px rgba(255,0,255,0.5), -3px 0 8px rgba(0,255,0,0.5); }
+    50% { box-shadow: -2px 2px 12px rgba(0,0,255,0.6), 2px -2px 12px rgba(255,255,0,0.6); }
+    75% { box-shadow: 2px -1px 8px rgba(255,0,0,0.5), -2px 1px 8px rgba(0,255,255,0.5); }
+}
+@keyframes fx-golden {
+    0%, 100% { box-shadow: 0 0 15px 5px rgba(255,215,0,0.4), 0 0 30px 10px rgba(200,170,0,0.2); }
+    50% { box-shadow: 0 0 25px 12px rgba(255,215,0,0.7), 0 0 50px 20px rgba(255,200,0,0.4); }
+}
+.fx-blood-glow { border-radius:50%; animation: fx-blood-pulse 2s ease-in-out infinite; }
+.fx-hellfire { border-radius:50%; animation: fx-hellfire 1.5s ease-in-out infinite; }
+.fx-phantom { border-radius:50%; animation: fx-phantom 2.5s ease-in-out infinite; }
+.fx-toxic { border-radius:50%; animation: fx-toxic 2s ease-in-out infinite; }
+.fx-void { border-radius:50%; animation: fx-void 2s ease-in-out infinite; }
+.fx-rainbow { border-radius:50%; animation: fx-rainbow 3s linear infinite; }
+.fx-glitch { border-radius:50%; animation: fx-glitch 0.5s steps(4) infinite; }
+.fx-golden { border-radius:50%; animation: fx-golden 2s ease-in-out infinite; }
 </style>
 <div id="boot-screen" onclick="beginSession()">
     <div style="font-size: 80px; margin-bottom: 20px; animation: batFloat 3s ease-in-out infinite;">🦇</div>
@@ -702,11 +756,12 @@
         <div id="chat_avatar" style="display: none; padding: 20px; overflow-y: auto; height: calc(100% - 40px);">
             <div style="display:flex; gap:20px; margin-bottom:20px;">
                 <div style="text-align:center;">
-                    <div id="my_avatar_wrapper" style="position:relative; width:160px; height:160px; margin:-15px auto 0; display:flex; align-items:center; justify-content:center;">
-                        <div id="my_avatar_display" style="width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden; box-sizing:content-box;">🦇</div>
-                        <div id="my_avatar_frame" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:160px; height:160px; z-index:15; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                        <div id="my_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                        <div id="my_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:20; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                    <div id="my_avatar_wrapper" style="position:relative; width:160px; height:160px; margin:-15px auto 0;">
+                        <div id="my_avatar_effect" style="position:absolute; top:-5px; left:-5px; width:170px; height:170px; z-index:0; pointer-events:none; border-radius:50%;"></div>
+                        <div id="my_avatar_display" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1; width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden; box-sizing:content-box;">🦇</div>
+                        <div id="my_avatar_frame" style="position:absolute; top:0; left:0; width:160px; height:160px; z-index:2; pointer-events:none; border-radius:50%; overflow:hidden; -webkit-mask:radial-gradient(circle,transparent 62px,black 66px); mask:radial-gradient(circle,transparent 62px,black 66px);"></div>
+                        <div id="my_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                        <div id="my_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
                     </div>
                     <div id="my_username_display" style="color:#d40000; font-size:18px; font-weight:bold; margin-top:10px;"></div>
                     <div id="my_rank_display" style="color:#888; font-size:12px;"></div>
@@ -1088,6 +1143,8 @@
                                 <span id="maintenance_status" style="color:#0f0; font-size:12px;">Status: OFF</span>
                             </div>
                             <input type="text" id="maintenance_message" class="ie-input" placeholder="Maintenance message (optional)" value="We're performing scheduled maintenance. Please check back soon!">
+                            <input type="text" id="maintenance_music" class="ie-input" placeholder="Music URL (YouTube or SoundCloud link)" style="margin-top:5px;">
+                            <p style="color:#666; font-size:9px; margin:3px 0;">Plays on the maintenance screen for non-ST users</p>
                             <div style="display:flex; gap:5px;">
                                 <button class="ie-btn" style="flex:1; background:#700; border-color:#f00;" onclick="toggleMaintenanceMode(true)">Enable Maintenance</button>
                                 <button class="ie-btn" style="flex:1; background:#050; border-color:#0f0;" onclick="toggleMaintenanceMode(false)">Disable Maintenance</button>
@@ -1521,6 +1578,7 @@
                         <option value="hat">Hat (above avatar)</option>
                         <option value="accessory">Accessory/Facialwear (on face)</option>
                         <option value="frame">Frame (around avatar)</option>
+                        <option value="effect">Effect (avatar glow)</option>
                     </select>
                     <input type="number" id="bulk_item_price" class="ie-input" placeholder="Default Price" value="500" min="1">
                     <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="bulkUploadItems()">Upload All</button>
@@ -1654,8 +1712,37 @@ let FIREBASE_USER = null; // Stores Firebase Auth user object
 let CURRENT_USER = "", IS_GUEST = false; // Define early for auth listener
 let maintenanceEnabled = false; // Track maintenance mode globally
 let currentUserDisplayName = null; // VIP display name
-const CLOUD_NAME = "fangtasia-14197";
-const UPLOAD_PRESET = "fangtasia";
+
+// Image upload: convert to base64 data URI (no external hosting needed)
+function fileToBase64(file, maxWidth = 800) {
+    return new Promise((resolve, reject) => {
+        // For non-image files (audio/video), just base64 encode directly
+        if (!file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+            return;
+        }
+        // For images, resize if needed then convert
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', 0.85));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
 
 // Firebase Auth State Listener - auto-login if already authenticated
 if (auth) {
@@ -2846,9 +2933,13 @@ function loadShopItems() {
             
             container.innerHTML = Object.entries(shopItems).map(([id, item]) => {
                 const owned = ownedItems[id];
+                const imgHtml = item.imageUrl ? 
+                    `<img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50?text=?'">` :
+                    `<div style="width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:50%; ${item.type === 'effect' ? 'background:radial-gradient(circle,#111,#000); box-shadow:0 0 10px rgba(255,0,0,0.5);' : ''}">${item.type === 'effect' ? '✨' : '?'}</div>`;
+                const typeLabel = item.type === 'effect' ? ' <span style="color:#ff00ff; font-size:8px;">[FX]</span>' : (item.type === 'frame' ? ' <span style="color:#0ff; font-size:8px;">[FRAME]</span>' : '');
                 return `<div class="shop-item ${owned ? 'owned' : ''}" onclick="${owned ? `equipItem('${id}')` : `buyShopItem('${id}')`}">
-                    <img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50?text=?'">
-                    <div style="color:#fff; font-size:10px; font-weight:bold;">${escapeHtml(item.name)}</div>
+                    ${imgHtml}
+                    <div style="color:#fff; font-size:10px; font-weight:bold;">${escapeHtml(item.name)}${typeLabel}</div>
                     <div style="color:${owned ? '#0f0' : '#ffd700'}; font-size:9px;">${owned ? 'OWNED' : item.price + ' tokens'}</div>
                 </div>`;
             }).join('');
@@ -2927,6 +3018,28 @@ function equipItem(itemId) {
     });
 }
 
+// Effect name to CSS class mapping
+const EFFECT_MAP = {
+    'blood-glow': 'fx-blood-glow',
+    'hellfire': 'fx-hellfire',
+    'phantom': 'fx-phantom',
+    'toxic': 'fx-toxic',
+    'void': 'fx-void',
+    'rainbow': 'fx-rainbow',
+    'glitch': 'fx-glitch',
+    'golden': 'fx-golden'
+};
+
+function applyAvatarEffect(wrapperEl, effectEl, effectName) {
+    // Remove any existing effect classes
+    Object.values(EFFECT_MAP).forEach(cls => wrapperEl.classList.remove(cls));
+    // Apply the effect class to the wrapper
+    const cls = EFFECT_MAP[effectName];
+    if (cls) {
+        wrapperEl.classList.add(cls);
+    }
+}
+
 function loadEquippedItems() {
     const container = document.getElementById('equipped_items');
     if (!container || !CURRENT_USER || IS_GUEST) return;
@@ -2935,18 +3048,19 @@ function loadEquippedItems() {
         const items = snap.val() || {};
         const equipped = Object.entries(items).filter(([id, data]) => data.equipped);
         
-        // Clear hat and frame displays
         const hatEl = document.getElementById('my_avatar_hat');
         const frameEl = document.getElementById('my_avatar_frame');
         const accessoryEl = document.getElementById('my_avatar_accessory');
+        const effectEl = document.getElementById('my_avatar_effect');
         const avatarEl = document.getElementById('my_avatar_display');
+        const wrapperEl = document.getElementById('my_avatar_wrapper');
         
         if (hatEl) hatEl.innerHTML = '';
         if (frameEl) frameEl.innerHTML = '';
         if (accessoryEl) accessoryEl.innerHTML = '';
-        
-        // Reset avatar border to default
+        if (effectEl) effectEl.innerHTML = '';
         if (avatarEl) avatarEl.style.border = '4px solid #700';
+        if (wrapperEl) wrapperEl.className = '';
         
         if (equipped.length === 0) {
             container.innerHTML = '<span style="color:#666; font-size:10px;">None equipped</span>';
@@ -2954,10 +3068,10 @@ function loadEquippedItems() {
         }
         
         let hatHtml = '';
-        let frameHtml = '';
         let accessoryHtml = '';
         let listHtml = '';
-        let hasFrame = false;
+        let frameUrl = '';
+        let effectName = '';
         
         for (const [id, data] of equipped) {
             const item = shopItems[id];
@@ -2966,27 +3080,33 @@ function loadEquippedItems() {
             if (item.type === 'hat') {
                 hatHtml = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
             } else if (item.type === 'frame') {
-                // Frame fills container completely, centered and scaled to fit
-                frameHtml = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
-                hasFrame = true;
+                frameUrl = item.imageUrl;
             } else if (item.type === 'accessory') {
                 accessoryHtml = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
+            } else if (item.type === 'effect') {
+                effectName = item.effectClass || item.name.toLowerCase().replace(/\s+/g, '-');
             }
             
             listHtml += `<div style="background:#0a0505; border:1px solid #0a0; border-radius:4px; padding:5px; display:flex; align-items:center; gap:5px;">
-                <img src="${item.imageUrl}" style="width:20px; height:20px; object-fit:contain;">
+                <img src="${item.imageUrl || ''}" style="width:20px; height:20px; object-fit:contain;" onerror="this.style.display='none'">
                 <span style="color:#0f0; font-size:9px;">${escapeHtml(item.name)}</span>
             </div>`;
         }
         
-        // Apply hat, frame, and accessory to avatar display
         if (hatEl && hatHtml) hatEl.innerHTML = hatHtml;
-        if (frameEl && frameHtml) frameEl.innerHTML = frameHtml;
         if (accessoryEl && accessoryHtml) accessoryEl.innerHTML = accessoryHtml;
         
-        // If frame is equipped, remove avatar border (frame replaces it)
-        if (hasFrame && avatarEl) {
+        // Frame: image fills 160x160 div, CSS mask on the div cuts out the center circle
+        // so the frame shows as a ring around the avatar. Works with ANY image format.
+        if (frameUrl && frameEl && avatarEl) {
+            console.log('MY FRAME RENDER:', 'url length:', frameUrl.length, 'url start:', frameUrl.substring(0, 50));
             avatarEl.style.border = 'none';
+            frameEl.innerHTML = `<img src="${frameUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="console.error('MY FRAME IMG FAILED:', this.src.substring(0,50)); this.style.display='none'">`;
+        }
+        
+        // Effect: apply CSS class to wrapper
+        if (effectName && wrapperEl) {
+            applyAvatarEffect(wrapperEl, effectEl, effectName);
         }
         
         container.innerHTML = listHtml || '<span style="color:#666; font-size:10px;">None equipped</span>';
@@ -3900,25 +4020,14 @@ function updateAvatar() {
         // URL provided - save directly
         saveAvatarToFirebase(url, avatarDisplay, urlEl);
     } else if (fileInput && fileInput.files[0]) {
-        // File upload to Cloudinary first
+        // Convert to base64 data URI
         alert('Uploading avatar...');
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        formData.append('upload_preset', UPLOAD_PRESET);
-        
-        fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(data => {
-                if (data.secure_url) {
-                    saveAvatarToFirebase(data.secure_url, avatarDisplay, urlEl);
-                } else {
-                    alert('Upload failed: ' + (data.error?.message || 'Unknown error'));
-                }
-            })
-            .catch((err) => { 
-                console.error('Upload error:', err); 
-                alert('Upload failed. Check your connection.'); 
-            });
+        fileToBase64(fileInput.files[0], 400).then(dataUri => {
+            saveAvatarToFirebase(dataUri, avatarDisplay, urlEl);
+        }).catch(err => {
+            console.error('Upload error:', err);
+            alert('Failed to process image.');
+        });
     } else {
         alert('Enter a URL or select a file to upload.');
     }
@@ -4028,13 +4137,17 @@ function openProfileWindow(username) {
             else pwAvatar.innerHTML = '🦇';
         }
         
-        // Load equipped shop items (hats/frames/accessories)
+        // Load equipped shop items (hats/frames/accessories/effects)
         const pwHat = document.getElementById('pw_avatar_hat');
         const pwFrame = document.getElementById('pw_avatar_frame');
         const pwAccessory = document.getElementById('pw_avatar_accessory');
+        const pwEffect = document.getElementById('pw_avatar_effect');
+        const pwWrapper = document.getElementById('pw_avatar_wrapper');
         if (pwHat) pwHat.innerHTML = '';
         if (pwFrame) pwFrame.innerHTML = '';
         if (pwAccessory) pwAccessory.innerHTML = '';
+        if (pwEffect) pwEffect.innerHTML = '';
+        if (pwWrapper) pwWrapper.className = '';
         
         if (profile.shopItems) {
             const equippedItems = Object.entries(profile.shopItems).filter(([id, data]) => data.equipped);
@@ -4045,12 +4158,15 @@ function openProfileWindow(username) {
                     
                     if (item.type === 'hat' && pwHat) {
                         pwHat.innerHTML = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
-                    } else if (item.type === 'frame' && pwFrame) {
-                        // Frame fills container completely, centered and scaled to fit
-                        pwFrame.innerHTML = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
-                        if (pwAvatar) pwAvatar.style.border = 'none';
+                    } else if (item.type === 'frame' && pwFrame && pwAvatar) {
+                        console.log('FRAME RENDER:', itemId, 'url length:', item.imageUrl?.length, 'url start:', item.imageUrl?.substring(0, 50));
+                        pwAvatar.style.border = 'none';
+                        pwFrame.innerHTML = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="console.error('FRAME IMG FAILED:', this.src.substring(0,50)); this.style.display='none'">`;
                     } else if (item.type === 'accessory' && pwAccessory) {
                         pwAccessory.innerHTML = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
+                    } else if (item.type === 'effect' && pwWrapper && pwEffect) {
+                        const eName = item.effectClass || item.name.toLowerCase().replace(/\s+/g, '-');
+                        applyAvatarEffect(pwWrapper, pwEffect, eName);
                     }
                 });
             }
@@ -4660,16 +4776,11 @@ function uploadChatFile() {
     const file = document.getElementById('chat_file').files[0]; if (!file) return;
     const isImage = file.type.startsWith('image/'), isVideo = file.type.startsWith('video/'), isAudio = file.type.startsWith('audio/');
     alert('Uploading file...');
-    const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', UPLOAD_PRESET);
-    const resourceType = isVideo ? 'video' : isAudio ? 'video' : 'image';
-    fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, { method: 'POST', body: formData })
-    .then(res => res.json()).then(data => {
-        if (data.secure_url) {
-            const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style' };
-            const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            let mediaType = isVideo ? 'video' : isAudio ? 'audio' : 'image';
-            db.ref('chat').push({ user: CURRENT_USER, text: '[' + mediaType.charAt(0).toUpperCase() + mediaType.slice(1) + ']', mediaUrl: data.secure_url, mediaType: mediaType, tag: u.rank || 'M', style: u.style || 'member-style', time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP });
-        } else { alert('Upload failed.'); }
+    fileToBase64(file, isImage ? 600 : 0).then(dataUri => {
+        const u = userDatabase[CURRENT_USER] || { rank: 'M', style: 'member-style' };
+        const timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        let mediaType = isVideo ? 'video' : isAudio ? 'audio' : 'image';
+        db.ref('chat').push({ user: CURRENT_USER, text: '[' + mediaType.charAt(0).toUpperCase() + mediaType.slice(1) + ']', mediaUrl: dataUri, mediaType: mediaType, tag: u.rank || 'M', style: u.style || 'member-style', time: timeNow, timestamp: firebase.database.ServerValue.TIMESTAMP });
     }).catch(() => { alert('Upload failed.'); });
     document.getElementById('chat_file').value = '';
 }
@@ -6741,60 +6852,65 @@ function initBuiltinShopItems() {
     
     // These are URL references - images stored in assets/avatars folder
     const builtinItems = {
-        'builtin_officers_hat': { name: 'Officers Hat', price: 1000, type: 'hat', imageUrl: 'assets/avatars/officers_hat.png' },
-        'builtin_player_one': { name: 'Player One', price: 500, type: 'hat', imageUrl: 'assets/avatars/player_one.png' },
-        'builtin_postal_conscience': { name: 'Postal Conscience', price: 750, type: 'hat', imageUrl: 'assets/avatars/postal_conscience.png' },
-        'builtin_red_fedora': { name: 'Red Fedora', price: 600, type: 'hat', imageUrl: 'assets/avatars/red_fedora.png' },
-        'builtin_retard': { name: 'Retard', price: 400, type: 'hat', imageUrl: 'assets/avatars/retard.png' },
-        'builtin_rip_bozo': { name: 'RIP BOZO', price: 800, type: 'frame', imageUrl: 'assets/avatars/rip_bozo.png' },
-        'builtin_the_merchant': { name: 'The Merchant', price: 500, type: 'hat', imageUrl: 'assets/avatars/the_merchant.png' },
-        'builtin_the_raped': { name: 'The Raped', price: 350, type: 'hat', imageUrl: 'assets/avatars/the_raped.png' },
-        'builtin_wanted': { name: 'Wanted', price: 700, type: 'frame', imageUrl: 'assets/avatars/wanted.png' },
-        'builtin_confederate_cap': { name: 'Confederate Cap', price: 900, type: 'hat', imageUrl: 'assets/avatars/confederate_cap.png' },
-        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'hat', imageUrl: 'assets/avatars/dead_pedo_bear.png' },
-        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'hat', imageUrl: 'assets/avatars/dharmachakra.png' },
-        'builtin_dunce_cap': { name: 'Dunce Cap', price: 300, type: 'hat', imageUrl: 'assets/avatars/dunce_cap.png' },
-        'builtin_hazmat_suit': { name: 'Hazmat Suit', price: 550, type: 'hat', imageUrl: 'assets/avatars/hazmat_suit.png' },
-        'builtin_ice_cap': { name: 'ICE Cap', price: 400, type: 'hat', imageUrl: 'assets/avatars/ice_cap.png' },
-        'builtin_israeli_friend_pins': { name: 'Israeli Friend Pins', price: 500, type: 'hat', imageUrl: 'assets/avatars/israeli_friend_pins.png' },
-        'builtin_japanese_text': { name: 'Japanese Text', price: 450, type: 'hat', imageUrl: 'assets/avatars/japanese_text.png' },
-        'builtin_liveleak': { name: 'LiveLeak', price: 600, type: 'hat', imageUrl: 'assets/avatars/liveleak.png' },
-        'builtin_nazi_officer': { name: 'Nazi Officer', price: 1000, type: 'hat', imageUrl: 'assets/avatars/nazi_officer.png' },
-        'builtin_noose': { name: 'Noose', price: 500, type: 'frame', imageUrl: 'assets/avatars/noose.png' },
-        'builtin_homer_head': { name: 'Homer Head', price: 500, type: 'frame', imageUrl: 'assets/avatars/homer_head.png' }
+        'builtin_officers_hat': { name: 'Officers Hat', price: 1000, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a3a2a%22%20stroke=%22%234a6a4a%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%8E%96%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%234a6a4a%22%20font-family=%22monospace%22%3EOfficer%3C/text%3E%3C/svg%3E' },
+        'builtin_player_one': { name: 'Player One', price: 500, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%231a1a3a%22%20stroke=%22%234444aa%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%95%B9%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%234444aa%22%20font-family=%22monospace%22%3EP1%3C/text%3E%3C/svg%3E' },
+        'builtin_postal_conscience': { name: 'Postal Conscience', price: 750, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a1a1a%22%20stroke=%22%23aa4444%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%AE%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aa4444%22%20font-family=%22monospace%22%3EPostal%3C/text%3E%3C/svg%3E' },
+        'builtin_red_fedora': { name: 'Red Fedora', price: 600, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a0a0a%22%20stroke=%22%23cc2222%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%8E%A9%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23cc2222%22%20font-family=%22monospace%22%3EFedora%3C/text%3E%3C/svg%3E' },
+        'builtin_retard': { name: 'Retard', price: 400, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a3a1a%22%20stroke=%22%23aaaa44%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A4%AA%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aaaa44%22%20font-family=%22monospace%22%3ERetard%3C/text%3E%3C/svg%3E' },
+        'builtin_rip_bozo': { name: 'RIP BOZO', price: 800, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23ff4444%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23cc0000%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23ff4444%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23cc0000%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%F0%9F%92%80%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23ff4444%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3ERIP%20BOZO%3C/text%3E%0A%3C/svg%3E' },
+        'builtin_the_merchant': { name: 'The Merchant', price: 500, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a0a%22%20stroke=%22%23ccaa22%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%AA%99%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23ccaa22%22%20font-family=%22monospace%22%3EMerchant%3C/text%3E%3C/svg%3E' },
+        'builtin_the_raped': { name: 'The Raped', price: 350, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a1a2a%22%20stroke=%22%23884488%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%98%B5%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23884488%22%20font-family=%22monospace%22%3ERaped%3C/text%3E%3C/svg%3E' },
+        'builtin_wanted': { name: 'Wanted', price: 700, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23cc8822%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23aa6600%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23cc8822%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23aa6600%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%F0%9F%94%AB%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23cc8822%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3EWANTED%3C/text%3E%0A%3C/svg%3E' },
+        'builtin_confederate_cap': { name: 'Confederate Cap', price: 900, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%231a1a2a%22%20stroke=%22%236666aa%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A7%A2%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%236666aa%22%20font-family=%22monospace%22%3EConfed%3C/text%3E%3C/svg%3E' },
+        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a1a0a%22%20stroke=%22%23aa6622%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A7%B8%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aa6622%22%20font-family=%22monospace%22%3EDPB%3C/text%3E%3C/svg%3E' },
+        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%231a1a2a%22%20stroke=%22%238888cc%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%E2%98%B8%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%238888cc%22%20font-family=%22monospace%22%3EDharma%3C/text%3E%3C/svg%3E' },
+        'builtin_dunce_cap': { name: 'Dunce Cap', price: 300, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a3a0a%22%20stroke=%22%23cccc22%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%90%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23cccc22%22%20font-family=%22monospace%22%3EDunce%3C/text%3E%3C/svg%3E' },
+        'builtin_hazmat_suit': { name: 'Hazmat Suit', price: 550, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a0a%22%20stroke=%22%23aaaa00%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%E2%98%A3%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aaaa00%22%20font-family=%22monospace%22%3EHazmat%3C/text%3E%3C/svg%3E' },
+        'builtin_ice_cap': { name: 'ICE Cap', price: 400, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%230a2a3a%22%20stroke=%22%2322aacc%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A7%8A%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%2322aacc%22%20font-family=%22monospace%22%3EICE%3C/text%3E%3C/svg%3E' },
+        'builtin_israeli_friend_pins': { name: 'Israeli Friend Pins', price: 500, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%230a1a3a%22%20stroke=%22%234488cc%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%8C%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%234488cc%22%20font-family=%22monospace%22%3EPins%3C/text%3E%3C/svg%3E' },
+        'builtin_japanese_text': { name: 'Japanese Text', price: 450, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a0a0a%22%20stroke=%22%23cc4444%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%88%B2%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23cc4444%22%20font-family=%22monospace%22%3EJP%3C/text%3E%3C/svg%3E' },
+        'builtin_liveleak': { name: 'LiveLeak', price: 600, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a2a%22%20stroke=%22%23ee8822%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%B9%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23ee8822%22%20font-family=%22monospace%22%3ELL%3C/text%3E%3C/svg%3E' },
+        'builtin_nazi_officer': { name: 'Nazi Officer', price: 1000, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a2a%22%20stroke=%22%23888888%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%E2%9A%94%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23888888%22%20font-family=%22monospace%22%3ENazi%3C/text%3E%3C/svg%3E' },
+        'builtin_noose': { name: 'Noose', price: 500, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23886644%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23664422%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23886644%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23664422%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%E2%9A%B0%EF%B8%8F%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23886644%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3ENoose%3C/text%3E%0A%3C/svg%3E' },
+        'builtin_homer_head': { name: 'Homer Head', price: 500, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23cccc44%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23aaaa00%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23cccc44%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23aaaa00%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%F0%9F%8D%A9%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23cccc44%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3EHomer%3C/text%3E%0A%3C/svg%3E' },
+        'builtin_fx_blood_glow': { name: 'Blood Glow', price: 1500, type: 'effect', effectClass: 'blood-glow', imageUrl: '' },
+        'builtin_fx_hellfire': { name: 'Hellfire', price: 2000, type: 'effect', effectClass: 'hellfire', imageUrl: '' },
+        'builtin_fx_phantom': { name: 'Phantom', price: 1800, type: 'effect', effectClass: 'phantom', imageUrl: '' },
+        'builtin_fx_toxic': { name: 'Toxic', price: 1200, type: 'effect', effectClass: 'toxic', imageUrl: '' },
+        'builtin_fx_void': { name: 'Void', price: 2500, type: 'effect', effectClass: 'void', imageUrl: '' },
+        'builtin_fx_rainbow': { name: 'Rainbow', price: 3000, type: 'effect', effectClass: 'rainbow', imageUrl: '' },
+        'builtin_fx_glitch': { name: 'Glitch', price: 2200, type: 'effect', effectClass: 'glitch', imageUrl: '' },
+        'builtin_fx_golden': { name: 'Golden', price: 5000, type: 'effect', effectClass: 'golden', imageUrl: '' }
     };
     
-    // Check which items need to be added and add them automatically
+    // Add missing items AND update existing items with correct data
     db.ref('shop_items').once('value', (snap) => {
         const existing = snap.val() || {};
-        let toAdd = [];
+        let toProcess = [];
 
         for (const [id, item] of Object.entries(builtinItems)) {
-            if (!existing[id] && item.imageUrl) {
-                toAdd.push({ id, item });
-            }
+            toProcess.push({ id, item, isNew: !existing[id] });
         }
 
-        if (toAdd.length === 0) {
-            resultEl.innerHTML = '<span style="color:#0f0;">All builtin items already exist!</span>';
-            return;
-        }
-
-        // Add all missing items
         let added = 0;
-        let promises = toAdd.map(({ id, item }) => {
-            return db.ref('shop_items/' + id).set({
+        let updated = 0;
+        let promises = toProcess.map(({ id, item, isNew }) => {
+            const data = {
                 name: item.name,
-                imageUrl: item.imageUrl,
+                imageUrl: item.imageUrl || '',
                 price: item.price,
                 type: item.type,
                 addedBy: 'system',
-                addedAt: Date.now()
-            }).then(() => { added++; });
+                addedAt: existing[id]?.addedAt || Date.now()
+            };
+            if (item.effectClass) data.effectClass = item.effectClass;
+            return db.ref('shop_items/' + id).set(data).then(() => { 
+                if (isNew) added++; else updated++;
+            });
         });
 
         Promise.all(promises).then(() => {
-            resultEl.innerHTML = '<span style="color:#0f0;">Added ' + added + ' items to shop!</span>';
+            resultEl.innerHTML = '<span style="color:#0f0;">✓ ' + added + ' added, ' + updated + ' updated!</span>';
             loadSTShopList();
         }).catch(err => {
             resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
@@ -6930,34 +7046,21 @@ async function bulkUploadItems() {
         const name = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ').replace(/-/g, ' ');
 
         try {
-            // Upload to Cloudinary
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
+            // Convert to base64 data URI
+            const dataUri = await fileToBase64(file, 400);
 
-            const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', {
-                method: 'POST',
-                body: formData
+            // Add to Firebase
+            const itemId = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+            await db.ref('shop_items/' + itemId).set({
+                name: name,
+                imageUrl: dataUri,
+                price: price,
+                type: type,
+                addedBy: CURRENT_USER,
+                addedAt: Date.now()
             });
-            const data = await res.json();
-
-            if (data.secure_url) {
-                // Add to Firebase
-                const itemId = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                await db.ref('shop_items/' + itemId).set({
-                    name: name,
-                    imageUrl: data.secure_url,
-                    price: price,
-                    type: type,
-                    addedBy: CURRENT_USER,
-                    addedAt: Date.now()
-                });
-                success++;
-                log += '<div style="color:#0f0;">✓ ' + name + '</div>';
-            } else {
-                failed++;
-                log += '<div style="color:#f00;">✗ ' + name + ' - Upload failed</div>';
-            }
+            success++;
+            log += '<div style="color:#0f0;">✓ ' + name + '</div>';
         } catch (err) {
             failed++;
             log += '<div style="color:#f00;">✗ ' + name + ' - ' + err.message + '</div>';
@@ -6974,6 +7077,29 @@ async function bulkUploadItems() {
 
 // ========== MAINTENANCE MODE ==========
 
+function playMaintenanceMusic(url) {
+    const container = document.getElementById('maintenance_music_player');
+    if (!container || !url) { if (container) container.innerHTML = ''; return; }
+    
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        let videoId = '';
+        const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        if (match) videoId = match[1];
+        if (videoId) {
+            container.innerHTML = `<iframe width="300" height="60" src="https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}" frameborder="0" allow="autoplay; encrypted-media" style="border-radius:6px; opacity:0.7;"></iframe>`;
+        }
+    } else if (url.includes('soundcloud.com')) {
+        container.innerHTML = `<iframe width="300" height="80" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23d40000&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false" style="border-radius:6px; opacity:0.7; filter:invert(0.85) hue-rotate(180deg) contrast(1.1);"></iframe>`;
+    } else {
+        container.innerHTML = '';
+    }
+}
+
+function stopMaintenanceMusic() {
+    const container = document.getElementById('maintenance_music_player');
+    if (container) container.innerHTML = '';
+}
+
 function toggleMaintenanceMode(enable) {
     const resultEl = document.getElementById('maintenance_result');
     if (!userDatabase[CURRENT_USER]?.isST) {
@@ -6982,11 +7108,13 @@ function toggleMaintenanceMode(enable) {
     }
     
     const message = document.getElementById('maintenance_message')?.value || 'We\'re performing scheduled maintenance. Please check back soon!';
+    const music = document.getElementById('maintenance_music')?.value?.trim() || '';
     
     if (enable) {
         db.ref('site_settings/maintenance').set({
             enabled: true,
             message: message,
+            music: music,
             enabledBy: CURRENT_USER,
             enabledAt: Date.now()
         }).then(() => {
@@ -7020,6 +7148,9 @@ function updateMaintenanceStatus() {
                 statusEl.innerHTML = '<span style="color:#0f0;">Status: OFF</span>';
             }
         }
+        // Load saved music URL into input
+        const musicInput = document.getElementById('maintenance_music');
+        if (musicInput && data.music) musicInput.value = data.music;
     });
 }
 
@@ -7046,10 +7177,13 @@ function setupMaintenanceListener() {
         if (data.enabled) {
             if (messageEl) messageEl.textContent = data.message || 'We\'re performing scheduled maintenance. Please check back soon!';
             if (overlay) overlay.style.display = 'flex';
+            // Play maintenance music if set
+            playMaintenanceMusic(data.music || '');
             // Disable all interaction
             document.body.style.overflow = 'hidden';
         } else {
             if (overlay) overlay.style.display = 'none';
+            stopMaintenanceMusic();
             document.body.style.overflow = '';
         }
     });
@@ -7073,6 +7207,7 @@ function initMaintenanceCheck() {
         if (data.enabled) {
             if (messageEl) messageEl.textContent = data.message || 'We\'re performing scheduled maintenance. Please check back soon!';
             if (overlay) overlay.style.display = 'flex';
+            playMaintenanceMusic(data.music || '');
             document.body.style.overflow = 'hidden';
         }
     });
@@ -8499,12 +8634,13 @@ function uploadVIPImage() {
     const user = userDatabase[CURRENT_USER]; if (!user || !(user.rank === 'VIP' || user.rank === 'CONTRIB' || user.isAdmin || user.isST)) { alert('VIP+ only.'); return; }
     const file = document.getElementById('vip_image_picker').files[0]; if (!file) { alert('Select image.'); return; }
     document.getElementById('vip_image_result').innerHTML = '<div style="color:#888; font-size:10px;">Uploading...</div>';
-    const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', UPLOAD_PRESET);
-    fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload', { method: 'POST', body: formData })
-        .then(res => res.json()).then(data => {
-            if (data.secure_url) { document.getElementById('vip_image_result').innerHTML = `<div style="background:#0a0000; border:1px solid #ffd700; padding:10px;"><div style="color:#0f0; font-size:10px;">✓ Uploaded!</div><input type="text" value="${data.secure_url}" style="width:100%; font-size:10px; background:#000; border:1px solid #ffd700; color:#ffd700; padding:6px;" onclick="this.select();" readonly></div>`; }
-            else document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Failed.</div>';
-        });
+    fileToBase64(file, 600).then(dataUri => {
+        document.getElementById('vip_image_result').innerHTML = `<div style="background:#0a0000; border:1px solid #ffd700; padding:10px;"><div style="color:#0f0; font-size:10px;">✓ Uploaded!</div><input type="text" value="${dataUri.substring(0, 80)}..." style="width:100%; font-size:10px; background:#000; border:1px solid #ffd700; color:#ffd700; padding:6px;" readonly><div style="color:#888; font-size:9px; margin-top:4px;">Image stored as base64. Paste URL fields will also accept this.</div></div>`;
+        // Copy to clipboard
+        navigator.clipboard.writeText(dataUri).catch(() => {});
+    }).catch(() => {
+        document.getElementById('vip_image_result').innerHTML = '<div style="color:#f00; font-size:10px;">Failed.</div>';
+    });
 }
 
 // ==================== CLUBS SYSTEM ====================
@@ -9492,13 +9628,12 @@ async function processIEUpload() {
     if (!canUpload) { alert('VIP+ members only can upload to Memories.'); return; }
     
     document.getElementById('upload_status').innerText = "Uploading..."; document.getElementById('upload_status').disabled = true;
-    const formData = new FormData(); formData.append('file', fileInput.files[0]); formData.append('upload_preset', UPLOAD_PRESET);
+    const file = fileInput.files[0];
+    if (file.size > 5 * 1024 * 1024) { alert('File too large! Max 5MB for direct upload. Use a URL instead for larger files.'); document.getElementById('upload_status').innerText = "Push to Cloud"; document.getElementById('upload_status').disabled = false; return; }
     try {
-        const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/auto/upload', { method: 'POST', body: formData });
-        const data = await res.json();
-        if (res.ok && data.secure_url) { await db.ref('archive').push({ name: name, url: data.secure_url, uploader: CURRENT_USER, timestamp: firebase.database.ServerValue.TIMESTAMP }); renderMemories(); document.getElementById('upload_status').innerText = "Push to Cloud"; document.getElementById('ie_filename').value = ""; fileInput.value = ""; alert('Uploaded!'); }
-        else { alert('Failed: ' + (data.error?.message || 'Unknown')); document.getElementById('upload_status').innerText = "Push to Cloud"; }
-    } catch (e) { alert("Error."); document.getElementById('upload_status').innerText = "Push to Cloud"; }
+        const dataUri = await fileToBase64(file, file.type.startsWith('image/') ? 800 : 0);
+        await db.ref('archive').push({ name: name, url: dataUri, uploader: CURRENT_USER, timestamp: firebase.database.ServerValue.TIMESTAMP }); renderMemories(); document.getElementById('upload_status').innerText = "Push to Cloud"; document.getElementById('ie_filename').value = ""; fileInput.value = ""; alert('Uploaded!');
+    } catch (e) { alert("Error: " + e.message); document.getElementById('upload_status').innerText = "Push to Cloud"; }
     document.getElementById('upload_status').disabled = false;
 }
 
