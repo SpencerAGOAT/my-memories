@@ -216,9 +216,9 @@
             <div id="pw_avatar_wrapper" style="position:relative; width:160px; height:160px; margin:-15px auto 0;">
                 <div id="pw_avatar_effect" style="position:absolute; top:-5px; left:-5px; width:170px; height:170px; z-index:0; pointer-events:none; border-radius:50%;"></div>
                 <div id="pw_avatar" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1; width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:50px; overflow:hidden; box-sizing:content-box;">🦇</div>
-                <div id="pw_avatar_frame" style="position:absolute; top:0; left:0; width:160px; height:160px; z-index:2; pointer-events:none; border-radius:50%; overflow:hidden; -webkit-mask:radial-gradient(circle,transparent 62px,black 66px); mask:radial-gradient(circle,transparent 62px,black 66px);"></div>
-                <div id="pw_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                <div id="pw_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                <div id="pw_avatar_frame" style="display:none;"></div>
+                <div id="pw_avatar_hat" style="display:none;"></div>
+                <div id="pw_avatar_accessory" style="display:none;"></div>
             </div>
             <div id="pw_name" style="font-size:22px; font-weight:bold; color:#d40000;"></div>
             <div id="pw_rank" style="font-size:12px; color:#888; margin-top:5px;"></div>
@@ -388,6 +388,13 @@
 .fx-rainbow { border-radius:50%; animation: fx-rainbow 3s linear infinite; }
 .fx-glitch { border-radius:50%; animation: fx-glitch 0.5s steps(4) infinite; }
 .fx-golden { border-radius:50%; animation: fx-golden 2s ease-in-out infinite; }
+@keyframes fx-beautiful-mind {
+    0%, 100% { box-shadow: 0 0 20px 8px rgba(255,255,255,0.3), 0 0 40px 15px rgba(200,220,255,0.15), 0 0 60px 25px rgba(150,180,255,0.08); }
+    25% { box-shadow: 0 0 25px 10px rgba(220,240,255,0.4), 0 0 50px 20px rgba(180,200,255,0.2), 0 0 70px 30px rgba(150,170,255,0.1); }
+    50% { box-shadow: 0 0 30px 12px rgba(255,255,255,0.5), 0 0 55px 22px rgba(200,230,255,0.25), 0 0 80px 35px rgba(170,200,255,0.12); }
+    75% { box-shadow: 0 0 22px 9px rgba(230,245,255,0.35), 0 0 45px 18px rgba(190,210,255,0.18), 0 0 65px 28px rgba(160,190,255,0.09); }
+}
+.fx-beautiful-mind { border-radius:50%; animation: fx-beautiful-mind 3s ease-in-out infinite; }
 </style>
 <div id="boot-screen" onclick="beginSession()">
     <div style="font-size: 80px; margin-bottom: 20px; animation: batFloat 3s ease-in-out infinite;">🦇</div>
@@ -759,9 +766,9 @@
                     <div id="my_avatar_wrapper" style="position:relative; width:160px; height:160px; margin:-15px auto 0;">
                         <div id="my_avatar_effect" style="position:absolute; top:-5px; left:-5px; width:170px; height:170px; z-index:0; pointer-events:none; border-radius:50%;"></div>
                         <div id="my_avatar_display" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1; width:130px; height:130px; border-radius:50%; background:#111; border:4px solid #700; display:flex; align-items:center; justify-content:center; font-size:60px; overflow:hidden; box-sizing:content-box;">🦇</div>
-                        <div id="my_avatar_frame" style="position:absolute; top:0; left:0; width:160px; height:160px; z-index:2; pointer-events:none; border-radius:50%; overflow:hidden; -webkit-mask:radial-gradient(circle,transparent 62px,black 66px); mask:radial-gradient(circle,transparent 62px,black 66px);"></div>
-                        <div id="my_avatar_hat" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:120px; height:80px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
-                        <div id="my_avatar_accessory" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:70px; z-index:5; pointer-events:none; display:flex; align-items:center; justify-content:center;"></div>
+                        <div id="my_avatar_frame" style="display:none;"></div>
+                        <div id="my_avatar_hat" style="display:none;"></div>
+                        <div id="my_avatar_accessory" style="display:none;"></div>
                     </div>
                     <div id="my_username_display" style="color:#d40000; font-size:18px; font-weight:bold; margin-top:10px;"></div>
                     <div id="my_rank_display" style="color:#888; font-size:12px;"></div>
@@ -1531,32 +1538,65 @@
                 <h3 style="color:#ff00ff; margin:0 0 15px 0;">ST Shop & Token Management</h3>
                 
                 <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
-                    <h4 style="color:#ff00ff;">Initialize Builtin Items</h4>
-                    <p style="color:#888; font-size:9px; margin:5px 0;">Load the default shop items (hats, frames, etc.)</p>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="initBuiltinShopItems()">Load Builtin Items</button>
-                    <div id="builtin_init_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                
-                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
-                    <h4 style="color:#ff00ff;">Add Custom Shop Item</h4>
+                    <h4 style="color:#ff00ff;">Add Shop Item</h4>
                     <input type="text" id="shop_item_name" class="ie-input" placeholder="Item Name">
-                    <input type="text" id="shop_item_image" class="ie-input" placeholder="Image URL">
                     <input type="number" id="shop_item_price" class="ie-input" placeholder="Price (tokens)" min="1">
                     <select id="shop_item_type" class="ie-input">
-                        <option value="hat">Hat (above avatar)</option>
-                        <option value="accessory">Accessory/Glasses (on face)</option>
-                        <option value="frame">Frame (around avatar)</option>
-                        <option value="effect">Effect</option>
+                        <option value="effect">Effect (CSS glow)</option>
                         <option value="badge">Badge</option>
                     </select>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stAddShopItem()">Add Item</button>
+                    <div id="shop_add_effect_opts" style="display:none; margin-top:5px;">
+                        <select id="shop_item_effectclass" class="ie-input">
+                            <option value="">-- Select Effect --</option>
+                            <option value="blood-glow">Blood Glow</option>
+                            <option value="hellfire">Hellfire</option>
+                            <option value="phantom">Phantom</option>
+                            <option value="toxic">Toxic</option>
+                            <option value="void">Void</option>
+                            <option value="rainbow">Rainbow</option>
+                            <option value="glitch">Glitch</option>
+                            <option value="golden">Golden</option>
+                            <option value="beautiful-mind">Beautiful Mind</option>
+                        </select>
+                        <p style="color:#666; font-size:9px; margin:3px 0;">Effects use CSS animations — no image needed.</p>
+                    </div>
+                    <div id="shop_add_image_section" style="margin-top:5px;">
+                        <label style="display:block; color:#888; font-size:9px; margin-bottom:3px;">Upload Image (or paste URL):</label>
+                        <input type="file" id="shop_item_file" accept="image/*" style="color:#888; font-size:10px; margin-bottom:5px; display:block;">
+                        <input type="text" id="shop_item_image" class="ie-input" placeholder="...or paste image URL / base64">
+                    </div>
+                    <div id="shop_add_preview" style="display:none; margin-top:8px; padding:8px; background:#050005; border:1px solid #500050; border-radius:4px; text-align:center;">
+                        <p style="color:#888; font-size:9px; margin-bottom:5px;">PREVIEW</p>
+                        <div id="shop_add_preview_container" style="display:inline-block; position:relative; width:160px; height:160px;">
+                            <div id="shop_add_preview_avatar" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:130px; height:130px; border-radius:50%; background:#222; display:flex; align-items:center; justify-content:center; font-size:40px; overflow:hidden; z-index:1;">🦇</div>
+                        </div>
+                    </div>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff; margin-top:8px;" onclick="stAddShopItem()">Add Item to Shop</button>
                     <div id="shop_add_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
                 
                 <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">Bulk Upload Items</h4>
+                    <p style="color:#888; font-size:9px; margin:0 0 8px 0;">Upload multiple images. File names become item names. Preview before upload.</p>
+                    <input type="file" id="bulk_item_files" multiple accept="image/*" style="color:#888; font-size:10px; margin-bottom:8px; display:block;" onchange="previewBulkUpload()">
+                    <select id="bulk_item_type" class="ie-input">
+                        <option value="effect">Effect (animated overlay)</option>
+                        <option value="badge">Badge</option>
+                    </select>
+                    <input type="number" id="bulk_item_price" class="ie-input" placeholder="Default Price" value="500" min="1">
+                    <div id="bulk_preview_grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px; max-height:200px; overflow-y:auto;"></div>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff; margin-top:5px;" onclick="bulkUploadItems()">Upload All</button>
+                    <div id="bulk_upload_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
+                </div>
+
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
                     <h4 style="color:#ff00ff;">Current Shop Items</h4>
-                    <div id="st_shop_list" style="max-height:200px; overflow-y:auto; font-size:10px;"></div>
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff; margin-top:5px;" onclick="loadSTShopList()">Refresh List</button>
+                    <div id="st_shop_list" style="max-height:250px; overflow-y:auto; font-size:10px;"></div>
+                    <div style="display:flex; gap:5px; margin-top:5px;">
+                        <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="loadSTShopList()">Refresh List</button>
+                        <button class="ie-btn" style="flex:1; background:#700; border-color:#f00;" onclick="deleteAllShopItems()">🗑️ Delete ALL Items</button>
+                    </div>
+                    <div id="delete_all_shop_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
                 
                 <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
@@ -1568,21 +1608,6 @@
                         <button class="ie-btn" style="flex:1; background:#700; border-color:#ff00ff;" onclick="stDeleteShopItem()">Delete Item</button>
                     </div>
                     <div id="shop_edit_result" style="margin-top:5px; font-size:10px;"></div>
-                </div>
-                
-                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
-                    <h4 style="color:#ff00ff;">Bulk Upload Items</h4>
-                    <p style="color:#888; font-size:9px; margin:0 0 8px 0;">Upload multiple images at once. File names become item names.</p>
-                    <input type="file" id="bulk_item_files" multiple accept="image/*" style="color:#888; font-size:10px; margin-bottom:8px; display:block;">
-                    <select id="bulk_item_type" class="ie-input">
-                        <option value="hat">Hat (above avatar)</option>
-                        <option value="accessory">Accessory/Facialwear (on face)</option>
-                        <option value="frame">Frame (around avatar)</option>
-                        <option value="effect">Effect (avatar glow)</option>
-                    </select>
-                    <input type="number" id="bulk_item_price" class="ie-input" placeholder="Default Price" value="500" min="1">
-                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="bulkUploadItems()">Upload All</button>
-                    <div id="bulk_upload_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
                 </div>
 
                 <div class="admin-section" style="border-color:#ff00ff;">
@@ -1714,10 +1739,19 @@ let maintenanceEnabled = false; // Track maintenance mode globally
 let currentUserDisplayName = null; // VIP display name
 
 // Image upload: convert to base64 data URI (no external hosting needed)
-function fileToBase64(file, maxWidth = 800) {
+function fileToBase64(file, maxWidth = 800, preserveAnimation = false) {
     return new Promise((resolve, reject) => {
         // For non-image files (audio/video), just base64 encode directly
         if (!file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+            return;
+        }
+        // For animated formats (webp/gif) when preserveAnimation is true, 
+        // read raw bytes to keep animation intact (canvas kills animation)
+        if (preserveAnimation && (file.type === 'image/webp' || file.type === 'image/gif')) {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result);
             reader.onerror = reject;
@@ -1734,7 +1768,9 @@ function fileToBase64(file, maxWidth = 800) {
                 if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                resolve(canvas.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', 0.85));
+                // Use PNG for formats that support transparency (PNG, WebP, GIF) to avoid black backgrounds
+                const usesPNG = file.type === 'image/png' || file.type === 'image/webp' || file.type === 'image/gif';
+                resolve(canvas.toDataURL(usesPNG ? 'image/png' : 'image/jpeg', 0.85));
             };
             img.onerror = reject;
             img.src = e.target.result;
@@ -2936,7 +2972,7 @@ function loadShopItems() {
                 const imgHtml = item.imageUrl ? 
                     `<img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50?text=?'">` :
                     `<div style="width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:50%; ${item.type === 'effect' ? 'background:radial-gradient(circle,#111,#000); box-shadow:0 0 10px rgba(255,0,0,0.5);' : ''}">${item.type === 'effect' ? '✨' : '?'}</div>`;
-                const typeLabel = item.type === 'effect' ? ' <span style="color:#ff00ff; font-size:8px;">[FX]</span>' : (item.type === 'frame' ? ' <span style="color:#0ff; font-size:8px;">[FRAME]</span>' : '');
+                const typeLabel = item.type === 'effect' ? ' <span style="color:#ff00ff; font-size:8px;">[FX]</span>' : (item.type === 'badge' ? ' <span style="color:#ffd700; font-size:8px;">[BADGE]</span>' : '');
                 return `<div class="shop-item ${owned ? 'owned' : ''}" onclick="${owned ? `equipItem('${id}')` : `buyShopItem('${id}')`}">
                     ${imgHtml}
                     <div style="color:#fff; font-size:10px; font-weight:bold;">${escapeHtml(item.name)}${typeLabel}</div>
@@ -3027,7 +3063,8 @@ const EFFECT_MAP = {
     'void': 'fx-void',
     'rainbow': 'fx-rainbow',
     'glitch': 'fx-glitch',
-    'golden': 'fx-golden'
+    'golden': 'fx-golden',
+    'beautiful-mind': 'fx-beautiful-mind'
 };
 
 function applyAvatarEffect(wrapperEl, effectEl, effectName) {
@@ -3048,18 +3085,11 @@ function loadEquippedItems() {
         const items = snap.val() || {};
         const equipped = Object.entries(items).filter(([id, data]) => data.equipped);
         
-        const hatEl = document.getElementById('my_avatar_hat');
-        const frameEl = document.getElementById('my_avatar_frame');
-        const accessoryEl = document.getElementById('my_avatar_accessory');
         const effectEl = document.getElementById('my_avatar_effect');
         const avatarEl = document.getElementById('my_avatar_display');
         const wrapperEl = document.getElementById('my_avatar_wrapper');
         
-        if (hatEl) hatEl.innerHTML = '';
-        if (frameEl) frameEl.innerHTML = '';
-        if (accessoryEl) accessoryEl.innerHTML = '';
         if (effectEl) effectEl.innerHTML = '';
-        if (avatarEl) avatarEl.style.border = '4px solid #700';
         if (wrapperEl) wrapperEl.className = '';
         
         if (equipped.length === 0) {
@@ -3067,23 +3097,14 @@ function loadEquippedItems() {
             return;
         }
         
-        let hatHtml = '';
-        let accessoryHtml = '';
         let listHtml = '';
-        let frameUrl = '';
         let effectName = '';
         
         for (const [id, data] of equipped) {
             const item = shopItems[id];
             if (!item) continue;
             
-            if (item.type === 'hat') {
-                hatHtml = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
-            } else if (item.type === 'frame') {
-                frameUrl = item.imageUrl;
-            } else if (item.type === 'accessory') {
-                accessoryHtml = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
-            } else if (item.type === 'effect') {
+            if (item.type === 'effect') {
                 effectName = item.effectClass || item.name.toLowerCase().replace(/\s+/g, '-');
             }
             
@@ -3091,17 +3112,6 @@ function loadEquippedItems() {
                 <img src="${item.imageUrl || ''}" style="width:20px; height:20px; object-fit:contain;" onerror="this.style.display='none'">
                 <span style="color:#0f0; font-size:9px;">${escapeHtml(item.name)}</span>
             </div>`;
-        }
-        
-        if (hatEl && hatHtml) hatEl.innerHTML = hatHtml;
-        if (accessoryEl && accessoryHtml) accessoryEl.innerHTML = accessoryHtml;
-        
-        // Frame: image fills 160x160 div, CSS mask on the div cuts out the center circle
-        // so the frame shows as a ring around the avatar. Works with ANY image format.
-        if (frameUrl && frameEl && avatarEl) {
-            console.log('MY FRAME RENDER:', 'url length:', frameUrl.length, 'url start:', frameUrl.substring(0, 50));
-            avatarEl.style.border = 'none';
-            frameEl.innerHTML = `<img src="${frameUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="console.error('MY FRAME IMG FAILED:', this.src.substring(0,50)); this.style.display='none'">`;
         }
         
         // Effect: apply CSS class to wrapper
@@ -3609,6 +3619,8 @@ function completeLogin(u) {
     }
     if (userData.isST) { 
         document.getElementById('st_tab').style.display = 'block'; 
+    }
+    if (userData.isST || userData.isAdmin) {
         document.getElementById('st_tab2').style.display = 'block'; 
     }
     setupAdminTabs(userData);
@@ -4137,15 +4149,9 @@ function openProfileWindow(username) {
             else pwAvatar.innerHTML = '🦇';
         }
         
-        // Load equipped shop items (hats/frames/accessories/effects)
-        const pwHat = document.getElementById('pw_avatar_hat');
-        const pwFrame = document.getElementById('pw_avatar_frame');
-        const pwAccessory = document.getElementById('pw_avatar_accessory');
+        // Load equipped shop items (effects only)
         const pwEffect = document.getElementById('pw_avatar_effect');
         const pwWrapper = document.getElementById('pw_avatar_wrapper');
-        if (pwHat) pwHat.innerHTML = '';
-        if (pwFrame) pwFrame.innerHTML = '';
-        if (pwAccessory) pwAccessory.innerHTML = '';
         if (pwEffect) pwEffect.innerHTML = '';
         if (pwWrapper) pwWrapper.className = '';
         
@@ -4156,15 +4162,7 @@ function openProfileWindow(username) {
                     const item = itemSnap.val();
                     if (!item) return;
                     
-                    if (item.type === 'hat' && pwHat) {
-                        pwHat.innerHTML = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
-                    } else if (item.type === 'frame' && pwFrame && pwAvatar) {
-                        console.log('FRAME RENDER:', itemId, 'url length:', item.imageUrl?.length, 'url start:', item.imageUrl?.substring(0, 50));
-                        pwAvatar.style.border = 'none';
-                        pwFrame.innerHTML = `<img src="${item.imageUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="console.error('FRAME IMG FAILED:', this.src.substring(0,50)); this.style.display='none'">`;
-                    } else if (item.type === 'accessory' && pwAccessory) {
-                        pwAccessory.innerHTML = `<img src="${item.imageUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none'">`;
-                    } else if (item.type === 'effect' && pwWrapper && pwEffect) {
+                    if (item.type === 'effect' && pwWrapper && pwEffect) {
                         const eName = item.effectClass || item.name.toLowerCase().replace(/\s+/g, '-');
                         applyAvatarEffect(pwWrapper, pwEffect, eName);
                     }
@@ -6337,8 +6335,8 @@ function loadSecurityLogs() {
 
 function stForceLogoutUser() {
     const resultEl = document.getElementById('st_force_logout_result');
-    if (!userDatabase[CURRENT_USER]?.isST) {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
         return;
     }
     
@@ -6364,8 +6362,8 @@ function stForceLogoutUser() {
 // Data recovery - copy user data from one account to another
 async function stRecoverUserData() {
     const resultEl = document.getElementById('st_recover_result');
-    if (!userDatabase[CURRENT_USER]?.isST) {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
         return;
     }
     
@@ -6413,8 +6411,8 @@ async function stRecoverUserData() {
 // Quick fix for K's data - recovers from lowercase k
 async function recoverKData() {
     const resultEl = document.getElementById('st_recover_result');
-    if (!userDatabase[CURRENT_USER]?.isST) {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
         return;
     }
     
@@ -6529,8 +6527,8 @@ const announceIcons = {
 
 function sendSiteAnnouncement() {
     const resultEl = document.getElementById('st_announce_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -6809,8 +6807,8 @@ setTimeout(startAnnouncementListener, 2000);
 
 function sendAdminMessage() {
     const resultEl = document.getElementById('st_admin_msg_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -6840,120 +6838,135 @@ function sendAdminMessage() {
 
 // ========== ST SHOP MANAGEMENT ==========
 
-// Built-in shop items will be loaded from Firebase or initialized by ST
-function initBuiltinShopItems() {
-    const resultEl = document.getElementById('builtin_init_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
-        return; 
-    }
-    
-    resultEl.innerHTML = '<span style="color:#ffd700;">Initializing items... This loads item URLs from the system.</span>';
-    
-    // These are URL references - images stored in assets/avatars folder
-    const builtinItems = {
-        'builtin_officers_hat': { name: 'Officers Hat', price: 1000, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a3a2a%22%20stroke=%22%234a6a4a%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%8E%96%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%234a6a4a%22%20font-family=%22monospace%22%3EOfficer%3C/text%3E%3C/svg%3E' },
-        'builtin_player_one': { name: 'Player One', price: 500, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%231a1a3a%22%20stroke=%22%234444aa%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%95%B9%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%234444aa%22%20font-family=%22monospace%22%3EP1%3C/text%3E%3C/svg%3E' },
-        'builtin_postal_conscience': { name: 'Postal Conscience', price: 750, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a1a1a%22%20stroke=%22%23aa4444%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%AE%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aa4444%22%20font-family=%22monospace%22%3EPostal%3C/text%3E%3C/svg%3E' },
-        'builtin_red_fedora': { name: 'Red Fedora', price: 600, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a0a0a%22%20stroke=%22%23cc2222%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%8E%A9%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23cc2222%22%20font-family=%22monospace%22%3EFedora%3C/text%3E%3C/svg%3E' },
-        'builtin_retard': { name: 'Retard', price: 400, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a3a1a%22%20stroke=%22%23aaaa44%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A4%AA%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aaaa44%22%20font-family=%22monospace%22%3ERetard%3C/text%3E%3C/svg%3E' },
-        'builtin_rip_bozo': { name: 'RIP BOZO', price: 800, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23ff4444%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23cc0000%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23ff4444%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23cc0000%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%F0%9F%92%80%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23ff4444%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3ERIP%20BOZO%3C/text%3E%0A%3C/svg%3E' },
-        'builtin_the_merchant': { name: 'The Merchant', price: 500, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a0a%22%20stroke=%22%23ccaa22%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%AA%99%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23ccaa22%22%20font-family=%22monospace%22%3EMerchant%3C/text%3E%3C/svg%3E' },
-        'builtin_the_raped': { name: 'The Raped', price: 350, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a1a2a%22%20stroke=%22%23884488%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%98%B5%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23884488%22%20font-family=%22monospace%22%3ERaped%3C/text%3E%3C/svg%3E' },
-        'builtin_wanted': { name: 'Wanted', price: 700, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23cc8822%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23aa6600%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23cc8822%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23aa6600%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%F0%9F%94%AB%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23cc8822%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3EWANTED%3C/text%3E%0A%3C/svg%3E' },
-        'builtin_confederate_cap': { name: 'Confederate Cap', price: 900, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%231a1a2a%22%20stroke=%22%236666aa%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A7%A2%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%236666aa%22%20font-family=%22monospace%22%3EConfed%3C/text%3E%3C/svg%3E' },
-        'builtin_dead_pedo_bear': { name: 'Dead Pedo Bear', price: 666, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a1a0a%22%20stroke=%22%23aa6622%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A7%B8%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aa6622%22%20font-family=%22monospace%22%3EDPB%3C/text%3E%3C/svg%3E' },
-        'builtin_dharmachakra': { name: 'Dharmachakra', price: 450, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%231a1a2a%22%20stroke=%22%238888cc%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%E2%98%B8%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%238888cc%22%20font-family=%22monospace%22%3EDharma%3C/text%3E%3C/svg%3E' },
-        'builtin_dunce_cap': { name: 'Dunce Cap', price: 300, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a3a0a%22%20stroke=%22%23cccc22%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%90%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23cccc22%22%20font-family=%22monospace%22%3EDunce%3C/text%3E%3C/svg%3E' },
-        'builtin_hazmat_suit': { name: 'Hazmat Suit', price: 550, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a0a%22%20stroke=%22%23aaaa00%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%E2%98%A3%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23aaaa00%22%20font-family=%22monospace%22%3EHazmat%3C/text%3E%3C/svg%3E' },
-        'builtin_ice_cap': { name: 'ICE Cap', price: 400, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%230a2a3a%22%20stroke=%22%2322aacc%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%A7%8A%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%2322aacc%22%20font-family=%22monospace%22%3EICE%3C/text%3E%3C/svg%3E' },
-        'builtin_israeli_friend_pins': { name: 'Israeli Friend Pins', price: 500, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%230a1a3a%22%20stroke=%22%234488cc%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%8C%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%234488cc%22%20font-family=%22monospace%22%3EPins%3C/text%3E%3C/svg%3E' },
-        'builtin_japanese_text': { name: 'Japanese Text', price: 450, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%233a0a0a%22%20stroke=%22%23cc4444%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%88%B2%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23cc4444%22%20font-family=%22monospace%22%3EJP%3C/text%3E%3C/svg%3E' },
-        'builtin_liveleak': { name: 'LiveLeak', price: 600, type: 'accessory', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a2a%22%20stroke=%22%23ee8822%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%F0%9F%93%B9%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23ee8822%22%20font-family=%22monospace%22%3ELL%3C/text%3E%3C/svg%3E' },
-        'builtin_nazi_officer': { name: 'Nazi Officer', price: 1000, type: 'hat', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22120%22%20height=%2280%22%20viewBox=%220%200%20120%2080%22%3E%3Crect%20x=%222%22%20y=%222%22%20width=%22116%22%20height=%2276%22%20rx=%228%22%20fill=%22%232a2a2a%22%20stroke=%22%23888888%22%20stroke-width=%222%22/%3E%3Ctext%20x=%2260%22%20y=%2245%22%20text-anchor=%22middle%22%20font-size=%2230%22%3E%E2%9A%94%EF%B8%8F%3C/text%3E%3Ctext%20x=%2260%22%20y=%2270%22%20text-anchor=%22middle%22%20font-size=%2210%22%20fill=%22%23888888%22%20font-family=%22monospace%22%3ENazi%3C/text%3E%3C/svg%3E' },
-        'builtin_noose': { name: 'Noose', price: 500, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23886644%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23664422%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23886644%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23664422%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%E2%9A%B0%EF%B8%8F%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23886644%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3ENoose%3C/text%3E%0A%3C/svg%3E' },
-        'builtin_homer_head': { name: 'Homer Head', price: 500, type: 'frame', imageUrl: 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22160%22%20height=%22160%22%20viewBox=%220%200%20160%20160%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id=%22rg%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%0A%3Cstop%20offset=%220%25%22%20stop-color=%22%23cccc44%22/%3E%0A%3Cstop%20offset=%22100%25%22%20stop-color=%22%23aaaa00%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2272%22%20fill=%22none%22%20stroke=%22url%28%23rg%29%22%20stroke-width=%2216%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2279%22%20fill=%22none%22%20stroke=%22%23cccc44%22%20stroke-width=%222%22/%3E%0A%3Ccircle%20cx=%2280%22%20cy=%2280%22%20r=%2264%22%20fill=%22none%22%20stroke=%22%23aaaa00%22%20stroke-width=%221%22%20opacity=%220.6%22/%3E%0A%3Ctext%20x=%2280%22%20y=%2218%22%20text-anchor=%22middle%22%20font-size=%2214%22%3E%F0%9F%8D%A9%3C/text%3E%0A%3Ctext%20x=%2280%22%20y=%22154%22%20text-anchor=%22middle%22%20font-size=%229%22%20fill=%22%23cccc44%22%20font-weight=%22bold%22%20font-family=%22monospace%22%3EHomer%3C/text%3E%0A%3C/svg%3E' },
-        'builtin_fx_blood_glow': { name: 'Blood Glow', price: 1500, type: 'effect', effectClass: 'blood-glow', imageUrl: '' },
-        'builtin_fx_hellfire': { name: 'Hellfire', price: 2000, type: 'effect', effectClass: 'hellfire', imageUrl: '' },
-        'builtin_fx_phantom': { name: 'Phantom', price: 1800, type: 'effect', effectClass: 'phantom', imageUrl: '' },
-        'builtin_fx_toxic': { name: 'Toxic', price: 1200, type: 'effect', effectClass: 'toxic', imageUrl: '' },
-        'builtin_fx_void': { name: 'Void', price: 2500, type: 'effect', effectClass: 'void', imageUrl: '' },
-        'builtin_fx_rainbow': { name: 'Rainbow', price: 3000, type: 'effect', effectClass: 'rainbow', imageUrl: '' },
-        'builtin_fx_glitch': { name: 'Glitch', price: 2200, type: 'effect', effectClass: 'glitch', imageUrl: '' },
-        'builtin_fx_golden': { name: 'Golden', price: 5000, type: 'effect', effectClass: 'golden', imageUrl: '' }
-    };
-    
-    // ONLY add items that don't exist yet - never overwrite existing custom images
-    db.ref('shop_items').once('value', (snap) => {
-        const existing = snap.val() || {};
-        let toAdd = [];
-
-        for (const [id, item] of Object.entries(builtinItems)) {
-            if (!existing[id]) {
-                toAdd.push({ id, item });
-            }
-        }
-
-        if (toAdd.length === 0) {
-            resultEl.innerHTML = '<span style="color:#0f0;">All ' + Object.keys(builtinItems).length + ' builtin items already exist. Your custom images are safe.</span>';
-            return;
-        }
-
-        let added = 0;
-        let promises = toAdd.map(({ id, item }) => {
-            const data = {
-                name: item.name,
-                imageUrl: item.imageUrl || '',
-                price: item.price,
-                type: item.type,
-                addedBy: 'system',
-                addedAt: Date.now()
-            };
-            if (item.effectClass) data.effectClass = item.effectClass;
-            return db.ref('shop_items/' + id).set(data).then(() => { added++; });
-        });
-
-        Promise.all(promises).then(() => {
-            resultEl.innerHTML = '<span style="color:#0f0;">✓ Added ' + added + ' new items. Existing items untouched.</span>';
-            loadSTShopList();
-        }).catch(err => {
-            resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
-        });
-    });
-}
-
 function stAddShopItem() {
     const resultEl = document.getElementById('shop_add_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
     const name = document.getElementById('shop_item_name').value.trim();
-    const imageUrl = document.getElementById('shop_item_image').value.trim();
     const price = parseInt(document.getElementById('shop_item_price').value);
     const type = document.getElementById('shop_item_type').value;
+    const fileInput = document.getElementById('shop_item_file');
+    const urlInput = document.getElementById('shop_item_image').value.trim();
     
     if (!name) { resultEl.innerHTML = '<span style="color:#f00;">Enter item name.</span>'; return; }
-    if (!imageUrl) { resultEl.innerHTML = '<span style="color:#f00;">Enter image URL.</span>'; return; }
     if (!price || price < 1) { resultEl.innerHTML = '<span style="color:#f00;">Enter valid price.</span>'; return; }
     
+    // For effects, no image needed
+    if (type === 'effect') {
+        const effectClass = document.getElementById('shop_item_effectclass').value;
+        if (!effectClass) { resultEl.innerHTML = '<span style="color:#f00;">Select an effect type.</span>'; return; }
+        
+        const itemId = 'item_' + Date.now();
+        db.ref('shop_items/' + itemId).set({
+            name: name, imageUrl: '', price: price, type: 'effect',
+            effectClass: effectClass, addedBy: CURRENT_USER, addedAt: Date.now()
+        }).then(() => {
+            resultEl.innerHTML = '<span style="color:#0f0;">✓ Effect added! ID: ' + itemId + '</span>';
+            document.getElementById('shop_item_name').value = '';
+            loadSTShopList();
+        });
+        return;
+    }
+    
+    // For image items: prefer file upload, fall back to URL
+    if (fileInput.files[0]) {
+        const preserveAnim = (type === 'effect');
+        fileToBase64(fileInput.files[0], 400, preserveAnim).then(dataUri => {
+            saveShopItem(name, dataUri, price, type, resultEl);
+        });
+    } else if (urlInput) {
+        saveShopItem(name, urlInput, price, type, resultEl);
+    } else {
+        resultEl.innerHTML = '<span style="color:#f00;">Upload an image or paste a URL.</span>';
+    }
+}
+
+function saveShopItem(name, imageUrl, price, type, resultEl) {
     const itemId = 'item_' + Date.now();
-    db.ref('shop_items/' + itemId).set({
-        name: name,
-        imageUrl: imageUrl,
-        price: price,
-        type: type,
-        addedBy: CURRENT_USER,
-        addedAt: Date.now()
-    }).then(() => {
-        resultEl.innerHTML = '<span style="color:#0f0;">Item added! ID: ' + itemId + '</span>';
+    const data = { name, imageUrl, price, type, addedBy: CURRENT_USER, addedAt: Date.now() };
+    db.ref('shop_items/' + itemId).set(data).then(() => {
+        resultEl.innerHTML = '<span style="color:#0f0;">✓ Item added! ID: ' + itemId + '</span>';
         document.getElementById('shop_item_name').value = '';
         document.getElementById('shop_item_image').value = '';
-        document.getElementById('shop_item_price').value = '';
+        document.getElementById('shop_item_file').value = '';
+        document.getElementById('shop_add_preview').style.display = 'none';
+        clearAddPreview();
         loadSTShopList();
     }).catch(err => {
         resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
+// Toggle effect options vs image upload based on type selection
+document.getElementById('shop_item_type')?.addEventListener('change', function() {
+    const isEffect = this.value === 'effect';
+    document.getElementById('shop_add_effect_opts').style.display = isEffect ? 'block' : 'none';
+    document.getElementById('shop_add_image_section').style.display = isEffect ? 'none' : 'block';
+    if (!isEffect) updateAddPreview();
+});
+
+// File upload preview
+document.getElementById('shop_item_file')?.addEventListener('change', function() {
+    if (this.files[0]) {
+        const type = document.getElementById('shop_item_type').value;
+        const preserveAnim = (type === 'effect');
+        fileToBase64(this.files[0], 400, preserveAnim).then(dataUri => {
+            document.getElementById('shop_item_image').value = '';
+            showAddPreview(dataUri);
+        });
+    }
+});
+
+// URL input preview
+document.getElementById('shop_item_image')?.addEventListener('input', function() {
+    const url = this.value.trim();
+    if (url && (url.startsWith('data:') || url.startsWith('http'))) {
+        showAddPreview(url);
+    }
+});
+
+function showAddPreview(imageUrl) {
+    const preview = document.getElementById('shop_add_preview');
+    preview.style.display = 'block';
+    // Show image next to avatar
+    const container = document.getElementById('shop_add_preview_container');
+    const existing = container.querySelector('.preview-item-img');
+    if (existing) existing.remove();
+    const img = document.createElement('img');
+    img.className = 'preview-item-img';
+    img.src = imageUrl;
+    img.style.cssText = 'width:80px; height:80px; object-fit:contain; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:3;';
+    container.appendChild(img);
+}
+
+function clearAddPreview() {
+    const container = document.getElementById('shop_add_preview_container');
+    if (container) {
+        const existing = container.querySelector('.preview-item-img');
+        if (existing) existing.remove();
+    }
+}
+
+// Bulk upload preview thumbnails
+function previewBulkUpload() {
+    const grid = document.getElementById('bulk_preview_grid');
+    const files = document.getElementById('bulk_item_files').files;
+    grid.innerHTML = '';
+    if (!files.length) return;
+    
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const name = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+            grid.innerHTML += `<div style="background:#111; border:1px solid #500; border-radius:4px; padding:4px; text-align:center;">
+                <img src="${e.target.result}" style="width:60px; height:60px; object-fit:contain; display:block; margin:0 auto 3px;">
+                <div style="color:#aaa; font-size:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${name}</div>
+            </div>`;
+        };
+        reader.readAsDataURL(file);
     });
 }
 
@@ -6971,11 +6984,23 @@ function loadSTShopList() {
         }
         
         container.innerHTML = Object.entries(items).map(([id, item]) => {
-            return `<div style="display:flex; align-items:center; gap:8px; padding:5px; border-bottom:1px solid #300;">
-                <img src="${item.imageUrl}" style="width:25px; height:25px; object-fit:contain; border:1px solid #400;" onerror="this.src='https://via.placeholder.com/25?text=?'">
-                <span style="flex:1; color:#fff;">${escapeHtml(item.name)}</span>
-                <span style="color:#ffd700;">${item.price}</span>
-                <span style="color:#666; font-size:8px;">${id}</span>
+            const typeColors = { frame: '#0ff', hat: '#ff0', accessory: '#f0f', effect: '#0f0', badge: '#ffd700' };
+            const tc = typeColors[item.type] || '#888';
+            const thumb = item.imageUrl 
+                ? `<img src="${item.imageUrl}" style="width:40px; height:40px; object-fit:contain; border:1px solid #400; border-radius:4px; background:#111;" onerror="this.style.display='none'">`
+                : `<div style="width:40px; height:40px; border:1px solid #400; border-radius:4px; background:#111; display:flex; align-items:center; justify-content:center; font-size:14px;">${item.type === 'effect' ? '✨' : '?'}</div>`;
+            return `<div style="display:flex; align-items:center; gap:8px; padding:6px; border-bottom:1px solid #300;">
+                ${thumb}
+                <div style="flex:1; min-width:0;">
+                    <div style="color:#fff; font-size:11px;">${escapeHtml(item.name)}</div>
+                    <div style="display:flex; gap:5px; align-items:center; margin-top:2px;">
+                        <span style="color:${tc}; font-size:8px; border:1px solid ${tc}; padding:0 3px; border-radius:2px;">${(item.type||'?').toUpperCase()}</span>
+                        <span style="color:#ffd700; font-size:9px;">🪙 ${item.price}</span>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#555; font-size:7px; cursor:pointer; word-break:break-all; max-width:100px;" onclick="document.getElementById('shop_edit_id').value='${id}'" title="Click to fill edit field">${id}</div>
+                </div>
             </div>`;
         }).join('');
     });
@@ -6983,8 +7008,8 @@ function loadSTShopList() {
 
 function stEditShopPrice() {
     const resultEl = document.getElementById('shop_edit_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7004,8 +7029,9 @@ function stEditShopPrice() {
 
 function stDeleteShopItem() {
     const resultEl = document.getElementById('shop_edit_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isST && !user?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7023,10 +7049,31 @@ function stDeleteShopItem() {
     });
 }
 
+function deleteAllShopItems() {
+    const resultEl = document.getElementById('delete_all_shop_result');
+    const user = userDatabase[CURRENT_USER];
+    if (!user?.isST && !user?.isAdmin) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
+        return;
+    }
+    
+    if (!confirm('⚠️ DELETE ALL SHOP ITEMS?\n\nThis removes every item from the shop. Users keep items they already purchased.\n\nThis cannot be undone!')) return;
+    if (!confirm('Are you REALLY sure? Type "yes" mentally and click OK.')) return;
+    
+    if (resultEl) resultEl.innerHTML = '<span style="color:#ff0;">⏳ Deleting all shop items...</span>';
+    
+    db.ref('shop_items').remove().then(() => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#0f0;">✓ All shop items deleted! Shop is now empty.</span>';
+        loadSTShopList();
+    }).catch(err => {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
+    });
+}
+
 async function bulkUploadItems() {
     const resultEl = document.getElementById('bulk_upload_result');
-    if (!userDatabase[CURRENT_USER]?.isST) {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
         return;
     }
 
@@ -7050,8 +7097,9 @@ async function bulkUploadItems() {
         const name = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ').replace(/-/g, ' ');
 
         try {
-            // Convert to base64 data URI
-            const dataUri = await fileToBase64(file, 400);
+            // Convert to base64 data URI (preserve animation for frames/effects)
+            const preserveAnim = (type === 'effect');
+            const dataUri = await fileToBase64(file, 400, preserveAnim);
 
             // Add to Firebase
             const itemId = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -7106,8 +7154,8 @@ function stopMaintenanceMusic() {
 
 function toggleMaintenanceMode(enable) {
     const resultEl = document.getElementById('maintenance_result');
-    if (!userDatabase[CURRENT_USER]?.isST) {
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>';
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) {
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>';
         return;
     }
     
@@ -7225,8 +7273,8 @@ setTimeout(initMaintenanceCheck, 100);
 
 function stGiveTokens() {
     const resultEl = document.getElementById('st_token_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7268,8 +7316,8 @@ function loadGiveItemDropdown() {
 
 function stGiveItem() {
     const resultEl = document.getElementById('st_give_item_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7396,8 +7444,8 @@ function dismissAdminMessage() {
 
 function triggerSiteRefresh() {
     const resultEl = document.getElementById('st_refresh_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7507,8 +7555,8 @@ function loadSiteStatus() {
 // ST CLUB MANAGEMENT FUNCTIONS
 function stCreateClub() {
     const resultEl = document.getElementById('st_club_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7554,8 +7602,8 @@ function stCreateClub() {
 
 function stTransferClub() {
     const resultEl = document.getElementById('st_club_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7601,8 +7649,8 @@ function stTransferClub() {
 
 function stRenameClub() {
     const resultEl = document.getElementById('st_club_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7645,8 +7693,8 @@ function stRenameClub() {
 
 function stDeleteClub() {
     const resultEl = document.getElementById('st_club_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7683,8 +7731,8 @@ function stDeleteClub() {
 // CLUB TAG MANAGEMENT
 function stSetClubTag() {
     const resultEl = document.getElementById('st_clubtag_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7717,8 +7765,8 @@ function stSetClubTag() {
 
 function stRemoveClubTag() {
     const resultEl = document.getElementById('st_clubtag_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7787,8 +7835,8 @@ let memberlistTags = {
 
 function stSetMemberlistTag() {
     const resultEl = document.getElementById('st_mltag_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7818,8 +7866,8 @@ function stSetMemberlistTag() {
 
 function stRemoveMemberlistTag() {
     const resultEl = document.getElementById('st_mltag_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -7990,8 +8038,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function stCreateBadge() {
     const resultEl = document.getElementById('st_create_badge_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -8108,8 +8156,8 @@ function loadBadgeLibrary() {
 
 function stDeleteBadge() {
     const resultEl = document.getElementById('st_delete_badge_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -8130,8 +8178,8 @@ function stDeleteBadge() {
 
 function stAssignBadge() {
     const resultEl = document.getElementById('st_badge_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
@@ -8170,8 +8218,8 @@ function stAssignBadge() {
 
 function stRemoveBadge() {
     const resultEl = document.getElementById('st_badge_result');
-    if (!userDatabase[CURRENT_USER]?.isST) { 
-        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. ST only.</span>'; 
+    const _u = userDatabase[CURRENT_USER]; if (!_u?.isST && !_u?.isAdmin) { 
+        if (resultEl) resultEl.innerHTML = '<span style="color:#f00;">Access denied. Admin+ only.</span>'; 
         return; 
     }
     
