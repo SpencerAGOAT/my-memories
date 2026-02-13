@@ -878,6 +878,13 @@
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('scratch', this)" style="border-color:#ffd700;">🎟️ Scratch Cards</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('war', this)" style="border-color:#ffd700;">⚔️ War</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('horses', this)" style="border-color:#ffd700;">🏇 Horse Race</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('coffin', this)" style="border-color:#ffd700;">⚰️ Coffin Raider</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('seance', this)" style="border-color:#ffd700;">🕯️ Séance</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('heist', this)" style="border-color:#ffd700;">💉 Blood Heist</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('oracle', this)" style="border-color:#ffd700;">🔮 Oracle</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('duels', this)" style="border-color:#ffd700;">⚔️ Duels</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('bounties', this)" style="border-color:#ffd700;">🎯 Bounties</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('achieve', this)" style="border-color:#ffd700;">🏆 Achievements</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('vipchat', this)" style="border-color:#ffd700;">💬 VIP Chat</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('perks', this)" style="border-color:#ffd700;">🎁 Perks</div>
         </div>
@@ -1030,6 +1037,162 @@
                 <div class="g-result" id="hrse_result" style="margin-top:6px; text-align:center;"></div>
                 <div id="hrse_picks" style="display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-top:6px;"></div>
             </div>
+            <!-- COFFIN RAIDER -->
+            <div id="vip_tab_coffin" style="display:none;">
+                <div style="text-align:center; margin-bottom:8px;">
+                    <div style="font-size:22px; color:#ffd700; text-shadow:0 0 20px rgba(255,215,0,0.4); font-weight:bold; letter-spacing:2px;">⚰️ COFFIN RAIDER</div>
+                    <div style="color:#665500; font-size:9px; letter-spacing:3px; text-transform:uppercase;">Risk the curse. Claim the gold.</div>
+                </div>
+                <div class="g-bet-bar" style="background:linear-gradient(90deg, rgba(80,50,0,0.15), transparent, rgba(80,50,0,0.15)); border:1px solid #332200; border-radius:8px;">
+                    <span class="bet-label" style="color:#aa8800;">Bet</span>
+                    <button class="g-btn small" onclick="cofChangeBet(-50)">−</button>
+                    <span id="cof_bet_display" class="bet-value" style="color:#ffd700;">50</span>
+                    <button class="g-btn small" onclick="cofChangeBet(50)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="cofChangeBet('max')">MAX</button>
+                </div>
+                <div style="background:linear-gradient(180deg, #0d0800, #050300); border:1px solid #332200; border-radius:10px; padding:20px; text-align:center; position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(ellipse at center, rgba(255,215,0,0.03), transparent 70%); pointer-events:none;"></div>
+                    <div id="cof_grid" style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; position:relative; z-index:1;"></div>
+                    <div id="cof_revealed" style="margin-top:12px; min-height:24px; font-size:13px;"></div>
+                    <div class="g-result" id="cof_result" style="margin-top:8px; font-size:12px;"></div>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="g-btn warning large" id="cof_start_btn" onclick="cofStart()" style="flex:1; background:linear-gradient(180deg,#4a3000,#2a1a00); border:1px solid #886600; border-radius:8px; padding:12px; font-size:12px; letter-spacing:1px; text-shadow:0 0 8px rgba(255,215,0,0.4);">⚰️ ENTER THE CRYPT</button>
+                    <button class="g-btn success" id="cof_cashout_btn" style="display:none; flex:1; background:linear-gradient(180deg,#004a00,#002a00); border:1px solid #008800; border-radius:8px; padding:12px; font-size:12px; animation:cofPulse 1s infinite;" onclick="cofCashout()">💰 CASH OUT</button>
+                </div>
+            </div>
+            <!-- SÉANCE -->
+            <div id="vip_tab_seance" style="display:none;">
+                <div style="text-align:center; margin-bottom:8px;">
+                    <div style="font-size:22px; color:#9966ff; text-shadow:0 0 20px rgba(153,102,255,0.5); font-weight:bold; letter-spacing:2px;">🕯️ SÉANCE</div>
+                    <div style="color:#553399; font-size:9px; letter-spacing:3px; text-transform:uppercase;">The spirits whisper a number...</div>
+                </div>
+                <div class="g-bet-bar" style="background:linear-gradient(90deg, rgba(80,0,120,0.15), transparent, rgba(80,0,120,0.15)); border:1px solid #442266; border-radius:8px;">
+                    <span class="bet-label" style="color:#9966ff;">Bet</span>
+                    <button class="g-btn small" onclick="seaChangeBet(-50)">−</button>
+                    <span id="sea_bet_display" class="bet-value" style="color:#cc99ff;">50</span>
+                    <button class="g-btn small" onclick="seaChangeBet(50)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="seaChangeBet('max')">MAX</button>
+                </div>
+                <div style="background:linear-gradient(180deg, #0a0012, #050008); border:1px solid #332255; border-radius:10px; padding:20px; text-align:center; position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(ellipse at center, rgba(153,102,255,0.05), transparent 60%); pointer-events:none;"></div>
+                    <div id="sea_candles" style="display:flex; justify-content:center; gap:20px; margin-bottom:12px; font-size:24px; opacity:0.3;">🕯️🕯️🕯️</div>
+                    <div id="sea_clues" style="min-height:60px; padding:10px; background:rgba(50,0,80,0.15); border:1px solid #221133; border-radius:8px; margin-bottom:12px;">
+                        <div style="color:#553399; font-size:10px; font-style:italic;">Summon the spirits to receive your clues...</div>
+                    </div>
+                    <div id="sea_numbers" style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;"></div>
+                    <div class="g-result" id="sea_result" style="margin-top:10px; font-size:12px;"></div>
+                </div>
+                <button class="g-btn large" id="sea_start_btn" onclick="seaStart()" style="width:100%; margin-top:8px; background:linear-gradient(180deg,#3a1860,#1a0830); border:1px solid #6633aa; border-radius:8px; padding:12px; color:#cc99ff; font-size:12px; letter-spacing:1px; text-shadow:0 0 8px rgba(153,102,255,0.4);">🕯️ SUMMON THE SPIRITS</button>
+            </div>
+            <!-- BLOOD BANK HEIST -->
+            <div id="vip_tab_heist" style="display:none;">
+                <div style="text-align:center; margin-bottom:8px;">
+                    <div style="font-size:22px; color:#ff3333; text-shadow:0 0 20px rgba(255,0,0,0.4); font-weight:bold; letter-spacing:2px;">💉 BLOOD BANK HEIST</div>
+                    <div style="color:#882222; font-size:9px; letter-spacing:3px; text-transform:uppercase;">How long can you hold your nerve?</div>
+                </div>
+                <div class="g-bet-bar" style="background:linear-gradient(90deg, rgba(120,0,0,0.15), transparent, rgba(120,0,0,0.15)); border:1px solid #442222; border-radius:8px;">
+                    <span class="bet-label" style="color:#ff4444;">Bet</span>
+                    <button class="g-btn small" onclick="hstChangeBet(-50)">−</button>
+                    <span id="hst_bet_display" class="bet-value" style="color:#ff6666;">50</span>
+                    <button class="g-btn small" onclick="hstChangeBet(50)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="hstChangeBet('max')">MAX</button>
+                </div>
+                <div style="background:linear-gradient(180deg, #120000, #080000); border:1px solid #442222; border-radius:10px; padding:20px; text-align:center; position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(ellipse at center, rgba(255,0,0,0.04), transparent 60%); pointer-events:none;"></div>
+                    <div id="hst_vault" style="position:relative; z-index:1;">
+                        <div style="font-size:40px; margin-bottom:6px;">🏦</div>
+                        <div id="hst_fill_bar" style="width:80%; margin:0 auto; height:20px; background:#111; border:1px solid #442222; border-radius:10px; overflow:hidden; position:relative;">
+                            <div id="hst_fill" style="height:100%; width:0%; background:linear-gradient(90deg,#500,#f00,#ff3333); border-radius:10px; transition:width 0.3s;"></div>
+                            <div id="hst_fill_text" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#fff; font-size:10px; font-weight:bold; text-shadow:0 1px 2px #000;">0 🩸</div>
+                        </div>
+                        <div id="hst_timer" style="color:#ff4444; font-size:28px; font-weight:bold; margin:12px 0; font-family:monospace; text-shadow:0 0 15px rgba(255,0,0,0.5);">0.0s</div>
+                        <div id="hst_status" style="color:#882222; font-size:10px; min-height:16px;">Place your bet and start the heist...</div>
+                    </div>
+                    <div class="g-result" id="hst_result" style="margin-top:8px; font-size:12px;"></div>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="g-btn large" id="hst_start_btn" onclick="hstStart()" style="flex:1; background:linear-gradient(180deg,#4a0000,#2a0000); border:1px solid #880000; border-radius:8px; padding:12px; color:#ff4444; font-size:12px; letter-spacing:1px;">💉 START HEIST</button>
+                    <button class="g-btn large" id="hst_grab_btn" onclick="hstGrab()" style="display:none; flex:1; background:linear-gradient(180deg,#004a00,#002a00); border:1px solid #008800; border-radius:8px; padding:12px; color:#00ff00; font-size:12px; letter-spacing:1px; animation:cofPulse 0.8s infinite;">💰 GRAB & RUN!</button>
+                </div>
+            </div>
+            <!-- ORACLE'S GAMBIT -->
+            <div id="vip_tab_oracle" style="display:none;">
+                <div style="text-align:center; margin-bottom:8px;">
+                    <div style="font-size:22px; color:#00ccff; text-shadow:0 0 20px rgba(0,200,255,0.4); font-weight:bold; letter-spacing:2px;">🔮 ORACLE'S GAMBIT</div>
+                    <div style="color:#226688; font-size:9px; letter-spacing:3px; text-transform:uppercase;">Higher or lower? Chain your fate.</div>
+                </div>
+                <div class="g-bet-bar" style="background:linear-gradient(90deg, rgba(0,80,120,0.15), transparent, rgba(0,80,120,0.15)); border:1px solid #224466; border-radius:8px;">
+                    <span class="bet-label" style="color:#00aadd;">Bet</span>
+                    <button class="g-btn small" onclick="orcChangeBet(-50)">−</button>
+                    <span id="orc_bet_display" class="bet-value" style="color:#66ddff;">50</span>
+                    <button class="g-btn small" onclick="orcChangeBet(50)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="orcChangeBet('max')">MAX</button>
+                </div>
+                <div style="background:linear-gradient(180deg, #000a12, #000508); border:1px solid #224455; border-radius:10px; padding:20px; text-align:center; position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(ellipse at center, rgba(0,200,255,0.04), transparent 60%); pointer-events:none;"></div>
+                    <div id="orc_cards" style="display:flex; justify-content:center; gap:8px; margin-bottom:12px; min-height:90px; align-items:center; position:relative; z-index:1;"></div>
+                    <div id="orc_chain" style="color:#226688; font-size:11px; margin-bottom:8px;">Chain: <span id="orc_chain_count" style="color:#00ccff; font-weight:bold;">0</span> — Multiplier: <span id="orc_chain_mult" style="color:#ffd700; font-weight:bold;">1x</span></div>
+                    <div class="g-result" id="orc_result" style="font-size:12px;"></div>
+                </div>
+                <div id="orc_actions" style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="g-btn large" id="orc_start_btn" onclick="orcStart()" style="flex:1; background:linear-gradient(180deg,#003050,#001830); border:1px solid #006699; border-radius:8px; padding:12px; color:#66ddff; font-size:12px; letter-spacing:1px;">🔮 CONSULT THE ORACLE</button>
+                </div>
+            </div>
+            <!-- VIP DUELS -->
+            <div id="vip_tab_duels" style="display:none;">
+                <div style="text-align:center; margin-bottom:10px;">
+                    <div style="font-size:22px; color:#ff6600; text-shadow:0 0 20px rgba(255,102,0,0.4); font-weight:bold; letter-spacing:2px;">⚔️ VIP DUELS</div>
+                    <div style="color:#884400; font-size:9px; letter-spacing:3px; text-transform:uppercase;">Challenge. Fight. Conquer.</div>
+                </div>
+                <div style="background:linear-gradient(180deg, #120800, #080400); border:1px solid #443322; border-radius:10px; padding:15px; position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(ellipse at center, rgba(255,102,0,0.03), transparent 60%); pointer-events:none;"></div>
+                    <div style="display:flex; gap:8px; margin-bottom:8px; position:relative; z-index:1;">
+                        <input type="text" id="duel_opponent" class="ie-input" placeholder="⚔️ Opponent username..." style="flex:1; margin:0; border-color:#553300; border-radius:6px; background:#0a0500;">
+                        <input type="number" id="duel_amount" class="ie-input" placeholder="Bet" min="50" value="100" style="width:90px; margin:0; border-color:#553300; border-radius:6px; background:#0a0500;">
+                    </div>
+                    <select id="duel_type" class="ie-input" style="border-color:#553300; margin-bottom:8px; border-radius:6px; background:#0a0500;">
+                        <option value="coinflip">🪙 Coin Flip — Pure luck</option>
+                        <option value="dice">🎲 Dice Roll — Highest wins</option>
+                        <option value="cards">🃏 Card Draw — Highest wins</option>
+                    </select>
+                    <button onclick="duelChallenge()" style="width:100%; background:linear-gradient(180deg,#4a2200,#2a1200); border:1px solid #886633; border-radius:8px; padding:10px; color:#ff8833; font-size:12px; cursor:pointer; font-weight:bold; letter-spacing:1px; text-shadow:0 0 8px rgba(255,102,0,0.3); transition:all 0.2s;" onmouseenter="this.style.borderColor='#ff8833'" onmouseleave="this.style.borderColor='#886633'">⚔️ SEND CHALLENGE</button>
+                    <div id="duel_status" style="margin-top:8px; color:#888; font-size:10px; text-align:center;"></div>
+                </div>
+                <div style="margin-top:10px; background:linear-gradient(180deg, #0a0600, #050300); border:1px solid #332211; border-radius:8px; padding:10px;">
+                    <div style="color:#ff8833; font-size:10px; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #221100; padding-bottom:4px;">📨 INCOMING CHALLENGES</div>
+                    <div id="duel_incoming" style="max-height:100px; overflow-y:auto; font-size:10px; color:#888;">No pending challenges</div>
+                </div>
+                <div style="margin-top:8px; background:linear-gradient(180deg, #0a0600, #050300); border:1px solid #332211; border-radius:8px; padding:10px;">
+                    <div style="color:#886633; font-size:10px; font-weight:bold; margin-bottom:6px; border-bottom:1px solid #221100; padding-bottom:4px;">📜 BATTLE HISTORY</div>
+                    <div id="duel_history" style="max-height:80px; overflow-y:auto; font-size:10px; color:#666;">No duels yet</div>
+                </div>
+            </div>
+            <!-- VIP BOUNTIES -->
+            <div id="vip_tab_bounties" style="display:none;">
+                <div style="text-align:center; margin-bottom:10px;">
+                    <div style="font-size:22px; color:#ff4444; text-shadow:0 0 20px rgba(255,68,68,0.4); font-weight:bold; letter-spacing:2px;">🎯 BOUNTY BOARD</div>
+                    <div style="color:#883333; font-size:9px; letter-spacing:3px; text-transform:uppercase;">Complete challenges. Earn blood money.</div>
+                </div>
+                <div id="bounty_list" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;"></div>
+                <div id="bounty_admin" style="display:none; margin-top:12px; background:linear-gradient(180deg,#120000,#080000); border:1px solid #442222; border-radius:10px; padding:12px;">
+                    <div style="color:#ff4444; font-size:10px; font-weight:bold; margin-bottom:8px; text-align:center; letter-spacing:1px;">🔧 POST NEW BOUNTY</div>
+                    <input type="text" id="bounty_title" class="ie-input" placeholder="Bounty title..." style="margin-bottom:4px; border-color:#442222; border-radius:6px; background:#0a0000;">
+                    <input type="text" id="bounty_desc" class="ie-input" placeholder="How to claim..." style="margin-bottom:4px; border-color:#442222; border-radius:6px; background:#0a0000;">
+                    <div style="display:flex; gap:6px;">
+                        <input type="number" id="bounty_reward" class="ie-input" placeholder="Reward" min="100" value="500" style="flex:1; margin:0; border-color:#442222; border-radius:6px; background:#0a0000;">
+                        <button onclick="postBounty()" style="background:linear-gradient(180deg,#4a0000,#2a0000); border:1px solid #880000; border-radius:8px; padding:8px 16px; color:#ff4444; font-size:11px; cursor:pointer; font-weight:bold;">📌 POST</button>
+                    </div>
+                </div>
+            </div>
+            <!-- ACHIEVEMENT WALL -->
+            <div id="vip_tab_achieve" style="display:none;">
+                <div style="text-align:center; margin-bottom:10px;">
+                    <div style="font-size:22px; color:#ffd700; text-shadow:0 0 20px rgba(255,215,0,0.4); font-weight:bold; letter-spacing:2px;">🏆 ACHIEVEMENT WALL</div>
+                    <div style="color:#886600; font-size:9px; letter-spacing:3px; text-transform:uppercase;">Immortalize your legacy</div>
+                </div>
+                <div id="achieve_grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:6px; max-height:340px; overflow-y:auto;"></div>
+            </div>
             <!-- VIP CHAT -->
             <div id="vip_tab_vipchat" style="display:none;">
                 <h3 style="color:#ffd700; margin:0 0 10px 0;">💬 VIP Chat</h3>
@@ -1044,16 +1207,12 @@
                 <h3 style="color:#ffd700; margin:0 0 10px 0;">🎁 VIP Perks</h3>
                 <div style="display:grid; gap:8px; grid-template-columns:1fr 1fr;">
                     <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:20px;">🏷️</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Gold VIP Tag</div><div style="color:#888; font-size:8px;">Exclusive chat tag</div></div>
-                    </div>
-                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
                         <span style="font-size:20px;">🎰</span>
                         <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">High Rollers</div><div style="color:#888; font-size:8px;">Bet up to 10,000</div></div>
                     </div>
                     <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
                         <span style="font-size:20px;">🃏</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">VIP Baccarat</div><div style="color:#888; font-size:8px;">Classic card game</div></div>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Baccarat</div><div style="color:#888; font-size:8px;">Classic card game</div></div>
                     </div>
                     <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
                         <span style="font-size:20px;">🎟️</span>
@@ -1065,15 +1224,39 @@
                     </div>
                     <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
                         <span style="font-size:20px;">🏇</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Blood Derby</div><div style="color:#888; font-size:8px;">Horse racing</div></div>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Blood Derby</div><div style="color:#888; font-size:8px;">Canvas horse racing</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">⚰️</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Coffin Raider</div><div style="color:#888; font-size:8px;">Risk/reward coffin picks</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">⚔️</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">VIP Duels</div><div style="color:#888; font-size:8px;">PvP challenges</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🎯</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Bounty Board</div><div style="color:#888; font-size:8px;">Token challenges</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🏆</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Achievements</div><div style="color:#888; font-size:8px;">Unlock milestones</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🕯️</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Séance</div><div style="color:#888; font-size:8px;">Cryptic spirit clues</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">💉</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Blood Heist</div><div style="color:#888; font-size:8px;">Nerve-based timer</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🔮</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Oracle's Gambit</div><div style="color:#888; font-size:8px;">Higher/lower chain</div></div>
                     </div>
                     <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
                         <span style="font-size:20px;">📺</span>
                         <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Watch Party</div><div style="color:#888; font-size:8px;">Queue-based YouTube</div></div>
-                    </div>
-                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:20px;">💬</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Private Chat</div><div style="color:#888; font-size:8px;">VIP-only channel</div></div>
                     </div>
                 </div>
             </div>
@@ -1373,6 +1556,12 @@
 /* Win/loss flash */
 @keyframes winFlash { 0% { background: rgba(0,100,0,0.3); } 100% { background: transparent; } }
 @keyframes loseFlash { 0% { background: rgba(100,0,0,0.3); } 100% { background: transparent; } }
+@keyframes cofPulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.85; transform:scale(1.03); } }
+@keyframes seanceFlicker { 0%,100% { opacity:0.3; text-shadow:0 0 5px rgba(153,102,255,0.3); } 50% { opacity:1; text-shadow:0 0 20px rgba(153,102,255,0.8); } }
+@keyframes heistPulseRed { 0%,100% { box-shadow:0 0 5px rgba(255,0,0,0.2); } 50% { box-shadow:0 0 25px rgba(255,0,0,0.6); } }
+@keyframes oracleGlow { 0%,100% { box-shadow:0 0 8px rgba(0,200,255,0.2); } 50% { box-shadow:0 0 20px rgba(0,200,255,0.6); } }
+@keyframes cardReveal { from { transform:rotateY(180deg) scale(0.5); opacity:0; } to { transform:rotateY(0) scale(1); opacity:1; } }
+@keyframes skullShake { 0%,100% { transform:rotate(0deg); } 20% { transform:rotate(-15deg); } 40% { transform:rotate(15deg); } 60% { transform:rotate(-10deg); } 80% { transform:rotate(10deg); } }
 .g-arena.win-flash { animation: winFlash 0.8s ease; }
 .g-arena.lose-flash { animation: loseFlash 0.8s ease; }
 .shop-item {
@@ -2262,6 +2451,10 @@
                         <option value="mysterybox">Mystery Box</option>
                         <option value="nickname">Nickname Title</option>
                         <option value="streakshield">Streak Shield</option>
+                        <option value="betmultiplier">Bet Multiplier</option>
+                        <option value="goldendice">Golden Dice</option>
+                        <option value="jackpotinsurance">Jackpot Insurance</option>
+                        <option value="dailyboost">Daily Boost</option>
                     </select>
                     <div id="shop_add_effect_opts" style="display:none; margin-top:5px;">
                         <select id="shop_item_effectclass" class="ie-input">
@@ -2310,6 +2503,10 @@
                         <option value="mysterybox">Mystery Box</option>
                         <option value="nickname">Nickname Title</option>
                         <option value="streakshield">Streak Shield</option>
+                        <option value="betmultiplier">Bet Multiplier</option>
+                        <option value="goldendice">Golden Dice</option>
+                        <option value="jackpotinsurance">Jackpot Insurance</option>
+                        <option value="dailyboost">Daily Boost</option>
                     </select>
                     <input type="number" id="bulk_item_price" class="ie-input" placeholder="Default Price" value="500" min="1">
                     <div id="bulk_preview_grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px; max-height:200px; overflow-y:auto;"></div>
@@ -4380,13 +4577,20 @@ function openVIPLounge() {
 function switchVIPTab(tab, el) {
     document.querySelectorAll('#viplounge_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
-    ['lounge','watchplay','highrollers','baccarat','scratch','war','horses','vipchat','perks'].forEach(t => {
+    ['lounge','watchplay','highrollers','baccarat','scratch','war','horses','coffin','seance','heist','oracle','duels','bounties','achieve','vipchat','perks'].forEach(t => {
         const panel = document.getElementById('vip_tab_' + t);
         if (panel) panel.style.display = t === tab ? 'block' : 'none';
     });
     if (tab === 'horses') hrseInit();
     if (tab === 'watchplay') loadVIPQueue();
     if (tab === 'vipchat') loadVIPChat();
+    if (tab === 'coffin') cofReset();
+    if (tab === 'duels') loadDuels();
+    if (tab === 'bounties') loadBounties();
+    if (tab === 'achieve') loadAchievements();
+    if (tab === 'seance') seaReset();
+    if (tab === 'heist') hstReset();
+    if (tab === 'oracle') orcReset();
 }
 
 function loadVIPOnlineList() {
@@ -4999,6 +5203,823 @@ function hrseFinish() {
 
 setTimeout(hrseInit, 500);
 
+// ========== COFFIN RAIDER ==========
+let cofBet = 50, cofActive = false, cofPrizes = [], cofRevealed = 0, cofRunningTotal = 0;
+function cofChangeBet(amt) { if (amt === 'max') cofBet = Math.min(playerTokens, 5000); else cofBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), cofBet + amt)); document.getElementById('cof_bet_display').textContent = cofBet; }
+
+function cofReset() {
+    cofActive = false; cofRevealed = 0; cofRunningTotal = 0;
+    const grid = document.getElementById('cof_grid');
+    if (!grid) return;
+    const cofNames = ['CRIMSON', 'OBSIDIAN', 'ANCIENT', 'CURSED', 'ROYAL'];
+    grid.innerHTML = Array(5).fill(0).map((_, i) => 
+        `<div id="cof_${i}" onclick="cofOpen(${i})" style="width:85px; height:110px; background:linear-gradient(180deg,#1a1000 0%,#2a1800 40%,#1a0e00 100%); border:2px solid #443300; border-radius:8px 8px 4px 4px; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:all 0.3s; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.5);" onmouseenter="this.style.borderColor='#ffd700';this.style.transform='translateY(-5px)';this.style.boxShadow='0 8px 25px rgba(255,215,0,0.25)'" onmouseleave="this.style.borderColor='#443300';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)'">
+            <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,#ffd70033,transparent);"></div>
+            <div style="font-size:32px; filter:drop-shadow(0 0 6px rgba(255,215,0,0.2));">⚰️</div>
+            <div style="font-size:7px; color:#665500; margin-top:6px; letter-spacing:2px; font-weight:bold;">${cofNames[i]}</div>
+            <div style="position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#44330066,transparent);"></div>
+        </div>`
+    ).join('');
+    document.getElementById('cof_revealed').innerHTML = '';
+    document.getElementById('cof_result').innerHTML = '';
+    document.getElementById('cof_start_btn').style.display = '';
+    document.getElementById('cof_cashout_btn').style.display = 'none';
+}
+
+function cofStart() {
+    if (playerTokens < cofBet) { alert('Not enough tokens!'); return; }
+    playerTokens -= cofBet; updateTokenDisplays(); savePlayerTokens();
+    cofActive = true; cofRevealed = 0; cofRunningTotal = 0;
+    
+    // Generate prizes: 1 skull (0x), 1 small (0.5x), 1 medium (1.5x), 1 big (3x), 1 jackpot (8x)
+    // Shuffle positions
+    const mults = [0, 0.5, 1.5, 3, 8].sort(() => Math.random() - 0.5);
+    // House edge: adjust — 30% chance the jackpot becomes 0
+    if (Math.random() < 0.3) { const jackIdx = mults.indexOf(8); if (jackIdx >= 0) mults[jackIdx] = 0; }
+    cofPrizes = mults;
+    
+    cofReset();
+    cofActive = true;
+    document.getElementById('cof_start_btn').style.display = 'none';
+    document.getElementById('cof_result').innerHTML = '<span style="color:#ffd700;">Choose a coffin... or cash out after each reveal</span>';
+}
+
+function cofOpen(i) {
+    if (!cofActive) return;
+    const el = document.getElementById('cof_' + i);
+    if (!el || el.dataset.opened) return;
+    el.dataset.opened = '1';
+    
+    const mult = cofPrizes[i];
+    const prize = Math.floor(cofBet * mult);
+    cofRevealed++;
+    
+    // Skull = game over
+    if (mult === 0) {
+        el.style.background = 'linear-gradient(180deg,#3a0000,#1a0000)';
+        el.style.borderColor = '#ff0000';
+        el.style.boxShadow = '0 0 25px rgba(255,0,0,0.5), inset 0 0 20px rgba(255,0,0,0.1)';
+        el.innerHTML = '<div style="font-size:32px; animation:skullShake 0.5s;">💀</div><div style="font-size:9px; color:#ff3333; margin-top:4px; font-weight:bold; letter-spacing:2px;">CURSED</div>';
+        el.style.cursor = 'default';
+        el.style.transform = 'scale(1.1)';
+        cofActive = false;
+        cofRunningTotal = 0;
+        document.getElementById('cof_result').innerHTML = `<span style="color:#ff3333; text-shadow:0 0 10px rgba(255,0,0,0.4);">💀 THE CRYPT CLAIMS YOU! -${cofBet} tokens</span>`;
+        document.getElementById('cof_cashout_btn').style.display = 'none';
+        cofRevealAll();
+        checkAchievement('coffin_cursed');
+        setTimeout(cofReset, 3000);
+        return;
+    }
+    
+    // Prize found
+    cofRunningTotal += prize;
+    const icons = { 0.5: '🪙', 1.5: '💰', 3: '💎', 8: '👑' };
+    const colors = { 0.5: '#888888', 1.5: '#ffd700', 3: '#00ccff', 8: '#ff00ff' };
+    const labels = { 0.5: 'BRONZE', 1.5: 'GOLD', 3: 'DIAMOND', 8: 'JACKPOT' };
+    el.style.background = `linear-gradient(180deg,${colors[mult]}15,#0a0800)`;
+    el.style.borderColor = colors[mult];
+    el.style.boxShadow = `0 0 15px ${colors[mult]}44`;
+    el.style.animation = 'cardReveal 0.4s ease-out';
+    el.innerHTML = `<div style="font-size:26px; filter:drop-shadow(0 0 8px ${colors[mult]});">${icons[mult]}</div><div style="font-size:10px; color:${colors[mult]}; font-weight:bold; margin-top:3px; letter-spacing:1px;">${labels[mult]}</div><div style="font-size:10px; color:#ffd700; font-weight:bold;">+${prize}🩸</div>`;
+    el.style.cursor = 'default';
+    
+    // Update revealed tally
+    document.getElementById('cof_revealed').innerHTML = `<span style="color:#ffd700; font-size:12px;">Running total: <b>${cofRunningTotal}</b> tokens (${cofRevealed}/5 opened)</span>`;
+    
+    if (cofRevealed >= 4) {
+        // All safe coffins opened (1 skull left), auto cash out
+        cofCashout();
+        return;
+    }
+    
+    document.getElementById('cof_cashout_btn').style.display = '';
+    document.getElementById('cof_result').innerHTML = `<span style="color:#ffd700;">Cash out for ${cofRunningTotal} or keep going... ${4 - cofRevealed} safe coffins may remain</span>`;
+}
+
+function cofCashout() {
+    if (!cofActive || cofRunningTotal <= 0) return;
+    cofActive = false;
+    playerTokens += cofRunningTotal; updateTokenDisplays(); savePlayerTokens();
+    document.getElementById('cof_result').innerHTML = `<span style="color:#ffd700; font-size:14px;">💰 Cashed out! +${cofRunningTotal} tokens!</span>`;
+    document.getElementById('cof_cashout_btn').style.display = 'none';
+    if (cofRunningTotal >= cofBet * 5) checkAchievement('coffin_jackpot');
+    cofRevealAll();
+    setTimeout(cofReset, 2500);
+}
+
+function cofRevealAll() {
+    for (let i = 0; i < 5; i++) {
+        const el = document.getElementById('cof_' + i);
+        if (el && !el.dataset.opened) {
+            const m = cofPrizes[i];
+            const icons = { 0: '💀', 0.5: '🪙', 1.5: '💰', 3: '💎', 8: '👑' };
+            el.style.opacity = '0.5';
+            el.innerHTML = `<div style="font-size:24px;">${icons[m]}</div><div style="font-size:9px; color:#555;">${m}x</div>`;
+        }
+    }
+}
+
+// ========== VIP DUELS ==========
+function duelChallenge() {
+    const opponent = document.getElementById('duel_opponent').value.trim();
+    const amount = parseInt(document.getElementById('duel_amount').value);
+    const type = document.getElementById('duel_type').value;
+    const status = document.getElementById('duel_status');
+    
+    if (!opponent) { status.innerHTML = '<span style="color:#f00;">Enter opponent name</span>'; return; }
+    if (!userDatabase[opponent]) { status.innerHTML = '<span style="color:#f00;">User not found</span>'; return; }
+    if (opponent === CURRENT_USER) { status.innerHTML = '<span style="color:#f00;">Can\'t duel yourself!</span>'; return; }
+    if (!amount || amount < 50) { status.innerHTML = '<span style="color:#f00;">Min bet: 50</span>'; return; }
+    if (playerTokens < amount) { status.innerHTML = '<span style="color:#f00;">Not enough tokens!</span>'; return; }
+    
+    playerTokens -= amount; updateTokenDisplays(); savePlayerTokens();
+    
+    db.ref('vip_duels').push({
+        challenger: CURRENT_USER,
+        opponent: opponent,
+        amount: amount,
+        type: type,
+        status: 'pending',
+        createdAt: Date.now()
+    }).then(() => {
+        status.innerHTML = '<span style="color:#0f0;">⚔️ Challenge sent to ' + opponent + '!</span>';
+        document.getElementById('duel_opponent').value = '';
+    });
+}
+
+function loadDuels() {
+    // Incoming challenges
+    db.ref('vip_duels').orderByChild('status').equalTo('pending').once('value', snap => {
+        const data = snap.val() || {};
+        const incoming = Object.entries(data).filter(([k, v]) => v.opponent === CURRENT_USER);
+        const el = document.getElementById('duel_incoming');
+        if (incoming.length === 0) { el.innerHTML = '<span style="color:#555;">No pending challenges</span>'; return; }
+        el.innerHTML = incoming.map(([k, v]) => {
+            const typeNames = { coinflip: '🪙 Coin Flip', dice: '🎲 Dice', cards: '🃏 Cards' };
+            return `<div style="padding:6px; background:#0a0800; border:1px solid #332200; border-radius:6px; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                <div><span style="color:#ffd700;">${escapeHtml(v.challenger)}</span> challenges you — ${typeNames[v.type]} for <b style="color:#ffd700;">${v.amount}</b> tokens</div>
+                <div style="display:flex; gap:4px;">
+                    <button class="g-btn small warning" onclick="duelAccept('${k}')">Accept</button>
+                    <button class="g-btn small" onclick="duelDecline('${k}')">Decline</button>
+                </div>
+            </div>`;
+        }).join('');
+    });
+    
+    // Recent history
+    db.ref('vip_duels').orderByChild('status').equalTo('resolved').limitToLast(10).once('value', snap => {
+        const data = snap.val() || {};
+        const el = document.getElementById('duel_history');
+        const entries = Object.values(data).sort((a, b) => (b.resolvedAt || 0) - (a.resolvedAt || 0));
+        if (entries.length === 0) { el.innerHTML = '<span style="color:#555;">No duels yet</span>'; return; }
+        el.innerHTML = entries.map(v => 
+            `<div style="padding:3px 0; border-bottom:1px solid #1a1100;"><span style="color:${v.winner === CURRENT_USER ? '#0f0' : '#f00'};">${v.winner === CURRENT_USER ? '🏆' : '💀'}</span> ${escapeHtml(v.challenger)} vs ${escapeHtml(v.opponent)} — <span style="color:#ffd700;">${v.amount}🩸</span> (${v.type}) → <b style="color:#ffd700;">${escapeHtml(v.winner)}</b> wins</div>`
+        ).join('');
+    });
+}
+
+function duelAccept(duelId) {
+    db.ref('vip_duels/' + duelId).once('value', snap => {
+        const d = snap.val();
+        if (!d || d.status !== 'pending') return;
+        if (playerTokens < d.amount) { alert('Not enough tokens! Need ' + d.amount); return; }
+        
+        playerTokens -= d.amount; updateTokenDisplays(); savePlayerTokens();
+        
+        let winner, detail;
+        if (d.type === 'coinflip') {
+            winner = Math.random() < 0.5 ? d.challenger : d.opponent;
+            detail = winner === d.challenger ? 'Heads' : 'Tails';
+        } else if (d.type === 'dice') {
+            const r1 = Math.floor(Math.random() * 6) + 1;
+            const r2 = Math.floor(Math.random() * 6) + 1;
+            winner = r1 >= r2 ? d.challenger : d.opponent;
+            detail = `${d.challenger}: ${r1} vs ${d.opponent}: ${r2}`;
+        } else {
+            const c1 = Math.floor(Math.random() * 13) + 2;
+            const c2 = Math.floor(Math.random() * 13) + 2;
+            winner = c1 >= c2 ? d.challenger : d.opponent;
+            const cardName = (v) => v <= 10 ? v : ['J','Q','K','A'][v-11];
+            detail = `${d.challenger}: ${cardName(c1)} vs ${d.opponent}: ${cardName(c2)}`;
+        }
+        
+        const totalPot = d.amount * 2;
+        const payout = Math.floor(totalPot * 0.95); // 5% house cut
+        
+        db.ref('vip_duels/' + duelId).update({
+            status: 'resolved', winner, detail, payout,
+            resolvedAt: Date.now()
+        });
+        
+        // Pay winner
+        if (winner === CURRENT_USER) {
+            playerTokens += payout; updateTokenDisplays(); savePlayerTokens();
+            alert(`⚔️ YOU WIN! ${detail}\n+${payout} tokens (5% house cut)`);
+            checkAchievement('duel_winner');
+        } else {
+            // Refund winner via Firebase
+            db.ref('profiles/' + winner + '/tokens').once('value', s => {
+                db.ref('profiles/' + winner + '/tokens').set((s.val() || 0) + payout);
+            });
+            alert(`⚔️ You lost! ${detail}\n${winner} wins ${payout} tokens`);
+        }
+        loadDuels();
+    });
+}
+
+function duelDecline(duelId) {
+    db.ref('vip_duels/' + duelId).once('value', snap => {
+        const d = snap.val();
+        if (!d) return;
+        // Refund challenger
+        db.ref('profiles/' + d.challenger + '/tokens').once('value', s => {
+            db.ref('profiles/' + d.challenger + '/tokens').set((s.val() || 0) + d.amount);
+        });
+        db.ref('vip_duels/' + duelId).remove();
+        loadDuels();
+    });
+}
+
+// ========== BOUNTY BOARD ==========
+function loadBounties() {
+    const el = document.getElementById('bounty_list');
+    if (!el) return;
+    
+    // Show admin panel if ST/admin
+    const _u = userDatabase[CURRENT_USER];
+    const adminPanel = document.getElementById('bounty_admin');
+    if (adminPanel) adminPanel.style.display = (_u?.isST || _u?.isAdmin) ? 'block' : 'none';
+    
+    db.ref('vip_bounties').orderByChild('active').equalTo(true).once('value', snap => {
+        const data = snap.val() || {};
+        const entries = Object.entries(data).sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+        
+        if (entries.length === 0) {
+            el.innerHTML = '<div style="color:#555; text-align:center; padding:20px;">No active bounties. Check back later!</div>';
+            return;
+        }
+        
+        el.innerHTML = entries.map(([id, b]) => {
+            const claimed = b.claimedBy && b.claimedBy[CURRENT_USER];
+            const claimCount = b.claimedBy ? Object.keys(b.claimedBy).length : 0;
+            const maxClaims = b.maxClaims || 1;
+            const full = claimCount >= maxClaims;
+            return `<div style="background:linear-gradient(135deg,#0a0800,#050300); border:1px solid ${claimed ? '#333' : '#553300'}; border-radius:8px; padding:12px; ${claimed ? 'opacity:0.5;' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div>
+                        <div style="color:#ffd700; font-weight:bold; font-size:12px;">🎯 ${escapeHtml(b.title)}</div>
+                        <div style="color:#888; font-size:10px; margin-top:4px;">${escapeHtml(b.description)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="color:#ffd700; font-size:14px; font-weight:bold;">${b.reward}🩸</div>
+                        <div style="color:#555; font-size:8px;">${claimCount}/${maxClaims} claimed</div>
+                    </div>
+                </div>
+                <div style="margin-top:8px; display:flex; gap:6px;">
+                    ${claimed ? '<span style="color:#0f0; font-size:10px;">✓ Claimed</span>' : 
+                      full ? '<span style="color:#f00; font-size:10px;">✗ Fully claimed</span>' :
+                      `<button class="g-btn warning small" onclick="claimBounty('${id}')">Claim Reward</button>`}
+                    ${(_u?.isST || _u?.isAdmin) ? `<button class="g-btn small" style="margin-left:auto;" onclick="removeBounty('${id}')">🗑️</button>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+    });
+}
+
+function postBounty() {
+    const title = document.getElementById('bounty_title').value.trim();
+    const desc = document.getElementById('bounty_desc').value.trim();
+    const reward = parseInt(document.getElementById('bounty_reward').value);
+    if (!title || !desc || !reward) { alert('Fill in all fields'); return; }
+    
+    db.ref('vip_bounties').push({
+        title, description: desc, reward, active: true,
+        maxClaims: 1, postedBy: CURRENT_USER, createdAt: Date.now()
+    }).then(() => {
+        document.getElementById('bounty_title').value = '';
+        document.getElementById('bounty_desc').value = '';
+        loadBounties();
+    });
+}
+
+function claimBounty(bountyId) {
+    db.ref('vip_bounties/' + bountyId).once('value', snap => {
+        const b = snap.val();
+        if (!b || !b.active) return;
+        const claimCount = b.claimedBy ? Object.keys(b.claimedBy).length : 0;
+        if (claimCount >= (b.maxClaims || 1)) { alert('Bounty fully claimed!'); return; }
+        if (b.claimedBy && b.claimedBy[CURRENT_USER]) { alert('Already claimed!'); return; }
+        
+        db.ref('vip_bounties/' + bountyId + '/claimedBy/' + CURRENT_USER).set(Date.now());
+        playerTokens += b.reward; updateTokenDisplays(); savePlayerTokens();
+        checkAchievement('bounty_claimed');
+        alert(`🎯 Bounty claimed! +${b.reward} tokens`);
+        loadBounties();
+    });
+}
+
+function removeBounty(id) {
+    if (confirm('Remove this bounty?')) {
+        db.ref('vip_bounties/' + id).update({ active: false });
+        loadBounties();
+    }
+}
+
+// ========== ACHIEVEMENT WALL ==========
+const ACHIEVEMENTS = [
+    { id: 'first_win', name: 'First Blood', desc: 'Win your first game', icon: '🩸', check: s => s.totalWins >= 1 },
+    { id: 'win_10', name: 'Serial Killer', desc: 'Win 10 games', icon: '🔪', check: s => s.totalWins >= 10 },
+    { id: 'win_50', name: 'Apex Predator', desc: 'Win 50 games', icon: '🦇', check: s => s.totalWins >= 50 },
+    { id: 'earn_1k', name: 'Blood Banker', desc: 'Earn 1,000 total tokens', icon: '🏦', check: s => s.totalEarned >= 1000 },
+    { id: 'earn_10k', name: 'Token Tycoon', desc: 'Earn 10,000 total tokens', icon: '💰', check: s => s.totalEarned >= 10000 },
+    { id: 'earn_100k', name: 'Blood Emperor', desc: 'Earn 100,000 total tokens', icon: '👑', check: s => s.totalEarned >= 100000 },
+    { id: 'streak_7', name: 'Undying Loyalty', desc: '7-day login streak', icon: '🔥', check: s => s.loginStreak >= 7 },
+    { id: 'streak_30', name: 'Eternal Devotion', desc: '30-day login streak', icon: '💎', check: s => s.loginStreak >= 30 },
+    { id: 'big_win', name: 'Jackpot Hunter', desc: 'Win 5,000+ in one game', icon: '🎰', check: s => s.biggestWin >= 5000 },
+    { id: 'duel_winner', name: 'Gladiator', desc: 'Win a VIP duel', icon: '⚔️', check: s => s.duelsWon >= 1 },
+    { id: 'duel_5', name: 'Champion', desc: 'Win 5 VIP duels', icon: '🏆', check: s => s.duelsWon >= 5 },
+    { id: 'coffin_jackpot', name: 'Tomb Raider', desc: 'Cash out 5x+ in Coffin Raider', icon: '⚰️', check: s => s.coffinJackpots >= 1 },
+    { id: 'coffin_cursed', name: 'Cursed', desc: 'Hit the skull in Coffin Raider', icon: '💀', check: s => s.coffinCurses >= 1 },
+    { id: 'bounty_claimed', name: 'Bounty Hunter', desc: 'Claim a bounty', icon: '🎯', check: s => s.bountiesClaimed >= 1 },
+    { id: 'all_games', name: 'Renaissance Vampire', desc: 'Play all 10+ game types', icon: '🧛', check: s => s.gamesPlayed >= 10 },
+    { id: 'high_roller', name: 'High Roller', desc: 'Bet 5,000 in a single game', icon: '🌟', check: s => s.biggestBet >= 5000 },
+    { id: 'seance_exact', name: 'Medium', desc: 'Guess exact number in Séance', icon: '🕯️', check: s => s.seanceExact >= 1 },
+    { id: 'heist_15s', name: 'Master Thief', desc: 'Survive 15+ seconds in Blood Heist', icon: '💉', check: s => s.heistLongest >= 15 },
+    { id: 'oracle_5chain', name: 'Fortune Teller', desc: 'Chain 5+ in Oracle\'s Gambit', icon: '🔮', check: s => s.oracleBestChain >= 5 },
+    { id: 'heist_close', name: 'Nerve of Steel', desc: 'Cash out within 1s of alarm', icon: '🚨', check: s => s.heistCloseCall >= 1 },
+];
+
+function loadAchievements() {
+    const el = document.getElementById('achieve_grid');
+    if (!el) return;
+    
+    db.ref('profiles/' + CURRENT_USER + '/achievements').once('value', snap => {
+        const unlocked = snap.val() || {};
+        
+        db.ref('profiles/' + CURRENT_USER + '/gameStats').once('value', statSnap => {
+            const stats = statSnap.val() || {};
+            
+            el.innerHTML = ACHIEVEMENTS.map(a => {
+                const isUnlocked = unlocked[a.id];
+                return `<div style="background:${isUnlocked ? 'linear-gradient(135deg,#1a1200,#0a0800)' : 'linear-gradient(135deg,#0a0a0a,#050505)'}; border:1px solid ${isUnlocked ? '#ffd700' : '#222'}; border-radius:8px; padding:10px; display:flex; align-items:center; gap:10px; transition:all 0.3s; ${isUnlocked ? 'box-shadow:0 0 8px rgba(255,215,0,0.15);' : 'opacity:0.5;'}">
+                    <div style="font-size:24px; ${isUnlocked ? '' : 'filter:grayscale(1);'}">${a.icon}</div>
+                    <div style="flex:1;">
+                        <div style="color:${isUnlocked ? '#ffd700' : '#555'}; font-weight:bold; font-size:11px;">${a.name}</div>
+                        <div style="color:${isUnlocked ? '#888' : '#333'}; font-size:9px;">${a.desc}</div>
+                    </div>
+                    ${isUnlocked ? '<span style="color:#ffd700; font-size:10px;">✓</span>' : '<span style="color:#333; font-size:10px;">🔒</span>'}
+                </div>`;
+            }).join('');
+        });
+    });
+}
+
+function checkAchievement(id) {
+    if (!CURRENT_USER || !db) return;
+    db.ref('profiles/' + CURRENT_USER + '/achievements/' + id).once('value', snap => {
+        if (snap.exists()) return; // Already unlocked
+        db.ref('profiles/' + CURRENT_USER + '/achievements/' + id).set({ unlockedAt: Date.now() });
+        // Increment stat
+        const statMap = {
+            duel_winner: 'duelsWon', duel_5: 'duelsWon',
+            coffin_jackpot: 'coffinJackpots', coffin_cursed: 'coffinCurses',
+            bounty_claimed: 'bountiesClaimed'
+        };
+        if (statMap[id]) {
+            db.ref('profiles/' + CURRENT_USER + '/gameStats/' + statMap[id]).once('value', s => {
+                db.ref('profiles/' + CURRENT_USER + '/gameStats/' + statMap[id]).set((s.val() || 0) + 1);
+            });
+        }
+    });
+}
+
+// Track game wins/earnings for achievements
+function trackGameStat(type, amount) {
+    if (!CURRENT_USER || !db) return;
+    const ref = db.ref('profiles/' + CURRENT_USER + '/gameStats');
+    ref.once('value', snap => {
+        const s = snap.val() || {};
+        const updates = {};
+        if (type === 'win') {
+            updates.totalWins = (s.totalWins || 0) + 1;
+            if (amount > (s.biggestWin || 0)) updates.biggestWin = amount;
+        }
+        if (type === 'earn') updates.totalEarned = (s.totalEarned || 0) + amount;
+        if (type === 'bet' && amount > (s.biggestBet || 0)) updates.biggestBet = amount;
+        if (type === 'game') updates.gamesPlayed = (s.gamesPlayed || 0) + 1;
+        ref.update(updates);
+        
+        // Check unlock thresholds
+        const merged = { ...s, ...updates };
+        if (merged.totalWins >= 1) checkAchievement('first_win');
+        if (merged.totalWins >= 10) checkAchievement('win_10');
+        if (merged.totalWins >= 50) checkAchievement('win_50');
+        if (merged.totalEarned >= 1000) checkAchievement('earn_1k');
+        if (merged.totalEarned >= 10000) checkAchievement('earn_10k');
+        if (merged.totalEarned >= 100000) checkAchievement('earn_100k');
+        if (merged.biggestWin >= 5000) checkAchievement('big_win');
+        if (merged.biggestBet >= 5000) checkAchievement('high_roller');
+        if (merged.gamesPlayed >= 10) checkAchievement('all_games');
+    });
+}
+
+// ========== NEW SHOP ITEM ACTIVATIONS ==========
+function activateBetMultiplier(itemId) {
+    if (!CURRENT_USER) return;
+    db.ref('profiles/' + CURRENT_USER + '/betMultiplier').set({ activatedAt: Date.now(), usesLeft: 10, multiplier: 1.5 });
+    db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId).remove();
+    window._betMultActive = { usesLeft: 10, multiplier: 1.5 };
+    alert('🔥 Bet Multiplier activated! Your next 10 winning bets pay 1.5x. Go get \'em!');
+}
+
+function activateGoldenDice(itemId) {
+    if (!CURRENT_USER) return;
+    db.ref('profiles/' + CURRENT_USER + '/goldenDice').set(true);
+    alert('🎲 Golden Dice equipped! Your dice now shine gold in the dice game.');
+}
+
+function activateJackpotInsurance(itemId) {
+    if (!CURRENT_USER) return;
+    db.ref('profiles/' + CURRENT_USER + '/jackpotInsurance').set({ activatedAt: Date.now(), lossStreak: 0, totalLost: 0, active: true });
+    db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId).remove();
+    window._insuranceActive = true;
+    alert('🛟 Jackpot Insurance activated! If you lose 3 games in a row, you\'ll get 25% of your losses back.');
+}
+
+function activateDailyBoost(itemId) {
+    if (!CURRENT_USER) return;
+    db.ref('profiles/' + CURRENT_USER + '/dailyBoost').set({ activatedAt: Date.now(), expiresAt: Date.now() + 604800000, multiplier: 3 });
+    db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId).remove();
+    window._dailyBoostActive = true;
+    alert('⚡ Daily Boost activated! Your daily spin gives 3x rewards for 7 days!');
+}
+
+// Load active power-ups on tab switch
+function loadActivePowerups() {
+    if (!CURRENT_USER || !db) return;
+    db.ref('profiles/' + CURRENT_USER + '/betMultiplier').once('value', s => {
+        const d = s.val();
+        window._betMultActive = d && d.usesLeft > 0 ? d : null;
+    });
+    db.ref('profiles/' + CURRENT_USER + '/jackpotInsurance').once('value', s => {
+        const d = s.val();
+        window._insuranceActive = d && d.active;
+    });
+    db.ref('profiles/' + CURRENT_USER + '/dailyBoost').once('value', s => {
+        const d = s.val();
+        window._dailyBoostActive = d && d.expiresAt > Date.now();
+    });
+    db.ref('profiles/' + CURRENT_USER + '/goldenDice').once('value', s => {
+        window._goldenDiceActive = s.val() || false;
+    });
+}
+
+// ========== SÉANCE ==========
+let seaBet = 50, seaActive = false, seaTarget = 0;
+function seaChangeBet(amt) { if (amt === 'max') seaBet = Math.min(playerTokens, 5000); else seaBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), seaBet + amt)); document.getElementById('sea_bet_display').textContent = seaBet; }
+
+function seaReset() {
+    seaActive = false;
+    const candles = document.getElementById('sea_candles');
+    if (candles) candles.style.opacity = '0.3';
+    const clues = document.getElementById('sea_clues');
+    if (clues) clues.innerHTML = '<div style="color:#553399; font-size:10px; font-style:italic;">Summon the spirits to receive your clues...</div>';
+    const nums = document.getElementById('sea_numbers');
+    if (nums) nums.innerHTML = '';
+    const result = document.getElementById('sea_result');
+    if (result) result.innerHTML = '';
+    const btn = document.getElementById('sea_start_btn');
+    if (btn) { btn.style.display = ''; btn.textContent = '🕯️ SUMMON THE SPIRITS'; btn.onclick = seaStart; }
+}
+
+function seaStart() {
+    if (playerTokens < seaBet) { alert('Not enough tokens!'); return; }
+    playerTokens -= seaBet; updateTokenDisplays(); savePlayerTokens();
+    seaActive = true;
+    
+    // Pick target number 1-10
+    seaTarget = Math.floor(Math.random() * 10) + 1;
+    
+    // Generate 3 cryptic clues
+    const cluePool = [];
+    if (seaTarget <= 5) cluePool.push('The spirits murmur of small things...', 'A whisper: "Look to the lesser half..."', 'The darkness gathers in lower places...');
+    else cluePool.push('The spirits scream of great power...', 'A roar echoes: "Seek the heights..."', 'Lightning crackles above...');
+    if (seaTarget % 2 === 0) cluePool.push('Balance... symmetry... even the dead know pairs...', 'Two by two they march into the void...', 'The mirror reflects an equal soul...');
+    else cluePool.push('Alone it stands, indivisible...', 'The odd ones are chosen by fate...', 'No twin exists for this spirit...');
+    if (seaTarget <= 3) cluePool.push('Almost nothing... the void is near...', 'The youngest spirits whisper first...');
+    else if (seaTarget >= 8) cluePool.push('Ancient power... nearly complete...', 'The oldest spirits hold this secret...');
+    else cluePool.push('Neither beginning nor end...', 'The middle ground trembles...');
+    
+    // Pick 3 clues
+    const shuffled = cluePool.sort(() => Math.random() - 0.5);
+    const chosen = shuffled.slice(0, 3);
+    
+    // Animate candles
+    const candles = document.getElementById('sea_candles');
+    candles.style.opacity = '1';
+    candles.style.animation = 'seanceFlicker 2s infinite';
+    
+    // Reveal clues one by one
+    const clueEl = document.getElementById('sea_clues');
+    clueEl.innerHTML = '';
+    
+    chosen.forEach((clue, idx) => {
+        setTimeout(() => {
+            clueEl.innerHTML += `<div style="color:#cc99ff; font-size:11px; font-style:italic; margin:4px 0; opacity:0; animation:cardReveal 0.6s forwards; text-shadow:0 0 8px rgba(153,102,255,0.3);">🕯️ "${clue}"</div>`;
+        }, (idx + 1) * 800);
+    });
+    
+    // Show number buttons after clues
+    setTimeout(() => {
+        const nums = document.getElementById('sea_numbers');
+        nums.innerHTML = Array.from({length:10}, (_, i) => i + 1).map(n => 
+            `<button onclick="seaGuess(${n})" style="width:38px; height:38px; background:linear-gradient(180deg,#2a1550,#150a30); border:1px solid #553399; border-radius:50%; color:#cc99ff; font-size:14px; font-weight:bold; cursor:pointer; transition:all 0.2s; margin:2px;" onmouseenter="this.style.borderColor='#cc99ff';this.style.boxShadow='0 0 12px rgba(153,102,255,0.4)';this.style.transform='scale(1.15)'" onmouseleave="this.style.borderColor='#553399';this.style.boxShadow='none';this.style.transform='scale(1)'">${n}</button>`
+        ).join('');
+        document.getElementById('sea_result').innerHTML = '<span style="color:#9966ff;">Choose the spirit\'s number...</span>';
+        document.getElementById('sea_start_btn').style.display = 'none';
+    }, 3200);
+}
+
+function seaGuess(num) {
+    if (!seaActive) return;
+    seaActive = false;
+    const result = document.getElementById('sea_result');
+    const nums = document.getElementById('sea_numbers');
+    
+    // Disable all buttons
+    nums.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '0.3'; });
+    // Highlight correct
+    nums.querySelectorAll('button').forEach((b, i) => {
+        if (i + 1 === seaTarget) { b.style.borderColor = '#ffd700'; b.style.boxShadow = '0 0 20px rgba(255,215,0,0.6)'; b.style.opacity = '1'; b.style.background = 'linear-gradient(180deg,#4a3000,#2a1a00)'; b.style.color = '#ffd700'; }
+        if (i + 1 === num && num !== seaTarget) { b.style.borderColor = '#ff0000'; b.style.boxShadow = '0 0 15px rgba(255,0,0,0.4)'; b.style.opacity = '1'; b.style.background = 'linear-gradient(180deg,#3a0000,#1a0000)'; b.style.color = '#ff3333'; }
+    });
+    
+    if (num === seaTarget) {
+        const payout = Math.floor(seaBet * 8);
+        playerTokens += payout; updateTokenDisplays(); savePlayerTokens();
+        result.innerHTML = `<span style="color:#ffd700; font-size:14px; text-shadow:0 0 15px rgba(255,215,0,0.5);">🕯️ THE SPIRITS SPOKE TRUE! +${payout} tokens (8x)!</span>`;
+        trackGameStat('win', payout); trackGameStat('earn', payout);
+        checkAchievement('seance_exact');
+        db.ref('profiles/' + CURRENT_USER + '/gameStats/seanceExact').once('value', s => {
+            db.ref('profiles/' + CURRENT_USER + '/gameStats/seanceExact').set((s.val() || 0) + 1);
+        });
+    } else if (Math.abs(num - seaTarget) === 1) {
+        const payout = Math.floor(seaBet * 3);
+        playerTokens += payout; updateTokenDisplays(); savePlayerTokens();
+        result.innerHTML = `<span style="color:#cc99ff; font-size:13px;">🕯️ So close... the answer was <b>${seaTarget}</b>. +${payout} tokens (3x)</span>`;
+        trackGameStat('win', payout); trackGameStat('earn', payout);
+    } else {
+        result.innerHTML = `<span style="color:#553399;">🕯️ The spirits deceived you. The answer was <b style="color:#ffd700;">${seaTarget}</b>. -${seaBet} tokens</span>`;
+    }
+    trackGameStat('game', 0);
+    setTimeout(seaReset, 3000);
+}
+
+// ========== BLOOD BANK HEIST ==========
+let hstBet = 50, hstActive = false, hstTimer = null, hstTime = 0, hstAlarmTime = 0, hstLoot = 0;
+function hstChangeBet(amt) { if (amt === 'max') hstBet = Math.min(playerTokens, 5000); else hstBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), hstBet + amt)); document.getElementById('hst_bet_display').textContent = hstBet; }
+
+function hstReset() {
+    hstActive = false; hstLoot = 0; hstTime = 0;
+    if (hstTimer) { clearInterval(hstTimer); hstTimer = null; }
+    const fill = document.getElementById('hst_fill');
+    if (fill) { fill.style.width = '0%'; fill.style.background = 'linear-gradient(90deg,#500,#f00,#ff3333)'; }
+    const fillText = document.getElementById('hst_fill_text');
+    if (fillText) fillText.textContent = '0 🩸';
+    const timer = document.getElementById('hst_timer');
+    if (timer) { timer.textContent = '0.0s'; timer.style.color = '#ff4444'; }
+    const status = document.getElementById('hst_status');
+    if (status) status.textContent = 'Place your bet and rob the blood bank...';
+    const result = document.getElementById('hst_result');
+    if (result) result.innerHTML = '';
+    document.getElementById('hst_start_btn').style.display = '';
+    document.getElementById('hst_grab_btn').style.display = 'none';
+}
+
+function hstStart() {
+    if (playerTokens < hstBet) { alert('Not enough tokens!'); return; }
+    playerTokens -= hstBet; updateTokenDisplays(); savePlayerTokens();
+    hstActive = true; hstLoot = 0; hstTime = 0;
+    
+    // Alarm triggers between 3-25 seconds (randomized)
+    hstAlarmTime = 3 + Math.random() * 22;
+    
+    document.getElementById('hst_start_btn').style.display = 'none';
+    document.getElementById('hst_grab_btn').style.display = '';
+    document.getElementById('hst_status').innerHTML = '<span style="color:#ff6666; animation:cofPulse 1s infinite;">💉 HEIST IN PROGRESS... Grab & run before the alarm!</span>';
+    
+    const fillBar = document.getElementById('hst_fill_bar');
+    if (fillBar) fillBar.style.animation = 'heistPulseRed 2s infinite';
+    
+    hstTimer = setInterval(() => {
+        if (!hstActive) return;
+        hstTime += 0.1;
+        
+        // Loot increases over time (exponential curve)
+        const baseLoot = hstBet * 0.15; // 15% of bet per second
+        const timeBonus = Math.pow(hstTime / 10, 1.5); // Exponential scaling
+        hstLoot = Math.floor(baseLoot * hstTime * (1 + timeBonus));
+        
+        // Update UI
+        const fill = document.getElementById('hst_fill');
+        const pct = Math.min(100, (hstTime / hstAlarmTime) * 100);
+        fill.style.width = pct + '%';
+        
+        // Color shifts as danger increases
+        if (pct > 80) fill.style.background = 'linear-gradient(90deg,#800,#ff0000,#ff3333,#ff0000)';
+        else if (pct > 60) fill.style.background = 'linear-gradient(90deg,#600,#cc0000,#ff4444)';
+        
+        document.getElementById('hst_fill_text').textContent = hstLoot + ' 🩸';
+        
+        const timerEl = document.getElementById('hst_timer');
+        timerEl.textContent = hstTime.toFixed(1) + 's';
+        if (pct > 70) timerEl.style.color = '#ff0000';
+        if (pct > 85) timerEl.style.textShadow = '0 0 20px rgba(255,0,0,0.8)';
+        
+        // Alarm triggers
+        if (hstTime >= hstAlarmTime) {
+            hstActive = false;
+            clearInterval(hstTimer);
+            hstTimer = null;
+            fill.style.width = '100%';
+            fill.style.background = '#ff0000';
+            timerEl.textContent = '🚨 ALARM!';
+            timerEl.style.color = '#ff0000';
+            timerEl.style.animation = 'skullShake 0.3s infinite';
+            document.getElementById('hst_status').innerHTML = '<span style="color:#ff0000; font-weight:bold;">🚨 CAUGHT! The blood bank security got you!</span>';
+            document.getElementById('hst_result').innerHTML = `<span style="color:#ff3333; text-shadow:0 0 10px rgba(255,0,0,0.4);">💀 BUSTED! Lost ${hstBet} tokens. Loot was at ${hstLoot}...</span>`;
+            document.getElementById('hst_grab_btn').style.display = 'none';
+            if (fillBar) fillBar.style.animation = '';
+            trackGameStat('game', 0);
+            setTimeout(hstReset, 3000);
+        }
+    }, 100);
+}
+
+function hstGrab() {
+    if (!hstActive) return;
+    hstActive = false;
+    clearInterval(hstTimer); hstTimer = null;
+    
+    playerTokens += hstLoot; updateTokenDisplays(); savePlayerTokens();
+    
+    document.getElementById('hst_timer').textContent = '✓ ESCAPED';
+    document.getElementById('hst_timer').style.color = '#00ff00';
+    document.getElementById('hst_timer').style.animation = '';
+    document.getElementById('hst_timer').style.textShadow = '0 0 15px rgba(0,255,0,0.5)';
+    document.getElementById('hst_status').innerHTML = `<span style="color:#00ff00;">💰 You escaped with the blood!</span>`;
+    document.getElementById('hst_result').innerHTML = `<span style="color:#ffd700; font-size:14px; text-shadow:0 0 10px rgba(255,215,0,0.4);">💉 HEIST COMPLETE! +${hstLoot} tokens! (${hstTime.toFixed(1)}s)</span>`;
+    document.getElementById('hst_grab_btn').style.display = 'none';
+    const fillBar = document.getElementById('hst_fill_bar');
+    if (fillBar) fillBar.style.animation = '';
+    
+    if (hstLoot > 0) { trackGameStat('win', hstLoot); trackGameStat('earn', hstLoot); }
+    trackGameStat('game', 0);
+    // Achievement: survived 15s+
+    if (hstTime >= 15) {
+        checkAchievement('heist_15s');
+        db.ref('profiles/' + CURRENT_USER + '/gameStats/heistLongest').once('value', s => {
+            if (hstTime > (s.val() || 0)) db.ref('profiles/' + CURRENT_USER + '/gameStats/heistLongest').set(Math.floor(hstTime));
+        });
+    }
+    // Achievement: close call (within 1s of alarm)
+    if (hstAlarmTime - hstTime < 1) {
+        checkAchievement('heist_close');
+        db.ref('profiles/' + CURRENT_USER + '/gameStats/heistCloseCall').once('value', s => {
+            db.ref('profiles/' + CURRENT_USER + '/gameStats/heistCloseCall').set((s.val() || 0) + 1);
+        });
+    }
+    setTimeout(hstReset, 3000);
+}
+
+// ========== ORACLE'S GAMBIT ==========
+let orcBet = 50, orcActive = false, orcDeck = [], orcRevealed = [], orcChain = 0, orcMult = 1;
+function orcChangeBet(amt) { if (amt === 'max') orcBet = Math.min(playerTokens, 5000); else orcBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), orcBet + amt)); document.getElementById('orc_bet_display').textContent = orcBet; }
+
+function orcReset() {
+    orcActive = false; orcChain = 0; orcMult = 1; orcRevealed = [];
+    const cards = document.getElementById('orc_cards');
+    if (cards) cards.innerHTML = '<div style="color:#226688; font-size:40px; opacity:0.3;">🔮</div>';
+    document.getElementById('orc_chain_count').textContent = '0';
+    document.getElementById('orc_chain_mult').textContent = '1x';
+    document.getElementById('orc_result').innerHTML = '';
+    const actions = document.getElementById('orc_actions');
+    if (actions) actions.innerHTML = `<button class="g-btn large" id="orc_start_btn" onclick="orcStart()" style="flex:1; background:linear-gradient(180deg,#003050,#001830); border:1px solid #006699; border-radius:8px; padding:12px; color:#66ddff; font-size:12px; letter-spacing:1px; text-shadow:0 0 8px rgba(0,200,255,0.3);">🔮 CONSULT THE ORACLE</button>`;
+}
+
+function orcMakeCard(value) {
+    const suits = ['♠','♥','♦','♣'];
+    const suit = suits[Math.floor(Math.random() * 4)];
+    const names = {1:'A',11:'J',12:'Q',13:'K'};
+    const display = names[value] || value;
+    const isRed = suit === '♥' || suit === '♦';
+    return { value, display, suit, isRed };
+}
+
+function orcRenderCard(card, faceDown) {
+    if (faceDown) {
+        return `<div style="width:52px; height:72px; background:linear-gradient(135deg,#002244,#001133); border:2px solid #004488; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#004488; box-shadow:0 2px 8px rgba(0,60,120,0.3); animation:oracleGlow 2s infinite;">❓</div>`;
+    }
+    return `<div style="width:52px; height:72px; background:linear-gradient(180deg,#1a1a2a,#0a0a15); border:2px solid ${card.isRed ? '#882222' : '#888'}; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.4); animation:cardReveal 0.4s ease-out;">
+        <div style="font-size:16px; font-weight:bold; color:${card.isRed ? '#ff4444' : '#cccccc'};">${card.display}</div>
+        <div style="font-size:14px; color:${card.isRed ? '#ff4444' : '#cccccc'};">${card.suit}</div>
+    </div>`;
+}
+
+function orcStart() {
+    if (playerTokens < orcBet) { alert('Not enough tokens!'); return; }
+    playerTokens -= orcBet; updateTokenDisplays(); savePlayerTokens();
+    orcActive = true; orcChain = 0; orcMult = 1;
+    
+    // Draw first card
+    const firstVal = Math.floor(Math.random() * 13) + 1;
+    const firstCard = orcMakeCard(firstVal);
+    orcRevealed = [firstCard];
+    
+    const cardsEl = document.getElementById('orc_cards');
+    cardsEl.innerHTML = orcRenderCard(firstCard, false) + '<div style="font-size:18px; color:#226688; margin:0 6px;">→</div>' + orcRenderCard(null, true);
+    
+    document.getElementById('orc_result').innerHTML = `<span style="color:#66ddff;">Current card: <b>${firstCard.display}${firstCard.suit}</b> — Is the next card higher or lower?</span>`;
+    
+    const actions = document.getElementById('orc_actions');
+    actions.innerHTML = `
+        <button onclick="orcGuess('higher')" style="flex:1; background:linear-gradient(180deg,#003a00,#001a00); border:1px solid #00aa44; border-radius:8px; padding:12px; color:#00ff66; font-size:13px; cursor:pointer; font-weight:bold; letter-spacing:1px; transition:all 0.2s;" onmouseenter="this.style.boxShadow='0 0 15px rgba(0,255,100,0.3)'" onmouseleave="this.style.boxShadow='none'">⬆️ HIGHER</button>
+        <button onclick="orcGuess('lower')" style="flex:1; background:linear-gradient(180deg,#3a0000,#1a0000); border:1px solid #aa2200; border-radius:8px; padding:12px; color:#ff4444; font-size:13px; cursor:pointer; font-weight:bold; letter-spacing:1px; transition:all 0.2s;" onmouseenter="this.style.boxShadow='0 0 15px rgba(255,50,0,0.3)'" onmouseleave="this.style.boxShadow='none'">⬇️ LOWER</button>
+        <button onclick="orcCashout()" style="flex:0.6; background:linear-gradient(180deg,#3a3000,#1a1800); border:1px solid #886600; border-radius:8px; padding:12px; color:#ffd700; font-size:11px; cursor:pointer; font-weight:bold; transition:all 0.2s;" onmouseenter="this.style.boxShadow='0 0 15px rgba(255,215,0,0.3)'" onmouseleave="this.style.boxShadow='none'">💰 ${orcMult}x</button>
+    `;
+}
+
+function orcGuess(direction) {
+    if (!orcActive) return;
+    
+    const lastCard = orcRevealed[orcRevealed.length - 1];
+    const newVal = Math.floor(Math.random() * 13) + 1;
+    const newCard = orcMakeCard(newVal);
+    orcRevealed.push(newCard);
+    
+    const correct = (direction === 'higher' && newCard.value >= lastCard.value) || (direction === 'lower' && newCard.value <= lastCard.value);
+    
+    // Render all cards
+    const cardsEl = document.getElementById('orc_cards');
+    if (correct) {
+        orcChain++;
+        orcMult = [1, 1.5, 2.5, 4, 7, 12, 20][Math.min(orcChain, 6)];
+        
+        document.getElementById('orc_chain_count').textContent = orcChain;
+        document.getElementById('orc_chain_mult').textContent = orcMult + 'x';
+        
+        // Show last 2 cards + next unknown
+        cardsEl.innerHTML = orcRenderCard(lastCard, false) + '<div style="font-size:14px; color:#00ff66; margin:0 4px;">✓</div>' + orcRenderCard(newCard, false) + '<div style="font-size:18px; color:#226688; margin:0 4px;">→</div>' + orcRenderCard(null, true);
+        
+        const payout = Math.floor(orcBet * orcMult);
+        document.getElementById('orc_result').innerHTML = `<span style="color:#00ff66;">✓ Correct! Chain: ${orcChain} — Cash out for <b style="color:#ffd700;">${payout}</b> tokens</span>`;
+        
+        // Update cashout button
+        const actions = document.getElementById('orc_actions');
+        actions.innerHTML = `
+            <button onclick="orcGuess('higher')" style="flex:1; background:linear-gradient(180deg,#003a00,#001a00); border:1px solid #00aa44; border-radius:8px; padding:12px; color:#00ff66; font-size:13px; cursor:pointer; font-weight:bold; letter-spacing:1px; transition:all 0.2s;" onmouseenter="this.style.boxShadow='0 0 15px rgba(0,255,100,0.3)'" onmouseleave="this.style.boxShadow='none'">⬆️ HIGHER</button>
+            <button onclick="orcGuess('lower')" style="flex:1; background:linear-gradient(180deg,#3a0000,#1a0000); border:1px solid #aa2200; border-radius:8px; padding:12px; color:#ff4444; font-size:13px; cursor:pointer; font-weight:bold; letter-spacing:1px; transition:all 0.2s;" onmouseenter="this.style.boxShadow='0 0 15px rgba(255,50,0,0.3)'" onmouseleave="this.style.boxShadow='none'">⬇️ LOWER</button>
+            <button onclick="orcCashout()" style="flex:0.6; background:linear-gradient(180deg,#3a3000,#1a1800); border:1px solid #ffd700; border-radius:8px; padding:12px; color:#ffd700; font-size:11px; cursor:pointer; font-weight:bold; animation:cofPulse 1s infinite; transition:all 0.2s;">💰 ${orcMult}x</button>
+        `;
+        
+        if (orcChain >= 6) {
+            orcCashout(); // Auto cash at max chain
+        }
+    } else {
+        // Bust!
+        orcActive = false;
+        cardsEl.innerHTML = orcRenderCard(lastCard, false) + '<div style="font-size:14px; color:#ff0000; margin:0 4px;">✗</div>' + orcRenderCard(newCard, false);
+        
+        document.getElementById('orc_result').innerHTML = `<span style="color:#ff3333; text-shadow:0 0 8px rgba(255,0,0,0.3);">💀 WRONG! ${newCard.display}${newCard.suit} was ${newCard.value > lastCard.value ? 'higher' : newCard.value < lastCard.value ? 'lower' : 'equal'}. Lost ${orcBet} tokens.</span>`;
+        
+        const actions = document.getElementById('orc_actions');
+        actions.innerHTML = '';
+        trackGameStat('game', 0);
+        setTimeout(orcReset, 3000);
+    }
+}
+
+function orcCashout() {
+    if (!orcActive) return;
+    orcActive = false;
+    const payout = Math.floor(orcBet * orcMult);
+    playerTokens += payout; updateTokenDisplays(); savePlayerTokens();
+    
+    document.getElementById('orc_result').innerHTML = `<span style="color:#ffd700; font-size:14px; text-shadow:0 0 15px rgba(255,215,0,0.5);">🔮 ORACLE REWARDS YOU! +${payout} tokens (${orcMult}x)!</span>`;
+    document.getElementById('orc_actions').innerHTML = '';
+    
+    if (payout > 0) { trackGameStat('win', payout); trackGameStat('earn', payout); }
+    trackGameStat('game', 0);
+    if (orcChain >= 5) {
+        checkAchievement('oracle_5chain');
+        db.ref('profiles/' + CURRENT_USER + '/gameStats/oracleBestChain').once('value', s => {
+            if (orcChain > (s.val() || 0)) db.ref('profiles/' + CURRENT_USER + '/gameStats/oracleBestChain').set(orcChain);
+        });
+    }
+    setTimeout(orcReset, 3000);
+}
+
 function loadVIPChat() {
     if (!db) return;
     db.ref('vip_lounge/chat').limitToLast(50).on('value', snap => {
@@ -5102,6 +6123,10 @@ function shopItemAction(type, id) {
         case 'mysterybox': return `openMysteryBox('${id}')`;
         case 'nickname': return `openNicknameEditor('${id}')`;
         case 'streakshield': return `activateStreakShield('${id}')`;
+        case 'betmultiplier': return `activateBetMultiplier('${id}')`;
+        case 'goldendice': return `activateGoldenDice('${id}')`;
+        case 'jackpotinsurance': return `activateJackpotInsurance('${id}')`;
+        case 'dailyboost': return `activateDailyBoost('${id}')`;
         default: return `equipItem('${id}')`;
     }
 }
@@ -5575,6 +6600,9 @@ function loadDailyStatus() {
         window._streakShieldActive = shield && shield.uses > 0;
     });
     
+    // Load active shop powerups
+    if (typeof loadActivePowerups === 'function') loadActivePowerups();
+    
     db.ref('game_stats/daily/' + CURRENT_USER).once('value', (snap) => {
         const data = snap.val() || {};
         const today = new Date().toDateString();
@@ -5847,11 +6875,11 @@ function renderShopGrid(container) {
             const owned = ownedItems[id];
             const imgHtml = item.imageUrl ? 
                 `<img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50?text=?'">` :
-                `<div style="width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:50%; background:radial-gradient(circle,#111,#000); box-shadow:0 0 8px ${({'effect':'rgba(255,0,0,0.4)','chattag':'rgba(0,255,255,0.3)','namecolor':'rgba(255,105,180,0.3)','luckycharm':'rgba(0,255,0,0.3)','vipaccess':'rgba(255,215,0,0.4)','profilebg':'rgba(170,0,255,0.3)','autocollect':'rgba(255,102,0,0.3)','tokenpass':'rgba(0,200,255,0.3)','mysterybox':'rgba(255,0,255,0.3)','nickname':'rgba(255,170,0,0.3)','streakshield':'rgba(0,255,136,0.3)'})[item.type]||'rgba(100,100,100,0.2)'};">${({'effect':'✨','chattag':'🏷️','namecolor':'🎨','luckycharm':'🍀','vipaccess':'🌟','profilebg':'🖼️','autocollect':'⚡','tokenpass':'💎','mysterybox':'🎁','nickname':'📛','streakshield':'🛡️'})[item.type]||'?'}</div>`;
-            const shopTypeLabels = { effect: ['#ff00ff','FX'], badge: ['#ffd700','BADGE'], chattag: ['#0ff','TAG'], namecolor: ['#ff69b4','COLOR'], luckycharm: ['#0f0','LUCK'], vipaccess: ['#ffd700','VIP'], profilebg: ['#aa00ff','BG'], autocollect: ['#ff6600','AUTO'], tokenpass: ['#00ccff','2X'], mysterybox: ['#ff00ff','BOX'], nickname: ['#ffaa00','NICK'], streakshield: ['#00ff88','SHIELD'] };
+                `<div style="width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:50%; background:radial-gradient(circle,#111,#000); box-shadow:0 0 8px ${({'effect':'rgba(255,0,0,0.4)','chattag':'rgba(0,255,255,0.3)','namecolor':'rgba(255,105,180,0.3)','luckycharm':'rgba(0,255,0,0.3)','vipaccess':'rgba(255,215,0,0.4)','profilebg':'rgba(170,0,255,0.3)','autocollect':'rgba(255,102,0,0.3)','tokenpass':'rgba(0,200,255,0.3)','mysterybox':'rgba(255,0,255,0.3)','nickname':'rgba(255,170,0,0.3)','streakshield':'rgba(0,255,136,0.3)','betmultiplier':'rgba(255,136,0,0.3)','goldendice':'rgba(255,215,0,0.4)','jackpotinsurance':'rgba(255,68,68,0.3)','dailyboost':'rgba(0,255,0,0.3)'})[item.type]||'rgba(100,100,100,0.2)'};">${({'effect':'✨','chattag':'🏷️','namecolor':'🎨','luckycharm':'🍀','vipaccess':'🌟','profilebg':'🖼️','autocollect':'⚡','tokenpass':'💎','mysterybox':'🎁','nickname':'📛','streakshield':'🛡️','betmultiplier':'🔥','goldendice':'🎲','jackpotinsurance':'🛟','dailyboost':'⚡'})[item.type]||'?'}</div>`;
+            const shopTypeLabels = { effect: ['#ff00ff','FX'], badge: ['#ffd700','BADGE'], chattag: ['#0ff','TAG'], namecolor: ['#ff69b4','COLOR'], luckycharm: ['#0f0','LUCK'], vipaccess: ['#ffd700','VIP'], profilebg: ['#aa00ff','BG'], autocollect: ['#ff6600','AUTO'], tokenpass: ['#00ccff','2X'], mysterybox: ['#ff00ff','BOX'], nickname: ['#ffaa00','NICK'], streakshield: ['#00ff88','SHIELD'], betmultiplier: ['#ff8800','BET+'], goldendice: ['#ffd700','DICE'], jackpotinsurance: ['#ff4444','INS'], dailyboost: ['#00ff00','BOOST'] };
             const tl = shopTypeLabels[item.type]; const typeLabel = tl ? ` <span style="color:${tl[0]}; font-size:8px;">[${tl[1]}]</span>` : '';
             const customizeTypes = ['chattag','namecolor','profilebg','nickname'];
-            const ownedLabel = owned ? (customizeTypes.includes(item.type) ? '<span style="color:#0ff;">CUSTOMIZE</span>' : (['luckycharm','tokenpass','mysterybox','streakshield'].includes(item.type) ? '<span style="color:#0f0;">ACTIVATE</span>' : '<span style="color:#0f0;">OWNED</span>')) : '<span style="color:#ffd700;">' + item.price + ' tokens</span>';
+            const ownedLabel = owned ? (customizeTypes.includes(item.type) ? '<span style="color:#0ff;">CUSTOMIZE</span>' : (['luckycharm','tokenpass','mysterybox','streakshield','betmultiplier','goldendice','jackpotinsurance','dailyboost'].includes(item.type) ? '<span style="color:#0f0;">ACTIVATE</span>' : '<span style="color:#0f0;">OWNED</span>')) : '<span style="color:#ffd700;">' + item.price + ' tokens</span>';
             return `<div class="shop-item ${owned ? 'owned' : ''}" onclick="${owned ? shopItemAction(item.type, id) : `buyShopItem('${id}')`}">
                 ${imgHtml}
                 <div style="color:#fff; font-size:10px; font-weight:bold;">${escapeHtml(item.name)}${typeLabel}</div>
@@ -5875,6 +6903,10 @@ async function seedDefaultShopItems() {
         { id: 'default_toxic', name: 'Toxic', price: 650, type: 'effect', effectClass: 'toxic', description: 'Toxic green glow' },
         { id: 'default_golden', name: 'Golden', price: 1000, type: 'effect', effectClass: 'golden', description: 'Prestigious golden aura' },
         { id: 'default_rainbow', name: 'Rainbow', price: 1200, type: 'effect', effectClass: 'rainbow', description: 'Shifting rainbow colors' },
+        { id: 'default_betmult', name: 'Bet Multiplier', price: 8000, type: 'betmultiplier', description: 'Next 10 bets pay 1.5x winnings' },
+        { id: 'default_goldendice', name: 'Golden Dice', price: 3000, type: 'goldendice', description: 'Cosmetic gold dice skin in dice game' },
+        { id: 'default_jackpotins', name: 'Jackpot Insurance', price: 6000, type: 'jackpotinsurance', description: 'Lose 3 in a row → get 25% losses back' },
+        { id: 'default_dailyboost', name: 'Daily Boost', price: 7500, type: 'dailyboost', description: 'Daily spin gives 3x rewards for 7 days' },
     ];
     
     const updates = {};
@@ -9769,7 +10801,7 @@ function stAddShopItem() {
     if (!price || price < 1) { resultEl.innerHTML = '<span style="color:#f00;">Enter valid price.</span>'; return; }
     
     // No-image types
-    const noImageTypes = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect','tokenpass','mysterybox','nickname','streakshield'];
+    const noImageTypes = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect','tokenpass','mysterybox','nickname','streakshield','betmultiplier','goldendice','jackpotinsurance','dailyboost'];
     if (noImageTypes.includes(type) && type !== 'chattag') {
         const itemId = 'item_' + Date.now();
         const extraData = {};
@@ -9852,7 +10884,7 @@ function saveShopItem(name, imageUrl, price, type, resultEl) {
 // Toggle effect options vs image upload based on type selection
 document.getElementById('shop_item_type')?.addEventListener('change', function() {
     const isEffect = this.value === 'effect';
-    const isChatTag = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect','tokenpass','mysterybox','nickname','streakshield'].includes(this.value);
+    const isChatTag = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect','tokenpass','mysterybox','nickname','streakshield','betmultiplier','goldendice','jackpotinsurance','dailyboost'].includes(this.value);
     document.getElementById('shop_add_effect_opts').style.display = isEffect ? 'block' : 'none';
     document.getElementById('shop_add_image_section').style.display = (isEffect || isChatTag) ? 'none' : 'block';
     if (!isEffect) updateAddPreview();
@@ -9934,7 +10966,7 @@ function loadSTShopList() {
         }
         
         container.innerHTML = Object.entries(items).map(([id, item]) => {
-            const typeColors = { frame: '#0ff', hat: '#ff0', accessory: '#f0f', effect: '#0f0', badge: '#ffd700', chattag: '#0ff', namecolor: '#ff69b4', luckycharm: '#0f0', vipaccess: '#ffd700', profilebg: '#aa00ff', autocollect: '#ff6600', tokenpass: '#00ccff', mysterybox: '#ff00ff', nickname: '#ffaa00', streakshield: '#00ff88' };
+            const typeColors = { frame: '#0ff', hat: '#ff0', accessory: '#f0f', effect: '#0f0', badge: '#ffd700', chattag: '#0ff', namecolor: '#ff69b4', luckycharm: '#0f0', vipaccess: '#ffd700', profilebg: '#aa00ff', autocollect: '#ff6600', tokenpass: '#00ccff', mysterybox: '#ff00ff', nickname: '#ffaa00', streakshield: '#00ff88', betmultiplier: '#ff8800', goldendice: '#ffd700', jackpotinsurance: '#ff4444', dailyboost: '#00ff00' };
             const tc = typeColors[item.type] || '#888';
             const thumb = item.imageUrl 
                 ? `<img src="${item.imageUrl}" style="width:40px; height:40px; object-fit:contain; border:1px solid #400; border-radius:4px; background:#111;" onerror="this.style.display='none'">`
