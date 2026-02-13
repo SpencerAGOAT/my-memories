@@ -423,11 +423,14 @@
     <div class="title-bar"><div class="title-bar-text">Fangtasia Games & Shop</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('games_window')"></button></div></div>
     <div class="window-body" style="padding:0; display:flex; flex-direction:column; height:calc(100% - 25px);">
         <!-- Token Display Bar -->
-        <div style="background:linear-gradient(90deg, #1a0808, #0a0000); padding:8px 15px; border-bottom:1px solid #500; display:flex; justify-content:space-between; align-items:center;">
-            <div><span style="color:#888; font-size:11px;">Blood Tokens:</span> <span id="main_token_display" style="color:#d40000; font-weight:bold; font-size:14px;">0</span></div>
-            <div style="display:flex; gap:10px;">
-                <button class="ie-btn" style="width:auto; padding:3px 10px; font-size:9px; margin:0;" onclick="showGiftTokens()">Gift</button>
-                <button class="ie-btn" style="width:auto; padding:3px 10px; font-size:9px; margin:0;" onclick="showTokenLeaderboard()">Ranks</button>
+        <div class="token-bar">
+            <div class="token-display">
+                <span class="token-icon">🩸</span>
+                <span id="main_token_display" class="token-amount">0</span>
+            </div>
+            <div class="token-bar-btns">
+                <button class="g-btn small" onclick="showGiftTokens()">🎁 Gift</button>
+                <button class="g-btn small" onclick="showTokenLeaderboard()">🏆 Ranks</button>
             </div>
         </div>
         
@@ -435,6 +438,9 @@
             <div class="tab active" onclick="switchGameTab('stakes', this)">Stakes</div>
             <div class="tab" onclick="switchGameTab('blackjack', this)">Blackjack</div>
             <div class="tab" onclick="switchGameTab('slots', this)">Slots</div>
+            <div class="tab" onclick="switchGameTab('roulette', this)">Roulette</div>
+            <div class="tab" onclick="switchGameTab('crash', this)">Crash</div>
+            <div class="tab" onclick="switchGameTab('coinflip', this)">Coin Flip</div>
             <div class="tab" onclick="switchGameTab('snake', this)">Snake</div>
             <div class="tab" onclick="switchGameTab('daily', this)">Daily</div>
             <div class="tab" onclick="switchGameTab('shop', this)">Shop</div>
@@ -442,97 +448,219 @@
         
         <div style="flex:1; overflow-y:auto;">
             <!-- SILVER STAKES -->
-            <div id="game_tab_stakes" style="padding: 10px;">
-                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Silver Stakes</h3>
-                <p style="color: #666; font-size: 9px; text-align: center;">Avoid the stakes! Win: 50 tokens</p>
-                <div class="game-status" id="game_status">Stakes: 10</div>
-                <div class="stakes-grid" id="stakes_grid"></div>
-                <div style="text-align: center; margin-top: 8px;">
-                    <button class="ie-btn" style="width: auto; padding: 4px 15px;" onclick="initStakesGame()">New Game</button>
+            <div id="game_tab_stakes" class="g-panel">
+                <div class="g-title">Silver Stakes</div>
+                <div class="g-sub">Avoid the stakes! Clear the board to win 50 tokens</div>
+                <div class="g-result" id="game_status">Stakes: 10</div>
+                <div class="g-arena" style="padding:12px;">
+                    <div class="stakes-grid" id="stakes_grid"></div>
                 </div>
-                <div id="game_my_stats" style="text-align: center; margin-top: 10px; padding: 8px; background: #0a0505; border: 1px solid #300; border-radius: 4px;">
-                    <span style="color: #888; font-size: 10px;">Your Wins: </span><span id="my_wins_count" style="color: #ff6600; font-weight: bold;">0</span>
+                <div class="g-actions">
+                    <button class="g-btn primary" onclick="initStakesGame()">New Game</button>
+                </div>
+                <div class="g-stat-bar">
+                    <span><span class="stat-label">Your Wins: </span><span id="my_wins_count" class="stat-value" style="color:#ff6600;">0</span></span>
                 </div>
             </div>
             
             <!-- BLACKJACK -->
-            <div id="game_tab_blackjack" style="padding: 10px; display:none;">
-                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Blood Blackjack</h3>
-                <p style="color: #666; font-size: 9px; text-align: center;">Beat the dealer! Bet: 10 | Win: 20</p>
+            <div id="game_tab_blackjack" class="g-panel" style="display:none;">
+                <div class="g-title">Blood Blackjack</div>
+                <div class="g-sub">Beat the dealer · Blackjack pays 2.5x · Double down on first hand</div>
                 
-                <div style="background:#0a0505; border:1px solid #400; border-radius:8px; padding:15px; margin:10px 0;">
-                    <div style="text-align:center; margin-bottom:15px;">
-                        <div style="color:#888; font-size:10px;">Dealer</div>
-                        <div id="bj_dealer_hand" style="display:flex; justify-content:center; gap:5px; margin-top:5px; min-height:60px;"></div>
-                        <div id="bj_dealer_score" style="color:#ffd700; font-size:12px; margin-top:5px;"></div>
+                <div class="g-bet-bar">
+                    <span class="bet-label">Bet</span>
+                    <button class="g-btn small" onclick="bjChangeBet(-10)">−</button>
+                    <span id="bj_bet_display" class="bet-value">10</span>
+                    <button class="g-btn small" onclick="bjChangeBet(10)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="bjChangeBet('max')">MAX</button>
+                </div>
+                
+                <div class="g-arena" id="bj_arena">
+                    <div style="text-align:center; margin-bottom:12px;">
+                        <div style="color:#555; font-size:9px; text-transform:uppercase; letter-spacing:2px;">Dealer</div>
+                        <div id="bj_dealer_hand" style="display:flex; justify-content:center; gap:6px; margin-top:6px; min-height:64px;"></div>
+                        <div id="bj_dealer_score" style="color:#ffd700; font-size:12px; margin-top:6px;"></div>
                     </div>
-                    <div style="border-top:1px solid #400; margin:10px 0;"></div>
+                    <div style="border-top:1px solid #2a0a0a; margin:8px 0;"></div>
                     <div style="text-align:center;">
-                        <div style="color:#888; font-size:10px;">You</div>
-                        <div id="bj_player_hand" style="display:flex; justify-content:center; gap:5px; margin-top:5px; min-height:60px;"></div>
-                        <div id="bj_player_score" style="color:#0f0; font-size:12px; margin-top:5px;"></div>
+                        <div style="color:#555; font-size:9px; text-transform:uppercase; letter-spacing:2px;">Your Hand</div>
+                        <div id="bj_player_hand" style="display:flex; justify-content:center; gap:6px; margin-top:6px; min-height:64px;"></div>
+                        <div id="bj_player_score" style="color:#0f0; font-size:12px; margin-top:6px;"></div>
                     </div>
                 </div>
                 
-                <div id="bj_result" style="text-align:center; font-size:14px; font-weight:bold; margin:10px 0; min-height:20px;"></div>
+                <div class="g-result" id="bj_result"></div>
                 
-                <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
-                    <button class="ie-btn" id="bj_hit_btn" style="width:auto; padding:8px 20px;" onclick="bjHit()">Hit</button>
-                    <button class="ie-btn" id="bj_stand_btn" style="width:auto; padding:8px 20px;" onclick="bjStand()">Stand</button>
-                    <button class="ie-btn" id="bj_new_btn" style="width:auto; padding:8px 20px; background:#050;" onclick="bjNewGame()">New</button>
+                <div class="g-actions">
+                    <button class="g-btn primary" id="bj_hit_btn" onclick="bjHit()">Hit</button>
+                    <button class="g-btn" id="bj_stand_btn" onclick="bjStand()">Stand</button>
+                    <button class="g-btn warning" id="bj_double_btn" onclick="bjDouble()">2x</button>
+                    <button class="g-btn success" id="bj_new_btn" onclick="bjNewGame()">Deal</button>
                 </div>
                 
-                <div style="text-align:center; margin-top:10px; padding:8px; background:#0a0505; border:1px solid #300; border-radius:4px;">
-                    <span style="color:#888; font-size:10px;">Wins: </span><span id="bj_wins" style="color:#0f0; font-weight:bold;">0</span>
+                <div class="g-stat-bar">
+                    <span><span class="stat-label">Wins: </span><span id="bj_wins" class="stat-value" style="color:#0f0;">0</span></span>
+                    <span style="color:#2a0a0a;">│</span>
+                    <span><span class="stat-label">Profit: </span><span id="bj_profit" class="stat-value">0</span></span>
                 </div>
             </div>
             
             <!-- SLOTS -->
-            <div id="game_tab_slots" style="padding: 10px; display:none;">
-                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Blood Slots</h3>
-                <p style="color: #666; font-size: 9px; text-align: center;">Cost: 10 | Max Win: 500</p>
+            <div id="game_tab_slots" class="g-panel" style="display:none;">
+                <div class="g-title">Blood Slots</div>
+                <div class="g-sub">Match symbols to win · VVV Jackpot: 500 tokens</div>
                 
-                <div style="background:linear-gradient(180deg, #1a0505, #0a0000); border:2px solid #700; border-radius:10px; padding:20px; margin:15px 0;">
-                    <div id="slots_reels" style="display:flex; justify-content:center; gap:10px;">
-                        <div class="slot-reel" id="slot1">V</div>
-                        <div class="slot-reel" id="slot2">B</div>
-                        <div class="slot-reel" id="slot3">C</div>
-                    </div>
-                    <div id="slots_result" style="text-align:center; margin-top:15px; font-size:14px; font-weight:bold; min-height:20px;"></div>
+                <div class="g-bet-bar">
+                    <span class="bet-label">Cost</span>
+                    <span class="bet-value">10</span>
                 </div>
                 
-                <div style="text-align:center;">
-                    <button class="ie-btn" id="spin_btn" style="width:auto; padding:12px 40px; font-size:14px; background:linear-gradient(180deg, #700, #400);" onclick="spinSlots()">SPIN (10)</button>
+                <div class="g-arena" id="slots_arena" style="text-align:center;">
+                    <div style="background:linear-gradient(90deg, transparent, rgba(100,0,0,0.1), transparent); padding:15px; border-radius:8px;">
+                        <div id="slots_reels" style="display:flex; justify-content:center; gap:12px;">
+                            <div class="slot-reel" id="slot1">🧛</div>
+                            <div class="slot-reel" id="slot2">🩸</div>
+                            <div class="slot-reel" id="slot3">⚰️</div>
+                        </div>
+                    </div>
+                    <div id="slots_result" class="g-result" style="margin-top:12px;"></div>
                 </div>
                 
-                <div style="margin-top:15px; padding:10px; background:#0a0505; border:1px solid #300; border-radius:4px;">
-                    <div style="color:#666; font-size:9px; text-align:center;">
-                        VVV = 500 | BBB = 250 | CCC = 100 | Match 2 = 15
+                <div class="g-actions">
+                    <button class="g-btn primary large" id="spin_btn" onclick="spinSlots()">🎰 SPIN</button>
+                </div>
+                
+                <div class="g-history" style="text-align:center;">
+                    <div style="color:#555; font-size:9px;">🧛🧛🧛 = 500 · 🩸🩸🩸 = 250 · ⚰️⚰️⚰️ = 100 · Match 2 = 15</div>
+                </div>
+            </div>
+            
+            <!-- ROULETTE -->
+            <div id="game_tab_roulette" class="g-panel" style="display:none;">
+                <div class="g-title">Blood Roulette</div>
+                <div class="g-sub">Red/Black 2x · Green 14x · Exact Number 36x</div>
+                
+                <div class="g-bet-bar">
+                    <span class="bet-label">Bet</span>
+                    <button class="g-btn small" onclick="rlChangeBet(-10)">−</button>
+                    <span id="rl_bet_display" class="bet-value">10</span>
+                    <button class="g-btn small" onclick="rlChangeBet(10)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="rlChangeBet('max')">MAX</button>
+                </div>
+                
+                <div class="g-arena" style="text-align:center;">
+                    <div class="rl-wheel" id="rl_wheel">?</div>
+                    <div class="g-result" id="rl_result"></div>
+                    
+                    <div style="margin-bottom:12px;">
+                        <div style="color:#555; font-size:8px; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Color Bet</div>
+                        <div class="rl-color-btns">
+                            <button class="g-btn rl-btn-red" onclick="rlSpin('red')">🔴 Red</button>
+                            <button class="g-btn rl-btn-black" onclick="rlSpin('black')">⚫ Black</button>
+                            <button class="g-btn rl-btn-green" onclick="rlSpin('green')">🟢</button>
+                        </div>
                     </div>
+                    
+                    <div>
+                        <div style="color:#555; font-size:8px; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Number Bet (0-36)</div>
+                        <div style="display:flex; justify-content:center; gap:6px; align-items:center;">
+                            <input type="number" id="rl_number_input" class="ie-input" min="0" max="36" placeholder="#" style="width:55px; margin:0; text-align:center;">
+                            <button class="g-btn warning" onclick="rlSpin('number')">Bet #</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="g-history">
+                    <div class="g-history-label">Recent Spins</div>
+                    <div class="g-history-items" id="rl_history_dots"></div>
+                </div>
+            </div>
+            
+            <!-- CRASH -->
+            <div id="game_tab_crash" class="g-panel" style="display:none;">
+                <div class="g-title">Blood Crash</div>
+                <div class="g-sub">Cash out before it crashes · The longer you wait, the bigger the win</div>
+                
+                <div class="g-bet-bar">
+                    <span class="bet-label">Bet</span>
+                    <button class="g-btn small" onclick="crChangeBet(-10)">−</button>
+                    <span id="cr_bet_display" class="bet-value">10</span>
+                    <button class="g-btn small" onclick="crChangeBet(10)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="crChangeBet('max')">MAX</button>
+                </div>
+                
+                <div class="g-arena" style="text-align:center;">
+                    <canvas id="crash_canvas" width="440" height="160" style="width:100%; background:linear-gradient(180deg, #060000, #030000); border-radius:6px; border:1px solid #2a0a0a;"></canvas>
+                    <div class="cr-multiplier" id="cr_multiplier">1.00x</div>
+                    <div class="g-result" id="cr_result"></div>
+                </div>
+                
+                <div class="g-actions">
+                    <button class="g-btn success large" id="cr_start_btn" onclick="crStart()">🚀 BET</button>
+                    <button class="g-btn warning large" id="cr_cashout_btn" style="display:none;" onclick="crCashout()">💰 CASH OUT</button>
+                </div>
+                
+                <div class="g-history">
+                    <div class="g-history-label">Recent Crashes</div>
+                    <div class="g-history-items" id="cr_history"></div>
+                </div>
+            </div>
+            
+            <!-- COIN FLIP -->
+            <div id="game_tab_coinflip" class="g-panel" style="display:none;">
+                <div class="g-title">Blood Coin Flip</div>
+                <div class="g-sub">Heads or Tails · Double or nothing · 50/50 odds</div>
+                
+                <div class="g-bet-bar">
+                    <span class="bet-label">Bet</span>
+                    <button class="g-btn small" onclick="cfChangeBet(-10)">−</button>
+                    <span id="cf_bet_display" class="bet-value">10</span>
+                    <button class="g-btn small" onclick="cfChangeBet(10)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="cfChangeBet('max')">MAX</button>
+                </div>
+                
+                <div class="g-arena" id="cf_arena" style="text-align:center;">
+                    <div class="cf-coin" id="cf_coin">🪙</div>
+                    <div class="g-result" id="cf_result" style="margin-top:15px;"></div>
+                </div>
+                
+                <div class="g-actions">
+                    <button class="g-btn primary large" id="cf_heads_btn" onclick="cfFlip('heads')">🩸 Heads</button>
+                    <button class="g-btn large" id="cf_tails_btn" onclick="cfFlip('tails')">💀 Tails</button>
+                </div>
+                
+                <div class="g-stat-bar" style="justify-content:space-between;">
+                    <span><span class="stat-label">Streak: </span><span id="cf_streak" class="stat-value" style="color:#ffd700;">0</span></span>
+                    <span><span class="stat-label">Best: </span><span id="cf_best_streak" class="stat-value" style="color:#ff6600;">0</span></span>
+                    <span><span class="stat-label">W/L: </span><span id="cf_record" class="stat-value" style="color:#aaa;">0/0</span></span>
+                </div>
+                <div class="g-history">
+                    <div class="g-history-items" id="cf_history" style="justify-content:center;"></div>
                 </div>
             </div>
             
             <!-- SNAKE -->
-            <div id="game_tab_snake" style="padding: 10px; display:none;">
-                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Blood Snake</h3>
-                <p style="color: #666; font-size: 9px; text-align: center;">Collect blood drops! 1 token per drop (max 200)</p>
+            <div id="game_tab_snake" class="g-panel" style="display:none;">
+                <div class="g-title">Blood Snake</div>
+                <div class="g-sub">Collect blood drops · 1 token per drop · Max 200 per game</div>
                 
-                <div style="text-align:center; margin:10px 0;">
-                    <canvas id="snake_canvas" width="280" height="280" style="background:#0a0000; border:2px solid #500;"></canvas>
+                <div class="g-arena" style="text-align:center; padding:12px;">
+                    <canvas id="snake_canvas" width="280" height="280" style="background:linear-gradient(180deg, #060000, #030000); border:2px solid #3a0a0a; border-radius:6px;"></canvas>
                 </div>
                 
-                <div id="snake_score" style="text-align:center; color:#d40000; font-size:14px; font-weight:bold; margin:10px 0;">Score: 0</div>
+                <div id="snake_score" class="g-result" style="color:#d40000; font-size:16px;">Score: 0</div>
                 
-                <div style="text-align:center;">
-                    <button class="ie-btn" style="width:auto; padding:8px 20px;" onclick="startSnakeGame()">Start Game</button>
+                <div class="g-actions">
+                    <button class="g-btn primary" onclick="startSnakeGame()">Start Game</button>
                 </div>
                 
-                <div style="color:#666; font-size:9px; text-align:center; margin-top:10px;">Use arrow keys or WASD to move</div>
+                <div style="color:#555; font-size:9px; text-align:center; margin-top:8px;">Arrow keys or WASD to move</div>
             </div>
             
             <!-- DAILY SPIN -->
-            <div id="game_tab_daily" style="padding: 10px; display:none;">
-                <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Daily Rewards</h3>
+            <div id="game_tab_daily" class="g-panel" style="display:none;">
+                <div class="g-title">Daily Rewards</div>
                 
                 <!-- Login Streak -->
                 <div style="background:#0a0505; border:1px solid #400; border-radius:8px; padding:15px; margin:10px 0;">
@@ -569,7 +697,7 @@
             </div>
             
             <!-- SHOP -->
-            <div id="game_tab_shop" style="padding: 10px; display:none;">
+            <div id="game_tab_shop" class="g-panel" style="display:none;">
                 <h3 style="color: #d40000; text-align: center; margin: 5px 0;">Token Shop</h3>
                 <p style="color: #666; font-size: 9px; text-align: center;">Buy items to customize your profile</p>
                 
@@ -615,69 +743,226 @@
 
 <style>
 .slot-reel {
-    width: 60px;
-    height: 70px;
-    background: linear-gradient(180deg, #200, #100);
-    border: 2px solid #500;
-    border-radius: 8px;
+    width: 70px;
+    height: 80px;
+    background: linear-gradient(180deg, #1a0808, #0a0000);
+    border: 2px solid #600;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     color: #d40000;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.9), 0 0 8px rgba(200,0,0,0.15);
+    text-shadow: 0 0 10px rgba(200,0,0,0.5);
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 .slot-reel.spinning {
-    animation: slotSpin 0.1s infinite;
+    animation: slotSpin 0.08s infinite;
+    border-color: #d40000;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.9), 0 0 15px rgba(200,0,0,0.4);
+}
+.slot-reel.win-highlight {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 20px rgba(255,215,0,0.4), inset 0 0 25px rgba(0,0,0,0.7) !important;
+    animation: reelGlow 0.5s ease 3;
 }
 @keyframes slotSpin {
-    0% { transform: translateY(-5px); }
-    50% { transform: translateY(5px); }
-    100% { transform: translateY(-5px); }
+    0% { transform: translateY(-4px); }
+    50% { transform: translateY(4px); }
+    100% { transform: translateY(-4px); }
+}
+@keyframes reelGlow {
+    0%,100% { box-shadow: 0 0 10px rgba(255,215,0,0.2), inset 0 0 25px rgba(0,0,0,0.7); }
+    50% { box-shadow: 0 0 25px rgba(255,215,0,0.6), inset 0 0 25px rgba(0,0,0,0.5); }
 }
 .bj-card {
-    width: 40px;
-    height: 55px;
-    background: linear-gradient(180deg, #fff, #ddd);
-    border: 1px solid #333;
-    border-radius: 4px;
+    width: 44px;
+    height: 60px;
+    background: linear-gradient(180deg, #fff, #e8e0d8);
+    border: 1.5px solid #555;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.4);
+    transition: transform 0.2s;
+    animation: cardDeal 0.3s ease;
 }
-.bj-card.red { color: #d40000; }
-.bj-card.black { color: #000; }
-.bj-card.hidden { background: linear-gradient(45deg, #300, #500); color: transparent; }
+@keyframes cardDeal {
+    from { transform: translateY(-20px) rotateY(90deg); opacity: 0; }
+    to { transform: translateY(0) rotateY(0); opacity: 1; }
+}
+.bj-card.red { color: #c00; }
+.bj-card.black { color: #111; }
+.bj-card.hidden { background: linear-gradient(135deg, #300 25%, #500 25%, #500 50%, #300 50%, #300 75%, #500 75%); background-size: 8px 8px; color: transparent; border-color: #700; }
 .streak-day {
-    width: 30px;
-    height: 30px;
-    background: #200;
-    border: 1px solid #400;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-size: 11px;
-    font-weight: bold;
+    width: 32px; height: 32px;
+    background: linear-gradient(180deg, #1a0808, #0a0000);
+    border: 1.5px solid #400;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #555; font-size: 11px; font-weight: bold;
+    transition: all 0.3s;
 }
 .streak-day.claimed {
-    background: #050;
-    border-color: #0a0;
-    color: #0f0;
+    background: linear-gradient(180deg, #0a2a0a, #051505);
+    border-color: #0a0; color: #0f0;
+    box-shadow: 0 0 6px rgba(0,255,0,0.2);
 }
-.streak-day.bonus {
-    background: #330;
-    border-color: #ffd700;
-    color: #ffd700;
+.streak-day.bonus { background: linear-gradient(180deg, #2a2200, #1a1100); border-color: #ffd700; color: #ffd700; }
+.streak-day.bonus.claimed { box-shadow: 0 0 8px rgba(255,215,0,0.3); }
+
+/* ========== UNIFIED GAME UI CLASSES ========== */
+.g-panel { padding: 12px; }
+.g-title { color: #d40000; text-align: center; margin: 0 0 2px; font-size: 16px; font-weight: bold; text-shadow: 0 0 15px rgba(200,0,0,0.3); letter-spacing: 1px; }
+.g-sub { color: #666; font-size: 9px; text-align: center; margin-bottom: 8px; }
+.g-arena {
+    background: linear-gradient(180deg, #110505, #080000);
+    border: 1.5px solid #3a0a0a;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 8px 0;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.3);
 }
-.streak-day.bonus.claimed {
-    background: #550;
+.g-bet-bar {
+    display: flex; justify-content: center; align-items: center; gap: 6px; margin: 8px 0;
+    padding: 6px 12px;
+    background: linear-gradient(90deg, transparent, rgba(100,0,0,0.1), transparent);
+    border-radius: 6px;
 }
+.g-bet-bar .bet-label { color: #777; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.g-bet-bar .bet-value { color: #ffd700; font-weight: bold; font-size: 16px; min-width: 50px; text-align: center; text-shadow: 0 0 8px rgba(255,215,0,0.3); }
+.g-btn {
+    background: linear-gradient(180deg, #2a0808, #180000);
+    border: 1.5px solid #600;
+    color: #e88;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.g-btn:hover { background: linear-gradient(180deg, #3a0a0a, #200000); border-color: #900; color: #faa; box-shadow: 0 0 10px rgba(200,0,0,0.2); }
+.g-btn:active { transform: scale(0.96); }
+.g-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.g-btn.primary { background: linear-gradient(180deg, #500, #300); border-color: #a00; color: #fcc; }
+.g-btn.primary:hover { background: linear-gradient(180deg, #700, #400); box-shadow: 0 0 15px rgba(200,0,0,0.3); }
+.g-btn.success { background: linear-gradient(180deg, #0a3a0a, #051a05); border-color: #0a0; color: #8f8; }
+.g-btn.success:hover { background: linear-gradient(180deg, #0d4d0d, #082208); box-shadow: 0 0 12px rgba(0,200,0,0.2); }
+.g-btn.warning { background: linear-gradient(180deg, #3a3a0a, #1a1a05); border-color: #aa0; color: #ff8; }
+.g-btn.warning:hover { background: linear-gradient(180deg, #4d4d0d, #222208); box-shadow: 0 0 12px rgba(200,200,0,0.2); }
+.g-btn.small { padding: 4px 10px; font-size: 10px; }
+.g-btn.large { padding: 12px 35px; font-size: 14px; letter-spacing: 1px; }
+.g-stat-bar {
+    margin-top: 10px; padding: 8px 12px;
+    background: linear-gradient(180deg, #0d0505, #060000);
+    border: 1px solid #2a0a0a;
+    border-radius: 6px;
+    font-size: 10px;
+    display: flex; justify-content: center; align-items: center; gap: 12px;
+}
+.g-stat-bar .stat-label { color: #666; }
+.g-stat-bar .stat-value { color: #ffd700; font-weight: bold; }
+.g-result { text-align: center; font-size: 14px; font-weight: bold; min-height: 20px; margin: 8px 0; }
+.g-history {
+    padding: 8px 10px;
+    background: linear-gradient(180deg, #0d0505, #060000);
+    border: 1px solid #2a0a0a;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+.g-history-label { color: #555; font-size: 8px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+.g-history-items { display: flex; gap: 3px; flex-wrap: wrap; }
+.g-actions { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+
+/* Token bar */
+.token-bar {
+    background: linear-gradient(90deg, #150505, #0d0000, #150505);
+    padding: 10px 15px;
+    border-bottom: 1px solid #3a0a0a;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.token-display {
+    display: flex; align-items: center; gap: 8px;
+}
+.token-icon { font-size: 18px; filter: drop-shadow(0 0 4px rgba(200,0,0,0.5)); }
+.token-amount {
+    color: #d40000; font-weight: bold; font-size: 18px;
+    text-shadow: 0 0 10px rgba(200,0,0,0.3);
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s;
+}
+.token-amount.flash { animation: tokenFlash 0.5s ease; }
+@keyframes tokenFlash {
+    0% { transform: scale(1); } 30% { transform: scale(1.3); color: #ffd700; } 100% { transform: scale(1); }
+}
+.token-bar-btns { display: flex; gap: 6px; }
+
+/* Roulette wheel */
+.rl-wheel {
+    width: 110px; height: 110px; margin: 0 auto 12px;
+    border-radius: 50%;
+    border: 4px solid #ffd700;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: bold;
+    background: radial-gradient(circle, #1a1a1a, #0a0a0a);
+    box-shadow: 0 0 20px rgba(255,215,0,0.15), inset 0 0 30px rgba(0,0,0,0.8);
+    transition: all 0.3s;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+.rl-wheel.spinning { animation: wheelPulse 0.15s infinite alternate; border-color: #ff6600; }
+@keyframes wheelPulse { from { transform: scale(0.97); } to { transform: scale(1.03); } }
+.rl-color-btns { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.rl-btn-red { background: linear-gradient(180deg, #8a0000, #550000) !important; border-color: #c00 !important; }
+.rl-btn-red:hover { box-shadow: 0 0 12px rgba(200,0,0,0.4) !important; }
+.rl-btn-black { background: linear-gradient(180deg, #333, #1a1a1a) !important; border-color: #666 !important; }
+.rl-btn-black:hover { box-shadow: 0 0 12px rgba(100,100,100,0.3) !important; }
+.rl-btn-green { background: linear-gradient(180deg, #006600, #003300) !important; border-color: #0a0 !important; }
+.rl-btn-green:hover { box-shadow: 0 0 12px rgba(0,200,0,0.3) !important; }
+
+/* Crash multiplier */
+.cr-multiplier {
+    font-size: 52px; font-weight: bold; color: #0f0; margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 20px rgba(0,255,0,0.3);
+    transition: color 0.3s, text-shadow 0.3s;
+}
+.cr-multiplier.hot { color: #ffa500; text-shadow: 0 0 20px rgba(255,165,0,0.4); }
+.cr-multiplier.fire { color: #ffd700; text-shadow: 0 0 25px rgba(255,215,0,0.5); animation: firePulse 0.3s infinite alternate; }
+.cr-multiplier.crashed { color: #f00; text-shadow: 0 0 30px rgba(255,0,0,0.5); animation: crashShake 0.1s 5; }
+@keyframes firePulse { from { transform: scale(1); } to { transform: scale(1.03); } }
+@keyframes crashShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+/* Coin flip */
+.cf-coin {
+    width: 110px; height: 110px; margin: 0 auto;
+    border-radius: 50%;
+    border: 4px solid #ffd700;
+    background: radial-gradient(circle at 40% 35%, #4a3800, #1a1100, #0d0800);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px;
+    box-shadow: 0 0 20px rgba(255,215,0,0.15), inset 0 0 20px rgba(0,0,0,0.5);
+    transition: transform 0.5s;
+}
+.cf-coin.flipping { animation: coinFlip 0.12s infinite; }
+@keyframes coinFlip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg) scale(0.8); } 100% { transform: rotateX(180deg); } }
+.cf-coin.win { box-shadow: 0 0 30px rgba(0,255,0,0.3), inset 0 0 20px rgba(0,0,0,0.5); border-color: #0f0; }
+.cf-coin.lose { box-shadow: 0 0 30px rgba(255,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.5); border-color: #f00; }
+
+/* Win/loss flash */
+@keyframes winFlash { 0% { background: rgba(0,100,0,0.3); } 100% { background: transparent; } }
+@keyframes loseFlash { 0% { background: rgba(100,0,0,0.3); } 100% { background: transparent; } }
+.g-arena.win-flash { animation: winFlash 0.8s ease; }
+.g-arena.lose-flash { animation: loseFlash 0.8s ease; }
 .shop-item {
     background: #0a0505;
     border: 1px solid #400;
@@ -2318,14 +2603,11 @@ function loadMyGameStats() {
 function switchGameTab(tab, el) {
     document.querySelectorAll('#games_window .tab').forEach(t => t.classList.remove('active'));
     if (el) el.classList.add('active');
-    document.getElementById('game_tab_stakes').style.display = tab === 'stakes' ? 'block' : 'none';
-    document.getElementById('game_tab_blackjack').style.display = tab === 'blackjack' ? 'block' : 'none';
-    document.getElementById('game_tab_slots').style.display = tab === 'slots' ? 'block' : 'none';
-    document.getElementById('game_tab_snake').style.display = tab === 'snake' ? 'block' : 'none';
-    document.getElementById('game_tab_daily').style.display = tab === 'daily' ? 'block' : 'none';
-    document.getElementById('game_tab_shop').style.display = tab === 'shop' ? 'block' : 'none';
-    
-    // Load data for specific tabs
+    const tabs = ['stakes','blackjack','slots','roulette','crash','coinflip','snake','daily','shop'];
+    tabs.forEach(t => {
+        const panel = document.getElementById('game_tab_' + t);
+        if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    });
     if (tab === 'daily') loadDailyStatus();
     if (tab === 'shop') loadShopItems();
 }
@@ -2333,11 +2615,25 @@ function switchGameTab(tab, el) {
 // ========== BLOOD TOKENS SYSTEM ==========
 let playerTokens = 100;
 
+let playerTokensListener = null;
+
 function loadPlayerTokens() {
     if (!CURRENT_USER || IS_GUEST) return;
-    db.ref('game_stats/tokens/' + CURRENT_USER).once('value', (snap) => {
-        playerTokens = snap.val() || 100;
+    // Remove old listener if exists
+    if (playerTokensListener) {
+        db.ref('game_stats/tokens/' + CURRENT_USER).off('value', playerTokensListener);
+    }
+    // Real-time listener so gifts arrive instantly
+    playerTokensListener = db.ref('game_stats/tokens/' + CURRENT_USER).on('value', (snap) => {
+        const newVal = snap.val() || 100;
+        const changed = newVal !== playerTokens;
+        playerTokens = newVal;
         updateTokenDisplays();
+        // Flash animation when tokens change from external source (gift)
+        if (changed) {
+            const el = document.getElementById('main_token_display');
+            if (el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+        }
     });
 }
 
@@ -2356,7 +2652,15 @@ function updateTokenDisplays() {
 }
 
 // ========== BLACKJACK ==========
-let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjGameOver = false, bjPlayerWins = 0;
+let bjDeck = [], bjPlayerHand = [], bjDealerHand = [], bjGameOver = true, bjPlayerWins = 0, bjProfit = 0;
+let bjBet = 10, bjCurrentBet = 0;
+
+function bjChangeBet(amt) {
+    if (amt === 'max') { bjBet = Math.max(10, playerTokens); }
+    else { bjBet = Math.max(10, bjBet + amt); }
+    bjBet = Math.min(bjBet, playerTokens);
+    document.getElementById('bj_bet_display').textContent = bjBet;
+}
 
 function createDeck() {
     const suits = ['♥', '♦', '♣', '♠'];
@@ -2367,7 +2671,9 @@ function createDeck() {
             deck.push({ suit, value, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
         }
     }
-    return deck.sort(() => Math.random() - 0.5);
+    // Use 6 decks like real casino
+    const shoe = [...deck, ...deck, ...deck, ...deck, ...deck, ...deck];
+    return shoe.sort(() => Math.random() - 0.5);
 }
 
 function getCardValue(card) {
@@ -2410,25 +2716,36 @@ function renderHands(showDealer = false) {
 }
 
 function bjNewGame() {
+    if (playerTokens < bjBet) {
+        document.getElementById('bj_result').innerHTML = '<span style="color:#f00;">Not enough tokens!</span>';
+        return;
+    }
+    
+    bjCurrentBet = bjBet;
+    playerTokens -= bjCurrentBet;
+    updateTokenDisplays();
+    
     bjDeck = createDeck();
     bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
     bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
     bjGameOver = false;
     
-    document.getElementById('bj_result').innerHTML = '';
+    document.getElementById('bj_result').innerHTML = `<span style="color:#ffd700;">Bet: ${bjCurrentBet} tokens</span>`;
     document.getElementById('bj_hit_btn').disabled = false;
     document.getElementById('bj_stand_btn').disabled = false;
+    document.getElementById('bj_double_btn').disabled = false;
+    document.getElementById('bj_double_btn').style.display = 'inline-block';
     
     renderHands(false);
     
-    // Check for blackjack
     if (getHandValue(bjPlayerHand) === 21) {
-        bjStand();
+        bjEndGame('blackjack');
     }
 }
 
 function bjHit() {
     if (bjGameOver) return;
+    document.getElementById('bj_double_btn').style.display = 'none';
     bjPlayerHand.push(bjDeck.pop());
     renderHands(false);
     
@@ -2437,12 +2754,38 @@ function bjHit() {
     }
 }
 
+function bjDouble() {
+    if (bjGameOver || bjPlayerHand.length !== 2) return;
+    if (playerTokens < bjCurrentBet) {
+        document.getElementById('bj_result').innerHTML = '<span style="color:#f00;">Not enough to double!</span>';
+        return;
+    }
+    playerTokens -= bjCurrentBet;
+    bjCurrentBet *= 2;
+    updateTokenDisplays();
+    document.getElementById('bj_result').innerHTML = `<span style="color:#ffd700;">Doubled! Bet: ${bjCurrentBet}</span>`;
+    
+    bjPlayerHand.push(bjDeck.pop());
+    renderHands(false);
+    
+    if (getHandValue(bjPlayerHand) > 21) {
+        bjEndGame('bust');
+    } else {
+        bjStand();
+    }
+}
+
 function bjStand() {
     if (bjGameOver) return;
     
-    // Dealer draws
-    while (getHandValue(bjDealerHand) < 17) {
-        bjDealerHand.push(bjDeck.pop());
+    // Dealer AI: hits on soft 17 (casino standard)
+    while (true) {
+        const val = getHandValue(bjDealerHand);
+        const hasSoftAce = bjDealerHand.some(c => c.value === 'A') && 
+            bjDealerHand.reduce((s, c) => s + getCardValue(c), 0) !== val;
+        if (val < 17 || (val === 17 && hasSoftAce)) {
+            bjDealerHand.push(bjDeck.pop());
+        } else break;
     }
     
     renderHands(true);
@@ -2460,53 +2803,352 @@ function bjEndGame(result) {
     bjGameOver = true;
     document.getElementById('bj_hit_btn').disabled = true;
     document.getElementById('bj_stand_btn').disabled = true;
+    document.getElementById('bj_double_btn').disabled = true;
     renderHands(true);
     
     const resultEl = document.getElementById('bj_result');
-    let msg = '', tokenChange = 0;
+    let payout = 0;
     
     switch(result) {
+        case 'blackjack':
+            payout = Math.floor(bjCurrentBet * 2.5);
+            resultEl.innerHTML = `<span style="color:#ffd700;">🃏 BLACKJACK! +${payout} tokens!</span>`;
+            bjPlayerWins++;
+            break;
         case 'bust':
-            msg = '<span style="color:#f00;">💀 BUST! You lose.</span>';
-            tokenChange = -10;
+            resultEl.innerHTML = `<span style="color:#f00;">💀 BUST! -${bjCurrentBet} tokens</span>`;
             break;
         case 'dealer_bust':
-            msg = '<span style="color:#0f0;">Dealer busts! You win!</span>';
-            tokenChange = 20;
+            payout = bjCurrentBet * 2;
+            resultEl.innerHTML = `<span style="color:#0f0;">Dealer busts! +${payout} tokens!</span>`;
             bjPlayerWins++;
             break;
         case 'win':
-            msg = '<span style="color:#0f0;">You win!</span>';
-            tokenChange = 20;
+            payout = bjCurrentBet * 2;
+            resultEl.innerHTML = `<span style="color:#0f0;">You win! +${payout} tokens!</span>`;
             bjPlayerWins++;
             break;
         case 'lose':
-            msg = '<span style="color:#f00;">Dealer wins.</span>';
-            tokenChange = -10;
+            resultEl.innerHTML = `<span style="color:#f00;">Dealer wins. -${bjCurrentBet} tokens</span>`;
             break;
         case 'push':
-            msg = '<span style="color:#ffd700;">Push - Tie!</span>';
+            payout = bjCurrentBet;
+            resultEl.innerHTML = '<span style="color:#ffd700;">Push - Bet returned</span>';
             break;
     }
     
-    resultEl.innerHTML = msg;
-    playerTokens += tokenChange;
-    if (playerTokens < 0) playerTokens = 0;
+    bjProfit += (payout - bjCurrentBet);
+    playerTokens += payout;
     updateTokenDisplays();
     savePlayerTokens();
     document.getElementById('bj_wins').textContent = bjPlayerWins;
+    document.getElementById('bj_profit').textContent = (bjProfit >= 0 ? '+' : '') + bjProfit;
+    document.getElementById('bj_profit').style.color = bjProfit >= 0 ? '#0f0' : '#f00';
     
-    // Save wins to Firebase
+    // Arena flash
+    const bjAr = document.getElementById('bj_arena');
+    if (bjAr) {
+        bjAr.classList.remove('win-flash','lose-flash');
+        void bjAr.offsetWidth;
+        bjAr.classList.add(payout > 0 ? 'win-flash' : (result === 'push' ? '' : 'lose-flash'));
+        setTimeout(() => bjAr.classList.remove('win-flash','lose-flash'), 800);
+    }
+    
     if (bjPlayerWins > 0 && CURRENT_USER && !IS_GUEST) {
-        db.ref('game_stats/blackjack/' + CURRENT_USER).update({
-            wins: bjPlayerWins,
-            lastWin: Date.now()
-        });
+        db.ref('game_stats/blackjack/' + CURRENT_USER).update({ wins: bjPlayerWins, lastWin: Date.now() });
     }
 }
 
+// ========== ROULETTE ==========
+const rlRedNumbers = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+let rlBet = 10, rlSpinning = false, rlHistory = [];
+
+function rlChangeBet(amt) {
+    if (amt === 'max') { rlBet = Math.max(10, playerTokens); }
+    else { rlBet = Math.max(10, rlBet + amt); }
+    rlBet = Math.min(rlBet, playerTokens);
+    document.getElementById('rl_bet_display').textContent = rlBet;
+}
+
+function rlSpin(betType) {
+    if (rlSpinning || playerTokens < rlBet) {
+        if (playerTokens < rlBet) document.getElementById('rl_result').innerHTML = '<span style="color:#f00;">Not enough tokens!</span>';
+        return;
+    }
+    
+    let betNumber = -1;
+    if (betType === 'number') {
+        betNumber = parseInt(document.getElementById('rl_number_input').value);
+        if (isNaN(betNumber) || betNumber < 0 || betNumber > 36) {
+            document.getElementById('rl_result').innerHTML = '<span style="color:#f00;">Pick a number 0-36</span>';
+            return;
+        }
+    }
+    
+    rlSpinning = true;
+    playerTokens -= rlBet;
+    updateTokenDisplays();
+    
+    const wheel = document.getElementById('rl_wheel');
+    const resultEl = document.getElementById('rl_result');
+    resultEl.innerHTML = '';
+    wheel.classList.add('spinning');
+    
+    // Spin animation
+    let spins = 0;
+    const spinInterval = setInterval(() => {
+        const rn = Math.floor(Math.random() * 37);
+        const isRed = rlRedNumbers.includes(rn);
+        wheel.textContent = rn;
+        wheel.style.background = rn === 0 ? 'radial-gradient(circle, #0a3a0a, #030)' : isRed ? 'radial-gradient(circle, #500, #200)' : 'radial-gradient(circle, #2a2a2a, #111)';
+        spins++;
+        if (spins > 28) {
+            clearInterval(spinInterval);
+            wheel.classList.remove('spinning');
+            
+            const num = Math.floor(Math.random() * 37);
+            const isRedFinal = rlRedNumbers.includes(num);
+            const color = num === 0 ? 'green' : isRedFinal ? 'red' : 'black';
+            
+            wheel.textContent = num;
+            wheel.style.background = num === 0 ? 'radial-gradient(circle, #0a0, #040)' : isRedFinal ? 'radial-gradient(circle, #c00, #500)' : 'radial-gradient(circle, #444, #1a1a1a)';
+            wheel.style.borderColor = '#ffd700';
+            wheel.style.transform = 'scale(1.15)';
+            wheel.style.boxShadow = '0 0 30px ' + (num === 0 ? 'rgba(0,255,0,0.4)' : isRedFinal ? 'rgba(255,0,0,0.4)' : 'rgba(150,150,150,0.3)');
+            setTimeout(() => { wheel.style.transform = 'scale(1)'; wheel.style.boxShadow = ''; }, 400);
+            
+            let payout = 0;
+            if (betType === 'number' && num === betNumber) {
+                payout = rlBet * 36;
+                resultEl.innerHTML = `<span style="color:#ffd700;">🎯 NUMBER HIT! +${payout} tokens!</span>`;
+            } else if (betType === 'green' && num === 0) {
+                payout = rlBet * 14;
+                resultEl.innerHTML = `<span style="color:#0f0;">🟢 GREEN! +${payout} tokens!</span>`;
+            } else if (betType === 'red' && color === 'red') {
+                payout = rlBet * 2;
+                resultEl.innerHTML = `<span style="color:#f88;">🔴 Red wins! +${payout}</span>`;
+            } else if (betType === 'black' && color === 'black') {
+                payout = rlBet * 2;
+                resultEl.innerHTML = `<span style="color:#ccc;">⚫ Black wins! +${payout}</span>`;
+            } else {
+                resultEl.innerHTML = `<span style="color:#555;">${num} ${color} — No win</span>`;
+            }
+            
+            playerTokens += payout;
+            updateTokenDisplays();
+            savePlayerTokens();
+            
+            rlHistory.unshift({ num, color });
+            if (rlHistory.length > 20) rlHistory.pop();
+            const dotsEl = document.getElementById('rl_history_dots');
+            dotsEl.innerHTML = rlHistory.map(h => {
+                const bg = h.color === 'green' ? '#0a0' : h.color === 'red' ? '#900' : '#333';
+                const bc = h.color === 'green' ? '#0f0' : h.color === 'red' ? '#f00' : '#666';
+                return `<div style="width:24px; height:24px; border-radius:50%; background:${bg}; display:flex; align-items:center; justify-content:center; font-size:8px; color:#fff; font-weight:bold; border:1.5px solid ${bc}33;">${h.num}</div>`;
+            }).join('');
+            
+            rlSpinning = false;
+        }
+    }, 65);
+}
+
+// ========== CRASH ==========
+let crBet = 10, crRunning = false, crCashedOut = false, crMultiplier = 1, crCrashPoint = 0;
+let crInterval = null, crHistory = [];
+
+function crChangeBet(amt) {
+    if (amt === 'max') { crBet = Math.max(10, playerTokens); }
+    else { crBet = Math.max(10, crBet + amt); }
+    crBet = Math.min(crBet, playerTokens);
+    document.getElementById('cr_bet_display').textContent = crBet;
+}
+
+function crStart() {
+    if (crRunning || playerTokens < crBet) {
+        if (playerTokens < crBet) document.getElementById('cr_result').innerHTML = '<span style="color:#f00;">Not enough tokens!</span>';
+        return;
+    }
+    
+    playerTokens -= crBet;
+    updateTokenDisplays();
+    
+    crRunning = true;
+    crCashedOut = false;
+    crMultiplier = 1.00;
+    
+    // Generate crash point (house edge ~4%)
+    const r = Math.random();
+    crCrashPoint = r < 0.04 ? 1.00 : Math.max(1.01, parseFloat((0.96 / (1 - r)).toFixed(2)));
+    if (crCrashPoint > 100) crCrashPoint = 100;
+    
+    document.getElementById('cr_start_btn').style.display = 'none';
+    document.getElementById('cr_cashout_btn').style.display = 'inline-block';
+    document.getElementById('cr_result').innerHTML = '';
+    
+    const canvas = document.getElementById('crash_canvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+    const multEl = document.getElementById('cr_multiplier');
+    let dataPoints = [];
+    let tick = 0;
+    
+    crInterval = setInterval(() => {
+        tick++;
+        crMultiplier = parseFloat((1 + (tick * 0.01) * (1 + tick * 0.002)).toFixed(2));
+        
+        if (crMultiplier >= crCrashPoint) {
+            crMultiplier = crCrashPoint;
+            clearInterval(crInterval);
+            crRunning = false;
+            
+            multEl.textContent = crMultiplier.toFixed(2) + 'x';
+            multEl.className = 'cr-multiplier crashed';
+            
+            if (!crCashedOut) {
+                document.getElementById('cr_result').innerHTML = `<span style="color:#f00;">💥 CRASHED at ${crCrashPoint.toFixed(2)}x! -${crBet} tokens</span>`;
+            }
+            
+            crHistory.unshift(crCrashPoint);
+            if (crHistory.length > 12) crHistory.pop();
+            document.getElementById('cr_history').innerHTML = crHistory.map(h => {
+                const c = h < 1.5 ? '#f00' : h < 3 ? '#ffa500' : h < 10 ? '#0f0' : '#ffd700';
+                return `<span style="color:${c}; font-size:10px; font-weight:bold; padding:2px 5px; background:#111; border-radius:3px; border:1px solid ${c}33;">${h.toFixed(2)}x</span>`;
+            }).join('');
+            
+            document.getElementById('cr_start_btn').style.display = 'inline-block';
+            document.getElementById('cr_cashout_btn').style.display = 'none';
+            savePlayerTokens();
+            return;
+        }
+        
+        multEl.textContent = crMultiplier.toFixed(2) + 'x';
+        multEl.className = 'cr-multiplier' + (crMultiplier < 2 ? '' : crMultiplier < 5 ? ' hot' : ' fire');
+        
+        // Draw graph
+        if (ctx) {
+            dataPoints.push(crMultiplier);
+            ctx.fillStyle = '#050000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 0.5;
+            for (let y = 0; y < canvas.height; y += 30) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+            
+            if (dataPoints.length > 1) {
+                const maxM = Math.max(...dataPoints, 2);
+                ctx.beginPath();
+                ctx.strokeStyle = crMultiplier < 2 ? '#0f0' : crMultiplier < 5 ? '#ffa500' : '#ffd700';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < dataPoints.length; i++) {
+                    const x = (i / Math.max(dataPoints.length - 1, 1)) * canvas.width;
+                    const y = canvas.height - ((dataPoints[i] - 1) / (maxM - 1)) * (canvas.height - 20) - 10;
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+    }, 50);
+}
+
+function crCashout() {
+    if (!crRunning || crCashedOut) return;
+    crCashedOut = true;
+    
+    const payout = Math.floor(crBet * crMultiplier);
+    playerTokens += payout;
+    updateTokenDisplays();
+    
+    document.getElementById('cr_result').innerHTML = `<span style="color:#0f0;">💰 Cashed out at ${crMultiplier.toFixed(2)}x! +${payout} tokens</span>`;
+    document.getElementById('cr_cashout_btn').style.display = 'none';
+    document.getElementById('cr_start_btn').style.display = 'inline-block';
+}
+
+// ========== COIN FLIP ==========
+let cfBet = 10, cfFlipping = false, cfStreak = 0, cfBestStreak = 0, cfWins = 0, cfLosses = 0, cfHistory = [];
+
+function cfChangeBet(amt) {
+    if (amt === 'max') { cfBet = Math.max(10, playerTokens); }
+    else { cfBet = Math.max(10, cfBet + amt); }
+    cfBet = Math.min(cfBet, playerTokens);
+    document.getElementById('cf_bet_display').textContent = cfBet;
+}
+
+function cfFlip(choice) {
+    if (cfFlipping || playerTokens < cfBet) {
+        if (playerTokens < cfBet) document.getElementById('cf_result').innerHTML = '<span style="color:#f00;">Not enough tokens!</span>';
+        return;
+    }
+    
+    cfFlipping = true;
+    playerTokens -= cfBet;
+    updateTokenDisplays();
+    
+    document.getElementById('cf_heads_btn').disabled = true;
+    document.getElementById('cf_tails_btn').disabled = true;
+    
+    const coin = document.getElementById('cf_coin');
+    const resultEl = document.getElementById('cf_result');
+    resultEl.innerHTML = '';
+    coin.classList.remove('win','lose');
+    coin.classList.add('flipping');
+    
+    // Flip animation
+    let flips = 0;
+    const flipInterval = setInterval(() => {
+        coin.textContent = flips % 2 === 0 ? '🩸' : '💀';
+        flips++;
+        
+        if (flips > 12) {
+            clearInterval(flipInterval);
+            coin.classList.remove('flipping');
+            
+            const result = Math.random() < 0.5 ? 'heads' : 'tails';
+            coin.textContent = result === 'heads' ? '🩸' : '💀';
+            
+            const won = choice === result;
+            const cfAr = document.getElementById('cf_arena');
+            
+            if (won) {
+                const payout = cfBet * 2;
+                playerTokens += payout;
+                cfStreak++;
+                cfWins++;
+                if (cfStreak > cfBestStreak) cfBestStreak = cfStreak;
+                resultEl.innerHTML = `<span style="color:#0f0;">${result === 'heads' ? '🩸' : '💀'} ${result.toUpperCase()}! +${payout} tokens</span>`;
+                coin.classList.add('win');
+                if (cfAr) { cfAr.classList.add('win-flash'); setTimeout(() => cfAr.classList.remove('win-flash'), 800); }
+            } else {
+                cfStreak = 0;
+                cfLosses++;
+                resultEl.innerHTML = `<span style="color:#f00;">${result === 'heads' ? '🩸' : '💀'} ${result.toUpperCase()} — You lose</span>`;
+                coin.classList.add('lose');
+                if (cfAr) { cfAr.classList.add('lose-flash'); setTimeout(() => cfAr.classList.remove('lose-flash'), 800); }
+            }
+            
+            cfHistory.unshift({ result, won });
+            if (cfHistory.length > 20) cfHistory.pop();
+            
+            updateTokenDisplays();
+            savePlayerTokens();
+            
+            document.getElementById('cf_streak').textContent = cfStreak;
+            document.getElementById('cf_best_streak').textContent = cfBestStreak;
+            document.getElementById('cf_record').textContent = cfWins + '/' + cfLosses;
+            document.getElementById('cf_history').innerHTML = cfHistory.map(h => {
+                const bg = h.won ? '#0a0' : '#a00';
+                return `<div style="width:20px; height:20px; border-radius:50%; background:${bg}; display:flex; align-items:center; justify-content:center; font-size:9px; border:1px solid ${h.won ? '#0f0' : '#f00'}33;">${h.result === 'heads' ? '🩸' : '💀'}</div>`;
+            }).join('');
+            
+            document.getElementById('cf_heads_btn').disabled = false;
+            document.getElementById('cf_tails_btn').disabled = false;
+            cfFlipping = false;
+        }
+    }, 90);
+}
+
 // ========== SLOTS ==========
-const slotSymbols = ['V', 'B', 'C', 'X', 'M', 'S']; // Vampire, Blood, Coffin, X, Moon, Stake
+const slotSymbols = ['🧛', '🩸', '⚰️', '💀', '🌙', '🗡️'];
 let slotsSpinning = false;
 
 function spinSlots() {
@@ -2560,22 +3202,33 @@ function spinSlots() {
             
             // Calculate winnings (max 500)
             let winnings = 0;
+            const arena = document.getElementById('slots_arena');
+            [slot1,slot2,slot3].forEach(s => s.classList.remove('win-highlight'));
+            
             if (results[0] === results[1] && results[1] === results[2]) {
                 // Three of a kind
                 switch(results[0]) {
-                    case 'V': winnings = 500; break;  // Vampire - jackpot
-                    case 'B': winnings = 250; break;  // Blood
-                    case 'C': winnings = 100; break;  // Coffin
-                    case 'X': winnings = 50; break;   // X
+                    case '🧛': winnings = 500; break;
+                    case '🩸': winnings = 250; break;
+                    case '⚰️': winnings = 100; break;
+                    case '💀': winnings = 50; break;
                     default: winnings = 25; break;
                 }
-                resultEl.innerHTML = `<span style="color:#ffd700;">JACKPOT! +${winnings} tokens!</span>`;
+                resultEl.innerHTML = `<span style="color:#ffd700;">🎰 JACKPOT! +${winnings} tokens!</span>`;
+                [slot1,slot2,slot3].forEach(s => s.classList.add('win-highlight'));
+                if (arena) arena.classList.add('win-flash');
+                setTimeout(() => { if (arena) arena.classList.remove('win-flash'); }, 800);
             } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
                 // Two of a kind
                 winnings = 15;
                 resultEl.innerHTML = `<span style="color:#0f0;">Match! +${winnings} tokens</span>`;
+                if (results[0] === results[1]) { slot1.classList.add('win-highlight'); slot2.classList.add('win-highlight'); }
+                if (results[1] === results[2]) { slot2.classList.add('win-highlight'); slot3.classList.add('win-highlight'); }
+                if (results[0] === results[2]) { slot1.classList.add('win-highlight'); slot3.classList.add('win-highlight'); }
             } else {
-                resultEl.innerHTML = '<span style="color:#888;">No match</span>';
+                resultEl.innerHTML = '<span style="color:#555;">No match</span>';
+                if (arena) arena.classList.add('lose-flash');
+                setTimeout(() => { if (arena) arena.classList.remove('lose-flash'); }, 800);
             }
             
             playerTokens += winnings;
