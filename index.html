@@ -127,20 +127,42 @@
         .club-members { color: #888; font-size: 10px; margin-top: 5px; }
         .club-badge { display: inline-block; padding: 2px 6px; background: #200; border: 1px solid #500; color: #f88; font-size: 9px; border-radius: 3px; margin: 2px; }
         .dm-list { max-height: 400px; overflow-y: auto; }
-        .dm-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #0a0000; border: 1px solid #300; margin-bottom: 5px; cursor: pointer; transition: all 0.2s; }
-        .dm-item:hover { background: #150000; border-color: #500; }
-        .dm-item.unread { border-left: 3px solid #d40000; }
-        .dm-avatar { width: 40px; height: 40px; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
-        .dm-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .dm-preview { flex: 1; overflow: hidden; }
-        .dm-name { color: #d40000; font-weight: bold; font-size: 12px; }
-        .dm-last { color: #666; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dm-time { color: #555; font-size: 9px; }
-        .msg-bubble { max-width: 70%; padding: 8px 12px; margin: 5px; border-radius: 12px; font-size: 12px; }
-        .msg-bubble.sent { background: #300; color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
-        .msg-bubble.received { background: #111; color: #ddd; border-bottom-left-radius: 4px; }
-        .friend-item { display: flex; align-items: center; gap: 10px; padding: 8px; background: #0a0000; border: 1px solid #300; margin-bottom: 5px; }
-        .friend-actions { margin-left: auto; display: flex; gap: 5px; }
+        .dm-item { display:flex; align-items:center; gap:12px; padding:12px 15px; background:linear-gradient(135deg, #0a0000, #080000); border:1px solid #1a0808; border-radius:8px; margin-bottom:6px; cursor:pointer; transition:all 0.3s; }
+        .dm-item:hover { background:linear-gradient(135deg, #150505, #0d0000); border-color:#500; transform:translateX(3px); }
+        .dm-item.unread { border-left:3px solid #d40000; box-shadow:0 0 8px rgba(212,0,0,0.15); }
+        .dm-avatar { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, #1a0808, #0a0000); border:2px solid #3a0a0a; display:flex; align-items:center; justify-content:center; font-size:18px; overflow:hidden; flex-shrink:0; transition:border-color 0.3s; }
+        .dm-item:hover .dm-avatar { border-color:#700; }
+        .dm-avatar img { width:100%; height:100%; object-fit:cover; }
+        .dm-preview { flex:1; overflow:hidden; }
+        .dm-name { color:#d40000; font-weight:bold; font-size:12px; text-shadow:0 0 6px rgba(212,0,0,0.2); }
+        .dm-last { color:#666; font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+        .dm-time { color:#444; font-size:9px; font-family:'Courier New',monospace; }
+        .dm-badge { background:#d40000; color:#fff; font-size:8px; padding:2px 6px; border-radius:10px; font-weight:bold; min-width:16px; text-align:center; }
+        .msg-bubble { max-width:70%; padding:10px 14px; margin:4px 0; border-radius:16px; font-size:12px; line-height:1.5; position:relative; }
+        .msg-bubble.sent { background:linear-gradient(135deg, #3a0000, #250000); color:#fff; margin-left:auto; border-bottom-right-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.3); }
+        .msg-bubble.received { background:linear-gradient(135deg, #111, #0a0a0a); color:#ddd; border-bottom-left-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+        .msg-bubble .msg-time { font-size:8px; color:#444; margin-top:4px; display:block; }
+        .friend-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:linear-gradient(135deg, #0a0000, #080000); border:1px solid #1a0808; border-radius:8px; margin-bottom:6px; transition:all 0.3s; }
+        .friend-item:hover { background:linear-gradient(135deg, #150505, #0d0000); border-color:#400; }
+        .friend-actions { margin-left:auto; display:flex; gap:6px; }
+        .friend-actions button { background:linear-gradient(180deg, #2a0a0a, #1a0000); border:1px solid #500; color:#d40000; padding:5px 10px; border-radius:6px; cursor:pointer; font-size:10px; transition:all 0.2s; }
+        .friend-actions button:hover { background:linear-gradient(180deg, #3a0a0a, #2a0000); border-color:#700; }
+        .msg-section-title { color:#d40000; font-size:14px; font-weight:bold; margin:0 0 12px 0; padding-bottom:8px; border-bottom:1px solid #2a0a0a; letter-spacing:0.5px; }
+        .msg-input-bar { padding:12px; background:linear-gradient(180deg, #0a0000, #050000); border-top:1px solid #2a0a0a; }
+        .msg-input-bar input { background:#050000 !important; border:1px solid #2a0a0a !important; border-radius:20px !important; padding:10px 15px !important; color:#ddd !important; font-size:12px !important; }
+        .msg-input-bar input:focus { border-color:#500 !important; box-shadow:0 0 8px rgba(212,0,0,0.1); }
+        .msg-send-btn { background:linear-gradient(180deg, #500, #300) !important; border:1px solid #700 !important; border-radius:20px !important; padding:8px 18px !important; color:#fff !important; font-size:11px !important; cursor:pointer; transition:all 0.2s; }
+        .msg-send-btn:hover { background:linear-gradient(180deg, #700, #500) !important; }
+        .msg-chat-header { padding:12px 15px; background:linear-gradient(180deg, #0d0000, #080000); border-bottom:1px solid #2a0a0a; display:flex; align-items:center; gap:12px; }
+        .msg-chat-header .back-btn { background:none; border:1px solid #3a0a0a; color:#888; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:11px; transition:all 0.2s; }
+        .msg-chat-header .back-btn:hover { background:#1a0808; border-color:#500; color:#d40000; }
+        .msg-sidebar { width:150px; background:linear-gradient(180deg, #080000, #050000); border-right:1px solid #2a0a0a; padding:8px 0; }
+        .msg-sidebar-item { padding:11px 14px; color:#666; font-size:11px; cursor:pointer; border-bottom:1px solid #1a0808; transition:all 0.3s; position:relative; }
+        .msg-sidebar-item:hover { background:linear-gradient(90deg, #150505, transparent); color:#d40000; }
+        .msg-sidebar-item.active { background:linear-gradient(90deg, #200000, transparent); color:#d40000; border-left:3px solid #d40000; }
+        .freq-card { background:linear-gradient(135deg, #0a0000, #060000); border:1px solid #2a0a0a; border-radius:8px; padding:12px; margin-bottom:6px; display:flex; align-items:center; gap:12px; transition:all 0.3s; }
+        .freq-card:hover { border-color:#500; }
+        .freq-card .freq-actions { display:flex; gap:6px; margin-left:auto; }
         .stakes-grid { display: grid; grid-template-columns: repeat(9, 26px); gap: 1px; justify-content: center; }
         .stakes-cell { width: 26px; height: 26px; background: #222; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .stakes-cell.revealed { background: #111; }
@@ -852,6 +874,10 @@
             <div class="mgmt-sidebar-item active" onclick="switchVIPTab('lounge', this)" style="border-color:#ffd700;">🏠 Lounge</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('watchplay', this)" style="border-color:#ffd700;">📺 Watch Party</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('highrollers', this)" style="border-color:#ffd700;">🎰 High Rollers</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('baccarat', this)" style="border-color:#ffd700;">🃏 Baccarat</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('scratch', this)" style="border-color:#ffd700;">🎟️ Scratch Cards</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('war', this)" style="border-color:#ffd700;">⚔️ War</div>
+            <div class="mgmt-sidebar-item" onclick="switchVIPTab('horses', this)" style="border-color:#ffd700;">🏇 Horse Race</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('vipchat', this)" style="border-color:#ffd700;">💬 VIP Chat</div>
             <div class="mgmt-sidebar-item" onclick="switchVIPTab('perks', this)" style="border-color:#ffd700;">🎁 Perks</div>
         </div>
@@ -885,16 +911,20 @@
             <!-- WATCH PARTY -->
             <div id="vip_tab_watchplay" style="display:none;">
                 <h3 style="color:#ffd700; margin:0 0 10px 0;">📺 Watch Together</h3>
-                <p style="color:#888; font-size:10px;">Paste a YouTube URL and watch with other VIPs in sync.</p>
+                <p style="color:#888; font-size:10px;">Add videos to the queue. Everyone watches in order.</p>
                 <div style="display:flex; gap:8px; margin:10px 0;">
                     <input type="text" id="vip_yt_url" class="ie-input" placeholder="YouTube URL..." style="flex:1; margin:0; border-color:#553300;">
-                    <button class="g-btn warning" onclick="vipPlayVideo()">▶ Play</button>
+                    <button class="g-btn warning" onclick="vipQueueVideo()">+ Queue</button>
                 </div>
-                <div id="vip_video_player" style="background:#000; border:1px solid #332200; border-radius:6px; width:100%; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; color:#555; font-size:12px;">Paste a YouTube URL above to start watching</div>
+                <div id="vip_video_player" style="background:#000; border:1px solid #332200; border-radius:6px; width:100%; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; color:#555; font-size:12px;">No video playing</div>
                 <div style="margin-top:10px;">
-                    <div style="color:#888; font-size:9px; margin-bottom:4px;">Now Watching</div>
-                    <div id="vip_now_playing" style="color:#ffd700; font-size:11px;">Nothing playing</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <div style="color:#888; font-size:9px; text-transform:uppercase; letter-spacing:1px;">Queue</div>
+                        <button class="g-btn small" style="font-size:8px;" onclick="vipSkipVideo()">⏭ Skip</button>
+                    </div>
+                    <div id="vip_video_queue" style="background:#050300; border:1px solid #221100; border-radius:6px; padding:6px; max-height:120px; overflow-y:auto; font-size:10px; color:#888;">Queue is empty</div>
                 </div>
+                <div style="margin-top:6px; color:#555; font-size:9px;">Now Playing: <span id="vip_now_playing" style="color:#ffd700;">Nothing</span></div>
             </div>
             <!-- HIGH ROLLERS -->
             <div id="vip_tab_highrollers" style="display:none;">
@@ -916,6 +946,90 @@
                     <button class="g-btn large" onclick="hrFlip('tails')">💀 TAILS</button>
                 </div>
             </div>
+            <!-- BACCARAT -->
+            <div id="vip_tab_baccarat" style="display:none;">
+                <h3 style="color:#ffd700; margin:0 0 10px 0;">🃏 VIP Baccarat</h3>
+                <p style="color:#888; font-size:10px;">Bet Player, Banker, or Tie. Closest to 9 wins.</p>
+                <div class="g-bet-bar" style="background:rgba(100,80,0,0.1);">
+                    <span class="bet-label" style="color:#aa8800;">Bet</span>
+                    <button class="g-btn small" onclick="bacChangeBet(-50)">−</button>
+                    <span id="bac_bet_display" class="bet-value" style="color:#ffd700;">50</span>
+                    <button class="g-btn small" onclick="bacChangeBet(50)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="bacChangeBet('max')">MAX</button>
+                </div>
+                <div class="g-arena" style="text-align:center; border-color:#332200;">
+                    <div style="display:flex; justify-content:center; gap:30px; margin-bottom:10px;">
+                        <div><div style="color:#888; font-size:9px; margin-bottom:4px;">PLAYER</div><div id="bac_player_cards" style="display:flex; gap:4px; justify-content:center; min-height:50px;"></div><div id="bac_player_score" style="color:#0ff; font-size:18px; font-weight:bold; margin-top:4px;">—</div></div>
+                        <div style="color:#444; font-size:10px; align-self:center;">VS</div>
+                        <div><div style="color:#888; font-size:9px; margin-bottom:4px;">BANKER</div><div id="bac_banker_cards" style="display:flex; gap:4px; justify-content:center; min-height:50px;"></div><div id="bac_banker_score" style="color:#ff6600; font-size:18px; font-weight:bold; margin-top:4px;">—</div></div>
+                    </div>
+                    <div class="g-result" id="bac_result"></div>
+                </div>
+                <div class="g-actions">
+                    <button class="g-btn primary" onclick="bacDeal('player')">👤 PLAYER (1.85x)</button>
+                    <button class="g-btn warning" onclick="bacDeal('banker')">🏦 BANKER (1.80x)</button>
+                    <button class="g-btn success" onclick="bacDeal('tie')">🤝 TIE (7x)</button>
+                </div>
+            </div>
+            <!-- SCRATCH CARDS -->
+            <div id="vip_tab_scratch" style="display:none;">
+                <h3 style="color:#ffd700; margin:0 0 10px 0;">🎟️ Scratch Cards</h3>
+                <p style="color:#888; font-size:10px;">Scratch 9 tiles. Match 3 symbols to win big!</p>
+                <div style="text-align:center; margin:10px 0;">
+                    <div style="color:#ffd700; font-size:12px;">Cost: <span id="scratch_cost">50</span> tokens per card</div>
+                </div>
+                <div class="g-arena" style="text-align:center; border-color:#332200; padding:15px;">
+                    <div id="scratch_grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; max-width:240px; margin:0 auto;"></div>
+                    <div class="g-result" id="scratch_result" style="margin-top:10px;"></div>
+                </div>
+                <div class="g-actions">
+                    <button class="g-btn warning large" id="scratch_buy_btn" onclick="scratchBuy()">🎟️ BUY CARD (50 tokens)</button>
+                    <button class="g-btn primary" id="scratch_reveal_btn" style="display:none;" onclick="scratchRevealAll()">👁️ REVEAL ALL</button>
+                </div>
+            </div>
+            <!-- WAR -->
+            <div id="vip_tab_war" style="display:none;">
+                <h3 style="color:#ffd700; margin:0 0 10px 0;">⚔️ Blood War</h3>
+                <p style="color:#888; font-size:10px;">Highest card wins. Tie = War (double or nothing).</p>
+                <div class="g-bet-bar" style="background:rgba(100,80,0,0.1);">
+                    <span class="bet-label" style="color:#aa8800;">Bet</span>
+                    <button class="g-btn small" onclick="warChangeBet(-50)">−</button>
+                    <span id="war_bet_display" class="bet-value" style="color:#ffd700;">50</span>
+                    <button class="g-btn small" onclick="warChangeBet(50)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="warChangeBet('max')">MAX</button>
+                </div>
+                <div class="g-arena" style="text-align:center; border-color:#332200;">
+                    <div style="display:flex; justify-content:center; gap:40px; margin:10px 0;">
+                        <div><div style="color:#888; font-size:9px; margin-bottom:6px;">YOU</div><div id="war_your_card" style="width:60px; height:80px; background:linear-gradient(135deg,#1a0808,#0a0000); border:2px solid #332200; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px; transition:all 0.3s;">🂠</div></div>
+                        <div style="align-self:center; color:#ffd700; font-size:16px; font-weight:bold;">⚔️</div>
+                        <div><div style="color:#888; font-size:9px; margin-bottom:6px;">DEALER</div><div id="war_dealer_card" style="width:60px; height:80px; background:linear-gradient(135deg,#1a0808,#0a0000); border:2px solid #332200; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px; transition:all 0.3s;">🂠</div></div>
+                    </div>
+                    <div id="war_status" style="color:#ffd700; font-size:12px; min-height:20px;"></div>
+                    <div class="g-result" id="war_result"></div>
+                </div>
+                <div class="g-actions">
+                    <button class="g-btn warning large" id="war_deal_btn" onclick="warDeal()">⚔️ BATTLE</button>
+                    <button class="g-btn success large" id="war_war_btn" style="display:none;" onclick="warGoToWar()">🔥 GO TO WAR!</button>
+                    <button class="g-btn" id="war_surrender_btn" style="display:none;" onclick="warSurrender()">🏳️ Surrender</button>
+                </div>
+            </div>
+            <!-- HORSE RACING -->
+            <div id="vip_tab_horses" style="display:none;">
+                <h3 style="color:#ffd700; margin:0 0 10px 0;">🏇 Blood Derby</h3>
+                <p style="color:#888; font-size:10px;">Pick a horse. Watch them race. Collect your winnings!</p>
+                <div class="g-bet-bar" style="background:rgba(100,80,0,0.1);">
+                    <span class="bet-label" style="color:#aa8800;">Bet</span>
+                    <button class="g-btn small" onclick="hrseChangeBet(-50)">−</button>
+                    <span id="hrse_bet_display" class="bet-value" style="color:#ffd700;">50</span>
+                    <button class="g-btn small" onclick="hrseChangeBet(50)">+</button>
+                    <button class="g-btn small" style="font-size:8px;" onclick="hrseChangeBet('max')">MAX</button>
+                </div>
+                <div class="g-arena" style="border-color:#332200; padding:8px;">
+                    <div id="hrse_track" style="font-family:monospace; font-size:11px; line-height:1.8;"></div>
+                    <div class="g-result" id="hrse_result" style="margin-top:8px;"></div>
+                </div>
+                <div id="hrse_odds" style="display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-top:8px;"></div>
+            </div>
             <!-- VIP CHAT -->
             <div id="vip_tab_vipchat" style="display:none;">
                 <h3 style="color:#ffd700; margin:0 0 10px 0;">💬 VIP Chat</h3>
@@ -928,26 +1042,38 @@
             <!-- PERKS -->
             <div id="vip_tab_perks" style="display:none;">
                 <h3 style="color:#ffd700; margin:0 0 10px 0;">🎁 VIP Perks</h3>
-                <div style="display:grid; gap:10px;">
-                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:12px; display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:24px;">🏷️</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:12px;">Gold VIP Chat Tag</div><div style="color:#888; font-size:9px;">Exclusive gold VIP tag in chat</div></div>
+                <div style="display:grid; gap:8px; grid-template-columns:1fr 1fr;">
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🏷️</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Gold VIP Tag</div><div style="color:#888; font-size:8px;">Exclusive chat tag</div></div>
                     </div>
-                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:12px; display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:24px;">🎰</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:12px;">High Rollers Access</div><div style="color:#888; font-size:9px;">Bet up to 10,000 tokens per flip</div></div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🎰</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">High Rollers</div><div style="color:#888; font-size:8px;">Bet up to 10,000</div></div>
                     </div>
-                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:12px; display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:24px;">📺</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:12px;">Watch Together</div><div style="color:#888; font-size:9px;">Sync YouTube with VIP friends</div></div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🃏</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">VIP Baccarat</div><div style="color:#888; font-size:8px;">Classic card game</div></div>
                     </div>
-                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:12px; display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:24px;">💬</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:12px;">Private VIP Chat</div><div style="color:#888; font-size:9px;">Exclusive chat channel</div></div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🎟️</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Scratch Cards</div><div style="color:#888; font-size:8px;">Instant win tickets</div></div>
                     </div>
-                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:12px; display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:24px;">✨</span>
-                        <div><div style="color:#ffd700; font-weight:bold; font-size:12px;">2x Daily Bonus</div><div style="color:#888; font-size:9px;">Double rewards from daily spin</div></div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">⚔️</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Blood War</div><div style="color:#888; font-size:8px;">Double or nothing</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">🏇</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Blood Derby</div><div style="color:#888; font-size:8px;">Horse racing</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">📺</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Watch Party</div><div style="color:#888; font-size:8px;">Queue-based YouTube</div></div>
+                    </div>
+                    <div style="background:#0a0800; border:1px solid #332200; border-radius:6px; padding:10px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:20px;">💬</span>
+                        <div><div style="color:#ffd700; font-weight:bold; font-size:11px;">Private Chat</div><div style="color:#888; font-size:8px;">VIP-only channel</div></div>
                     </div>
                 </div>
             </div>
@@ -1437,35 +1563,39 @@
 <!-- MESSAGES WINDOW -->
 <div class="window" id="messages_window" style="left:180px; top:60px; width:700px; height:520px; display:none;">
     <div class="title-bar"><div class="title-bar-text">💬 Messages</div><div class="title-bar-controls"><button aria-label="Close" onclick="toggleWin('messages_window')"></button></div></div>
-    <div class="window-body" style="display:flex; height:100%;">
-        <div class="mgmt-sidebar">
-            <div class="mgmt-sidebar-item active" onclick="switchMsgTab('dms', this)">📨 DMs</div>
-            <div class="mgmt-sidebar-item" onclick="switchMsgTab('groups', this)">👥 Groups</div>
-            <div class="mgmt-sidebar-item" onclick="switchMsgTab('friends', this)">🤝 Friends</div>
-            <div class="mgmt-sidebar-item" onclick="switchMsgTab('requests', this)">📩 Requests <span id="friend_req_count" style="color:#f00;"></span></div>
+    <div class="window-body" style="display:flex; height:calc(100% - 25px); padding:0; overflow:hidden;">
+        <div class="msg-sidebar">
+            <div class="msg-sidebar-item active" onclick="switchMsgTab('dms', this)">📨 DMs</div>
+            <div class="msg-sidebar-item" onclick="switchMsgTab('groups', this)">👥 Groups</div>
+            <div class="msg-sidebar-item" onclick="switchMsgTab('friends', this)">🤝 Friends</div>
+            <div class="msg-sidebar-item" onclick="switchMsgTab('requests', this)">📩 Requests <span id="friend_req_count" style="color:#f00; font-size:10px;"></span></div>
         </div>
-        <div class="mgmt-content" style="flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column;">
-            <div id="msg_tab_dms" style="flex:1; display:flex; flex-direction:column;">
+        <div style="flex:1; overflow:hidden; display:flex; flex-direction:column; background:linear-gradient(180deg, #0a0000, #050000);">
+            <!-- DMs Tab -->
+            <div id="msg_tab_dms" style="flex:1; display:flex; flex-direction:column; min-height:0;">
                 <div id="dm_list_view" style="flex:1; overflow-y:auto; padding:15px;">
-                    <h3 style="color:#d40000; margin:0 0 15px 0;">Direct Messages</h3>
+                    <div class="msg-section-title">Direct Messages</div>
                     <div id="dm_conversations" class="dm-list"></div>
                 </div>
-                <div id="dm_chat_view" style="display:none; flex:1; flex-direction:column;">
-                    <div style="padding:10px; background:#0a0000; border-bottom:1px solid #400; display:flex; align-items:center; gap:10px;">
-                        <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="closeDMChat()">← Back</button>
-                        <div id="dm_chat_avatar" style="width:30px; height:30px; border-radius:50%; background:#111; border:2px solid #500; display:flex; align-items:center; justify-content:center; font-size:14px; overflow:hidden;">🦇</div>
-                        <span id="dm_chat_name" style="color:#d40000; font-weight:bold;"></span>
-                    </div>
-                    <div id="dm_messages" style="flex:1; overflow-y:auto; padding:10px;"></div>
-                    <div style="padding:10px; background:#111; border-top:1px solid #400;">
-                        <div style="display:flex; gap:5px; align-items:center;">
-                            <input type="text" id="dm_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message or paste image/gif URL..." onkeypress="if(event.key==='Enter')sendDM()">
-                            <button class="ie-btn" style="width:auto; padding:8px 12px; font-size:11px;" onclick="showDMMediaInput()" title="Send Image/GIF/Video">📎</button>
-                            <button class="ie-btn" style="width:auto; padding:8px 15px;" onclick="sendDM()">Send</button>
+                <div id="dm_chat_view" style="display:none; flex:1; flex-direction:column; min-height:0;">
+                    <div class="msg-chat-header">
+                        <button class="back-btn" onclick="closeDMChat()">← Back</button>
+                        <div id="dm_chat_avatar" style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#1a0808,#0a0000); border:2px solid #3a0a0a; display:flex; align-items:center; justify-content:center; font-size:14px; overflow:hidden;">🦇</div>
+                        <div>
+                            <span id="dm_chat_name" style="color:#d40000; font-weight:bold; font-size:12px;"></span>
+                            <div style="color:#444; font-size:9px;">Direct Message</div>
                         </div>
-                        <div id="dm_media_preview" style="display:none; margin-top:8px; padding:8px; background:#0a0000; border:1px solid #400; border-radius:4px;">
+                    </div>
+                    <div id="dm_messages" style="flex:1; overflow-y:auto; padding:12px; min-height:0;"></div>
+                    <div class="msg-input-bar">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="text" id="dm_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendDM()">
+                            <button class="ie-btn" style="width:auto; padding:8px 12px; font-size:11px; background:#222; border-color:#333; border-radius:8px;" onclick="showDMMediaInput()" title="Attach">📎</button>
+                            <button class="msg-send-btn" onclick="sendDM()">Send</button>
+                        </div>
+                        <div id="dm_media_preview" style="display:none; margin-top:8px; padding:8px; background:#0a0000; border:1px solid #2a0a0a; border-radius:8px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                                <span style="color:#888; font-size:10px;">Media URL:</span>
+                                <span style="color:#666; font-size:9px;">📎 Media URL:</span>
                                 <button onclick="document.getElementById('dm_media_preview').style.display='none'; document.getElementById('dm_media_url').value='';" style="background:none; border:none; color:#f00; cursor:pointer; font-size:12px;">✕</button>
                             </div>
                             <input type="text" id="dm_media_url" class="ie-input" style="margin:0; font-size:10px;" placeholder="Paste image/gif/mp4 URL here...">
@@ -1473,56 +1603,63 @@
                     </div>
                 </div>
             </div>
-            <div id="msg_tab_groups" style="display:none; flex:1; flex-direction:column;">
+            <!-- Groups Tab -->
+            <div id="msg_tab_groups" style="display:none; flex:1; flex-direction:column; min-height:0;">
                 <div id="group_list_view" style="flex:1; overflow-y:auto; padding:15px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h3 style="color:#d40000; margin:0;">Group Chats</h3>
-                        <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="showCreateGroup()">+ New Group</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <div class="msg-section-title" style="margin:0; border:none; padding:0;">Group Chats</div>
+                        <button style="background:linear-gradient(180deg,#2a0a0a,#1a0000); border:1px solid #500; color:#d40000; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:10px; transition:all 0.2s;" onmouseenter="this.style.borderColor='#700'" onmouseleave="this.style.borderColor='#500'" onclick="showCreateGroup()">+ New Group</button>
                     </div>
                     <div id="group_conversations" class="dm-list"></div>
                 </div>
-                <div id="group_chat_view" style="display:none; flex:1; flex-direction:column;">
-                    <div style="padding:10px; background:#0a0000; border-bottom:1px solid #400; display:flex; align-items:center; gap:10px;">
-                        <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="closeGroupChat()">← Back</button>
-                        <span id="group_chat_name" style="color:#d40000; font-weight:bold;"></span>
-                        <button class="ie-btn" style="width:auto; padding:5px 10px; margin-left:auto;" onclick="showGroupMembers()">👥</button>
+                <div id="group_chat_view" style="display:none; flex:1; flex-direction:column; min-height:0;">
+                    <div class="msg-chat-header">
+                        <button class="back-btn" onclick="closeGroupChat()">← Back</button>
+                        <span id="group_chat_name" style="color:#d40000; font-weight:bold; font-size:12px;"></span>
+                        <button style="margin-left:auto; background:none; border:1px solid #3a0a0a; color:#888; padding:5px 10px; border-radius:6px; cursor:pointer; font-size:10px;" onclick="showGroupMembers()">👥 Members</button>
                     </div>
-                    <div id="group_messages" style="flex:1; overflow-y:auto; padding:10px;"></div>
-                    <div style="padding:10px; background:#111; border-top:1px solid #400;">
-                        <div style="display:flex; gap:5px; align-items:center;">
-                            <input type="text" id="group_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message or paste image/gif URL..." onkeypress="if(event.key==='Enter')sendGroupMsg()">
-                            <button class="ie-btn" style="width:auto; padding:8px 12px; font-size:11px;" onclick="showGroupMediaInput()" title="Send Image/GIF/Video">📎</button>
-                            <button class="ie-btn" style="width:auto; padding:8px 15px;" onclick="sendGroupMsg()">Send</button>
+                    <div id="group_messages" style="flex:1; overflow-y:auto; padding:12px; min-height:0;"></div>
+                    <div class="msg-input-bar">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="text" id="group_input" class="ie-input" style="margin:0; flex:1;" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendGroupMsg()">
+                            <button class="ie-btn" style="width:auto; padding:8px 12px; font-size:11px; background:#222; border-color:#333; border-radius:8px;" onclick="showGroupMediaInput()">📎</button>
+                            <button class="msg-send-btn" onclick="sendGroupMsg()">Send</button>
                         </div>
-                        <div id="group_media_preview" style="display:none; margin-top:8px; padding:8px; background:#0a0000; border:1px solid #400; border-radius:4px;">
+                        <div id="group_media_preview" style="display:none; margin-top:8px; padding:8px; background:#0a0000; border:1px solid #2a0a0a; border-radius:8px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                                <span style="color:#888; font-size:10px;">Media URL:</span>
+                                <span style="color:#666; font-size:9px;">📎 Media URL:</span>
                                 <button onclick="document.getElementById('group_media_preview').style.display='none'; document.getElementById('group_media_url').value='';" style="background:none; border:none; color:#f00; cursor:pointer; font-size:12px;">✕</button>
                             </div>
                             <input type="text" id="group_media_url" class="ie-input" style="margin:0; font-size:10px;" placeholder="Paste image/gif/mp4 URL here...">
                         </div>
                     </div>
                 </div>
-                <div id="create_group_view" style="display:none; padding:15px;">
-                    <h3 style="color:#d40000; margin:0 0 15px 0;">Create Group Chat</h3>
-                    <input type="text" id="new_group_name" class="ie-input" placeholder="Group Name" maxlength="30">
-                    <p style="color:#888; font-size:10px; margin:10px 0 5px 0;">Select friends to add:</p>
-                    <div id="group_friend_select" style="max-height:200px; overflow-y:auto; margin-bottom:15px;"></div>
-                    <button class="ie-btn" onclick="createGroupChat()">Create Group</button>
-                    <button class="ie-btn" style="background:#333;" onclick="cancelCreateGroup()">Cancel</button>
+                <div id="create_group_view" style="display:none; padding:20px;">
+                    <div class="msg-section-title">Create Group Chat</div>
+                    <input type="text" id="new_group_name" class="ie-input" placeholder="Group Name" maxlength="30" style="border-radius:8px;">
+                    <p style="color:#666; font-size:10px; margin:12px 0 6px 0;">Select friends to add:</p>
+                    <div id="group_friend_select" style="max-height:180px; overflow-y:auto; margin-bottom:15px; background:#050000; border:1px solid #2a0a0a; border-radius:8px; padding:8px;"></div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="msg-send-btn" style="flex:1;" onclick="createGroupChat()">Create Group</button>
+                        <button class="back-btn" style="flex:1; text-align:center; padding:8px; background:#111; border:1px solid #333; border-radius:8px; color:#888; cursor:pointer;" onclick="cancelCreateGroup()">Cancel</button>
+                    </div>
                 </div>
             </div>
-            <div id="msg_tab_friends" style="display:none; flex-direction:column; padding:20px; overflow-y:auto; flex:1;">
-                <h3 style="color:#d40000; margin:0 0 15px 0; font-size:16px; flex-shrink:0;">👥 Your Friends</h3>
-                <div id="friends_list" style="flex:1; min-height:200px; overflow-y:auto; margin-bottom:15px; border:1px solid #400; border-radius:4px; background:#050000;"></div>
-                <div style="background:#0a0000; padding:15px; border:1px solid #400; border-radius:6px; flex-shrink:0;">
-                    <label style="color:#d40000; font-size:12px; display:block; margin-bottom:8px; font-weight:bold;">➕ Add a Friend</label>
-                    <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin-bottom:10px;">
-                    <button class="ie-btn" style="width:100%;" onclick="sendFriendRequest()">Send Friend Request</button>
+            <!-- Friends Tab -->
+            <div id="msg_tab_friends" style="display:none; flex-direction:column; padding:20px; overflow-y:auto; flex:1; min-height:0;">
+                <div class="msg-section-title">Your Friends</div>
+                <div id="friends_list" style="flex:1; min-height:150px; overflow-y:auto; margin-bottom:15px;"></div>
+                <div style="background:linear-gradient(135deg, #0d0000, #080000); padding:15px; border:1px solid #2a0a0a; border-radius:10px;">
+                    <label style="color:#d40000; font-size:11px; display:block; margin-bottom:8px; font-weight:bold;">➕ Add a Friend</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="add_friend_input" class="ie-input" placeholder="Enter username..." style="margin:0; flex:1; border-radius:8px;">
+                        <button class="msg-send-btn" onclick="sendFriendRequest()">Send Request</button>
+                    </div>
                 </div>
             </div>
-            <div id="msg_tab_requests" style="display:none; padding:20px; overflow-y:auto; flex:1;">
-                <h3 style="color:#d40000; margin:0 0 15px 0; font-size:16px;">📩 Friend Requests</h3>
+            <!-- Requests Tab -->
+            <div id="msg_tab_requests" style="display:none; padding:20px; overflow-y:auto; flex:1; min-height:0;">
+                <div class="msg-section-title">Friend Requests</div>
                 <div id="friend_requests_list" style="min-height:100px;"></div>
             </div>
         </div>
@@ -2121,6 +2258,10 @@
                         <option value="vipaccess">VIP Access</option>
                         <option value="profilebg">Profile Background</option>
                         <option value="autocollect">Auto-Collect Bonus</option>
+                        <option value="tokenpass">2x Token Pass</option>
+                        <option value="mysterybox">Mystery Box</option>
+                        <option value="nickname">Nickname Title</option>
+                        <option value="streakshield">Streak Shield</option>
                     </select>
                     <div id="shop_add_effect_opts" style="display:none; margin-top:5px;">
                         <select id="shop_item_effectclass" class="ie-input">
@@ -2165,6 +2306,10 @@
                         <option value="vipaccess">VIP Access</option>
                         <option value="profilebg">Profile Background</option>
                         <option value="autocollect">Auto-Collect Bonus</option>
+                        <option value="tokenpass">2x Token Pass</option>
+                        <option value="mysterybox">Mystery Box</option>
+                        <option value="nickname">Nickname Title</option>
+                        <option value="streakshield">Streak Shield</option>
                     </select>
                     <input type="number" id="bulk_item_price" class="ie-input" placeholder="Default Price" value="500" min="1">
                     <div id="bulk_preview_grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px; max-height:200px; overflow-y:auto;"></div>
@@ -2177,7 +2322,8 @@
                     <div id="st_shop_list" style="max-height:250px; overflow-y:auto; font-size:10px;"></div>
                     <div style="display:flex; gap:5px; margin-top:5px;">
                         <button class="ie-btn" style="flex:1; background:#500050; border-color:#ff00ff;" onclick="loadSTShopList()">Refresh List</button>
-                        <button class="ie-btn" style="flex:1; background:#700; border-color:#f00;" onclick="deleteAllShopItems()">🗑️ Delete ALL Items</button>
+                        <button class="ie-btn" style="flex:1; background:#005050; border-color:#00ffff;" onclick="seedDefaultShopItems().then(()=>{alert('Default items seeded!');loadSTShopList();})">🌱 Seed Defaults</button>
+                        <button class="ie-btn" style="flex:1; background:#700; border-color:#f00;" onclick="deleteAllShopItems()">🗑️ Delete ALL</button>
                     </div>
                     <div id="delete_all_shop_result" style="margin-top:5px; font-size:10px;"></div>
                 </div>
@@ -2210,6 +2356,47 @@
                     <button class="ie-btn" style="background:#500050; border-color:#ff00ff;" onclick="stGiveItem()">Give Item</button>
                     <button class="ie-btn" style="background:#333; border-color:#ff00ff; margin-top:5px;" onclick="loadGiveItemDropdown()">Refresh Items</button>
                     <div id="st_give_item_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+
+                <div class="admin-section" style="border-color:#ff00ff; margin-bottom:15px;">
+                    <h4 style="color:#ff00ff;">🎛️ User Feature Management</h4>
+                    <p style="color:#666; font-size:9px; margin:0 0 8px 0;">Manage chat tags, name colors, nicknames, lucky charms, token passes, streak shields, and other user features.</p>
+                    <input type="text" id="st_feat_username" class="ie-input" placeholder="Username to manage">
+                    <select id="st_feat_action" class="ie-input" onchange="stFeatActionChange()">
+                        <option value="">-- Select Action --</option>
+                        <option value="set_chattag">🏷️ Set Chat Tag</option>
+                        <option value="remove_chattag">🏷️ Remove Chat Tag</option>
+                        <option value="set_namecolor">🎨 Set Name Color</option>
+                        <option value="remove_namecolor">🎨 Remove Name Color</option>
+                        <option value="set_nickname">📛 Set Nickname Title</option>
+                        <option value="remove_nickname">📛 Remove Nickname</option>
+                        <option value="set_profilebg">🖼️ Set Profile Background</option>
+                        <option value="give_luckycharm">🍀 Give Lucky Charm (24h)</option>
+                        <option value="give_tokenpass">💎 Give 2x Token Pass (24h)</option>
+                        <option value="give_streakshield">🛡️ Give Streak Shield</option>
+                        <option value="give_vip">🌟 Grant VIP Access</option>
+                        <option value="remove_vip">🌟 Revoke VIP Access</option>
+                        <option value="toggle_autocollect">⚡ Toggle Auto-Collect</option>
+                        <option value="reset_streak">🔥 Reset Login Streak</option>
+                        <option value="view_inventory">📦 View User Inventory</option>
+                    </select>
+                    <div id="st_feat_value_section" style="display:none; margin-top:5px;">
+                        <input type="text" id="st_feat_value" class="ie-input" placeholder="Value...">
+                        <p id="st_feat_hint" style="color:#555; font-size:8px; margin:3px 0 0 0;"></p>
+                    </div>
+                    <button class="ie-btn" style="background:#500050; border-color:#ff00ff; margin-top:8px;" onclick="stExecFeature()">Execute</button>
+                    <div id="st_feat_result" style="margin-top:5px; font-size:10px; max-height:150px; overflow-y:auto;"></div>
+                </div>
+
+                <div class="admin-section" style="border-color:#ff00ff;">
+                    <h4 style="color:#ff00ff;">🎰 Game & Economy Controls</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff; font-size:9px; padding:8px;" onclick="stViewEconomy()">📊 Economy Stats</button>
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff; font-size:9px; padding:8px;" onclick="stResetUserTokens()">🔄 Reset User Tokens</button>
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff; font-size:9px; padding:8px;" onclick="stClearVIPChat()">🗑️ Clear VIP Chat</button>
+                        <button class="ie-btn" style="background:#500050; border-color:#ff00ff; font-size:9px; padding:8px;" onclick="stClearVIPQueue()">📺 Clear Video Queue</button>
+                    </div>
+                    <div id="st_econ_result" style="margin-top:8px; font-size:10px; max-height:200px; overflow-y:auto;"></div>
                 </div>
             </div>
         </div>
@@ -4193,10 +4380,13 @@ function openVIPLounge() {
 function switchVIPTab(tab, el) {
     document.querySelectorAll('#viplounge_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
-    ['lounge','watchplay','highrollers','vipchat','perks'].forEach(t => {
+    ['lounge','watchplay','highrollers','baccarat','scratch','war','horses','vipchat','perks'].forEach(t => {
         const panel = document.getElementById('vip_tab_' + t);
         if (panel) panel.style.display = t === tab ? 'block' : 'none';
     });
+    if (tab === 'horses') hrseInit();
+    if (tab === 'watchplay') loadVIPQueue();
+    if (tab === 'vipchat') loadVIPChat();
 }
 
 function loadVIPOnlineList() {
@@ -4206,16 +4396,356 @@ function loadVIPOnlineList() {
     el.innerHTML = vips.length ? vips.map(v => `<span style="margin-right:8px;">🌟 ${v}</span>`).join('') : '<span style="color:#666;">No VIPs online</span>';
 }
 
-function vipPlayVideo() {
+// VIP Queue-Based Watch Party
+let vipVideoQueue = [];
+function vipQueueVideo() {
     const url = document.getElementById('vip_yt_url').value.trim();
     if (!url) return;
     const videoId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&\n?#]+)/);
     if (!videoId) { alert('Invalid YouTube URL'); return; }
-    document.getElementById('vip_video_player').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId[1]}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="border-radius:6px;"></iframe>`;
-    document.getElementById('vip_now_playing').textContent = 'Playing: ' + url;
-    // Sync to Firebase
-    if (db) db.ref('vip_lounge/now_playing').set({ url: url, videoId: videoId[1], startedBy: CURRENT_USER, startedAt: Date.now() });
+    db.ref('vip_lounge/video_queue').push({ url, videoId: videoId[1], addedBy: CURRENT_USER, addedAt: Date.now() });
+    document.getElementById('vip_yt_url').value = '';
+    loadVIPQueue();
 }
+function loadVIPQueue() {
+    db.ref('vip_lounge/video_queue').once('value', snap => {
+        const data = snap.val() || {};
+        const items = Object.entries(data);
+        const el = document.getElementById('vip_video_queue');
+        if (!el) return;
+        vipVideoQueue = items;
+        if (items.length === 0) { el.innerHTML = '<span style="color:#555;">Queue is empty</span>'; return; }
+        el.innerHTML = items.map(([k, v], i) => `<div style="padding:4px 6px; border-bottom:1px solid #1a1100; display:flex; justify-content:space-between; align-items:center;${i===0?' background:rgba(255,215,0,0.05);':''}"><span style="color:${i===0?'#ffd700':'#888'};">${i===0?'▶ ':''}<span style="font-size:10px;">${v.videoId}</span></span><span style="color:#555; font-size:8px;">${v.addedBy}</span></div>`).join('');
+        // Auto-play first if nothing playing
+        const player = document.getElementById('vip_video_player');
+        if (player && !player.querySelector('iframe') && items.length > 0) {
+            vipPlayFirst();
+        }
+    });
+}
+function vipPlayFirst() {
+    if (vipVideoQueue.length === 0) return;
+    const [key, data] = vipVideoQueue[0];
+    document.getElementById('vip_video_player').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${data.videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="border-radius:6px;"></iframe>`;
+    document.getElementById('vip_now_playing').textContent = data.videoId + ' (by ' + data.addedBy + ')';
+    db.ref('vip_lounge/now_playing').set({ videoId: data.videoId, startedBy: data.addedBy, startedAt: Date.now() });
+}
+function vipSkipVideo() {
+    if (vipVideoQueue.length > 0) {
+        db.ref('vip_lounge/video_queue/' + vipVideoQueue[0][0]).remove();
+        setTimeout(() => { loadVIPQueue(); setTimeout(vipPlayFirst, 300); }, 300);
+    }
+}
+
+// ========== NEW SHOP ITEM FUNCTIONS ==========
+function activateTokenPass(itemId) {
+    if (!CURRENT_USER) return;
+    db.ref('profiles/' + CURRENT_USER + '/tokenPass').set({ activatedAt: Date.now(), expiresAt: Date.now() + 86400000 });
+    alert('💎 2x Token Pass activated for 24 hours! All game earnings are doubled.');
+}
+function openMysteryBox(itemId) {
+    if (!CURRENT_USER) return;
+    const prizes = [
+        { name: '10 tokens', amount: 10, rarity: 'common' },
+        { name: '25 tokens', amount: 25, rarity: 'common' },
+        { name: '50 tokens', amount: 50, rarity: 'uncommon' },
+        { name: '100 tokens', amount: 100, rarity: 'rare' },
+        { name: '250 tokens', amount: 250, rarity: 'epic' },
+        { name: '500 tokens', amount: 500, rarity: 'legendary' },
+    ];
+    const r = Math.random();
+    let prize;
+    if (r < 0.35) prize = prizes[0];
+    else if (r < 0.60) prize = prizes[1];
+    else if (r < 0.80) prize = prizes[2];
+    else if (r < 0.92) prize = prizes[3];
+    else if (r < 0.98) prize = prizes[4];
+    else prize = prizes[5];
+    
+    const colors = { common: '#888', uncommon: '#0f0', rare: '#00bfff', epic: '#aa00ff', legendary: '#ffd700' };
+    playerTokens += prize.amount;
+    updateTokenDisplays(); savePlayerTokens();
+    // Remove one mystery box from inventory
+    db.ref('profiles/' + CURRENT_USER + '/shopItems/' + itemId).remove();
+    
+    alert(`🎁 Mystery Box opened!\n\n${prize.rarity.toUpperCase()}: ${prize.name}!`);
+}
+function openNicknameEditor(itemId) {
+    const current = userDatabase[CURRENT_USER]?.nickname || '';
+    const modal = document.createElement('div');
+    modal.id = 'nickname_modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `<div style="background:linear-gradient(180deg,#1a0808,#0a0000);border:2px solid #700;border-radius:10px;padding:25px;width:300px;text-align:center;">
+        <h3 style="color:#ffaa00;margin:0 0 15px 0;">📛 Set Nickname Title</h3>
+        <p style="color:#666;font-size:9px;">Shows under your name on profile cards</p>
+        <input type="text" id="nickname_input" class="ie-input" value="${current}" placeholder="The Bloodlord, Fang Master..." maxlength="25" style="text-align:center;">
+        <div id="nickname_preview" style="margin:10px 0;color:#ffaa00;font-size:11px;font-style:italic;">${current || 'Preview...'}</div>
+        <div style="display:flex;gap:8px;justify-content:center;">
+            <button class="g-btn warning" onclick="saveNickname()">Save</button>
+            <button class="g-btn" onclick="saveNickname(true)">Remove</button>
+            <button class="g-btn" onclick="document.getElementById('nickname_modal').remove()">Cancel</button>
+        </div>
+    </div>`;
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+    document.getElementById('nickname_input').oninput = function() {
+        document.getElementById('nickname_preview').textContent = this.value || 'Preview...';
+    };
+}
+function saveNickname(remove) {
+    const val = remove ? null : (document.getElementById('nickname_input')?.value?.trim() || null);
+    if (val && val.length > 25) { alert('Max 25 characters'); return; }
+    db.ref('members/' + CURRENT_USER).update({ nickname: val });
+    if (userDatabase[CURRENT_USER]) userDatabase[CURRENT_USER].nickname = val;
+    const modal = document.getElementById('nickname_modal');
+    if (modal) modal.remove();
+}
+function activateStreakShield(itemId) {
+    if (!CURRENT_USER) return;
+    db.ref('profiles/' + CURRENT_USER + '/streakShield').set({ activatedAt: Date.now(), uses: 1 });
+    alert('🛡️ Streak Shield activated! Your daily login streak is protected for 1 missed day.');
+}
+
+// ========== VIP BACCARAT ==========
+let bacBet = 50;
+function bacChangeBet(amt) { if (amt === 'max') bacBet = Math.min(playerTokens, 5000); else bacBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), bacBet + amt)); document.getElementById('bac_bet_display').textContent = bacBet; }
+
+function bacDeal(choice) {
+    if (playerTokens < bacBet) { alert('Not enough tokens!'); return; }
+    playerTokens -= bacBet; updateTokenDisplays();
+    
+    const cardVal = (v) => v > 9 ? 0 : v;
+    const drawCard = () => { const v = Math.floor(Math.random() * 13) + 1; return { val: Math.min(v, 10), display: ['A','2','3','4','5','6','7','8','9','10','J','Q','K'][v-1] }; };
+    const suits = ['♠','♥','♦','♣'];
+    const drawFull = () => { const c = drawCard(); c.suit = suits[Math.floor(Math.random()*4)]; c.html = `<div style="width:36px;height:50px;background:#111;border:1px solid #333;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:${c.suit==='♥'||c.suit==='♦'?'#f00':'#ddd'};font-weight:bold;">${c.display}${c.suit}</div>`; return c; };
+    
+    let pCards = [drawFull(), drawFull()], bCards = [drawFull(), drawFull()];
+    let pScore = (cardVal(pCards[0].val) + cardVal(pCards[1].val)) % 10;
+    let bScore = (cardVal(bCards[0].val) + cardVal(bCards[1].val)) % 10;
+    
+    // Third card rules
+    if (pScore <= 5 && bScore < 8 && pScore < 8) { const c = drawFull(); pCards.push(c); pScore = (pScore + cardVal(c.val)) % 10; }
+    if (bScore <= 5 && pScore < 8 && bScore < 8) { const c = drawFull(); bCards.push(c); bScore = (bScore + cardVal(c.val)) % 10; }
+    
+    document.getElementById('bac_player_cards').innerHTML = pCards.map(c => c.html).join('');
+    document.getElementById('bac_banker_cards').innerHTML = bCards.map(c => c.html).join('');
+    document.getElementById('bac_player_score').textContent = pScore;
+    document.getElementById('bac_banker_score').textContent = bScore;
+    
+    let winner = pScore > bScore ? 'player' : bScore > pScore ? 'banker' : 'tie';
+    let payout = 0;
+    const resultEl = document.getElementById('bac_result');
+    
+    if (choice === winner) {
+        if (winner === 'player') payout = Math.floor(bacBet * 1.85);
+        else if (winner === 'banker') payout = Math.floor(bacBet * 1.80);
+        else payout = Math.floor(bacBet * 7);
+        playerTokens += payout;
+        resultEl.innerHTML = `<span style="color:#ffd700;">${winner === 'tie' ? '🤝 TIE' : winner === 'player' ? '👤 PLAYER' : '🏦 BANKER'} WINS! +${payout}</span>`;
+    } else {
+        resultEl.innerHTML = `<span style="color:#f00;">${winner === 'tie' ? '🤝 Tie' : winner === 'player' ? '👤 Player' : '🏦 Banker'} wins. -${bacBet}</span>`;
+    }
+    updateTokenDisplays(); savePlayerTokens();
+}
+
+// ========== VIP SCRATCH CARDS ==========
+let scratchCard = null, scratchRevealed = 0;
+function scratchBuy() {
+    if (playerTokens < 50) { alert('Not enough tokens!'); return; }
+    playerTokens -= 50; updateTokenDisplays(); savePlayerTokens();
+    
+    const symbols = ['🩸','💀','⚰️','🧛','🦇','🌙','🔮','💎'];
+    // Generate card with weighted distribution - 70% house edge
+    scratchCard = [];
+    for (let i = 0; i < 9; i++) scratchCard.push(symbols[Math.floor(Math.random() * symbols.length)]);
+    // 15% chance to force a 3-match for excitement
+    if (Math.random() < 0.15) {
+        const sym = symbols[Math.floor(Math.random() * symbols.length)];
+        const positions = [0,1,2,3,4,5,6,7,8].sort(() => Math.random()-0.5).slice(0,3);
+        positions.forEach(p => scratchCard[p] = sym);
+    }
+    
+    scratchRevealed = 0;
+    const grid = document.getElementById('scratch_grid');
+    grid.innerHTML = scratchCard.map((s, i) => `<div id="sc_${i}" onclick="scratchTile(${i})" style="width:70px;height:70px;background:linear-gradient(135deg,#332200,#221100);border:2px solid #554400;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all 0.3s;user-select:none;" onmouseenter="this.style.borderColor='#ffd700'" onmouseleave="this.style.borderColor='#554400'">❓</div>`).join('');
+    
+    document.getElementById('scratch_buy_btn').style.display = 'none';
+    document.getElementById('scratch_reveal_btn').style.display = '';
+    document.getElementById('scratch_result').innerHTML = '<span style="color:#ffd700;">Scratch the tiles!</span>';
+}
+function scratchTile(i) {
+    const el = document.getElementById('sc_' + i);
+    if (!el || el.dataset.revealed) return;
+    el.dataset.revealed = '1';
+    el.textContent = scratchCard[i];
+    el.style.background = 'linear-gradient(135deg,#0a0000,#050000)';
+    el.style.borderColor = '#500';
+    el.style.cursor = 'default';
+    scratchRevealed++;
+    if (scratchRevealed >= 9) scratchCheckWin();
+}
+function scratchRevealAll() {
+    for (let i = 0; i < 9; i++) scratchTile(i);
+}
+function scratchCheckWin() {
+    const counts = {};
+    scratchCard.forEach(s => counts[s] = (counts[s] || 0) + 1);
+    const maxMatch = Math.max(...Object.values(counts));
+    const matchSym = Object.keys(counts).find(k => counts[k] === maxMatch);
+    
+    const prizes = { 3: 75, 4: 200, 5: 500, 6: 1000, 7: 2500, 8: 5000, 9: 10000 };
+    let payout = prizes[maxMatch] || 0;
+    const resultEl = document.getElementById('scratch_result');
+    
+    if (payout > 0) {
+        playerTokens += payout; updateTokenDisplays(); savePlayerTokens();
+        resultEl.innerHTML = `<span style="color:#ffd700;">🎉 ${maxMatch}x ${matchSym}! +${payout} tokens!</span>`;
+    } else {
+        resultEl.innerHTML = `<span style="color:#555;">No match. Better luck next time!</span>`;
+    }
+    
+    document.getElementById('scratch_buy_btn').style.display = '';
+    document.getElementById('scratch_reveal_btn').style.display = 'none';
+}
+
+// ========== VIP WAR ==========
+let warBet = 50, warActive = false, warYourVal = 0, warDealerVal = 0;
+const warCards = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const warVals = { 'A':14,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13 };
+function warChangeBet(amt) { if (amt === 'max') warBet = Math.min(playerTokens, 5000); else warBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), warBet + amt)); document.getElementById('war_bet_display').textContent = warBet; }
+
+function warDeal() {
+    if (warActive || playerTokens < warBet) { if (playerTokens < warBet) alert('Not enough tokens!'); return; }
+    warActive = true;
+    playerTokens -= warBet; updateTokenDisplays();
+    
+    const suits = ['♠','♥','♦','♣'];
+    const yCard = warCards[Math.floor(Math.random()*13)];
+    const dCard = warCards[Math.floor(Math.random()*13)];
+    const ySuit = suits[Math.floor(Math.random()*4)];
+    const dSuit = suits[Math.floor(Math.random()*4)];
+    warYourVal = warVals[yCard]; warDealerVal = warVals[dCard];
+    
+    const cardColor = (s) => s === '♥' || s === '♦' ? '#f00' : '#ddd';
+    document.getElementById('war_your_card').innerHTML = `<div style="color:${cardColor(ySuit)};text-align:center;"><div style="font-size:18px;font-weight:bold;">${yCard}</div><div style="font-size:14px;">${ySuit}</div></div>`;
+    document.getElementById('war_dealer_card').innerHTML = `<div style="color:${cardColor(dSuit)};text-align:center;"><div style="font-size:18px;font-weight:bold;">${dCard}</div><div style="font-size:14px;">${dSuit}</div></div>`;
+    
+    if (warYourVal > warDealerVal) {
+        const payout = Math.floor(warBet * 1.85);
+        playerTokens += payout; updateTokenDisplays(); savePlayerTokens();
+        document.getElementById('war_result').innerHTML = `<span style="color:#0f0;">⚔️ You win! +${payout}</span>`;
+        warActive = false;
+    } else if (warYourVal < warDealerVal) {
+        document.getElementById('war_result').innerHTML = `<span style="color:#f00;">💀 Dealer wins. -${warBet}</span>`;
+        savePlayerTokens(); warActive = false;
+    } else {
+        document.getElementById('war_status').innerHTML = '<span style="color:#ffd700;">⚔️ WAR! Double down or surrender (get half back)</span>';
+        document.getElementById('war_deal_btn').style.display = 'none';
+        document.getElementById('war_war_btn').style.display = '';
+        document.getElementById('war_surrender_btn').style.display = '';
+    }
+}
+function warGoToWar() {
+    if (playerTokens < warBet) { alert('Not enough tokens to go to war!'); warSurrender(); return; }
+    playerTokens -= warBet; updateTokenDisplays();
+    const yCard = warCards[Math.floor(Math.random()*13)];
+    const dCard = warCards[Math.floor(Math.random()*13)];
+    const yVal = warVals[yCard], dVal = warVals[dCard];
+    
+    if (yVal >= dVal) {
+        const payout = Math.floor(warBet * 3.5);
+        playerTokens += payout; updateTokenDisplays();
+        document.getElementById('war_result').innerHTML = `<span style="color:#ffd700;">⚔️ WAR WON! ${yCard} vs ${dCard}. +${payout}!</span>`;
+    } else {
+        document.getElementById('war_result').innerHTML = `<span style="color:#f00;">💀 War lost. ${yCard} vs ${dCard}. -${warBet * 2}</span>`;
+    }
+    savePlayerTokens(); warActive = false;
+    document.getElementById('war_deal_btn').style.display = '';
+    document.getElementById('war_war_btn').style.display = 'none';
+    document.getElementById('war_surrender_btn').style.display = 'none';
+    document.getElementById('war_status').innerHTML = '';
+}
+function warSurrender() {
+    const refund = Math.floor(warBet * 0.5);
+    playerTokens += refund; updateTokenDisplays(); savePlayerTokens();
+    document.getElementById('war_result').innerHTML = `<span style="color:#888;">🏳️ Surrendered. ${refund} returned.</span>`;
+    warActive = false;
+    document.getElementById('war_deal_btn').style.display = '';
+    document.getElementById('war_war_btn').style.display = 'none';
+    document.getElementById('war_surrender_btn').style.display = 'none';
+    document.getElementById('war_status').innerHTML = '';
+}
+
+// ========== VIP HORSE RACING ==========
+let hrseBet = 50, hrseRacing = false;
+const hrseNames = ['🩸 Bloodhoof', '💀 Deathgallop', '🦇 Nightwing', '⚡ Thunderbolt', '🌙 Moonstrider'];
+function hrseChangeBet(amt) { if (amt === 'max') hrseBet = Math.min(playerTokens, 5000); else hrseBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), hrseBet + amt)); document.getElementById('hrse_bet_display').textContent = hrseBet; }
+
+function hrseInit() {
+    // Generate random odds
+    const oddsEl = document.getElementById('hrse_odds');
+    if (!oddsEl) return;
+    const baseOdds = [2.5, 3, 4, 5, 7].sort(() => Math.random() - 0.5);
+    oddsEl.innerHTML = hrseNames.map((name, i) => `<button class="g-btn small" style="font-size:9px; padding:8px 4px; text-align:center; white-space:nowrap;" onclick="hrsePickHorse(${i}, ${baseOdds[i]})" id="hrse_btn_${i}">${name.split(' ')[0]}<br><span style="color:#ffd700;">${baseOdds[i]}x</span></button>`).join('');
+    
+    const track = document.getElementById('hrse_track');
+    track.innerHTML = hrseNames.map((name, i) => {
+        const emoji = name.split(' ')[0];
+        return `<div id="hrse_lane_${i}" style="color:#888;">${emoji} ${'░'.repeat(25)} 🏁</div>`;
+    }).join('');
+}
+
+function hrsePickHorse(index, odds) {
+    if (hrseRacing || playerTokens < hrseBet) { if (playerTokens < hrseBet) alert('Not enough tokens!'); return; }
+    hrseRacing = true;
+    playerTokens -= hrseBet; updateTokenDisplays();
+    
+    // Highlight picked horse
+    for (let i = 0; i < 5; i++) {
+        const btn = document.getElementById('hrse_btn_' + i);
+        if (btn) btn.disabled = true;
+    }
+    
+    document.getElementById('hrse_result').innerHTML = '<span style="color:#ffd700;">🏇 AND THEY\'RE OFF!</span>';
+    
+    const positions = [0, 0, 0, 0, 0];
+    const trackLen = 25;
+    
+    const raceInterval = setInterval(() => {
+        for (let i = 0; i < 5; i++) {
+            positions[i] += Math.random() * 2.5 + 0.5;
+        }
+        
+        const track = document.getElementById('hrse_track');
+        track.innerHTML = hrseNames.map((name, i) => {
+            const emoji = name.split(' ')[0];
+            const pos = Math.min(Math.floor(positions[i]), trackLen);
+            const isMine = i === index;
+            return `<div style="color:${isMine ? '#ffd700' : '#888'};">${emoji} ${'░'.repeat(pos)}${'▓'.repeat(1)}${'░'.repeat(Math.max(0, trackLen - pos - 1))} 🏁</div>`;
+        }).join('');
+        
+        // Check winner
+        const winner = positions.findIndex(p => p >= trackLen);
+        if (winner >= 0) {
+            clearInterval(raceInterval);
+            const resultEl = document.getElementById('hrse_result');
+            
+            if (winner === index) {
+                const payout = Math.floor(hrseBet * odds);
+                playerTokens += payout; updateTokenDisplays();
+                resultEl.innerHTML = `<span style="color:#ffd700;">🏆 ${hrseNames[winner]} wins! +${payout} tokens!</span>`;
+            } else {
+                resultEl.innerHTML = `<span style="color:#f00;">${hrseNames[winner]} wins. You picked ${hrseNames[index]}.</span>`;
+            }
+            savePlayerTokens();
+            hrseRacing = false;
+            // Re-init with new odds
+            setTimeout(hrseInit, 2000);
+        }
+    }, 100);
+}
+
+setTimeout(hrseInit, 500);
 
 function loadVIPChat() {
     if (!db) return;
@@ -4316,6 +4846,10 @@ function shopItemAction(type, id) {
         case 'luckycharm': return `activateLuckyCharm('${id}')`;
         case 'vipaccess': return `openVIPLounge()`;
         case 'autocollect': return `toggleAutoCollect('${id}')`;
+        case 'tokenpass': return `activateTokenPass('${id}')`;
+        case 'mysterybox': return `openMysteryBox('${id}')`;
+        case 'nickname': return `openNicknameEditor('${id}')`;
+        case 'streakshield': return `activateStreakShield('${id}')`;
         default: return `equipItem('${id}')`;
     }
 }
@@ -4777,6 +5311,18 @@ function loadDailyStatus() {
         window._luckyCharmActive = charm && charm.expiresAt > Date.now();
     });
     
+    // Check token pass status
+    db.ref('profiles/' + CURRENT_USER + '/tokenPass').once('value', snap => {
+        const pass = snap.val();
+        window._tokenPassActive = pass && pass.expiresAt > Date.now();
+    });
+    
+    // Check streak shield status
+    db.ref('profiles/' + CURRENT_USER + '/streakShield').once('value', snap => {
+        const shield = snap.val();
+        window._streakShieldActive = shield && shield.uses > 0;
+    });
+    
     db.ref('game_stats/daily/' + CURRENT_USER).once('value', (snap) => {
         const data = snap.val() || {};
         const today = new Date().toDateString();
@@ -5020,33 +5566,80 @@ function loadShopItems() {
         shopItems = snap.val() || {};
         
         if (Object.keys(shopItems).length === 0) {
-            container.innerHTML = '<div style="color:#888; text-align:center; padding:20px; grid-column:span 3;">Shop is empty. ST can add items.</div>';
+            // Auto-seed default items on first load
+            seedDefaultShopItems().then(() => {
+                db.ref('shop_items').once('value', (snap2) => {
+                    shopItems = snap2.val() || {};
+                    renderShopGrid(container);
+                });
+            });
             return;
         }
         
-        // Get user's owned items
-        db.ref('profiles/' + CURRENT_USER + '/shopItems').once('value', (ownedSnap) => {
-            const ownedItems = ownedSnap.val() || {};
-            
-            container.innerHTML = Object.entries(shopItems).map(([id, item]) => {
-                const owned = ownedItems[id];
-                const imgHtml = item.imageUrl ? 
-                    `<img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50?text=?'">` :
-                    `<div style="width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:50%; background:radial-gradient(circle,#111,#000); box-shadow:0 0 8px ${({'effect':'rgba(255,0,0,0.4)','chattag':'rgba(0,255,255,0.3)','namecolor':'rgba(255,105,180,0.3)','luckycharm':'rgba(0,255,0,0.3)','vipaccess':'rgba(255,215,0,0.4)','profilebg':'rgba(170,0,255,0.3)','autocollect':'rgba(255,102,0,0.3)'})[item.type]||'rgba(100,100,100,0.2)'};">${({'effect':'✨','chattag':'🏷️','namecolor':'🎨','luckycharm':'🍀','vipaccess':'🌟','profilebg':'🖼️','autocollect':'⚡'})[item.type]||'?'}</div>`;
-                const shopTypeLabels = { effect: ['#ff00ff','FX'], badge: ['#ffd700','BADGE'], chattag: ['#0ff','TAG'], namecolor: ['#ff69b4','COLOR'], luckycharm: ['#0f0','LUCK'], vipaccess: ['#ffd700','VIP'], profilebg: ['#aa00ff','BG'], autocollect: ['#ff6600','AUTO'] };
-                const tl = shopTypeLabels[item.type]; const typeLabel = tl ? ` <span style="color:${tl[0]}; font-size:8px;">[${tl[1]}]</span>` : '';
-                const customizeTypes = ['chattag','namecolor','profilebg'];
-                const ownedLabel = owned ? (customizeTypes.includes(item.type) ? '<span style="color:#0ff;">CUSTOMIZE</span>' : (item.type === 'luckycharm' ? '<span style="color:#0f0;">ACTIVATE</span>' : '<span style="color:#0f0;">OWNED</span>')) : '<span style="color:#ffd700;">' + item.price + ' tokens</span>';
-                return `<div class="shop-item ${owned ? 'owned' : ''}" onclick="${owned ? shopItemAction(item.type, id) : `buyShopItem('${id}')`}">
-                    ${imgHtml}
-                    <div style="color:#fff; font-size:10px; font-weight:bold;">${escapeHtml(item.name)}${typeLabel}</div>
-                    <div style="font-size:9px;">${ownedLabel}</div>
-                </div>`;
-            }).join('');
-        });
+        renderShopGrid(container);
     });
     
     loadEquippedItems();
+}
+
+function renderShopGrid(container) {
+    if (Object.keys(shopItems).length === 0) {
+        container.innerHTML = '<div style="color:#888; text-align:center; padding:20px; grid-column:span 3;">Shop is empty. ST can add items.</div>';
+        return;
+    }
+    
+    db.ref('profiles/' + CURRENT_USER + '/shopItems').once('value', (ownedSnap) => {
+        const ownedItems = ownedSnap.val() || {};
+        
+        container.innerHTML = Object.entries(shopItems).map(([id, item]) => {
+            const owned = ownedItems[id];
+            const imgHtml = item.imageUrl ? 
+                `<img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50?text=?'">` :
+                `<div style="width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:50%; background:radial-gradient(circle,#111,#000); box-shadow:0 0 8px ${({'effect':'rgba(255,0,0,0.4)','chattag':'rgba(0,255,255,0.3)','namecolor':'rgba(255,105,180,0.3)','luckycharm':'rgba(0,255,0,0.3)','vipaccess':'rgba(255,215,0,0.4)','profilebg':'rgba(170,0,255,0.3)','autocollect':'rgba(255,102,0,0.3)','tokenpass':'rgba(0,200,255,0.3)','mysterybox':'rgba(255,0,255,0.3)','nickname':'rgba(255,170,0,0.3)','streakshield':'rgba(0,255,136,0.3)'})[item.type]||'rgba(100,100,100,0.2)'};">${({'effect':'✨','chattag':'🏷️','namecolor':'🎨','luckycharm':'🍀','vipaccess':'🌟','profilebg':'🖼️','autocollect':'⚡','tokenpass':'💎','mysterybox':'🎁','nickname':'📛','streakshield':'🛡️'})[item.type]||'?'}</div>`;
+            const shopTypeLabels = { effect: ['#ff00ff','FX'], badge: ['#ffd700','BADGE'], chattag: ['#0ff','TAG'], namecolor: ['#ff69b4','COLOR'], luckycharm: ['#0f0','LUCK'], vipaccess: ['#ffd700','VIP'], profilebg: ['#aa00ff','BG'], autocollect: ['#ff6600','AUTO'], tokenpass: ['#00ccff','2X'], mysterybox: ['#ff00ff','BOX'], nickname: ['#ffaa00','NICK'], streakshield: ['#00ff88','SHIELD'] };
+            const tl = shopTypeLabels[item.type]; const typeLabel = tl ? ` <span style="color:${tl[0]}; font-size:8px;">[${tl[1]}]</span>` : '';
+            const customizeTypes = ['chattag','namecolor','profilebg','nickname'];
+            const ownedLabel = owned ? (customizeTypes.includes(item.type) ? '<span style="color:#0ff;">CUSTOMIZE</span>' : (['luckycharm','tokenpass','mysterybox','streakshield'].includes(item.type) ? '<span style="color:#0f0;">ACTIVATE</span>' : '<span style="color:#0f0;">OWNED</span>')) : '<span style="color:#ffd700;">' + item.price + ' tokens</span>';
+            return `<div class="shop-item ${owned ? 'owned' : ''}" onclick="${owned ? shopItemAction(item.type, id) : `buyShopItem('${id}')`}">
+                ${imgHtml}
+                <div style="color:#fff; font-size:10px; font-weight:bold;">${escapeHtml(item.name)}${typeLabel}</div>
+                <div style="font-size:9px;">${ownedLabel}</div>
+            </div>`;
+        }).join('');
+    });
+}
+
+async function seedDefaultShopItems() {
+    const defaults = [
+        { id: 'default_luckycharm', name: 'Lucky Charm', price: 5000, type: 'luckycharm', description: '+5% better slot odds for 24h' },
+        { id: 'default_tokenpass', name: '2x Token Pass', price: 10000, type: 'tokenpass', description: 'Double token earnings for 24h' },
+        { id: 'default_mysterybox', name: 'Mystery Box', price: 5000, type: 'mysterybox', description: 'Random prize 10-500 tokens' },
+        { id: 'default_streakshield', name: 'Streak Shield', price: 4000, type: 'streakshield', description: 'Protect your login streak for 1 miss' },
+        { id: 'default_autocollect', name: 'Auto-Collect', price: 3500, type: 'autocollect', description: 'Auto-claim daily bonus on open' },
+        { id: 'default_vipaccess', name: 'VIP Access', price: 100000, type: 'vipaccess', description: 'Unlock the VIP Lounge' },
+        { id: 'default_bloodglow', name: 'Blood Glow', price: 600, type: 'effect', effectClass: 'blood-glow', description: 'Glowing red effect on avatar' },
+        { id: 'default_hellfire', name: 'Hellfire', price: 800, type: 'effect', effectClass: 'hellfire', description: 'Fiery orange effect on avatar' },
+        { id: 'default_phantom', name: 'Phantom', price: 700, type: 'effect', effectClass: 'phantom', description: 'Ghostly purple effect' },
+        { id: 'default_toxic', name: 'Toxic', price: 650, type: 'effect', effectClass: 'toxic', description: 'Toxic green glow' },
+        { id: 'default_golden', name: 'Golden', price: 1000, type: 'effect', effectClass: 'golden', description: 'Prestigious golden aura' },
+        { id: 'default_rainbow', name: 'Rainbow', price: 1200, type: 'effect', effectClass: 'rainbow', description: 'Shifting rainbow colors' },
+    ];
+    
+    const updates = {};
+    defaults.forEach(item => {
+        updates['shop_items/' + item.id] = {
+            name: item.name,
+            imageUrl: '',
+            price: item.price,
+            type: item.type,
+            description: item.description || '',
+            effectClass: item.effectClass || '',
+            addedBy: 'system',
+            addedAt: Date.now()
+        };
+    });
+    
+    return db.ref().update(updates);
 }
 
 function buyShopItem(itemId) {
@@ -8924,7 +9517,7 @@ function stAddShopItem() {
     if (!price || price < 1) { resultEl.innerHTML = '<span style="color:#f00;">Enter valid price.</span>'; return; }
     
     // No-image types
-    const noImageTypes = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect'];
+    const noImageTypes = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect','tokenpass','mysterybox','nickname','streakshield'];
     if (noImageTypes.includes(type) && type !== 'chattag') {
         const itemId = 'item_' + Date.now();
         const extraData = {};
@@ -9007,7 +9600,7 @@ function saveShopItem(name, imageUrl, price, type, resultEl) {
 // Toggle effect options vs image upload based on type selection
 document.getElementById('shop_item_type')?.addEventListener('change', function() {
     const isEffect = this.value === 'effect';
-    const isChatTag = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect'].includes(this.value);
+    const isChatTag = ['chattag','namecolor','luckycharm','vipaccess','profilebg','autocollect','tokenpass','mysterybox','nickname','streakshield'].includes(this.value);
     document.getElementById('shop_add_effect_opts').style.display = isEffect ? 'block' : 'none';
     document.getElementById('shop_add_image_section').style.display = (isEffect || isChatTag) ? 'none' : 'block';
     if (!isEffect) updateAddPreview();
@@ -9089,7 +9682,7 @@ function loadSTShopList() {
         }
         
         container.innerHTML = Object.entries(items).map(([id, item]) => {
-            const typeColors = { frame: '#0ff', hat: '#ff0', accessory: '#f0f', effect: '#0f0', badge: '#ffd700', chattag: '#0ff', namecolor: '#ff69b4', luckycharm: '#0f0', vipaccess: '#ffd700', profilebg: '#aa00ff', autocollect: '#ff6600' };
+            const typeColors = { frame: '#0ff', hat: '#ff0', accessory: '#f0f', effect: '#0f0', badge: '#ffd700', chattag: '#0ff', namecolor: '#ff69b4', luckycharm: '#0f0', vipaccess: '#ffd700', profilebg: '#aa00ff', autocollect: '#ff6600', tokenpass: '#00ccff', mysterybox: '#ff00ff', nickname: '#ffaa00', streakshield: '#00ff88' };
             const tc = typeColors[item.type] || '#888';
             const thumb = item.imageUrl 
                 ? `<img src="${item.imageUrl}" style="width:40px; height:40px; object-fit:contain; border:1px solid #400; border-radius:4px; background:#111;" onerror="this.style.display='none'">`
@@ -9452,6 +10045,207 @@ function stGiveItem() {
             resultEl.innerHTML = '<span style="color:#f00;">Error: ' + err.message + '</span>';
         });
     });
+}
+
+// ========== ST FEATURE MANAGEMENT ==========
+function stFeatActionChange() {
+    const action = document.getElementById('st_feat_action').value;
+    const valSec = document.getElementById('st_feat_value_section');
+    const valInput = document.getElementById('st_feat_value');
+    const hint = document.getElementById('st_feat_hint');
+    
+    const needsValue = ['set_chattag','set_namecolor','set_nickname','set_profilebg'].includes(action);
+    valSec.style.display = needsValue ? 'block' : 'none';
+    
+    const hints = {
+        set_chattag: 'Enter tag text (e.g. "Blood Lord")',
+        set_namecolor: 'Enter hex color (e.g. #ff0000)',
+        set_nickname: 'Enter nickname title (e.g. "The Immortal")',
+        set_profilebg: 'Enter theme: bloodmoon, deepvoid, crimsondusk, midnight, emeralddark, royalgold'
+    };
+    hint.textContent = hints[action] || '';
+    valInput.placeholder = hints[action] || 'Value...';
+}
+
+function stExecFeature() {
+    const resultEl = document.getElementById('st_feat_result');
+    const _u = userDatabase[CURRENT_USER];
+    if (!_u?.isST && !_u?.isAdmin) { resultEl.innerHTML = '<span style="color:#f00;">Access denied.</span>'; return; }
+    
+    const username = document.getElementById('st_feat_username').value.trim();
+    const action = document.getElementById('st_feat_action').value;
+    const value = document.getElementById('st_feat_value')?.value?.trim() || '';
+    
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!action) { resultEl.innerHTML = '<span style="color:#f00;">Select an action.</span>'; return; }
+    if (!userDatabase[username] && action !== 'view_inventory') { resultEl.innerHTML = '<span style="color:#f00;">User not found in database.</span>'; return; }
+    
+    const ok = (msg) => resultEl.innerHTML = `<span style="color:#0f0;">✓ ${msg}</span>`;
+    const err = (msg) => resultEl.innerHTML = `<span style="color:#f00;">✗ ${msg}</span>`;
+    
+    switch(action) {
+        case 'set_chattag':
+            if (!value) { err('Enter tag text.'); return; }
+            db.ref('members/' + username).update({ customTag: value });
+            if (userDatabase[username]) userDatabase[username].customTag = value;
+            ok(`Chat tag set to "${value}" for ${username}`);
+            break;
+        case 'remove_chattag':
+            db.ref('members/' + username + '/customTag').remove();
+            db.ref('members/' + username + '/customTagColor').remove();
+            if (userDatabase[username]) { delete userDatabase[username].customTag; delete userDatabase[username].customTagColor; }
+            ok(`Chat tag removed for ${username}`);
+            break;
+        case 'set_namecolor':
+            if (!value.match(/^#[0-9a-fA-F]{3,6}$/)) { err('Enter valid hex color (e.g. #ff0000)'); return; }
+            db.ref('members/' + username + '/chatNameColor').set(value);
+            if (userDatabase[username]) userDatabase[username].chatNameColor = value;
+            ok(`Name color set to <span style="color:${value};">${value}</span> for ${username}`);
+            break;
+        case 'remove_namecolor':
+            db.ref('members/' + username + '/chatNameColor').remove();
+            if (userDatabase[username]) delete userDatabase[username].chatNameColor;
+            ok(`Name color removed for ${username}`);
+            break;
+        case 'set_nickname':
+            if (!value) { err('Enter nickname.'); return; }
+            db.ref('members/' + username).update({ nickname: value });
+            if (userDatabase[username]) userDatabase[username].nickname = value;
+            ok(`Nickname set to "${value}" for ${username}`);
+            break;
+        case 'remove_nickname':
+            db.ref('members/' + username + '/nickname').remove();
+            if (userDatabase[username]) delete userDatabase[username].nickname;
+            ok(`Nickname removed for ${username}`);
+            break;
+        case 'set_profilebg':
+            if (!value) { err('Enter theme ID.'); return; }
+            db.ref('profiles/' + username + '/profileBG').set(value);
+            ok(`Profile background set to "${value}" for ${username}`);
+            break;
+        case 'give_luckycharm':
+            db.ref('profiles/' + username + '/luckyCharm').set({ activatedAt: Date.now(), expiresAt: Date.now() + 86400000 });
+            ok(`Lucky Charm (24h) given to ${username}`);
+            break;
+        case 'give_tokenpass':
+            db.ref('profiles/' + username + '/tokenPass').set({ activatedAt: Date.now(), expiresAt: Date.now() + 86400000 });
+            ok(`2x Token Pass (24h) given to ${username}`);
+            break;
+        case 'give_streakshield':
+            db.ref('profiles/' + username + '/streakShield').set({ activatedAt: Date.now(), uses: 1 });
+            ok(`Streak Shield given to ${username}`);
+            break;
+        case 'give_vip':
+            db.ref('members/' + username).update({ rank: 'VIP' });
+            if (userDatabase[username]) userDatabase[username].rank = 'VIP';
+            ok(`VIP access granted to ${username}`);
+            break;
+        case 'remove_vip':
+            db.ref('members/' + username + '/rank').remove();
+            if (userDatabase[username]) delete userDatabase[username].rank;
+            ok(`VIP access revoked for ${username}`);
+            break;
+        case 'toggle_autocollect':
+            db.ref('profiles/' + username + '/autoCollect').once('value', snap => {
+                const current = snap.val();
+                db.ref('profiles/' + username + '/autoCollect').set(!current);
+                ok(`Auto-collect ${!current ? 'ENABLED' : 'DISABLED'} for ${username}`);
+            });
+            break;
+        case 'reset_streak':
+            db.ref('profiles/' + username + '/loginStreak').set(0);
+            db.ref('profiles/' + username + '/lastLogin').remove();
+            ok(`Login streak reset for ${username}`);
+            break;
+        case 'view_inventory':
+            resultEl.innerHTML = '<span style="color:#888;">Loading...</span>';
+            db.ref('profiles/' + username).once('value', snap => {
+                const data = snap.val() || {};
+                const items = data.shopItems ? Object.keys(data.shopItems) : [];
+                const tokenCount = data.tokens || 0;
+                let html = `<div style="color:#ffd700; margin-bottom:5px; font-weight:bold;">📦 ${username}'s Inventory</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">🩸 Tokens: <b>${tokenCount}</b></div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">🔥 Streak: <b>${data.loginStreak || 0}</b></div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">🍀 Lucky Charm: ${data.luckyCharm?.expiresAt > Date.now() ? '<span style="color:#0f0;">Active</span>' : '<span style="color:#555;">Inactive</span>'}</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">💎 Token Pass: ${data.tokenPass?.expiresAt > Date.now() ? '<span style="color:#0f0;">Active</span>' : '<span style="color:#555;">Inactive</span>'}</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">🛡️ Streak Shield: ${data.streakShield?.uses > 0 ? '<span style="color:#0f0;">Active ('+data.streakShield.uses+' uses)</span>' : '<span style="color:#555;">Inactive</span>'}</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">⚡ Auto-Collect: ${data.autoCollect ? '<span style="color:#0f0;">On</span>' : '<span style="color:#555;">Off</span>'}</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">🖼️ Profile BG: ${data.profileBG || '<span style="color:#555;">None</span>'}</div>`;
+                // Member data
+                const mData = userDatabase[username] || {};
+                html += `<div style="color:#ddd; margin-bottom:4px;">🏷️ Chat Tag: ${mData.customTag ? `<span style="color:${mData.customTagColor || '#0ff'};">${mData.customTag}</span>` : '<span style="color:#555;">None</span>'}</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">🎨 Name Color: ${mData.chatNameColor ? `<span style="color:${mData.chatNameColor};">${mData.chatNameColor}</span>` : '<span style="color:#555;">Default</span>'}</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">📛 Nickname: ${mData.nickname || '<span style="color:#555;">None</span>'}</div>`;
+                html += `<div style="color:#ddd; margin-bottom:4px;">🌟 Rank: ${mData.rank || '<span style="color:#555;">Member</span>'}</div>`;
+                html += `<div style="color:#888; margin-top:6px; font-size:9px;">Shop Items (${items.length}):</div>`;
+                if (items.length > 0) {
+                    html += items.map(id => `<div style="color:#aaa; font-size:9px; padding:2px 0;">• ${id}</div>`).join('');
+                } else {
+                    html += '<div style="color:#555; font-size:9px;">No items owned</div>';
+                }
+                resultEl.innerHTML = html;
+            });
+            break;
+        default:
+            err('Unknown action.');
+    }
+}
+
+function stViewEconomy() {
+    const resultEl = document.getElementById('st_econ_result');
+    resultEl.innerHTML = '<span style="color:#888;">Loading economy data...</span>';
+    
+    db.ref('profiles').once('value', snap => {
+        const profiles = snap.val() || {};
+        let totalTokens = 0, totalUsers = 0, richest = { name: 'nobody', tokens: 0 };
+        let vipCount = 0, luckyActive = 0, passActive = 0;
+        const now = Date.now();
+        
+        Object.entries(profiles).forEach(([username, data]) => {
+            const t = data.tokens || 0;
+            totalTokens += t;
+            totalUsers++;
+            if (t > richest.tokens) richest = { name: username, tokens: t };
+            if (data.luckyCharm?.expiresAt > now) luckyActive++;
+            if (data.tokenPass?.expiresAt > now) passActive++;
+        });
+        
+        Object.values(userDatabase).forEach(u => { if (u.rank === 'VIP' || u.isVIP) vipCount++; });
+        
+        let html = `<div style="color:#ffd700; font-weight:bold; margin-bottom:8px;">📊 Economy Dashboard</div>`;
+        html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; font-size:10px;">`;
+        html += `<div style="background:#0a0005; border:1px solid #300030; border-radius:4px; padding:6px;">👥 Total Users<br><b style="color:#ffd700;">${totalUsers}</b></div>`;
+        html += `<div style="background:#0a0005; border:1px solid #300030; border-radius:4px; padding:6px;">🩸 Total Tokens<br><b style="color:#ffd700;">${totalTokens.toLocaleString()}</b></div>`;
+        html += `<div style="background:#0a0005; border:1px solid #300030; border-radius:4px; padding:6px;">👑 Richest<br><b style="color:#ffd700;">${richest.name} (${richest.tokens})</b></div>`;
+        html += `<div style="background:#0a0005; border:1px solid #300030; border-radius:4px; padding:6px;">📊 Avg Tokens<br><b style="color:#ffd700;">${totalUsers ? Math.floor(totalTokens / totalUsers) : 0}</b></div>`;
+        html += `<div style="background:#0a0005; border:1px solid #300030; border-radius:4px; padding:6px;">🌟 VIP Members<br><b style="color:#ffd700;">${vipCount}</b></div>`;
+        html += `<div style="background:#0a0005; border:1px solid #300030; border-radius:4px; padding:6px;">🍀 Active Charms<br><b style="color:#ffd700;">${luckyActive}</b></div>`;
+        html += `</div>`;
+        resultEl.innerHTML = html;
+    });
+}
+
+function stResetUserTokens() {
+    const user = prompt('Enter username to reset tokens:');
+    if (!user) return;
+    if (!userDatabase[user]) { alert('User not found.'); return; }
+    const amount = parseInt(prompt('Set token balance to:', '100'));
+    if (isNaN(amount)) return;
+    db.ref('profiles/' + user + '/tokens').set(amount);
+    document.getElementById('st_econ_result').innerHTML = `<span style="color:#0f0;">✓ ${user}'s tokens set to ${amount}</span>`;
+}
+
+function stClearVIPChat() {
+    if (!confirm('Clear all VIP chat messages?')) return;
+    db.ref('vip_lounge/chat').remove();
+    document.getElementById('st_econ_result').innerHTML = '<span style="color:#0f0;">✓ VIP chat cleared</span>';
+}
+
+function stClearVIPQueue() {
+    if (!confirm('Clear VIP video queue?')) return;
+    db.ref('vip_lounge/video_queue').remove();
+    db.ref('vip_lounge/now_playing').remove();
+    document.getElementById('st_econ_result').innerHTML = '<span style="color:#0f0;">✓ VIP video queue cleared</span>';
 }
 
 function startAdminMessageListener() {
@@ -11249,7 +12043,7 @@ let dmListener = null;
 let groupListener = null;
 
 function switchMsgTab(tab, el) {
-    document.querySelectorAll('#messages_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('#messages_window .msg-sidebar-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
     ['dms', 'groups', 'friends', 'requests'].forEach(t => {
         const panel = document.getElementById('msg_tab_' + t);
@@ -11427,8 +12221,8 @@ function startDM(username) {
                 msgWin.style.zIndex = "200";
             }
             // Switch to DMs tab
-            document.querySelectorAll('#messages_window .mgmt-sidebar-item').forEach(i => i.classList.remove('active'));
-            document.querySelector('#messages_window .mgmt-sidebar-item').classList.add('active');
+            document.querySelectorAll('#messages_window .msg-sidebar-item').forEach(i => i.classList.remove('active'));
+            document.querySelector('#messages_window .msg-sidebar-item').classList.add('active');
             ['dms', 'groups', 'friends', 'requests'].forEach(t => {
                 const panel = document.getElementById('msg_tab_' + t);
                 if (panel) panel.style.display = t === 'dms' ? 'flex' : 'none';
