@@ -1936,7 +1936,53 @@
         </div>
         <div class="mgmt-content" style="flex:1; padding:15px; overflow-y:auto; max-height:100%;">
             <div id="admin_tab_apps"><h3 style="color:#d40000; margin:0 0 15px 0;">Membership Applications</h3><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="app_filter" class="ie-input" style="width:150px; margin:0;" onchange="loadAllApplications()"><option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="denied">Denied</option></select><input type="text" id="app_search" class="ie-input" placeholder="Search username..." style="flex:1; margin:0;" oninput="loadAllApplications()"></div><div id="all_applications" style="max-height:380px; overflow-y:auto;"></div></div>
-            <div id="admin_tab_members" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">All Members</h3><div id="all_members" style="max-height:420px; overflow-y:auto;"></div></div>
+            <div id="admin_tab_members" style="display:none;">
+                <h3 style="color:#d40000; margin:0 0 15px 0;">👥 Members</h3>
+                <div class="admin-section" style="margin-bottom:15px;">
+                    <h4>➕ Create New User</h4>
+                    <input type="text" id="create_user_name" class="ie-input" placeholder="Username">
+                    <input type="text" id="create_user_pass" class="ie-input" placeholder="Password (min 6 chars)">
+                    <select id="create_user_rank" class="ie-input">
+                        <option value="member">Member</option>
+                        <option value="vip">VIP</option>
+                        <option value="mod">Moderator</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button class="ie-btn" style="background:#700;" onclick="adminCreateUser()">🩸 Create Account</button>
+                    <div id="create_user_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section" style="margin-bottom:15px;">
+                    <h4>✏️ Edit User</h4>
+                    <input type="text" id="edit_user_name" class="ie-input" placeholder="Username to edit">
+                    <select id="edit_user_field" class="ie-input" onchange="editUserFieldChange()">
+                        <option value="">-- Select Field --</option>
+                        <option value="password">🔑 Change Password</option>
+                        <option value="rank">👑 Change Rank</option>
+                        <option value="delete">🗑️ Delete User</option>
+                    </select>
+                    <div id="edit_user_value_section" style="display:none; margin-top:5px;">
+                        <input type="text" id="edit_user_value" class="ie-input" placeholder="New value...">
+                    </div>
+                    <div id="edit_user_rank_section" style="display:none; margin-top:5px;">
+                        <select id="edit_user_new_rank" class="ie-input">
+                            <option value="member">Member</option>
+                            <option value="vip">VIP</option>
+                            <option value="mod">Moderator</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button class="ie-btn" style="background:#700; margin-top:5px;" onclick="adminEditUser()">Apply Change</button>
+                    <div id="edit_user_result" style="margin-top:5px; font-size:10px;"></div>
+                </div>
+                <div class="admin-section">
+                    <h4>📋 All Members</h4>
+                    <div style="display:flex; gap:5px; margin-bottom:8px;">
+                        <input type="text" id="member_search" class="ie-input" placeholder="Search..." style="flex:1; margin:0;" oninput="filterMemberList()">
+                        <button class="ie-btn" style="width:auto; padding:5px 10px;" onclick="loadAllMembers()">🔄</button>
+                    </div>
+                    <div id="all_members" style="max-height:280px; overflow-y:auto;"></div>
+                </div>
+            </div>
             <div id="admin_tab_moderation" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">User Moderation</h3><div class="admin-section"><h4>Take Action</h4><input type="text" id="mod_username" class="ie-input" placeholder="Username to moderate..."><select id="mod_action" class="ie-input"><option value="">Select Action...</option><option value="warn">⚠️ Warn</option><option value="mute">🔇 Mute (can't chat)</option><option value="timeout">⏱️ Timeout (can't chat)</option><option value="kick">👢 Kick (offline)</option><option value="softban">🚫 Soft Ban</option><option value="hardban">⛔ Hard Ban</option><option value="unmute">🔊 Unmute</option></select><select id="mod_duration" class="ie-input"><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="360">6 hours</option><option value="1440">24 hours</option><option value="10080">7 days</option><option value="43200">30 days</option><option value="0">Permanent</option></select><input type="text" id="mod_reason" class="ie-input" placeholder="Reason (optional)"><button class="ie-btn" style="background: #700;" onclick="executeModAction()">Execute Action</button><div id="mod_result" style="margin-top: 5px; font-size: 10px;"></div></div><div class="admin-section"><h4>🗑️ Delete Message</h4><input type="text" id="delete_msg_id" class="ie-input" placeholder="Message ID (from chat 3-dot menu)"><button class="ie-btn" style="background:#700;" onclick="deleteMessageById()">Delete Message</button><div id="delete_msg_result" style="margin-top:5px; font-size:10px;"></div></div><div class="admin-section"><h4>🔇 Muted Users</h4><button class="ie-btn" style="width:auto; padding:5px 10px; margin-bottom:5px;" onclick="loadMutedUsers()">🔄 Refresh</button><div id="muted_users" style="max-height:100px; overflow-y:auto; font-size:10px;">Click refresh to load...</div></div><div class="admin-section"><h4>🚫 Banned/Suspended Users</h4><div id="banned_users" style="max-height:150px; overflow-y:auto; font-size:10px;">None</div></div></div>
             <div id="admin_tab_announcements" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Lounge Announcements</h3><div class="admin-section"><h4>Pin Message</h4><input type="text" id="pin_message" class="ie-input" placeholder="Message to pin in the lounge..."><div style="display:flex; gap:10px;"><button class="ie-btn" style="flex:1;" onclick="pinMessage()">📌 Pin Message</button><button class="ie-btn" style="flex:1; background:#333;" onclick="clearPin()">Clear Pin</button></div></div><div class="admin-section"><h4>Chat Management</h4><button class="ie-btn" style="background: #500;" onclick="clearChat()">🗑️ Clear All Messages</button><button class="ie-btn" style="background: #333; margin-top:5px;" onclick="exportChat()">📥 Export Chat Log</button></div></div>
             <div id="admin_tab_bot" style="display:none;"><h3 style="color:#d40000; margin:0 0 15px 0;">Eric Northman Bot</h3><div class="admin-section"><h4>Send as Eric</h4><textarea id="bot_message" class="ie-input" placeholder="Eric says..." style="height:80px; resize:none;"></textarea><button class="ie-btn" onclick="sendBotMessage()">🧛 Send Message</button></div></div>
@@ -8880,7 +8926,134 @@ function loadAllMembers() {
     const members = [];
     Object.keys(userDatabase).forEach(name => { if (!coreAdmins[name]) members.push({ username: name, ...userDatabase[name] }); });
     Object.keys(coreAdmins).forEach(name => members.push({ username: name, ...coreAdmins[name], isCore: true }));
-    container.innerHTML = members.map(m => `<div style="background:#050000; border:1px solid #400; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div><span class="${m.style}" style="font-weight:bold;">${escapeHtml(m.username)}</span><span style="color:#666; font-size:10px;"> [${m.fullRank}]</span></div><span style="color:#555; font-size:9px;">ID: ${generateUserId(m.username)}</span></div>`).join('');
+    container.innerHTML = members.map(m => {
+        const rankBadge = m.isAdmin || m.isST ? '👑' : m.isMod ? '🛡️' : m.rank === 'VIP' || m.isVIP ? '🌟' : '🩸';
+        const rankLabel = m.isST ? 'ST' : m.isAdmin ? 'Admin' : m.isMod ? 'Mod' : m.rank === 'VIP' || m.isVIP ? 'VIP' : m.fullRank || 'Member';
+        return `<div class="member-row" data-name="${m.username.toLowerCase()}" style="background:#050000; border:1px solid #400; padding:8px 10px; margin-bottom:4px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+            <div><span style="font-weight:bold; color:#ddd;">${rankBadge} ${escapeHtml(m.username)}</span> <span style="color:#666; font-size:9px;">[${rankLabel}]</span></div>
+            <div style="display:flex; gap:4px; align-items:center;">
+                <span style="color:#444; font-size:8px;">${m.pass ? '🔑' : ''}</span>
+                <button class="ie-btn" style="padding:2px 6px; font-size:8px; width:auto; background:#333;" onclick="document.getElementById('edit_user_name').value='${m.username}'">✏️</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filterMemberList() {
+    const query = (document.getElementById('member_search')?.value || '').toLowerCase();
+    document.querySelectorAll('.member-row').forEach(row => {
+        row.style.display = !query || row.dataset.name.includes(query) ? '' : 'none';
+    });
+}
+
+function adminCreateUser() {
+    const resultEl = document.getElementById('create_user_result');
+    const _u = userDatabase[CURRENT_USER];
+    if (!_u?.isST && !_u?.isAdmin) { resultEl.innerHTML = '<span style="color:#f00;">Access denied.</span>'; return; }
+    
+    const username = document.getElementById('create_user_name').value.trim();
+    const password = document.getElementById('create_user_pass').value.trim();
+    const rank = document.getElementById('create_user_rank').value;
+    
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (username.length < 2 || username.length > 20) { resultEl.innerHTML = '<span style="color:#f00;">Username must be 2-20 chars.</span>'; return; }
+    if (/[^a-zA-Z0-9_\-]/.test(username)) { resultEl.innerHTML = '<span style="color:#f00;">Username: letters, numbers, _ and - only.</span>'; return; }
+    if (!password || password.length < 6) { resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 6 chars.</span>'; return; }
+    if (userDatabase[username]) { resultEl.innerHTML = '<span style="color:#f00;">Username already exists!</span>'; return; }
+    
+    const rankMap = {
+        member: { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false },
+        vip: { rank: 'VIP', fullRank: 'VIP Member', style: 'vip-style', isAdmin: false, isVIP: true },
+        mod: { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', isAdmin: false, isMod: true },
+        admin: { rank: 'A', fullRank: 'Admin', style: 'admin-style', isAdmin: true },
+    };
+    
+    const newUser = {
+        pass: password,
+        ...rankMap[rank],
+        createdBy: CURRENT_USER,
+        createdAt: Date.now()
+    };
+    
+    db.ref('members/' + username).set(newUser).then(() => {
+        userDatabase[username] = newUser;
+        
+        // Initialize profile
+        db.ref('profiles/' + username).set({
+            tokens: 100,
+            loginStreak: 0,
+            createdAt: Date.now()
+        });
+        
+        resultEl.innerHTML = `<span style="color:#0f0;">✓ User <b>${username}</b> created as ${rankMap[rank].fullRank}!</span><br><span style="color:#888; font-size:9px;">Password: ${password}</span>`;
+        document.getElementById('create_user_name').value = '';
+        document.getElementById('create_user_pass').value = '';
+        loadAllMembers();
+    }).catch(err => {
+        resultEl.innerHTML = `<span style="color:#f00;">Error: ${err.message}</span>`;
+    });
+}
+
+function editUserFieldChange() {
+    const field = document.getElementById('edit_user_field').value;
+    const valSec = document.getElementById('edit_user_value_section');
+    const rankSec = document.getElementById('edit_user_rank_section');
+    
+    valSec.style.display = field === 'password' ? 'block' : 'none';
+    rankSec.style.display = field === 'rank' ? 'block' : 'none';
+    
+    if (field === 'password') document.getElementById('edit_user_value').placeholder = 'New password (min 6 chars)';
+}
+
+function adminEditUser() {
+    const resultEl = document.getElementById('edit_user_result');
+    const _u = userDatabase[CURRENT_USER];
+    if (!_u?.isST && !_u?.isAdmin) { resultEl.innerHTML = '<span style="color:#f00;">Access denied.</span>'; return; }
+    
+    const username = document.getElementById('edit_user_name').value.trim();
+    const field = document.getElementById('edit_user_field').value;
+    
+    if (!username) { resultEl.innerHTML = '<span style="color:#f00;">Enter a username.</span>'; return; }
+    if (!userDatabase[username]) { resultEl.innerHTML = '<span style="color:#f00;">User not found.</span>'; return; }
+    if (!field) { resultEl.innerHTML = '<span style="color:#f00;">Select a field to edit.</span>'; return; }
+    
+    // Protect core admins
+    const protectedUsers = ['losersyndicate', 'noseeyedear', 'oleg'];
+    if (protectedUsers.includes(username.toLowerCase()) && CURRENT_USER.toLowerCase() !== username.toLowerCase()) {
+        resultEl.innerHTML = '<span style="color:#f00;">Cannot edit this user.</span>';
+        return;
+    }
+    
+    if (field === 'password') {
+        const newPass = document.getElementById('edit_user_value').value.trim();
+        if (!newPass || newPass.length < 6) { resultEl.innerHTML = '<span style="color:#f00;">Password must be at least 6 chars.</span>'; return; }
+        db.ref('members/' + username + '/pass').set(newPass);
+        if (userDatabase[username]) userDatabase[username].pass = newPass;
+        resultEl.innerHTML = `<span style="color:#0f0;">✓ Password updated for ${username}</span>`;
+    }
+    else if (field === 'rank') {
+        const newRank = document.getElementById('edit_user_new_rank').value;
+        const rankMap = {
+            member: { rank: 'M', fullRank: 'Member', style: 'member-style', isAdmin: false, isMod: false, isVIP: false },
+            vip: { rank: 'VIP', fullRank: 'VIP Member', style: 'vip-style', isAdmin: false, isMod: false, isVIP: true },
+            mod: { rank: 'MOD', fullRank: 'Moderator', style: 'mod-style', isAdmin: false, isMod: true, isVIP: false },
+            admin: { rank: 'A', fullRank: 'Admin', style: 'admin-style', isAdmin: true, isMod: false, isVIP: false },
+        };
+        const updates = rankMap[newRank];
+        db.ref('members/' + username).update(updates);
+        Object.assign(userDatabase[username], updates);
+        resultEl.innerHTML = `<span style="color:#0f0;">✓ ${username} is now ${updates.fullRank}</span>`;
+        loadAllMembers();
+    }
+    else if (field === 'delete') {
+        if (!confirm(`DELETE user "${username}"? This removes their account, profile, and all data. This cannot be undone!`)) return;
+        db.ref('members/' + username).remove();
+        db.ref('profiles/' + username).remove();
+        delete userDatabase[username];
+        resultEl.innerHTML = `<span style="color:#f00;">✓ User ${username} deleted.</span>`;
+        document.getElementById('edit_user_name').value = '';
+        loadAllMembers();
+    }
 }
 function loadBannedUsers() {
     const container = document.getElementById('banned_users'); if (!container) return;
