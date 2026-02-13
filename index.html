@@ -1015,8 +1015,7 @@
             </div>
             <!-- HORSE RACING -->
             <div id="vip_tab_horses" style="display:none;">
-                <h3 style="color:#ffd700; margin:0 0 10px 0;">🏇 Blood Derby</h3>
-                <p style="color:#888; font-size:10px;">Pick a horse. Watch them race. Collect your winnings!</p>
+                <h3 style="color:#ffd700; margin:0 0 6px 0;">🏇 Blood Derby</h3>
                 <div class="g-bet-bar" style="background:rgba(100,80,0,0.1);">
                     <span class="bet-label" style="color:#aa8800;">Bet</span>
                     <button class="g-btn small" onclick="hrseChangeBet(-50)">−</button>
@@ -1024,11 +1023,12 @@
                     <button class="g-btn small" onclick="hrseChangeBet(50)">+</button>
                     <button class="g-btn small" style="font-size:8px;" onclick="hrseChangeBet('max')">MAX</button>
                 </div>
-                <div class="g-arena" style="border-color:#332200; padding:8px;">
-                    <div id="hrse_track" style="font-family:monospace; font-size:11px; line-height:1.8;"></div>
-                    <div class="g-result" id="hrse_result" style="margin-top:8px;"></div>
+                <div class="g-arena" style="border-color:#332200; padding:0; overflow:hidden; position:relative;">
+                    <canvas id="hrse_canvas" width="520" height="220" style="width:100%; display:block; background:linear-gradient(180deg,#0a0800,#050300);"></canvas>
+                    <div id="hrse_commentary" style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(180deg, transparent, rgba(0,0,0,0.9)); padding:8px 12px; color:#ffd700; font-size:11px; font-weight:bold; text-shadow:0 0 6px rgba(255,215,0,0.4); min-height:24px; text-align:center;"></div>
                 </div>
-                <div id="hrse_odds" style="display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-top:8px;"></div>
+                <div class="g-result" id="hrse_result" style="margin-top:6px; text-align:center;"></div>
+                <div id="hrse_picks" style="display:grid; grid-template-columns:repeat(5,1fr); gap:4px; margin-top:6px;"></div>
             </div>
             <!-- VIP CHAT -->
             <div id="vip_tab_vipchat" style="display:none;">
@@ -4677,72 +4677,324 @@ function warSurrender() {
 }
 
 // ========== VIP HORSE RACING ==========
-let hrseBet = 50, hrseRacing = false;
-const hrseNames = ['🩸 Bloodhoof', '💀 Deathgallop', '🦇 Nightwing', '⚡ Thunderbolt', '🌙 Moonstrider'];
-function hrseChangeBet(amt) { if (amt === 'max') hrseBet = Math.min(playerTokens, 5000); else hrseBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), hrseBet + amt)); document.getElementById('hrse_bet_display').textContent = hrseBet; }
+let hrseBet = 50, hrseRacing = false, hrseAnimFrame = null;
+const hrseHorses = [
+    { name: 'Bloodhoof', emoji: '🩸', color: '#ff0000', trailColor: 'rgba(255,0,0,' },
+    { name: 'Deathgallop', emoji: '💀', color: '#aaaaaa', trailColor: 'rgba(170,170,170,' },
+    { name: 'Nightwing', emoji: '🦇', color: '#9933ff', trailColor: 'rgba(153,51,255,' },
+    { name: 'Thunderbolt', emoji: '⚡', color: '#ffcc00', trailColor: 'rgba(255,204,0,' },
+    { name: 'Moonstrider', emoji: '🌙', color: '#00ccff', trailColor: 'rgba(0,204,255,' },
+];
+let hrseOdds = [], hrsePickedHorse = -1, hrsePickedOdds = 0;
+let hrsePositions = [], hrseSpeeds = [], hrseStamina = [], hrseBoostTimer = [], hrseParticles = [];
+let hrseFinishOrder = [], hrseRacePhase = 'idle'; // idle, countdown, racing, finished
 
-function hrseInit() {
-    // Generate random odds
-    const oddsEl = document.getElementById('hrse_odds');
-    if (!oddsEl) return;
-    const baseOdds = [2.5, 3, 4, 5, 7].sort(() => Math.random() - 0.5);
-    oddsEl.innerHTML = hrseNames.map((name, i) => `<button class="g-btn small" style="font-size:9px; padding:8px 4px; text-align:center; white-space:nowrap;" onclick="hrsePickHorse(${i}, ${baseOdds[i]})" id="hrse_btn_${i}">${name.split(' ')[0]}<br><span style="color:#ffd700;">${baseOdds[i]}x</span></button>`).join('');
-    
-    const track = document.getElementById('hrse_track');
-    track.innerHTML = hrseNames.map((name, i) => {
-        const emoji = name.split(' ')[0];
-        return `<div id="hrse_lane_${i}" style="color:#888;">${emoji} ${'░'.repeat(25)} 🏁</div>`;
-    }).join('');
+function hrseChangeBet(amt) {
+    if (amt === 'max') hrseBet = Math.min(playerTokens, 5000);
+    else hrseBet = Math.max(50, Math.min(Math.min(playerTokens, 5000), hrseBet + amt));
+    document.getElementById('hrse_bet_display').textContent = hrseBet;
 }
 
-function hrsePickHorse(index, odds) {
-    if (hrseRacing || playerTokens < hrseBet) { if (playerTokens < hrseBet) alert('Not enough tokens!'); return; }
-    hrseRacing = true;
-    playerTokens -= hrseBet; updateTokenDisplays();
+function hrseInit() {
+    hrseRacePhase = 'idle';
+    hrsePickedHorse = -1;
+    hrseFinishOrder = [];
+    hrseParticles = [];
+    hrseOdds = [2.5, 3, 4, 5.5, 8].sort(() => Math.random() - 0.5);
+    hrsePositions = [0, 0, 0, 0, 0];
+    hrseSpeeds = [0, 0, 0, 0, 0];
+    hrseStamina = [100, 100, 100, 100, 100];
+    hrseBoostTimer = [0, 0, 0, 0, 0];
     
-    // Highlight picked horse
+    const picksEl = document.getElementById('hrse_picks');
+    if (!picksEl) return;
+    picksEl.innerHTML = hrseHorses.map((h, i) => 
+        `<button class="g-btn small" id="hrse_btn_${i}" style="font-size:9px; padding:8px 4px; text-align:center; border-color:${h.color}44; transition:all 0.2s;" onclick="hrsePickAndGo(${i})" onmouseenter="this.style.borderColor='${h.color}';this.style.boxShadow='0 0 10px ${h.color}44'" onmouseleave="this.style.borderColor='${h.color}44';this.style.boxShadow='none'">${h.emoji} ${h.name}<br><span style="color:#ffd700;font-size:10px;">${hrseOdds[i]}x</span></button>`
+    ).join('');
+    
+    document.getElementById('hrse_result').innerHTML = '';
+    document.getElementById('hrse_commentary').textContent = 'Pick your champion...';
+    hrseDraw();
+}
+
+function hrseDraw() {
+    const canvas = document.getElementById('hrse_canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const laneH = 36, trackTop = 15, finishX = W - 40;
+    
+    ctx.clearRect(0, 0, W, H);
+    
+    // Track background
+    ctx.fillStyle = '#0a0800';
+    ctx.fillRect(0, 0, W, H);
+    
+    // Lane lines & dirt texture
     for (let i = 0; i < 5; i++) {
-        const btn = document.getElementById('hrse_btn_' + i);
-        if (btn) btn.disabled = true;
+        const y = trackTop + i * laneH;
+        // Lane bg alternating
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(30,20,5,0.6)' : 'rgba(20,13,3,0.6)';
+        ctx.fillRect(0, y, W, laneH);
+        // Dirt specks
+        for (let d = 0; d < 30; d++) {
+            ctx.fillStyle = `rgba(60,40,10,${Math.random() * 0.3})`;
+            ctx.fillRect(Math.random() * W, y + Math.random() * laneH, 2, 1);
+        }
+        // Lane divider
+        ctx.strokeStyle = 'rgba(80,60,20,0.3)';
+        ctx.setLineDash([4, 8]);
+        ctx.beginPath(); ctx.moveTo(0, y + laneH); ctx.lineTo(W, y + laneH); ctx.stroke();
+        ctx.setLineDash([]);
     }
     
-    document.getElementById('hrse_result').innerHTML = '<span style="color:#ffd700;">🏇 AND THEY\'RE OFF!</span>';
-    
-    const positions = [0, 0, 0, 0, 0];
-    const trackLen = 25;
-    
-    const raceInterval = setInterval(() => {
-        for (let i = 0; i < 5; i++) {
-            positions[i] += Math.random() * 2.5 + 0.5;
+    // Finish line
+    const flagSize = 6;
+    for (let fy = trackTop; fy < trackTop + 5 * laneH; fy += flagSize) {
+        for (let fx = 0; fx < 2; fx++) {
+            ctx.fillStyle = ((fy / flagSize + fx) % 2 === 0) ? '#fff' : '#000';
+            ctx.fillRect(finishX + fx * flagSize, fy, flagSize, flagSize);
         }
+    }
+    
+    // Particles (dust, sparks)
+    hrseParticles = hrseParticles.filter(p => p.life > 0);
+    hrseParticles.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.life -= p.decay; p.vy += 0.05;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+    });
+    ctx.globalAlpha = 1;
+    
+    // Horses
+    for (let i = 0; i < 5; i++) {
+        const h = hrseHorses[i];
+        const y = trackTop + i * laneH + laneH / 2;
+        const x = 30 + (hrsePositions[i] / 100) * (finishX - 40);
+        const isMine = i === hrsePickedHorse;
+        const boosting = hrseBoostTimer[i] > 0;
         
-        const track = document.getElementById('hrse_track');
-        track.innerHTML = hrseNames.map((name, i) => {
-            const emoji = name.split(' ')[0];
-            const pos = Math.min(Math.floor(positions[i]), trackLen);
-            const isMine = i === index;
-            return `<div style="color:${isMine ? '#ffd700' : '#888'};">${emoji} ${'░'.repeat(pos)}${'▓'.repeat(1)}${'░'.repeat(Math.max(0, trackLen - pos - 1))} 🏁</div>`;
-        }).join('');
-        
-        // Check winner
-        const winner = positions.findIndex(p => p >= trackLen);
-        if (winner >= 0) {
-            clearInterval(raceInterval);
-            const resultEl = document.getElementById('hrse_result');
-            
-            if (winner === index) {
-                const payout = Math.floor(hrseBet * odds);
-                playerTokens += payout; updateTokenDisplays();
-                resultEl.innerHTML = `<span style="color:#ffd700;">🏆 ${hrseNames[winner]} wins! +${payout} tokens!</span>`;
-            } else {
-                resultEl.innerHTML = `<span style="color:#f00;">${hrseNames[winner]} wins. You picked ${hrseNames[index]}.</span>`;
+        // Speed trail
+        if (hrseRacePhase === 'racing' && hrseSpeeds[i] > 0.8) {
+            const trailLen = Math.floor(hrseSpeeds[i] * 20);
+            for (let t = 0; t < trailLen; t++) {
+                const alpha = (1 - t / trailLen) * 0.4;
+                ctx.fillStyle = h.trailColor + alpha + ')';
+                ctx.fillRect(x - t * 2.5 - 5, y - 3 + Math.random() * 6, 3, 2);
             }
-            savePlayerTokens();
-            hrseRacing = false;
-            // Re-init with new odds
-            setTimeout(hrseInit, 2000);
         }
-    }, 100);
+        
+        // Boost glow
+        if (boosting) {
+            ctx.shadowColor = h.color;
+            ctx.shadowBlur = 15;
+        }
+        
+        // Horse body
+        ctx.font = '20px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // Gallop bounce
+        const bounce = hrseRacePhase === 'racing' ? Math.sin(Date.now() / (80 - hrseSpeeds[i] * 30) + i) * 3 : 0;
+        ctx.fillText(h.emoji, x, y + bounce);
+        ctx.shadowBlur = 0;
+        
+        // Selection highlight
+        if (isMine && hrseRacePhase !== 'idle') {
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 3]);
+            ctx.strokeRect(x - 14, y - 14, 28, 28);
+            ctx.setLineDash([]);
+        }
+        
+        // Stamina bar (tiny, above horse)
+        if (hrseRacePhase === 'racing') {
+            const barW = 24, barH = 3;
+            const barX = x - barW / 2, barY = y - 17;
+            ctx.fillStyle = '#111';
+            ctx.fillRect(barX, barY, barW, barH);
+            const stPct = hrseStamina[i] / 100;
+            ctx.fillStyle = stPct > 0.5 ? '#0f0' : stPct > 0.2 ? '#ff0' : '#f00';
+            ctx.fillRect(barX, barY, barW * stPct, barH);
+        }
+        
+        // Position label (1st, 2nd...)
+        if (hrseRacePhase === 'racing' || hrseRacePhase === 'finished') {
+            const sorted = [...hrsePositions].map((p, idx) => ({ p, idx })).sort((a, b) => b.p - a.p);
+            const rank = sorted.findIndex(s => s.idx === i) + 1;
+            ctx.font = '8px monospace';
+            ctx.fillStyle = rank === 1 ? '#ffd700' : '#666';
+            ctx.fillText(rank + (rank === 1 ? 'st' : rank === 2 ? 'nd' : rank === 3 ? 'rd' : 'th'), x, y - 20);
+        }
+    }
+    
+    // Start gate
+    if (hrseRacePhase === 'idle' || hrseRacePhase === 'countdown') {
+        ctx.fillStyle = 'rgba(100,50,0,0.6)';
+        ctx.fillRect(26, trackTop, 3, 5 * laneH);
+    }
+}
+
+function hrsePickAndGo(index) {
+    if (hrseRacing || playerTokens < hrseBet) { if (playerTokens < hrseBet) alert('Not enough tokens!'); return; }
+    hrseRacing = true;
+    hrsePickedHorse = index;
+    hrsePickedOdds = hrseOdds[index];
+    playerTokens -= hrseBet; updateTokenDisplays();
+    
+    for (let i = 0; i < 5; i++) {
+        const btn = document.getElementById('hrse_btn_' + i);
+        if (btn) { btn.disabled = true; btn.style.opacity = i === index ? '1' : '0.4'; }
+    }
+    
+    // Countdown phase
+    hrseRacePhase = 'countdown';
+    const comm = document.getElementById('hrse_commentary');
+    comm.textContent = '🔔 Riders to the gates...';
+    
+    setTimeout(() => {
+        comm.textContent = '3...';
+        setTimeout(() => {
+            comm.textContent = '2...';
+            setTimeout(() => {
+                comm.textContent = '1...';
+                setTimeout(() => {
+                    comm.textContent = '🏇 AND THEY\'RE OFF!';
+                    hrseRacePhase = 'racing';
+                    hrseRunRace();
+                }, 600);
+            }, 600);
+        }, 600);
+    }, 800);
+}
+
+function hrseRunRace() {
+    const finishLine = 100;
+    const comm = document.getElementById('hrse_commentary');
+    const commentaries = [
+        () => { const lead = hrseGetLeader(); return `${hrseHorses[lead].emoji} ${hrseHorses[lead].name} takes an early lead!`; },
+        () => { const lead = hrseGetLeader(); return `${hrseHorses[lead].emoji} ${hrseHorses[lead].name} is pulling ahead!`; },
+        () => { if (hrseStamina[hrsePickedHorse] < 30) return '😰 Your horse is getting tired!'; return null; },
+        () => { const b = hrseBoostTimer.findIndex(t => t > 0); return b >= 0 ? `⚡ ${hrseHorses[b].name} surges forward with a burst of speed!` : null; },
+        () => { const sorted = [...hrsePositions].map((p,i)=>({p,i})).sort((a,b)=>b.p-a.p); if (Math.abs(sorted[0].p - sorted[1].p) < 5) return `🔥 IT'S NECK AND NECK! ${hrseHorses[sorted[0].i].name} vs ${hrseHorses[sorted[1].i].name}!`; return null; },
+        () => { const myRank = hrseGetRank(hrsePickedHorse); return myRank === 1 ? `👑 Your ${hrseHorses[hrsePickedHorse].name} is in the lead!` : myRank >= 4 ? `😬 ${hrseHorses[hrsePickedHorse].name} is falling behind...` : null; },
+        () => { const max = Math.max(...hrsePositions); return max > 70 ? '🏁 They\'re approaching the finish line!' : null; },
+        () => { const max = Math.max(...hrsePositions); return max > 85 ? '🏁 HERE THEY COME! FINAL STRETCH!' : null; },
+    ];
+    let commTimer = 0, lastComm = '';
+    
+    function tick() {
+        if (hrseRacePhase !== 'racing') return;
+        
+        // Physics: speed based on stamina + randomness + boosts
+        for (let i = 0; i < 5; i++) {
+            const basePower = 0.6 + Math.random() * 0.9;
+            const staminaFactor = 0.4 + (hrseStamina[i] / 100) * 0.6;
+            const boostFactor = hrseBoostTimer[i] > 0 ? 1.8 : 1;
+            
+            hrseSpeeds[i] = basePower * staminaFactor * boostFactor;
+            hrsePositions[i] += hrseSpeeds[i] * 0.6;
+            
+            // Stamina drain
+            hrseStamina[i] = Math.max(0, hrseStamina[i] - (0.15 + Math.random() * 0.2) * (boostFactor > 1 ? 2.5 : 1));
+            
+            // Random boost (3% chance per tick if stamina > 40)
+            if (hrseBoostTimer[i] <= 0 && hrseStamina[i] > 40 && Math.random() < 0.03) {
+                hrseBoostTimer[i] = 15; // ~0.75s of boost
+                // Boost particles
+                const canvas = document.getElementById('hrse_canvas');
+                const y = 15 + i * 36 + 18;
+                const x = 30 + (hrsePositions[i] / 100) * (canvas.width - 80);
+                for (let p = 0; p < 8; p++) {
+                    hrseParticles.push({ x: x - 10, y: y + (Math.random()-0.5)*12, vx: -(1 + Math.random()*3), vy: (Math.random()-0.5)*2, life: 1, decay: 0.04 + Math.random()*0.03, color: hrseHorses[i].color, size: 2 + Math.random()*2 });
+                }
+            }
+            if (hrseBoostTimer[i] > 0) hrseBoostTimer[i]--;
+            
+            // Dust particles while racing
+            if (Math.random() < 0.3) {
+                const canvas = document.getElementById('hrse_canvas');
+                const y = 15 + i * 36 + 18;
+                const x = 30 + (hrsePositions[i] / 100) * (canvas.width - 80);
+                hrseParticles.push({ x: x - 8, y: y + 5 + Math.random()*5, vx: -(0.5 + Math.random()), vy: -Math.random()*0.5, life: 0.6, decay: 0.02, color: '#6b4c23', size: 1 + Math.random() });
+            }
+            
+            // Check finish
+            if (hrsePositions[i] >= finishLine && !hrseFinishOrder.includes(i)) {
+                hrseFinishOrder.push(i);
+            }
+        }
+        
+        // Commentary
+        commTimer++;
+        if (commTimer % 25 === 0) {
+            const pool = commentaries.map(fn => fn()).filter(c => c && c !== lastComm);
+            if (pool.length > 0) {
+                lastComm = pool[Math.floor(Math.random() * pool.length)];
+                comm.textContent = lastComm;
+            }
+        }
+        
+        hrseDraw();
+        
+        // Race over when first horse finishes
+        if (hrseFinishOrder.length >= 1 && hrseFinishOrder.length < 5) {
+            // Let stragglers finish for a moment
+            if (hrseFinishOrder.length >= 3 || commTimer > 500) {
+                hrseFinish();
+                return;
+            }
+        }
+        if (hrseFinishOrder.length >= 5 || commTimer > 600) {
+            hrseFinish();
+            return;
+        }
+        
+        hrseAnimFrame = requestAnimationFrame(tick);
+    }
+    
+    hrseAnimFrame = requestAnimationFrame(tick);
+}
+
+function hrseGetLeader() {
+    let max = -1, leader = 0;
+    hrsePositions.forEach((p, i) => { if (p > max) { max = p; leader = i; } });
+    return leader;
+}
+function hrseGetRank(idx) {
+    const sorted = [...hrsePositions].map((p, i) => ({ p, i })).sort((a, b) => b.p - a.p);
+    return sorted.findIndex(s => s.idx === idx) + 1;
+}
+
+function hrseFinish() {
+    hrseRacePhase = 'finished';
+    if (hrseAnimFrame) cancelAnimationFrame(hrseAnimFrame);
+    
+    const winner = hrseFinishOrder[0];
+    const comm = document.getElementById('hrse_commentary');
+    const resultEl = document.getElementById('hrse_result');
+    
+    // Photo finish particles
+    for (let p = 0; p < 40; p++) {
+        const canvas = document.getElementById('hrse_canvas');
+        hrseParticles.push({ x: canvas.width - 40, y: 15 + Math.random() * 180, vx: (Math.random()-0.5)*4, vy: -2 - Math.random()*3, life: 1, decay: 0.015, color: ['#ffd700','#ff0000','#ff6600','#fff'][Math.floor(Math.random()*4)], size: 2 + Math.random()*3 });
+    }
+    hrseDraw();
+    
+    if (winner === hrsePickedHorse) {
+        const payout = Math.floor(hrseBet * hrsePickedOdds);
+        playerTokens += payout; updateTokenDisplays();
+        comm.textContent = `🏆 ${hrseHorses[winner].name} WINS! YOU COLLECT ${payout} TOKENS!`;
+        resultEl.innerHTML = `<span style="color:#ffd700; font-size:14px;">🏆 +${payout} tokens!</span>`;
+    } else {
+        comm.textContent = `${hrseHorses[winner].emoji} ${hrseHorses[winner].name} takes the crown! Your ${hrseHorses[hrsePickedHorse].name} came ${hrseGetRank(hrsePickedHorse)}${['','st','nd','rd','th','th'][hrseGetRank(hrsePickedHorse)]}.`;
+        resultEl.innerHTML = `<span style="color:#f00;">💀 -${hrseBet} tokens</span>`;
+    }
+    savePlayerTokens();
+    hrseRacing = false;
+    setTimeout(hrseInit, 3500);
 }
 
 setTimeout(hrseInit, 500);
